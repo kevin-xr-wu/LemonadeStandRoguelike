@@ -74,8 +74,8 @@ h3{margin:14px 0 6px}
 .sky.rainy{background:linear-gradient(180deg,#5f7d99,#93a9bd)}
 .sky.perfect{background:linear-gradient(180deg,#6ee7ff,#fff3a0)}
 .sky.windy{background:linear-gradient(180deg,#8fd0e8,#e8f7d9)}
-.ground{height:64px;background:linear-gradient(180deg,#8a6b46,#6f5638);position:relative;border-top:4px solid #557c3e}
-.ground:before{content:"";position:absolute;top:-14px;left:0;right:0;height:14px;background:#6fbf4a}
+.ground{height:64px;background:#8a6b46 var(--groundPng) 0 0/128px 64px;position:relative;image-rendering:pixelated}
+.ground:before{content:"";position:absolute;top:-18px;left:0;right:0;height:28px;background:var(--grassPng) 0 0/128px 28px repeat-x;image-rendering:pixelated}
 .stand{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:128px;image-rendering:pixelated;z-index:5;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
 .standSign{position:absolute;left:50%;bottom:134px;transform:translateX(-50%) rotate(-2deg);background:#fff;border:3px solid var(--ink);border-radius:9px;padding:2px 12px;font-weight:900;font-size:14px;z-index:6;white-space:nowrap}
 .weatherBig{position:absolute;top:10px;right:14px;font-size:46px;z-index:4}
@@ -210,8 +210,9 @@ button,input,select{touch-action:manipulation}
   .iconBtn{padding:6px 9px;border-radius:10px}
   /* Scene scales down, nothing overlaps the stand sign */
   .sky{height:188px}
-  .ground{height:54px}
-  .stand{width:64px;bottom:2px}
+  .ground{height:54px;background-size:64px 32px}
+  .ground:before{top:-9px;height:14px;background-size:64px 14px}
+  .stand{width:64px;bottom:0}
   .standSign{bottom:68px;font-size:12px;padding:2px 8px;max-width:92%}
   .weatherBig{font-size:36px;top:8px;right:10px}
   .crowdMix{font-size:11.5px;max-width:54%;padding:4px 8px;line-height:1.4}
@@ -250,7 +251,9 @@ button,input,select{touch-action:manipulation}
 }
 @media (max-height:500px) and (orientation:landscape){
   .sky{height:148px}
-  .stand{width:64px;bottom:2px}
+  .ground{background-size:64px 32px}
+  .ground:before{top:-9px;height:14px;background-size:64px 14px}
+  .stand{width:64px;bottom:0}
   .standSign{bottom:68px}
   .bubble{bottom:96px}
   .coin{bottom:80px}
@@ -289,6 +292,11 @@ const fmt=n=>{const v=Math.round(n*100)/100;return (v<0?"-$":"$")+Math.abs(v).to
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 /* 64×64 pixel-art stand, drawn in Pixelwright. CSS shows it at 2×, or 1× on small screens (.stand). */
 const STAND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAARVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v+Jh7gjAAAAAXRSTlMAQObYZgAAAfNJREFUeNrdl+12wiAMhsW6SaebHs+x93+pC+SDAIFS6y/jduAN4WkILdrDB5nbaDXgN9odDQWpTJCqAPn8+xXNECxLQg6gKTmACSbAWRdpAEyCDejKDEDzNwEyQpHACqBOoZHAmk6ERgJNQJlCmcAoQAjuB+2PjbQ4Ss0OAVzQbmykxVFqdrwb4BwNu8JR6uSQKuLwAQPAjQ5oLQ0OJOgbAewYAvhJ77UhbqqOBDcFwPDpU0c3ANYJdLUBp9xFGS9PtjQaAEV0BEzZ0/VAJYQ0eK+ja4B7cEcAsoh1gFqyW2ayM+wdL6APcG6evfdcg9kvi/ezHwbgdDCYEZT3yxMAlAHvSA+A0/1ZAMILgFiSHiBe4Ayz6Y5jQOCJbgNk/ak1AKFrA3j9qg6yAsiJF9gBULSqA3fO31KhmEwBSHc8xqYWZ1CfAoznw32xRX/ZslB+FApwesHUKvYDXjRdxuNmK040yspqGm4TMJR4CxD8Tr79mnaLAPhvAS4QBGc+tNALf9GBbfCPARQk/wxnUAC4D/42IBZGZWB+GNDcBbqyroFkoWvQBMgXeNv6gD33wf47EQZUSFLaTSMbANFTAeKWrwASR08bAKgkDYBKpFVEDj5O+wDVLlQLfPc2TputAOw7UimH4d95Zqz5Mtl5Sf2gd+5/Q2ZNQf2Dk0AAAAAASUVORK5CYII=";
+/* 64×14 grass edge and 64×32 dirt tile, drawn in Pixelwright. They repeat along .ground at 2×, or 1× on small screens. */
+const GRASS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAOCAMAAACo5erwAAAAUVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil9Bc2ApAAAAAXRSTlMAQObYZgAAAMFJREFUeNqlkksOw0AIQ+EIHTa9/0lrPmYg6qJSiRrsh4dGSkREcc3aLkmzMSRV0zPPwD+2VCJwDNc5tYNSrYG6hzP8ijHhyIc8n1TM6xzLEwrRxHwTUDH2FTzie05syxAr5UJ3NigXvHDxXOgWX9md5IJA949LUzQbw574gso/ju3oZkMLHsYr7ri1SxGt5RwSSnb6H9zD4sWroue7ScM+KPUOupM3Cs5bFrVnBky9g+5iwT8VnyV7GfZBb3IG3X0Ahost7N2GQNgAAAAASUVORK5CYII=";
+const GROUND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAMAAACVQ462AAAAUVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil9Bc2ApAAAAAXRSTlMAQObYZgAAAJdJREFUeNrFlVEOgDAIQ3cM5P4Hdck0bihQNtH9kjzb0mDZFh8MICIVoM3eVTAPYM5RcNq+AMOX8FRSM3DcAwDfCHMJVkAwmXoFU31KL5Jb8xQF9vr6adUXVsD19a7iFkQqIECPsgEWTkpiD0BRAmBu8HE4AuSOgEUIBfE0v/uxaKFIgOZBTRdVcJy3O774p9PO9c8Qm7IdZWTH7YBjEDkAAAAASUVORK5CYII=";
+document.documentElement.style.setProperty("--grassPng",`url(${GRASS_PNG})`);
+document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
 function sampleWeighted(items){let t=items.reduce((s,i)=>s+i.w,0),r=Math.random()*t;for(const i of items){r-=i.w;if(r<=0)return i}return items[items.length-1]}
 
 /* ---------- audio (tiny WebAudio juice) ---------- */
