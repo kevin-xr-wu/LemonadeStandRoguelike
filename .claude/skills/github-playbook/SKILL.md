@@ -1,5 +1,5 @@
 ---
-name: steward
+name: github-playbook
 description: Playbook for source control and pull requests in this repo. Use for any commit, branch, push or PR, and whenever a PR comment or review arrives.
 ---
 
