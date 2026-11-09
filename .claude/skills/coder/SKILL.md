@@ -35,5 +35,4 @@ How Claude works in this repo. Several Claude sessions can run here at once, so 
   git rebase --onto origin/main <newest commit that isn't yours> <your branch>
   git push --force-with-lease
   ```
-  PR #4 should have been handled this way. It picked up PR #3's sprite commit, and merging it put that change into `main` unreviewed. Rebasing first would have dropped the sprite commit and left PR #3 to be reviewed and merged on its own.
 - Leave other sessions' PRs and branches alone: don't merge, close, rebase or push to them.
