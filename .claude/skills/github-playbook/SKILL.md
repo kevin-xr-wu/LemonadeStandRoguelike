@@ -13,6 +13,7 @@ How Claude handles git, pull requests and review comments in this repo.
 - Keep one change per PR. Use small commits with a short imperative subject (`Add core mechanics section to README`).
 - Never rewrite pushed history: no amend, rebase or force-push. Fix mistakes with a new commit.
 - Open PRs against `main`. Say what changed and why in a few lines.
+- Right after opening a PR, subscribe this session to it with `subscribe_pr_activity`, so review comments wake the session. If that tool isn't available, tell kevin-xr-wu the PR isn't being watched.
 - Before pushing a change to `world-lemonade-stand.html`, open it in a browser and check that it loads with no console errors.
 - After a merge, switch to `main` and pull.
 
