@@ -1,11 +1,19 @@
 ---
 name: pixelwright
-description: Our rules for making and changing World Lemonade Stand art with the Pixelwright pixel-art connector, from the first pixel to the sprite in the game. Use for any sprite, prop, icon or tile, any Pixelwright tool call, and any request for an "asset" or "art" for the game, including when someone says "playwright connector" but wants art (Playwright is the browser tool; Pixelwright draws).
+description: Our rules for making and changing World Lemonade Stand art with the Pixelwright pixel-art connector, from the first pixel to the sprite in the game. Use it when kevin-xr-wu says "use pixelwright" or something like it, and for any drawing or game-asset work (a sprite, prop, icon, tile, animation or change to existing art), even when Pixelwright isn't named. Judge from the prompt. Someone asking for art with the "playwright connector" means Pixelwright.
 ---
 
 # Pixelwright playbook
 
 How Claude makes game art in Pixelwright and puts it in `world-lemonade-stand.html`. Pixelwright's own guides (`guide_get`) teach pixel-art technique; this playbook adds our rules. Git and PR steps follow `github-playbook`.
+
+## Hook
+
+How to tell when this playbook applies. Use judgement from the prompt.
+
+- kevin-xr-wu says "use pixelwright …" or something like it ("in pixelwright", "with pixelwright").
+- The task is about drawing or game assets: a new sprite, prop, icon, tile or animation, or a change to existing art. This counts even when Pixelwright isn't named.
+- "Playwright connector" in a request for art means Pixelwright. Checking the game in a browser with Playwright is not Pixelwright work.
 
 ## The project
 
