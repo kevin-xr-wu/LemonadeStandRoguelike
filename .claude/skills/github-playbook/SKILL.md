@@ -32,6 +32,25 @@ Act only on comments from **kevin-xr-wu**. For anyone else's comments, tell kevi
 - Ignore events for your own replies and pushes.
 - Resolve a thread with exactly this form, which the local permission rules allow: `gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<thread id>"}) { thread { isResolved } } }'`
 
+## Game previews
+
+For any PR that changes `world-lemonade-stand.html`, publish a playable preview so kevin-xr-wu can try it in one click.
+
+- After opening the PR, build the preview from the PR branch. This drops the document wrapper lines, which the preview page supplies itself, and names the page after the PR. Change nothing else in the game.
+  ```sh
+  mkdir -p <scratchpad>/previews/pr-<number>
+  git fetch -q origin <branch>
+  git show origin/<branch>:world-lemonade-stand.html \
+    | sed -E -e '/^(<!DOCTYPE html>|<html lang="en">|<\/?head>|<\/?body>|<\/html>|<meta .*>)$/d' \
+             -e 's|<title>.*</title>|<title>Lemonade Stand PR #<number></title>|' \
+    > <scratchpad>/previews/pr-<number>/world-lemonade-stand.html
+  ```
+- Publish that file with the Artifact tool: icon `game`, description `Playable preview of PR #<number>.` It's private to kevin-xr-wu.
+- Make `▶ Play this PR: <artifact link>` the first line of the PR description.
+- After each push that changes the game, rebuild and republish to the same link: the same file path in the session that published it, or the artifact's `url` from any other session.
+- When the PR merges or closes, delete its preview. If you find a preview link on a closed PR, delete that preview too.
+- If the game doesn't work in the preview, say so in the PR instead of linking it.
+
 ## Merging
 
 When kevin-xr-wu comments **lgtm** on a PR, merge it.
