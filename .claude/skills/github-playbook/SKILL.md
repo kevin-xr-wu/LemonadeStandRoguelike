@@ -51,6 +51,55 @@ For any PR that changes `world-lemonade-stand.html`, publish a playable preview 
 - When the PR merges or closes, delete its preview. If you find a preview link on a closed PR, delete that preview too.
 - If the game doesn't work in the preview, say so in the PR instead of linking it.
 
+## Before and after
+
+Show the game before and after a change in the PR description, as evidence of what changed.
+
+**Only do this when kevin-xr-wu asks for before and after evidence**, in chat or in a PR comment. Don't add it on your own, even when a PR changes how the game looks.
+
+- **Before** is `main`: `git show origin/main:world-lemonade-stand.html > <scratchpad>/before.html`. **After** is the PR branch.
+- Choose what shows the change best:
+  - A screenshot for how something looks: art, layout, colors, text, a new panel.
+  - A video for something that moves or plays out: an animation, a transition, timing, what a click does, a flow across screens.
+  - Both if that helps. Show only the screens the change touches.
+- Capture both with Playwright in exactly the same way: the same window size, the same clicks, and `Math.random` seeded the same with `page.addInitScript`. Then the change is the only difference. Take screenshots at `deviceScaleFactor: 2`. When the change touches layout, add a phone row at 390×844.
+- Make videos GIFs: `gh` can't upload a video, but a linked GIF plays in the description. Record about 5 seconds at about 10 frames a second, at 1× and clipped to the part that changes, and keep each GIF under 5 MB. There's no ffmpeg, so install `gifenc` and `pngjs` from npm in the scratchpad and encode with them:
+  ```js
+  import gifenc from 'gifenc'; import pngjs from 'pngjs'; // CommonJS: no named imports
+  const { GIFEncoder, quantize, applyPalette } = gifenc, { PNG } = pngjs;
+  // ...after the clicks that start the moment to record:
+  const clip = await page.locator('.scene').first().boundingBox();
+  const frames = [], t0 = Date.now();
+  while (Date.now() - t0 < 5000) { frames.push({ t: Date.now(), png: await page.screenshot({ clip }) }); await page.waitForTimeout(80); }
+  const gif = GIFEncoder();
+  frames.forEach(({ t, png }, i) => {
+    const { data, width, height } = PNG.sync.read(png);
+    const palette = quantize(data, 256);
+    gif.writeFrame(applyPalette(data, palette), width, height, { palette, delay: (frames[i + 1]?.t ?? t + 100) - t });
+  });
+  gif.finish(); fs.writeFileSync('after.gif', gif.bytes());
+  ```
+- Put the files in a `pr-<number>/` folder on the `pr-media` branch. That branch holds only PR media. Never merge it or delete it. Add the files from a worktree of their own:
+  ```sh
+  git fetch -q origin pr-media
+  git worktree add --detach .claude/worktrees/pr-media-<number> origin/pr-media
+  # copy before.png, after.png (or .gif) into .claude/worktrees/pr-media-<number>/pr-<number>/, then from that folder:
+  git add pr-<number> && git commit -m "Add PR #<number> before and after"
+  git -c http.postBuffer=157286400 push origin HEAD:pr-media   # if it's rejected: git pull --rebase origin pr-media, then push again
+  git worktree remove .claude/worktrees/pr-media-<number>
+  ```
+- Add this right after the summary in the PR description. Link to the branch, not a commit, so a new push of the files updates the PR:
+  ```md
+  ## Before / After
+
+  | Before | After |
+  | --- | --- |
+  | <img src="https://github.com/kevin-xr-wu/LemonadeStandRoguelike/blob/pr-media/pr-<number>/before.png?raw=true" width="400"> | <img src="https://github.com/kevin-xr-wu/LemonadeStandRoguelike/blob/pr-media/pr-<number>/after.png?raw=true" width="400"> |
+  ```
+  Add a row for each extra screen or GIF, and a line under the table saying what to look at.
+- Once a PR has a before and after, take After again after each push that changes what the player sees, and push it over the old files.
+- Keep the files after the PR closes. Its description still shows them.
+
 ## Merging
 
 When kevin-xr-wu comments **lgtm** on a PR, merge it.
