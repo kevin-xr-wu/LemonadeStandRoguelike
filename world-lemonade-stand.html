@@ -80,7 +80,7 @@ h3{margin:14px 0 6px}
 .standSign{position:absolute;left:50%;bottom:134px;transform:translateX(-50%) rotate(-2deg);background:#fff;border:3px solid var(--ink);border-radius:9px;padding:2px 12px;font-weight:900;font-size:14px;z-index:6;white-space:nowrap}
 .weatherBig{position:absolute;top:10px;right:14px;font-size:46px;z-index:4}
 .crowdMix{position:absolute;top:10px;left:12px;background:rgba(255,253,244,.92);border:2.5px solid var(--ink);border-radius:10px;padding:5px 10px;font-size:12.5px;font-weight:700;z-index:6;max-width:46%;line-height:1.5}
-.cust{position:absolute;bottom:4px;font-size:30px;z-index:6;transition:left .5s linear;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+.cust{position:absolute;bottom:2px;height:64px;transform:translateX(-50%);image-rendering:pixelated;z-index:6;transition:left .5s linear;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
 .bubble{position:absolute;bottom:150px;font-size:12px;font-weight:800;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 8px;z-index:8;animation:floatUp 1.6s ease-out forwards;white-space:nowrap}
 .coin{position:absolute;bottom:140px;font-size:19px;z-index:9;animation:coinFly .8s ease-in forwards;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translateY(8px)}15%{opacity:1}100%{opacity:0;transform:translateY(-42px)}}
@@ -216,7 +216,7 @@ button,input,select{touch-action:manipulation}
   .standSign{bottom:68px;font-size:12px;padding:2px 8px;max-width:92%}
   .weatherBig{font-size:36px;top:8px;right:10px}
   .crowdMix{font-size:11.5px;max-width:54%;padding:4px 8px;line-height:1.4}
-  .cust{font-size:24px;bottom:2px}
+  .cust{height:32px;bottom:1px}
   .bubble{font-size:11px;bottom:96px}
   .coin{bottom:80px}
   .streak{top:54px;right:10px;font-size:14px;padding:3px 9px}
@@ -255,6 +255,7 @@ button,input,select{touch-action:manipulation}
   .ground:before{top:-9px;height:14px;background-size:64px 14px}
   .stand{width:64px;bottom:0}
   .standSign{bottom:68px}
+  .cust{height:32px;bottom:1px}
   .bubble{bottom:96px}
   .coin{bottom:80px}
 }
@@ -295,6 +296,15 @@ const STAND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt
 /* 64×14 grass edge and 64×32 dirt tile, drawn in Pixelwright. They repeat along .ground at 2×, or 1× on small screens. */
 const GRASS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAOCAMAAACo5erwAAAAUVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil9Bc2ApAAAAAXRSTlMAQObYZgAAAMFJREFUeNqlkksOw0AIQ+EIHTa9/0lrPmYg6qJSiRrsh4dGSkREcc3aLkmzMSRV0zPPwD+2VCJwDNc5tYNSrYG6hzP8ijHhyIc8n1TM6xzLEwrRxHwTUDH2FTzie05syxAr5UJ3NigXvHDxXOgWX9md5IJA949LUzQbw574gso/ju3oZkMLHsYr7ri1SxGt5RwSSnb6H9zD4sWroue7ScM+KPUOupM3Cs5bFrVnBky9g+5iwT8VnyV7GfZBb3IG3X0Ahost7N2GQNgAAAAASUVORK5CYII=";
 const GROUND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAMAAACVQ462AAAAUVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil9Bc2ApAAAAAXRSTlMAQObYZgAAAJdJREFUeNrFlVEOgDAIQ3cM5P4Hdck0bihQNtH9kjzb0mDZFh8MICIVoM3eVTAPYM5RcNq+AMOX8FRSM3DcAwDfCHMJVkAwmXoFU31KL5Jb8xQF9vr6adUXVsD19a7iFkQqIECPsgEWTkpiD0BRAmBu8HE4AuSOgEUIBfE0v/uxaKFIgOZBTRdVcJy3O774p9PO9c8Qm7IdZWTH7YBjEDkAAAAASUVORK5CYII=";
+/* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
+const CUSTOMER_PNG={
+  kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
+  parents:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAO5JREFUeNqNktsOgjAMhlchAbORcOPt5gXeaMD3fzt72oBlVf9k6dZ+ND3g/hOozPibtW0GwfFxNAm4SQI7BzyiamnHU0pyEGkRPwEHdwyTjDjWkJL3HuPtGohgLUaNLOqhPU24jqQ5xpkvQ00oMA5qGsAABcCrCejnDSDFI4Cv74ASh36aAITgQxCiAvjtoGcxQY5Nta4CaLzvhIATQMuFntYLSQB0UQzWAkRIEy13yh2dASFwvXvHFSBl0O7KKCrAwYv1tDJkoBBmBgvICTIBXdddcEJidDTUSS4TLigExIgLd8Fn/yt3k118nPsA+2croHT6psQAAAAASUVORK5CYII=",
+  athletes:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMRJREFUeNqVks0SgyAMhMnFodN09FB7D8Wj8v5v16ygJWin7Y6K7MfyM8F9FRUd/KmoIbs/RUtoKOr7BkwxhhBiFJsgNfMrIjX5CBw91YYaf43o0odAJsdAPrOOFnt6jGZOAIlZYxvJIKSgTwOEbqwZHc9X9N4+qcXeG7D+APiL704Bd/DPpoJqgF3JKcABl6J5rgEKtYGBHuOvYMaECsa7LRVmzltviruDth5/AqIBFwpfu0JKaQEorb2IayK3tup169wL/Ycg0CszZV8AAAAASUVORK5CYII=",
+  tourists:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMpJREFUeNq1kcESgyAMRE3RGWcA5eIJ7tD//8FuUtSQTg89dEdA9kFYZbpEont++Yvog3R/mQfCNcJbXtejvS/vm+5dWDTnLjckoEIHDG4561OoFHjSRgASizzG5y3Fe4/1BgiBbCERZxr/C0UWhZyDvIaT0IpZEo/iGsMNSiYBK0DgmQbP1qi1VjVgEuEfIDUoX8LWWgmtDr4EkwTq5BMkDgVowd61bT+AjdBbIN9y9n8DaWcg/Rdg4ibnQPqgfAc9APpobl2N0/QCuPISphTS5LkAAAAASUVORK5CYII=",
+  foodies:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAL9JREFUeNrNks0OwiAQhLuQ2BqadC/2DmJS3v8FnaULQms03pzDks7X4Wdh+CpSnfykOpDqbxtIE6R0D1BKHoDW61gIhTAKCd4DTFMB4q8gBJBJG6BLBcPttUYI8HUqfElVoJs6AonUwEC87CAfmTG95/34CoiZrZ1n5+bZWobbA8fs3AEsZMURbuS3HoCgmKbJBYxSTNPeArLegR8S6IBYunh/3w9VjP3dfgSR4r8Ba4whk2vnw4Clw+mt10H0BMb+HMh5Syd+AAAAAElFTkSuQmCC",
+  artists:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAL9JREFUeNqVkl0OwiAQhJ1YkkbaaDwA+0IfbDXe/3YOYKFL6UMnAZb9GDb8XLaCmq1JamHbpZekWSO8/3mSWZM5S+enLO+3hEAgwuZOgJFgbAERK+L2IBACr0A4NeCoFOX8IyqAGNxXgo9W3gxck0xx+dbhi4nh6sCBA8YYNBwwg+ml4YB5mm/XqsGtOpYpDnG5OMqD8EZw1ZfV53eqwOThj8HA/vI6cgwK9AXU3+QksNbyNLGv87cEONR/vQxBP/VJKFytvpCgAAAAAElFTkSuQmCC",
+};
 document.documentElement.style.setProperty("--grassPng",`url(${GRASS_PNG})`);
 document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
 function sampleWeighted(items){let t=items.reduce((s,i)=>s+i.w,0),r=Math.random()*t;for(const i of items){r-=i.w;if(r<=0)return i}return items[items.length-1]}
@@ -1016,7 +1026,7 @@ async function runDayPhase(phase){
   const chunk=Math.max(1,Math.ceil(target/Math.max(visual,1)));
   for(let i=0;i<visual&&processed<target;i++){
     const ck=pick(mixArr)||"parents";const c=CROWDS[ck];
-    spawnCustomer(c,ck);
+    spawnCustomer(ck);
     let soldChunk=0;
     for(let j=0;j<chunk&&processed<target;j++){
       const res=serveOne(ck);
@@ -1052,12 +1062,12 @@ function updateDayStats(streak){
   const sb=$("#streakBox");
   if(streak>=5){sb.style.display="block";$("#streakN").textContent=streak}else sb.style.display="none";
 }
-function spawnCustomer(c,ck){
+function spawnCustomer(ck){
   const sky=$("#skyBox");if(!sky)return;
-  const d=document.createElement("div");d.className="cust";d.textContent=c.icon;
-  const fromLeft=Math.random()<0.5;d.style.left=fromLeft?"-40px":"calc(100% + 10px)";sky.appendChild(d);
+  const d=document.createElement("img");d.className="cust";d.src=CUSTOMER_PNG[ck]||CUSTOMER_PNG.parents;d.alt="";
+  const fromLeft=Math.random()<0.5;d.style.left=fromLeft?"-40px":"calc(100% + 40px)";sky.appendChild(d);
   requestAnimationFrame(()=>{d.style.left=(42+Math.random()*16)+"%"});
-  setTimeout(()=>{d.style.left=fromLeft?"calc(100% + 10px)":"-40px";setTimeout(()=>d.remove(),600)},1500);
+  setTimeout(()=>{d.style.left=fromLeft?"calc(100% + 40px)":"-40px";setTimeout(()=>d.remove(),600)},1500);
 }
 function spawnBubble(txt){
   const sky=$("#skyBox");if(!sky)return;
