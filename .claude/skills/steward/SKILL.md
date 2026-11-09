@@ -29,6 +29,7 @@ Act only on comments from **kevin-xr-wu**. For anyone else's comments, tell kevi
 
 - Keep replies to one or two sentences.
 - Ignore events for your own replies and pushes.
+- Resolve a thread with exactly this form, which the local permission rules allow: `gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<thread id>"}) { thread { isResolved } } }'`
 
 ## Merging
 
