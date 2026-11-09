@@ -76,13 +76,13 @@ h3{margin:14px 0 6px}
 .sky.windy{background:linear-gradient(180deg,#8fd0e8,#e8f7d9)}
 .ground{height:64px;background:linear-gradient(180deg,#8a6b46,#6f5638);position:relative;border-top:4px solid #557c3e}
 .ground:before{content:"";position:absolute;top:-14px;left:0;right:0;height:14px;background:#6fbf4a}
-.stand{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);width:128px;image-rendering:pixelated;z-index:5;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
-.standSign{position:absolute;left:50%;bottom:186px;transform:translateX(-50%) rotate(-2deg);background:#fff;border:3px solid var(--ink);border-radius:9px;padding:2px 12px;font-weight:900;font-size:14px;z-index:6;white-space:nowrap}
+.stand{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:128px;image-rendering:pixelated;z-index:5;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
+.standSign{position:absolute;left:50%;bottom:134px;transform:translateX(-50%) rotate(-2deg);background:#fff;border:3px solid var(--ink);border-radius:9px;padding:2px 12px;font-weight:900;font-size:14px;z-index:6;white-space:nowrap}
 .weatherBig{position:absolute;top:10px;right:14px;font-size:46px;z-index:4}
 .crowdMix{position:absolute;top:10px;left:12px;background:rgba(255,253,244,.92);border:2.5px solid var(--ink);border-radius:10px;padding:5px 10px;font-size:12.5px;font-weight:700;z-index:6;max-width:46%;line-height:1.5}
-.cust{position:absolute;bottom:56px;font-size:30px;z-index:6;transition:left .5s linear;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
-.bubble{position:absolute;font-size:12px;font-weight:800;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 8px;z-index:8;animation:floatUp 1.6s ease-out forwards;white-space:nowrap}
-.coin{position:absolute;font-size:19px;z-index:9;animation:coinFly .8s ease-in forwards;pointer-events:none}
+.cust{position:absolute;bottom:4px;font-size:30px;z-index:6;transition:left .5s linear;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+.bubble{position:absolute;bottom:150px;font-size:12px;font-weight:800;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 8px;z-index:8;animation:floatUp 1.6s ease-out forwards;white-space:nowrap}
+.coin{position:absolute;bottom:140px;font-size:19px;z-index:9;animation:coinFly .8s ease-in forwards;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translateY(8px)}15%{opacity:1}100%{opacity:0;transform:translateY(-42px)}}
 @keyframes coinFly{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-70px) scale(1.4) rotate(40deg)}}
 .streak{position:absolute;top:64px;right:14px;background:var(--ink);color:var(--lemon);font-weight:900;border-radius:10px;padding:4px 12px;font-size:16px;z-index:7;display:none}
@@ -211,12 +211,13 @@ button,input,select{touch-action:manipulation}
   /* Scene scales down, nothing overlaps the stand sign */
   .sky{height:188px}
   .ground{height:54px}
-  .stand{width:64px;bottom:40px}
-  .standSign{bottom:106px;font-size:12px;padding:2px 8px;max-width:92%}
+  .stand{width:64px;bottom:2px}
+  .standSign{bottom:68px;font-size:12px;padding:2px 8px;max-width:92%}
   .weatherBig{font-size:36px;top:8px;right:10px}
   .crowdMix{font-size:11.5px;max-width:54%;padding:4px 8px;line-height:1.4}
-  .cust{font-size:24px;bottom:48px}
-  .bubble{font-size:11px}
+  .cust{font-size:24px;bottom:2px}
+  .bubble{font-size:11px;bottom:96px}
+  .coin{bottom:80px}
   .streak{top:54px;right:10px;font-size:14px;padding:3px 9px}
   .dayStats{font-size:13.5px;padding:8px 10px;gap:6px}
   /* Sliders get fat thumbs; labels can breathe */
@@ -249,8 +250,10 @@ button,input,select{touch-action:manipulation}
 }
 @media (max-height:500px) and (orientation:landscape){
   .sky{height:148px}
-  .stand{width:64px;bottom:40px}
-  .standSign{bottom:108px}
+  .stand{width:64px;bottom:2px}
+  .standSign{bottom:68px}
+  .bubble{bottom:96px}
+  .coin{bottom:80px}
 }
 </style>
 </head>
@@ -1051,12 +1054,12 @@ function spawnCustomer(c,ck){
 function spawnBubble(txt){
   const sky=$("#skyBox");if(!sky)return;
   const d=document.createElement("div");d.className="bubble";d.textContent=txt;
-  d.style.left=(44+Math.random()*14)+"%";d.style.bottom="150px";sky.appendChild(d);setTimeout(()=>d.remove(),1600);
+  d.style.left=(44+Math.random()*14)+"%";sky.appendChild(d);setTimeout(()=>d.remove(),1600);
 }
 function spawnCoin(){
   const layer=$("#fxLayer");if(!layer)return;
   const d=document.createElement("div");d.className="coin";d.textContent="🪙";
-  d.style.left=(47+Math.random()*6)+"%";d.style.bottom="140px";layer.appendChild(d);setTimeout(()=>d.remove(),800);
+  d.style.left=(47+Math.random()*6)+"%";layer.appendChild(d);setTimeout(()=>d.remove(),800);
 }
 function resumeAfternoon(){if(!D||D.done)return;const ctl=$("#dayControl");if(ctl)ctl.innerHTML=`<p class="big">Afternoon rush…</p><button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button>`;runDayPhase("afternoon")}
 
