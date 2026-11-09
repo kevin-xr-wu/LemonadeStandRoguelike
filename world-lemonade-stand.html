@@ -76,11 +76,11 @@ h3{margin:14px 0 6px}
 .sky.windy{background:linear-gradient(180deg,#8fd0e8,#e8f7d9)}
 .ground{height:64px;background:linear-gradient(180deg,#8a6b46,#6f5638);position:relative;border-top:4px solid #557c3e}
 .ground:before{content:"";position:absolute;top:-14px;left:0;right:0;height:14px;background:#6fbf4a}
-.stand{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);font-size:64px;z-index:5;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
-.standSign{position:absolute;left:50%;bottom:128px;transform:translateX(-50%) rotate(-2deg);background:#fff;border:3px solid var(--ink);border-radius:9px;padding:2px 12px;font-weight:900;font-size:14px;z-index:6;white-space:nowrap}
+.stand{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);width:128px;image-rendering:pixelated;z-index:5;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
+.standSign{position:absolute;left:50%;bottom:186px;transform:translateX(-50%) rotate(-2deg);background:#fff;border:3px solid var(--ink);border-radius:9px;padding:2px 12px;font-weight:900;font-size:14px;z-index:6;white-space:nowrap}
 .weatherBig{position:absolute;top:10px;right:14px;font-size:46px;z-index:4}
 .crowdMix{position:absolute;top:10px;left:12px;background:rgba(255,253,244,.92);border:2.5px solid var(--ink);border-radius:10px;padding:5px 10px;font-size:12.5px;font-weight:700;z-index:6;max-width:46%;line-height:1.5}
-.cust{position:absolute;bottom:56px;font-size:30px;z-index:4;transition:left .5s linear;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+.cust{position:absolute;bottom:56px;font-size:30px;z-index:6;transition:left .5s linear;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
 .bubble{position:absolute;font-size:12px;font-weight:800;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 8px;z-index:8;animation:floatUp 1.6s ease-out forwards;white-space:nowrap}
 .coin{position:absolute;font-size:19px;z-index:9;animation:coinFly .8s ease-in forwards;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translateY(8px)}15%{opacity:1}100%{opacity:0;transform:translateY(-42px)}}
@@ -114,7 +114,7 @@ table.pl tr.total td{border-top:3px solid var(--ink);border-bottom:none;font-siz
 .mt{margin-top:14px}.mb{margin-bottom:8px}
 .hidden{display:none!important}
 .nowrap{white-space:nowrap}
-@media(max-width:640px){h1.logo{font-size:38px}.stand{font-size:50px}.sky{height:200px}.crowdMix{max-width:58%}}
+@media(max-width:640px){h1.logo{font-size:38px}.sky{height:200px}.crowdMix{max-width:58%}}
 
 /* ==================== Kid-friendly layer: tips, upgrade shelf, guess bar, the math ==================== */
 #tipBox{position:fixed;left:0;top:0;z-index:400;max-width:min(260px,calc(100vw - 16px));background:var(--ink);color:#fff;font-size:13.5px;font-weight:700;line-height:1.35;padding:8px 11px;border-radius:10px;box-shadow:0 4px 0 rgba(0,0,0,.25);pointer-events:none;opacity:0;transition:opacity .1s}
@@ -211,7 +211,7 @@ button,input,select{touch-action:manipulation}
   /* Scene scales down, nothing overlaps the stand sign */
   .sky{height:188px}
   .ground{height:54px}
-  .stand{font-size:52px;bottom:44px}
+  .stand{width:64px;bottom:40px}
   .standSign{bottom:106px;font-size:12px;padding:2px 8px;max-width:92%}
   .weatherBig{font-size:36px;top:8px;right:10px}
   .crowdMix{font-size:11.5px;max-width:54%;padding:4px 8px;line-height:1.4}
@@ -249,8 +249,8 @@ button,input,select{touch-action:manipulation}
 }
 @media (max-height:500px) and (orientation:landscape){
   .sky{height:148px}
-  .stand{bottom:40px}
-  .standSign{bottom:96px}
+  .stand{width:64px;bottom:40px}
+  .standSign{bottom:108px}
 }
 </style>
 </head>
@@ -284,6 +284,8 @@ const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const fmt=n=>{const v=Math.round(n*100)/100;return (v<0?"-$":"$")+Math.abs(v).toFixed(2).replace(/\.00$/,"")};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+/* 64×64 pixel-art stand, drawn in Pixelwright. CSS shows it at 2×, or 1× on small screens (.stand). */
+const STAND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAARVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v+Jh7gjAAAAAXRSTlMAQObYZgAAAfNJREFUeNrdl+12wiAMhsW6SaebHs+x93+pC+SDAIFS6y/jduAN4WkILdrDB5nbaDXgN9odDQWpTJCqAPn8+xXNECxLQg6gKTmACSbAWRdpAEyCDejKDEDzNwEyQpHACqBOoZHAmk6ERgJNQJlCmcAoQAjuB+2PjbQ4Ss0OAVzQbmykxVFqdrwb4BwNu8JR6uSQKuLwAQPAjQ5oLQ0OJOgbAewYAvhJ77UhbqqOBDcFwPDpU0c3ANYJdLUBp9xFGS9PtjQaAEV0BEzZ0/VAJYQ0eK+ja4B7cEcAsoh1gFqyW2ayM+wdL6APcG6evfdcg9kvi/ezHwbgdDCYEZT3yxMAlAHvSA+A0/1ZAMILgFiSHiBe4Ayz6Y5jQOCJbgNk/ak1AKFrA3j9qg6yAsiJF9gBULSqA3fO31KhmEwBSHc8xqYWZ1CfAoznw32xRX/ZslB+FApwesHUKvYDXjRdxuNmK040yspqGm4TMJR4CxD8Tr79mnaLAPhvAS4QBGc+tNALf9GBbfCPARQk/wxnUAC4D/42IBZGZWB+GNDcBbqyroFkoWvQBMgXeNv6gD33wf47EQZUSFLaTSMbANFTAeKWrwASR08bAKgkDYBKpFVEDj5O+wDVLlQLfPc2TputAOw7UimH4d95Zqz5Mtl5Sf2gd+5/Q2ZNQf2Dk0AAAAAASUVORK5CYII=";
 function sampleWeighted(items){let t=items.reduce((s,i)=>s+i.w,0),r=Math.random()*t;for(const i of items){r-=i.w;if(r<=0)return i}return items[items.length-1]}
 
 /* ---------- audio (tiny WebAudio juice) ---------- */
@@ -800,7 +802,7 @@ function renderMorning(){
       <div class="crowdMix">📍 Pick a spot below</div>
       <div class="weatherBig">${wx.icon}</div>
       <div class="standSign">${sellableNow().length?`🍋 ${sellableNow().length} flavor${sellableNow().length>1?"s":""} on the menu`:"🛒 Buy supplies to open"}</div>
-      <div class="stand">🏖️</div>
+      <img class="stand" src="${STAND_PNG}" alt="">
     </div>
     <div class="ground"></div>
     <div class="dayStats forecastBar" tabindex="0"${tip("The forecast is always right. Use it to guess how many people will come and what they'll pay.")}><span class="fcLabel">Today's forecast</span><span class="fcMain">${wx.icon} <b>${wx.name}</b> · 🌡️ <b>${M.temp}°F</b></span><span class="fcDesc">${wx.desc}</span>${M.dice?`<span>🎲 Lucky Dice: <b>${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers</b> today</span>`:""}</div>
@@ -958,7 +960,7 @@ function renderDayScene(){
       <div class="weatherBig" id="sceneWxIcon">${wx.icon}</div>
       <div class="streak" id="streakBox">🔥 STREAK ×<span id="streakN">0</span></div>
       <div class="standSign">🍋 ${D.menu.length} flavor${D.menu.length>1?"s":""} · from ${fmt(Math.min(...D.menu.map(rk=>menuPrice(rk))))}</div>
-      <div class="stand">🏖️</div>
+      <img class="stand" src="${STAND_PNG}" alt="">
       <div id="fxLayer"></div>
     </div>
     <div class="ground"></div>
