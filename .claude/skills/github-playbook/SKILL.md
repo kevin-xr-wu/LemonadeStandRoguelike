@@ -9,13 +9,13 @@ How Claude handles git, pull requests and review comments in this repo.
 
 ## Source control
 
-- Never commit straight to `main`. Make a branch for each change, named for it in kebab-case (`add-readme`).
+- Never commit straight to `main`. Make a branch for each change, named for it in kebab-case (`add-readme`), in its own worktree as the coder playbook says.
 - Keep one change per PR. Use small commits with a short imperative subject (`Add core mechanics section to README`).
-- Never rewrite pushed history: no amend, rebase or force-push. Fix mistakes with a new commit.
+- Fix mistakes with a new commit, not by amending. If your branch turns out to sit on top of another branch, rebase your branch onto `main` and leave the other branch alone, as the coder playbook says.
 - Open PRs against `main`. Say what changed and why in a few lines.
 - Right after opening a PR, subscribe this session to it with `subscribe_pr_activity`, so review comments wake the session. If that tool isn't available, tell kevin-xr-wu the PR isn't being watched.
 - Before pushing a change to `world-lemonade-stand.html`, open it in a browser and check that it loads with no console errors.
-- After a merge, switch to `main` and pull.
+- After a merge, remove your worktree. Never switch branches in the main folder.
 
 ## Review comments
 
@@ -57,6 +57,6 @@ When kevin-xr-wu comments **lgtm** on a PR, merge it.
 
 - It counts when the whole comment is "lgtm", in any case, with punctuation ignored. It can be a PR comment, a review comment or a review summary.
 - "lgtm, but fix X" is a change request, not a merge. Make the fix and wait for a new lgtm.
-- Before merging, check that the PR has no conflicts, that CI is green (if it has any), and that no change kevin-xr-wu asked for is still unpushed. If something blocks the merge, reply on the PR saying what.
-- Squash-merge and delete the branch: `gh pr merge <number> --squash --delete-branch`.
+- Before merging, check that the PR has no conflicts, that CI is green (if it has any), that it holds only its own commits, and that no change kevin-xr-wu asked for is still unpushed. If something blocks the merge, reply on the PR saying what.
+- Squash-merge, then delete the branch: `gh pr merge <number> --squash`, then `git push origin --delete <branch>`.
 - Never merge without that lgtm.
