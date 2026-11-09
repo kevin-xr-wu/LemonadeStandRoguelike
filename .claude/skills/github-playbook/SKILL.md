@@ -53,7 +53,9 @@ For any PR that changes `world-lemonade-stand.html`, publish a playable preview 
 
 ## Before and after
 
-For any PR that changes what the player sees or does, show the game before and after the change in the PR description. Skip it when nothing on screen changes, like a refactor or a playbook edit.
+Show the game before and after a change in the PR description, as evidence of what changed.
+
+**Only do this when kevin-xr-wu asks for before and after evidence**, in chat or in a PR comment. Don't add it on your own, even when a PR changes how the game looks.
 
 - **Before** is `main`: `git show origin/main:world-lemonade-stand.html > <scratchpad>/before.html`. **After** is the PR branch.
 - Choose what shows the change best:
@@ -95,7 +97,7 @@ For any PR that changes what the player sees or does, show the game before and a
   | <img src="https://github.com/kevin-xr-wu/LemonadeStandRoguelike/blob/pr-media/pr-<number>/before.png?raw=true" width="400"> | <img src="https://github.com/kevin-xr-wu/LemonadeStandRoguelike/blob/pr-media/pr-<number>/after.png?raw=true" width="400"> |
   ```
   Add a row for each extra screen or GIF, and a line under the table saying what to look at.
-- After each push that changes what the player sees, take After again and push it over the old files.
+- Once a PR has a before and after, take After again after each push that changes what the player sees, and push it over the old files.
 - Keep the files after the PR closes. Its description still shows them.
 
 ## Merging
