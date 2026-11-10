@@ -89,9 +89,11 @@ h3{margin:14px 0 6px}
 @keyframes custWalk{from{background-position-x:0}to{background-position-x:calc(var(--fw)*var(--s)*-4px)}}
 @keyframes custCarry{from{background-position-x:calc(var(--fw)*var(--s)*-4px)}to{background-position-x:calc(var(--fw)*var(--s)*-8px)}}
 .bubble{--rise:34px;position:absolute;bottom:72px;font-size:12px;font-weight:800;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 8px;z-index:8;animation:floatUp 1.6s ease-out forwards;white-space:nowrap}
-.coin{position:absolute;bottom:140px;font-size:19px;z-index:9;animation:coinFly .8s ease-in forwards;pointer-events:none}
+/* The coin pops up over the head of the customer who paid, spinning. left is its centre. */
+.coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
-@keyframes coinFly{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-70px) scale(1.4) rotate(40deg)}}
+@keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
+@keyframes coinSpin{to{background-position-x:calc(var(--s)*-40px)}}
 .streak{position:absolute;top:64px;right:14px;background:var(--ink);color:var(--lemon);font-weight:900;border-radius:10px;padding:4px 12px;font-size:16px;z-index:7;display:none}
 .streak.hot{display:block;animation:pulse .4s infinite alternate}
 @keyframes pulse{from{transform:scale(1)}to{transform:scale(1.09) rotate(1.5deg)}}
@@ -225,7 +227,7 @@ button,input,select{touch-action:manipulation}
   .crowdMix{font-size:11.5px;max-width:54%;padding:4px 8px;line-height:1.4}
   .cust{--s:1;bottom:1px}
   .bubble{font-size:11px;bottom:34px;--rise:8px}
-  .coin{bottom:80px}
+  .coin{--s:1;--rise:14px;bottom:32px}
   .streak{top:54px;right:10px;font-size:14px;padding:3px 9px}
   .dayStats{font-size:13.5px;padding:8px 10px;gap:6px}
   /* Sliders get fat thumbs; labels can breathe */
@@ -264,7 +266,7 @@ button,input,select{touch-action:manipulation}
   .standSign{bottom:68px}
   .cust{--s:1;bottom:1px}
   .bubble{bottom:34px;--rise:8px}
-  .coin{bottom:80px}
+  .coin{--s:1;--rise:14px;bottom:32px}
 }
 </style>
 </head>
@@ -303,6 +305,8 @@ const STAND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt
 /* 64×14 grass edge and 64×32 dirt tile, drawn in Pixelwright. They repeat along .ground at 2×, or 1× on small screens. */
 const GRASS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAOCAMAAACo5erwAAAAUVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil9Bc2ApAAAAAXRSTlMAQObYZgAAAMFJREFUeNqlkksOw0AIQ+EIHTa9/0lrPmYg6qJSiRrsh4dGSkREcc3aLkmzMSRV0zPPwD+2VCJwDNc5tYNSrYG6hzP8ijHhyIc8n1TM6xzLEwrRxHwTUDH2FTzie05syxAr5UJ3NigXvHDxXOgWX9md5IJA949LUzQbw574gso/ju3oZkMLHsYr7ri1SxGt5RwSSnb6H9zD4sWroue7ScM+KPUOupM3Cs5bFrVnBky9g+5iwT8VnyV7GfZBb3IG3X0Ahost7N2GQNgAAAAASUVORK5CYII=";
 const GROUND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAMAAACVQ462AAAAUVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil9Bc2ApAAAAAXRSTlMAQObYZgAAAJdJREFUeNrFlVEOgDAIQ3cM5P4Hdck0bihQNtH9kjzb0mDZFh8MICIVoM3eVTAPYM5RcNq+AMOX8FRSM3DcAwDfCHMJVkAwmXoFU31KL5Jb8xQF9vr6adUXVsD19a7iFkQqIECPsgEWTkpiD0BRAmBu8HE4AuSOgEUIBfE0v/uxaKFIgOZBTRdVcJy3O774p9PO9c8Qm7IdZWTH7YBjEDkAAAAASUVORK5CYII=";
+/* 10×10 coin with 4 spin frames, drawn in Pixelwright. CSS shows it at 2×, or 1× on small screens (.coin). */
+const COIN_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAKCAMAAADxROxiAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAG1JREFUeNp9kEsOwCAIROtG4f4X7szwqYmNxIQX58GCBzVQ7DsBGzp1NxMPwIrfYTNh7mnkohVCifIqXSiyFh4ivRLxJBqHUvAWHXsoYoBP4v/GT1RJRD/ECNvUDCGF6jO36G+nukoDzePMl4O//RgE2mM6JDUAAAAASUVORK5CYII=";
 /* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
 const CUSTOMER_PNG={
   kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
@@ -323,6 +327,7 @@ const CUSTOMER_WALK_PNG={
 };
 document.documentElement.style.setProperty("--grassPng",`url(${GRASS_PNG})`);
 document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
+document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
 function sampleWeighted(items){let t=items.reduce((s,i)=>s+i.w,0),r=Math.random()*t;for(const i of items){r-=i.w;if(r<=0)return i}return items[items.length-1]}
 
 /* ---------- audio (tiny WebAudio juice) ---------- */
@@ -1097,7 +1102,8 @@ function spawnCustomer(ck,{buys=false,say=null,streak=0}={}){
   walk(from,spot).then(()=>{
     if(!d.isConnected){day.buying--;return}
     d.className="cust front";d.style.backgroundImage=`url(${CUSTOMER_PNG[ck]})`;
-    sfx.coin(streak);spawnCoin();if(say)spawnBubble(say,spot);
+    sfx.coin(streak);spawnCoin(spot);
+    if(say)setTimeout(()=>{if(d.isConnected)spawnBubble(say,spot)},700); // pay first, then talk, so the coin and bubble don't overlap
     setTimeout(()=>{day.buying--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())},800);
   });
 }
@@ -1111,10 +1117,10 @@ function spawnBubble(txt,x){
   const d=document.createElement("div");d.className="bubble";d.textContent=txt;
   d.style.left=x+"px";sky.appendChild(d);setTimeout(()=>d.remove(),1600);
 }
-function spawnCoin(){
+function spawnCoin(x){
   const layer=$("#fxLayer");if(!layer)return;
-  const d=document.createElement("div");d.className="coin";d.textContent="🪙";
-  d.style.left=(47+Math.random()*6)+"%";layer.appendChild(d);setTimeout(()=>d.remove(),800);
+  const d=document.createElement("div");d.className="coin";
+  d.style.left=x+"px";layer.appendChild(d);setTimeout(()=>d.remove(),800);
 }
 function resumeAfternoon(){if(!D||D.done)return;const ctl=$("#dayControl");if(ctl)ctl.innerHTML=`<p class="big">Afternoon rush…</p><button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button>`;runDayPhase("afternoon")}
 
