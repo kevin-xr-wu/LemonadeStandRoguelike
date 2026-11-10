@@ -54,8 +54,6 @@ h3{margin:14px 0 6px}
 .ctrl label{display:flex;justify-content:space-between;font-weight:900;font-size:16px}
 .ctrl input[type=range]{width:100%;height:28px;accent-color:var(--lemon2);cursor:pointer}
 .ctrl .hint{font-size:12.5px;opacity:.7;font-weight:600}
-.proj{background:var(--paper);border:2.5px dashed var(--ink);border-radius:12px;padding:10px 14px;font-size:14.5px;line-height:1.55}
-.proj b{font-size:16px}
 .warn{color:var(--red);font-weight:800}
 /* Buttons */
 .btn{display:inline-block;background:var(--green);color:#fff;border:3px solid var(--ink);border-radius:14px;padding:13px 26px;font-size:19px;font-weight:900;box-shadow:0 5px 0 rgba(43,33,24,.9);transition:transform .1s,box-shadow .1s;text-shadow:1px 1px 0 rgba(0,0,0,.25)}
@@ -90,14 +88,39 @@ h3{margin:14px 0 6px}
 @keyframes pulse{from{transform:scale(1)}to{transform:scale(1.09) rotate(1.5deg)}}
 .dayStats{display:flex;flex-wrap:wrap;gap:8px;background:#2b2118;color:#fff;padding:10px 14px;font-weight:800;font-size:15px}
 .dayStats span b{color:var(--lemon)}
-/* Report table */
-table.pl{width:100%;border-collapse:collapse;font-size:15.5px}
-table.pl td{padding:5px 4px;border-bottom:2px dotted #cdbf9d}
-table.pl td:last-child{text-align:right;font-weight:900}
-table.pl tr.total td{border-top:3px solid var(--ink);border-bottom:none;font-size:18px}
+/* Evening report: the day's math is a till receipt, the tip a sticky note */
 .pos{color:var(--green2)} .negc{color:var(--red)}
-.stamp{display:inline-block;border:4px solid var(--green2);color:var(--green2);font-weight:900;font-size:21px;padding:4px 16px;border-radius:10px;transform:rotate(-5deg);letter-spacing:.05em;background:rgba(88,179,104,.12);animation:stampIn .35s cubic-bezier(.2,2.2,.4,1)}
-.stamp.bad{border-color:var(--red);color:var(--red);background:rgba(228,87,46,.1)}
+.report{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px 28px;align-items:start}
+.receiptBox{max-width:340px;width:100%;justify-self:center}
+.receiptWrap{transform:rotate(-.8deg);filter:drop-shadow(2px 0 0 var(--ink)) drop-shadow(-2px 0 0 var(--ink)) drop-shadow(0 2px 0 var(--ink)) drop-shadow(0 -2px 0 var(--ink)) drop-shadow(0 4px 0 rgba(43,33,24,.35))}
+.receipt{background:#fff;padding:20px 18px 24px;font-size:16px;
+  -webkit-mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) top/16px 8px repeat-x,linear-gradient(#000 0 0) center/100% calc(100% - 16px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/16px 8px repeat-x;
+          mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) top/16px 8px repeat-x,linear-gradient(#000 0 0) center/100% calc(100% - 16px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/16px 8px repeat-x}
+.rHead{text-align:center;font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-bottom:8px}
+.rRow,.rTotal{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:3px 0}
+.amt{font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
+.rTotal{border-top:2px dashed #cdbf9d;margin-top:8px;padding-top:10px;font-weight:900}
+.rTotal .amt{font-size:30px;line-height:1}
+.coinSpot{position:relative;display:inline-block}
+.dropCoin{position:absolute;bottom:30%;font-size:20px;margin-left:-10px;pointer-events:none;animation:coinDrop .5s ease-in both}
+@keyframes coinDrop{0%{transform:translateY(-60px) rotate(-30deg);opacity:0}25%,80%{opacity:1}100%{transform:translateY(0) rotate(20deg) scale(.6);opacity:0}}
+.rStamp{display:block;width:max-content;margin:12px auto 0;border:3px solid currentColor;border-radius:8px;padding:1px 10px;font-size:15px;font-weight:900;letter-spacing:.08em;color:var(--green2);transform:rotate(-4deg);opacity:.85;animation:stampPress .2s ease-out 1.2s both}
+.rStamp.bad{color:var(--red)}
+@keyframes stampPress{from{transform:scale(1.7) rotate(-4deg);opacity:0}to{transform:rotate(-4deg);opacity:.85}}
+.dayNotes p{margin:0 0 10px;line-height:1.45}
+.note{position:relative;max-width:420px;background:#fff3a0;padding:12px 14px 10px;margin:4px 0 12px;line-height:1.4;transform:rotate(.6deg);box-shadow:0 5px 6px -3px rgba(43,33,24,.35)}
+.note:before{content:"";position:absolute;top:-7px;left:50%;width:54px;height:14px;margin-left:-27px;background:rgba(201,167,122,.5);transform:rotate(-3deg)} /* tape */
+.facts{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:4px;line-height:1.4}
+.todayHead{margin:10px 0 0;font-size:15px}
+/* End screen: the score first, then a few highlights */
+.scoreLabel{font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:.65;margin-top:4px}
+.scoreBig{font-size:64px;font-weight:900;line-height:1.1;color:var(--lemon);text-shadow:3px 3px 0 var(--ink),-1.5px -1.5px 0 var(--ink),1.5px -1.5px 0 var(--ink),-1.5px 1.5px 0 var(--ink);font-variant-numeric:tabular-nums}
+.highlights{list-style:none;margin:16px auto;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px 8px;max-width:560px}
+.highlights li{display:flex;flex-direction:column;align-items:center;line-height:1.25}
+.highlights .hlIcon{font-size:30px}
+.highlights b{font-size:22px}
+.highlights small{font-size:13px;opacity:.75}
+@media (prefers-reduced-motion:reduce){.dropCoin{display:none}.rStamp{animation:none}}
 @keyframes stampIn{from{transform:scale(2.4) rotate(8deg);opacity:0}to{transform:scale(1) rotate(-5deg);opacity:1}}
 /* Inventory chips */
 .inv{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
@@ -152,11 +175,6 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 #guessText b{color:var(--lemon);font-size:18px}
 #guessText .pos{color:#9be15d} #guessText .negc{color:#ff8f6b}
 .guessBar #btnOpen{font-size:20px;padding:12px 22px;margin-left:auto}
-.headline{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
-table.sum{width:100%;border-collapse:collapse;font-size:16px}
-table.sum td{padding:6px 4px;border-bottom:2px dotted #cdbf9d}
-table.sum td.amt{text-align:right;font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
-table.sum tr.total td{border-top:3px solid var(--ink);border-bottom:none;font-size:19px;font-weight:900}
 .typeLabel{font-weight:900;opacity:.55}
 @media (max-width:720px){ /* bottom bar: forecast and a short Open button, one row when they fit */
   .guessBar{padding:8px 10px;gap:8px}
@@ -177,7 +195,8 @@ table.sum tr.total td{border-top:3px solid var(--ink);border-bottom:none;font-si
   .shelf .slots{order:3;flex:1 1 100%}
   .shelf .btn{margin-left:auto}
   .slot{width:40px;height:40px;font-size:22px}
-  .headline{font-size:24px}
+  .highlights{grid-template-columns:repeat(2,1fr)}
+  .scoreBig{font-size:52px}
   .forecastBar .fcMain{font-size:20px}
   .forecastBar .fcDesc{font-size:15px}
 }
@@ -225,18 +244,18 @@ button,input,select{touch-action:manipulation}
   .ctrl{margin:12px 0}
   .ctrl label{font-size:15px;gap:8px}
   .ctrl input[type=range]{height:38px}
-  .proj{font-size:13.5px;padding:9px 11px}
-  .proj b{font-size:15px}
   /* Tap targets */
   .btn.sm{min-height:40px;padding:8px 12px}
   #btnOpen{font-size:19px!important;padding:14px 16px!important;max-width:100%}
   .choice{padding:11px}
   .choice .ttl{font-size:17px}
   .kidEmoji{font-size:28px}
-  table.pl{font-size:14px}
-  table.pl tr.total td{font-size:16px}
-  .stamp{font-size:18px;padding:3px 12px}
   .synBanner{font-size:15px;padding:9px 11px}
+  .report{grid-template-columns:1fr;gap:14px}
+  .receipt{padding:16px 16px 20px;font-size:15px}
+  .rRow{padding:2px 0}
+  .rTotal .amt{font-size:27px}
+  .dayNotes p{margin-bottom:8px}
   .log{font-size:12.5px;max-height:150px}
   .modalWrap{padding:8px}
   .modal{padding:15px;max-height:92dvh}
@@ -329,6 +348,20 @@ function confetti(n=50){
     (function anim(t){const p=(t-t0)/1400;if(p>=1){d.remove();return}
       d.style.transform=`translate(${dx*p*9}px,${dy*p*9+p*p*220}px) rotate(${rot*p}deg)`;d.style.opacity=1-p;requestAnimationFrame(anim)})(t0);
   }
+}
+
+/* ---------- money count-up: a total counts up from $0 as coins drop in; reduced motion shows it at once ---------- */
+function countUp(el,to){
+  if(!el)return;
+  if(to<=0||matchMedia("(prefers-reduced-motion:reduce)").matches){el.textContent=fmt(to);return}
+  const t0=performance.now(),dur=1100;el.textContent=fmt(0);
+  const step=t=>{if(!el.isConnected)return;const p=Math.min(1,(t-t0)/dur);
+    el.textContent=fmt(p<1?Math.floor(to*(1-Math.pow(1-p,3))*100)/100:to);if(p<1)requestAnimationFrame(step)};
+  requestAnimationFrame(step);
+  [-22,12,-6,20,2].forEach((x,i)=>{ // fixed spots: Math.random stays the game's alone
+    const c=document.createElement("span");c.className="dropCoin";c.textContent="🪙";c.style.left=`calc(50% + ${x}px)`;c.style.animationDelay=i*0.2+"s";
+    el.parentNode.appendChild(c);setTimeout(()=>{c.remove();if(el.isConnected)sfx.coin(i*4)},i*200+500);
+  });
 }
 
 /* ============================================================ DATA ============================================================ */
@@ -1111,11 +1144,11 @@ function finishDay(){
   let streakNote="";
   if(served>=0.75&&made>0){
     S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);
-    if(S.streak>=2){const pct=Math.min(25,3*S.streak);const bonus=Math.round(revenue*pct/100*100)/100;S.cash+=bonus;S.lifetimeProfit+=bonus;streakNote=`🔥 Hot streak ×${S.streak}! Bonus: <b>${fmt(bonus)}</b> (${pct}% of sales).`}
+    if(S.streak>=2){const pct=Math.min(25,3*S.streak);const bonus=Math.round(revenue*pct/100*100)/100;S.cash+=bonus;S.lifetimeProfit+=bonus;streakNote=`🔥 Hot streak: ${S.streak} days! Bonus: <b>${fmt(bonus)}</b> (${pct}% of sales).`}
   } else if(S.gear.includes("clover")&&S.streak>=2&&S.cloverAct!==actIndex()){
-    S.cloverAct=actIndex();streakNote=`🍀 Your Four-Leaf Clover saved your hot streak ×${S.streak}!`;
+    S.cloverAct=actIndex();streakNote=`🍀 Your Four-Leaf Clover saved your ${S.streak}-day hot streak!`;
   } else {
-    if(S.streak>=2)streakNote=`💨 Your hot streak ×${S.streak} ended (${served<0.75?"fewer than 3 out of 4 customers got lemonade":"no money made"}).`;
+    if(S.streak>=2)streakNote=`💨 Your ${S.streak}-day hot streak ended (${served<0.75?"fewer than 3 out of 4 customers got lemonade":"no money made"}).`;
     S.streak=0;
   }
   // Compound Piggy: interest on the bank, every evening
@@ -1130,56 +1163,61 @@ function finishDay(){
   S.cash=Math.round(S.cash*100)/100;
   // counterfactual — the near-miss engine
   let counter="";const outCount=Math.max(0,unserved-D.awayPrice-D.awayWarm); // left because supplies ran out
-  if(unserved>0&&(D.awayOut>0||D.unmet>0))counter=`💡 <b>You ran out!</b> ${outCount} more people wanted lemonade. That's about <b>${fmt(outCount*Math.max(avgPrice,1))}</b> you missed. Buy more supplies.`;
-  else if(D.awayPrice>unserved*0.4&&D.awayPrice>0)counter=`💡 <b>Too pricey.</b> ${D.awayPrice} people walked away. Try a lower price.`;
-  else if(D.awayWarm>0)counter=`💡 <b>Too warm.</b> ${D.awayWarm} people wanted colder lemonade. At ${M.temp}°F, use ${iceMinToday()} cubes or more.`;
-  else if(wasted>0)counter=`💡 <b>Leftovers.</b> ${wasted} cups were poured out at closing. That's <b>${fmt(wasted*pourCost)}</b> wasted.`;
-  else if(unserved>0)counter=`💡 <b>So close!</b> ${unserved} people didn't buy. Try a lower price or another sign.`;
-  else counter=`💡 <b>Perfect!</b> Everyone got lemonade, and nothing went to waste.`;
+  if(unserved>0&&(D.awayOut>0||D.unmet>0))counter=`<b>You ran out!</b> ${outCount} more people wanted lemonade. That's about <b>${fmt(outCount*Math.max(avgPrice,1))}</b> you missed. Buy more supplies.`;
+  else if(D.awayPrice>unserved*0.4&&D.awayPrice>0)counter=`<b>Too pricey.</b> ${D.awayPrice} people walked away. Try a lower price.`;
+  else if(D.awayWarm>0)counter=`<b>Too warm.</b> ${D.awayWarm} people wanted colder lemonade. At ${M.temp}°F, use ${iceMinToday()} cubes or more.`;
+  else if(wasted>0)counter=`<b>Leftovers.</b> ${wasted} cups were poured out at closing. That's <b>${fmt(wasted*pourCost)}</b> wasted.`;
+  else if(unserved>0)counter=`<b>So close!</b> ${unserved} people didn't buy. Try a lower price or another sign.`;
+  else counter=`<b>Perfect!</b> Everyone got lemonade, and nothing went to waste.`;
   const tonight=overnight(); // ice melts and old produce goes bad once you close
-  const flavorRows=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]).map(([rk,n])=>`<tr><td>${RECIPES[rk].icon} ${RECIPES[rk].name}</td><td>${n} cups · ${fmt(D.revBy[rk]||0)}</td></tr>`).join("");
-  const sellRows=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]).map(([rk,n])=>`<tr><td>${RECIPES[rk].icon} Sold ${n} cup${n===1?"":"s"} × ${fmt(menuPrice(rk))}</td><td class="amt">${fmt(n*menuPrice(rk))}</td></tr>`).join("");
+  const byCups=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]);
+  const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${RECIPES[rk].icon}</span> ${n} cup${n===1?"":"s"} × ${fmt(menuPrice(rk))}</span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
   const upgradeBonus=Math.round((D.revenue-Object.entries(D.soldBy).reduce((s,[rk,n])=>s+n*menuPrice(rk),0))*100)/100;
   const walked=D.awayPrice,warmAway=D.awayWarm,ranOut=Math.max(0,unserved-walked-warmAway),why=[];
   if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);if(warmAway)why.push(`${warmAway} wanted more ice`);
   const brewedTotal=Object.values(D.brewed).reduce((s,v)=>s+v,0);
   const invLine=Object.keys(INGREDIENTS).filter(id=>(S.inv[id]||0)>0).map(id=>`${S.inv[id]}${INGREDIENTS[id].icon}`).join(" ");
-  const repLine=repNotes.length?`⭐ Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b> (${repNotes.join(", ")})`:`⭐ Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
+  const repExtra=repNotes.slice(D.demand>0?1:0); // the first note (people served) is the line above it
+  const repLine=repNotes.length?`⭐ Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b>${repExtra.length?` (${repExtra.join(", ")})`:""}`:`⭐ Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
+  const stamp=perfect?`<span class="rStamp">PERFECT DAY</span>`:soldOut?`<span class="rStamp">SOLD OUT</span>`:made<0?`<span class="rStamp bad">ROUGH DAY</span>`:"";
+  const today=S.log.slice(M.logStart);
   $("#screen").innerHTML=`
   <div class="panel">
-    <h2>🌇 Day ${S.day} results · ${M.loc.icon} ${M.loc.name}</h2>
-    <p class="headline ${made>=0?"pos":"negc"}">${made>=0?`You made ${fmt(made)} today!`:`You lost ${fmt(-made)} today.`}</p>
-    <div class="center">${perfect?`<span class="stamp">⭐ PERFECT DAY ⭐</span>`:soldOut?`<span class="stamp">SOLD OUT!</span>`:made<0?`<span class="stamp bad">ROUGH DAY</span>`:`<span class="stamp">GOOD DAY</span>`}</div>
-    <h3>🧮 The math</h3>
-    <table class="sum">
-      ${sellRows}
-      ${upgradeBonus>0.004?`<tr><td>🎁 Upgrade bonuses</td><td class="amt">+${fmt(upgradeBonus)}</td></tr>`:""}
-      ${bannerBonus?`<tr><td>🚩 Sellout Banner pre-sales</td><td class="amt">+${fmt(bannerBonus)}</td></tr>`:""}
-      <tr><td>🫙 Tips</td><td class="amt">+${fmt(tips)}</td></tr>
-      <tr><td>🪧 Signs: ${D.paidSigns} × ${fmt(D.signCostEach)}${D.signs-D.paidSigns>0?` (${D.signs-D.paidSigns} free)`:""}</td><td class="amt">−${fmt(D.fixedCost)}</td></tr>
-      <tr class="total"><td>= Money made today</td><td class="amt ${made>=0?"pos":"negc"}">${fmt(made)}</td></tr>
-    </table>
-    <p>👥 ${D.demand} people wanted lemonade. You served ${D.sold}.${why.length?` ${why.join(", ")}.`:""}</p>
-    <div class="proj">${counter}</div>
-    <p>${repLine}</p>
-    ${streakNote||interestNote||jarNote?`<p class="big" style="margin-bottom:0">${[streakNote,interestNote,jarNote].filter(Boolean).join("<br>")}</p>`:""}
-    ${tonight.length?`<p>🌙 <b>Tonight:</b> ${listWords(tonight)}.</p>`:""}
+    <h2>🌇 Day ${S.day} results</h2>
+    <div class="report">
+      <div class="receiptBox">
+        <div class="receiptWrap"><div class="receipt">
+          <div class="rHead">${M.loc.icon} ${M.loc.name}</div>
+          ${sellRows}
+          ${upgradeBonus>0.004?`<div class="rRow"><span>🎁 Upgrade bonuses</span><span class="amt">+${fmt(upgradeBonus)}</span></div>`:""}
+          ${bannerBonus?`<div class="rRow"><span>🚩 Sellout Banner pre-sales</span><span class="amt">+${fmt(bannerBonus)}</span></div>`:""}
+          <div class="rRow"><span>🫙 Tips</span><span class="amt">+${fmt(tips)}</span></div>
+          <div class="rRow"><span>🪧 ${D.paidSigns} sign${D.paidSigns===1?"":"s"} × ${fmt(D.signCostEach)}${D.signs-D.paidSigns>0?` (${D.signs-D.paidSigns} free)`:""}</span><span class="amt">−${fmt(D.fixedCost)}</span></div>
+          <div class="rTotal"><span>Money made today</span><span class="coinSpot"><span class="amt ${made>=0?"pos":"negc"}" id="madeAmt">${fmt(made)}</span></span></div>
+          ${stamp}
+        </div></div>
+      </div>
+      <div class="dayNotes">
+        <p>👥 ${D.sold} of ${D.demand} people got lemonade.${why.length?` ${why.join(", ")}.`:""}</p>
+        <div class="note">${counter}</div>
+        <p>${repLine}</p>
+        ${[streakNote,interestNote,jarNote].filter(Boolean).map(n=>`<p>${n}</p>`).join("")}
+        ${tonight.length?`<p>🌙 <b>Tonight:</b> ${listWords(tonight)}.</p>`:""}
+      </div>
+    </div>
     <details class="numbers"><summary>See every number</summary>
-      <table class="pl">
-        <tr><td>🧑 Customers served</td><td>${D.sold} of about ${D.demand}${D.brotherSpilled?" (2 spilled)":""}</td></tr>
-        ${flavorRows}
-        <tr><td>🍶 Pitchers made</td><td>${brewedTotal}${wasted?` · ${wasted} cups poured out`:""}</td></tr>
-        ${D.crew?`<tr><td>🚧 Road workers at lunch</td><td>${D.crew}</td></tr>`:""}
-        <tr><td>💵 Sales</td><td>${fmt(revenue)}</td></tr>
-        <tr><td>🫙 Tips</td><td>${fmt(tips)}</td></tr>
-        <tr><td>🪧 Signs</td><td>−${fmt(D.fixedCost)}</td></tr>
-        <tr><td>🏦 Money now</td><td>${fmt(S.cash)}</td></tr>
-        <tr><td>🎒 Supplies left</td><td>${invLine||"none"}</td></tr>
-      </table>
-      <div class="log">${S.log.slice(M.logStart).join("<br>")||"A quiet day at the stand."}</div>
+      <ul class="facts">
+        ${byCups.map(([rk,n])=>`<li>${RECIPES[rk].icon} ${RECIPES[rk].name}: <b>${n} cup${n===1?"":"s"}</b></li>`).join("")}
+        <li>🍶 Pitchers made: <b>${brewedTotal}</b></li>
+        ${wasted?`<li>🫗 Cups poured out: <b>${wasted}</b></li>`:""}
+        <li>🎒 Supplies left: <b>${invLine||"none"}</b></li>
+      </ul>
+      <h4 class="todayHead">Today</h4>
+      <ul class="facts">${today.length?today.map(l=>`<li>${l}</li>`).join(""):"<li>A quiet day at the stand.</li>"}</ul>
     </details>
     <div class="center mt"><button class="btn gold" style="font-size:21px" onclick="afterReport()">${S.day%3===0?"📦 Open your bonus crate →":"🎁 Pick an upgrade →"}</button></div>
   </div>`;
+  countUp($("#madeAmt"),made);
   updateHUD();
   D.report={profit:made,perfect};
 }
@@ -1305,16 +1343,25 @@ function summerComplete(){
   const best=Math.max(meta.stats.best,Math.round(S.cash));
   $("#screen").innerHTML=`<div class="panel center">
     <h2>🏆 Summer complete!</h2>
-    <p class="big">Your score: <b style="font-size:26px">${fmt(S.cash)}</b></p>
-    <p>Cups sold: <b>${S.lifetimeSold}</b> · Money made: <b>${fmt(S.lifetimeProfit)}</b> · Best hot streak: <b>🔥 ×${S.bestStreak}</b><br>
-    <span class="muted">Your best score: <b>${fmt(best)}</b></span></p>
+    ${scoreHtml(`Your best: ${fmt(best)}`)}
+    ${highlightsHtml(clamp(S.day,0,14))}
     <div class="flex mt" style="justify-content:center;gap:10px;flex-wrap:wrap">
       <button class="btn gold" style="font-size:20px" onclick="endRun('complete')">🏁 Finish and keep my score</button>
       <button class="btn purple" style="font-size:20px" onclick="goEndless()">♾️ Keep playing (Endless)</button>
     </div>
     <p class="small muted">Endless: keep your stand and play on. Stop any morning, or play until you run out of money.</p>
   </div>`;
+  countUp($("#scoreAmt"),S.cash);
   confetti(80);sfx.fanfare();updateHUD();
+}
+/* The score, big, then four highlights of the run. */
+function scoreHtml(bestLine){
+  return `<div class="scoreLabel">Your score</div><div class="coinSpot"><div class="scoreBig" id="scoreAmt">${fmt(S.cash)}</div></div><p class="muted" style="margin:2px 0 0">${bestLine}</p>`;
+}
+function highlightsHtml(days){
+  const hl=[["📅",S.endless?days:`${days} of 14`,"days played"],["🥤",S.lifetimeSold,"cups sold"],
+    ["🔥",`${S.bestStreak} day${S.bestStreak===1?"":"s"}`,"best hot streak"],["⭐",S.perfectDays,`perfect day${S.perfectDays===1?"":"s"}`]];
+  return `<ul class="highlights">${hl.map(([i,v,l])=>`<li><span class="hlIcon">${i}</span><b>${v}</b><small>${l}</small></li>`).join("")}</ul>`;
 }
 function goEndless(){
   S.endless=true;S.totalDays=Infinity;S.actsCount=Infinity;
@@ -1328,30 +1375,24 @@ function endRun(mode,reason){
   st.runs++;if(S.completed){st.wins++;st.winsFull++}
   st.days+=daysSurvived;st.sold+=S.lifetimeSold;st.profit+=Math.max(0,Math.round(S.lifetimeProfit));
   st.perfect+=S.perfectDays;st.sellouts+=S.sellouts;
-  st.best=Math.max(st.best,Math.round(S.cash));
+  const prevBest=st.best;st.best=Math.max(st.best,Math.round(S.cash));
   saveMeta();
   const heading=mode==="complete"?"🏆 Summer complete!":mode==="retired"?"🏁 Score saved!":"🌅 Out of business";
   if(mode!=="bankrupt"){confetti(120);sfx.fanfare()}
+  const newBest=prevBest>0&&Math.round(S.cash)>prevBest;
   $("#screen").innerHTML=`<div class="panel center">
     <h2>${heading}</h2>
     ${S.endless&&S.completed?`<p class="muted" style="margin:2px 0">Summer complete, then Endless to Day ${S.day}.</p>`:""}
     ${reason?`<p class="big">${reason}</p>`:""}
-    <table class="pl" style="text-align:left">
-      <tr><td>Days played</td><td>${daysSurvived}${S.endless?" (Endless)":" / 14"}</td></tr>
-      <tr><td>Best hot streak</td><td>🔥 ×${S.bestStreak}</td></tr>
-      <tr><td>Total money made</td><td>${fmt(S.lifetimeProfit)}</td></tr>
-      <tr><td>Cups sold</td><td>${S.lifetimeSold}</td></tr>
-      <tr><td>Days you sold out</td><td>${S.sellouts}</td></tr>
-      <tr><td>Perfect days</td><td>${S.perfectDays}</td></tr>
-      <tr><td>Combos found</td><td>${S.discoveredSyn.length?S.discoveredSyn.map(id=>SYNERGIES.find(s=>s.id===id).name).join(", "):"none"}</td></tr>
-      <tr class="total"><td>🏆 Score (your money)</td><td>${fmt(S.cash)}</td></tr>
-      <tr><td>Your best score</td><td>${fmt(st.best)}</td></tr>
-    </table>
+    ${scoreHtml(newBest?"🏅 New best score!":`Your best: ${fmt(st.best)}`)}
+    ${highlightsHtml(daysSurvived)}
     <p class="muted">Your stand: ${buildSummary()}</p>
+    ${S.discoveredSyn.length?`<p class="muted">⚡ Combos found: ${S.discoveredSyn.map(id=>SYNERGIES.find(s=>s.id===id).name).join(", ")}</p>`:""}
     <div class="flex mt" style="justify-content:center">
       <button class="btn gold" style="font-size:21px" onclick="showTitle()">Play again</button>
     </div>
   </div>`;
+  countUp($("#scoreAmt"),S.cash);
   updateHUD();
   S=null;setTimeout(updateHUD,50);$("#hud").style.display="none";
 }
