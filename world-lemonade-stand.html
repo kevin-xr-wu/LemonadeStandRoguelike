@@ -54,8 +54,6 @@ h3{margin:14px 0 6px}
 .ctrl label{display:flex;justify-content:space-between;font-weight:900;font-size:16px}
 .ctrl input[type=range]{width:100%;height:28px;accent-color:var(--lemon2);cursor:pointer}
 .ctrl .hint{font-size:12.5px;opacity:.7;font-weight:600}
-.proj{background:var(--paper);border:2.5px dashed var(--ink);border-radius:12px;padding:10px 14px;font-size:14.5px;line-height:1.55}
-.proj b{font-size:16px}
 .warn{color:var(--red);font-weight:800}
 /* Buttons */
 .btn{display:inline-block;background:var(--green);color:#fff;border:3px solid var(--ink);border-radius:14px;padding:13px 26px;font-size:19px;font-weight:900;box-shadow:0 5px 0 rgba(43,33,24,.9);transition:transform .1s,box-shadow .1s;text-shadow:1px 1px 0 rgba(0,0,0,.25)}
@@ -67,18 +65,35 @@ h3{margin:14px 0 6px}
 .btn.sm{padding:8px 14px;font-size:14px;border-radius:11px}
 /* Scene */
 .scene{border:3px solid var(--ink);border-radius:var(--radius);overflow:hidden;margin-top:14px;box-shadow:var(--shadow);position:relative}
-.sky{height:230px;position:relative;transition:background 1s;overflow:hidden}
-.sky.sunny{background:linear-gradient(180deg,#7ec8ff,#cfeeff)}
-.sky.hot{background:linear-gradient(180deg,#ff9d3c,#ffe259)}
-.sky.cloudy{background:linear-gradient(180deg,#9db3c8,#d7e2ec)}
-.sky.rainy{background:linear-gradient(180deg,#5f7d99,#93a9bd)}
-.sky.perfect{background:linear-gradient(180deg,#6ee7ff,#fff3a0)}
-.sky.windy{background:linear-gradient(180deg,#8fd0e8,#e8f7d9)}
-.ground{height:64px;background:#8a6b46 var(--groundPng) 0 0/128px 64px;position:relative;image-rendering:pixelated}
+.sky{--px:2;height:230px;position:relative;transition:background 1s;overflow:hidden} /* --px: screen pixels per art pixel */
+.sky.sunny,.sky.perfect,.sky.windy{background:#7fc4e8}
+.sky.hot{background:#fff3a0}
+.sky.cloudy{background:#93a9bd}
+.sky.rainy{background:#5f7d99}
+.ground{height:64px;background:#8a6b46 var(--groundPng) 0 0/128px 64px;position:relative;z-index:3;image-rendering:pixelated}
 .ground:before{content:"";position:absolute;top:-18px;left:0;right:0;height:28px;background:var(--grassPng) 0 0/128px 28px repeat-x;image-rendering:pixelated}
+/* Street and weather art, drawn in Pixelwright. Sizes are art pixels times --px. The grass edge covers the street's bottom rows. */
+.wx{position:absolute;display:block;image-rendering:pixelated;pointer-events:none;background:no-repeat 0 0/100% 100%}
+.street{left:0;right:0;bottom:0;height:calc(56px*var(--px));background:var(--streetPng) 50% 100%/calc(256px*var(--px)) 100% repeat-x;z-index:2}
+.sun{top:calc(4px*var(--px));right:calc(6px*var(--px));width:calc(29px*var(--px));height:calc(29px*var(--px));background-image:var(--sunPng);z-index:1}
+.sun.hot{top:calc(2px*var(--px));right:calc(4px*var(--px));width:calc(33px*var(--px));height:calc(33px*var(--px));background-image:var(--hotSunPng)}
+.rainbow{left:calc(4px*var(--px));bottom:calc(14px*var(--px));width:calc(120px*var(--px));height:calc(60px*var(--px));background-image:var(--rainbowPng);z-index:1}
+.cloud{top:calc(var(--y)*var(--px)*1px);width:calc(40px*var(--px));height:calc(16px*var(--px));background-image:var(--cloudPng);z-index:1;animation:drift linear infinite}
+.cloud.dark{background-image:var(--rainCloudPng)}
+.wx.flip{transform:scaleX(-1)}
+.rain{inset:0;background:var(--rainPng) 0 0/calc(32px*var(--px)) calc(32px*var(--px));z-index:4;animation:rainFall .4s steps(8) infinite}
+.gust{bottom:calc(var(--b)*var(--px)*1px);width:calc(48px*var(--px));height:calc(12px*var(--px));background-image:var(--gustPng);z-index:4;animation:blowBy 2.8s linear infinite}
+.leaf{bottom:calc(var(--b)*var(--px)*1px);width:calc(9px*var(--px));height:calc(7px*var(--px));background-image:var(--leafPng);z-index:4;animation:blowBy 3.6s linear infinite,leafSpin .6s steps(4) infinite,leafBob 1.1s ease-in-out infinite alternate}
+.shimmer{bottom:calc(var(--b)*var(--px)*1px);width:calc(11px*var(--px));height:calc(20px*var(--px));background-image:var(--shimmerPng);z-index:4;opacity:.8;animation:shimmer 2.5s ease-out infinite}
+@keyframes drift{from{left:-20%}to{left:110%}}
+@keyframes rainFall{to{background-position:0 calc(32px*var(--px))}}
+@keyframes blowBy{0%{left:-12%;opacity:0}10%,85%{opacity:1}100%{left:105%;opacity:0}}
+@keyframes leafSpin{to{rotate:360deg}}
+@keyframes leafBob{to{translate:0 calc(-10px*var(--px))}}
+@keyframes shimmer{0%{translate:0 0;opacity:0}30%{opacity:.8}100%{translate:0 calc(-28px*var(--px));opacity:0}}
+@media (prefers-reduced-motion:reduce){.cloud,.rain,.gust,.leaf,.shimmer{animation:none}}
 .stand{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:128px;image-rendering:pixelated;z-index:5;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
 .standSign{position:absolute;left:50%;bottom:134px;transform:translateX(-50%) rotate(-2deg);background:#fff;border:3px solid var(--ink);border-radius:9px;padding:2px 12px;font-weight:900;font-size:14px;z-index:6;white-space:nowrap}
-.weatherBig{position:absolute;top:10px;right:14px;font-size:46px;z-index:4}
 .crowdMix{position:absolute;top:10px;left:12px;background:rgba(255,253,244,.92);border:2.5px solid var(--ink);border-radius:10px;padding:5px 10px;font-size:12.5px;font-weight:700;z-index:6;max-width:46%;line-height:1.5}
 /* Customers: --fw is the frame width in sprite pixels, --s the scale. left is the centre of the feet. */
 .cust{--s:2;position:absolute;bottom:2px;width:calc(var(--fw)*var(--s)*1px);height:calc(var(--s)*32px);margin-left:calc(var(--fw)*var(--s)*-.5px);background:no-repeat 0 0/calc(var(--fw)*var(--s)*8px) 100%;image-rendering:pixelated;z-index:6;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
@@ -99,14 +114,39 @@ h3{margin:14px 0 6px}
 @keyframes pulse{from{transform:scale(1)}to{transform:scale(1.09) rotate(1.5deg)}}
 .dayStats{display:flex;flex-wrap:wrap;gap:8px;background:#2b2118;color:#fff;padding:10px 14px;font-weight:800;font-size:15px}
 .dayStats span b{color:var(--lemon)}
-/* Report table */
-table.pl{width:100%;border-collapse:collapse;font-size:15.5px}
-table.pl td{padding:5px 4px;border-bottom:2px dotted #cdbf9d}
-table.pl td:last-child{text-align:right;font-weight:900}
-table.pl tr.total td{border-top:3px solid var(--ink);border-bottom:none;font-size:18px}
+/* Evening report: the day's math is a till receipt, the tip a sticky note */
 .pos{color:var(--green2)} .negc{color:var(--red)}
-.stamp{display:inline-block;border:4px solid var(--green2);color:var(--green2);font-weight:900;font-size:21px;padding:4px 16px;border-radius:10px;transform:rotate(-5deg);letter-spacing:.05em;background:rgba(88,179,104,.12);animation:stampIn .35s cubic-bezier(.2,2.2,.4,1)}
-.stamp.bad{border-color:var(--red);color:var(--red);background:rgba(228,87,46,.1)}
+.report{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px 28px;align-items:start}
+.receiptBox{max-width:340px;width:100%;justify-self:center}
+.receiptWrap{transform:rotate(-.8deg);filter:drop-shadow(2px 0 0 var(--ink)) drop-shadow(-2px 0 0 var(--ink)) drop-shadow(0 2px 0 var(--ink)) drop-shadow(0 -2px 0 var(--ink)) drop-shadow(0 4px 0 rgba(43,33,24,.35))}
+.receipt{background:#fff;padding:20px 18px 24px;font-size:16px;
+  -webkit-mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) top/16px 8px repeat-x,linear-gradient(#000 0 0) center/100% calc(100% - 16px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/16px 8px repeat-x;
+          mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) top/16px 8px repeat-x,linear-gradient(#000 0 0) center/100% calc(100% - 16px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/16px 8px repeat-x}
+.rHead{text-align:center;font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-bottom:8px}
+.rRow,.rTotal{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:3px 0}
+.amt{font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
+.rTotal{border-top:2px dashed #cdbf9d;margin-top:8px;padding-top:10px;font-weight:900}
+.rTotal .amt{font-size:30px;line-height:1}
+.coinSpot{position:relative;display:inline-block}
+.dropCoin{position:absolute;bottom:30%;font-size:20px;margin-left:-10px;pointer-events:none;animation:coinDrop .5s ease-in both}
+@keyframes coinDrop{0%{transform:translateY(-60px) rotate(-30deg);opacity:0}25%,80%{opacity:1}100%{transform:translateY(0) rotate(20deg) scale(.6);opacity:0}}
+.rStamp{display:block;width:max-content;margin:12px auto 0;border:3px solid currentColor;border-radius:8px;padding:1px 10px;font-size:15px;font-weight:900;letter-spacing:.08em;color:var(--green2);transform:rotate(-4deg);opacity:.85;animation:stampPress .2s ease-out 1.2s both}
+.rStamp.bad{color:var(--red)}
+@keyframes stampPress{from{transform:scale(1.7) rotate(-4deg);opacity:0}to{transform:rotate(-4deg);opacity:.85}}
+.dayNotes p{margin:0 0 10px;line-height:1.45}
+.note{position:relative;max-width:420px;background:#fff3a0;padding:12px 14px 10px;margin:14px 0 12px;line-height:1.4;transform:rotate(.6deg);box-shadow:0 5px 6px -3px rgba(43,33,24,.35)}
+.note:before{content:"";position:absolute;top:-7px;left:50%;width:54px;height:14px;margin-left:-27px;background:rgba(201,167,122,.5);transform:rotate(-3deg)} /* tape */
+.facts{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:4px;line-height:1.4}
+.todayHead{margin:10px 0 0;font-size:15px}
+/* End screen: the score first, then a few highlights */
+.scoreLabel{font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:.65;margin-top:4px}
+.scoreBig{font-size:64px;font-weight:900;line-height:1.1;color:var(--lemon);text-shadow:3px 3px 0 var(--ink),-1.5px -1.5px 0 var(--ink),1.5px -1.5px 0 var(--ink),-1.5px 1.5px 0 var(--ink);font-variant-numeric:tabular-nums}
+.highlights{list-style:none;margin:16px auto;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px 8px;max-width:560px}
+.highlights li{display:flex;flex-direction:column;align-items:center;line-height:1.25}
+.highlights .hlIcon{font-size:30px}
+.highlights b{font-size:22px}
+.highlights small{font-size:13px;opacity:.75}
+@media (prefers-reduced-motion:reduce){.dropCoin{display:none}.rStamp{animation:none}}
 @keyframes stampIn{from{transform:scale(2.4) rotate(8deg);opacity:0}to{transform:scale(1) rotate(-5deg);opacity:1}}
 /* Inventory chips */
 .inv{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
@@ -161,11 +201,6 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 #guessText b{color:var(--lemon);font-size:18px}
 #guessText .pos{color:#9be15d} #guessText .negc{color:#ff8f6b}
 .guessBar #btnOpen{font-size:20px;padding:12px 22px;margin-left:auto}
-.headline{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
-table.sum{width:100%;border-collapse:collapse;font-size:16px}
-table.sum td{padding:6px 4px;border-bottom:2px dotted #cdbf9d}
-table.sum td.amt{text-align:right;font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
-table.sum tr.total td{border-top:3px solid var(--ink);border-bottom:none;font-size:19px;font-weight:900}
 .typeLabel{font-weight:900;opacity:.55}
 @media (max-width:720px){ /* bottom bar: forecast and a short Open button, one row when they fit */
   .guessBar{padding:8px 10px;gap:8px}
@@ -186,7 +221,8 @@ table.sum tr.total td{border-top:3px solid var(--ink);border-bottom:none;font-si
   .shelf .slots{order:3;flex:1 1 100%}
   .shelf .btn{margin-left:auto}
   .slot{width:40px;height:40px;font-size:22px}
-  .headline{font-size:24px}
+  .highlights{grid-template-columns:repeat(2,1fr)}
+  .scoreBig{font-size:52px}
   .forecastBar .fcMain{font-size:20px}
   .forecastBar .fcDesc{font-size:15px}
 }
@@ -218,12 +254,11 @@ button,input,select{touch-action:manipulation}
   .qbar{height:12px}
   .iconBtn{padding:6px 9px;border-radius:10px}
   /* Scene scales down, nothing overlaps the stand sign */
-  .sky{height:188px}
+  .sky{height:188px;--px:1}
   .ground{height:54px;background-size:64px 32px}
   .ground:before{top:-9px;height:14px;background-size:64px 14px}
   .stand{width:64px;bottom:0}
   .standSign{bottom:68px;font-size:12px;padding:2px 8px;max-width:92%}
-  .weatherBig{font-size:36px;top:8px;right:10px}
   .crowdMix{font-size:11.5px;max-width:54%;padding:4px 8px;line-height:1.4}
   .cust{--s:1;bottom:1px}
   .bubble{font-size:11px;bottom:34px;--rise:8px}
@@ -234,18 +269,18 @@ button,input,select{touch-action:manipulation}
   .ctrl{margin:12px 0}
   .ctrl label{font-size:15px;gap:8px}
   .ctrl input[type=range]{height:38px}
-  .proj{font-size:13.5px;padding:9px 11px}
-  .proj b{font-size:15px}
   /* Tap targets */
   .btn.sm{min-height:40px;padding:8px 12px}
   #btnOpen{font-size:19px!important;padding:14px 16px!important;max-width:100%}
   .choice{padding:11px}
   .choice .ttl{font-size:17px}
   .kidEmoji{font-size:28px}
-  table.pl{font-size:14px}
-  table.pl tr.total td{font-size:16px}
-  .stamp{font-size:18px;padding:3px 12px}
   .synBanner{font-size:15px;padding:9px 11px}
+  .report{grid-template-columns:1fr;gap:14px}
+  .receipt{padding:16px 16px 20px;font-size:15px}
+  .rRow{padding:2px 0}
+  .rTotal .amt{font-size:27px}
+  .dayNotes p{margin-bottom:8px}
   .log{font-size:12.5px;max-height:150px}
   .modalWrap{padding:8px}
   .modal{padding:15px;max-height:92dvh}
@@ -259,7 +294,7 @@ button,input,select{touch-action:manipulation}
   .panel{padding:11px}
 }
 @media (max-height:500px) and (orientation:landscape){
-  .sky{height:148px}
+  .sky{height:148px;--px:1}
   .ground{background-size:64px 32px}
   .ground:before{top:-9px;height:14px;background-size:64px 14px}
   .stand{width:64px;bottom:0}
@@ -307,6 +342,20 @@ const GRASS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAOCAMAAACo5
 const GROUND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAMAAACVQ462AAAAUVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil9Bc2ApAAAAAXRSTlMAQObYZgAAAJdJREFUeNrFlVEOgDAIQ3cM5P4Hdck0bihQNtH9kjzb0mDZFh8MICIVoM3eVTAPYM5RcNq+AMOX8FRSM3DcAwDfCHMJVkAwmXoFU31KL5Jb8xQF9vr6adUXVsD19a7iFkQqIECPsgEWTkpiD0BRAmBu8HE4AuSOgEUIBfE0v/uxaKFIgOZBTRdVcJy3O774p9PO9c8Qm7IdZWTH7YBjEDkAAAAASUVORK5CYII=";
 /* 10×10 coin with 4 spin frames, drawn in Pixelwright. CSS shows it at 2×, or 1× on small screens (.coin). */
 const COIN_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAKCAMAAADxROxiAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAG1JREFUeNp9kEsOwCAIROtG4f4X7szwqYmNxIQX58GCBzVQ7DsBGzp1NxMPwIrfYTNh7mnkohVCifIqXSiyFh4ivRLxJBqHUvAWHXsoYoBP4v/GT1RJRD/ECNvUDCGF6jO36G+nukoDzePMl4O//RgE2mM6JDUAAAAASUVORK5CYII=";
+/* 256×56 street (houses, trees, picket fence), drawn in Pixelwright. It repeats along the back of .sky at 2×, or 1× on small screens. */
+const STREET_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAA4CAMAAAAl8tYgAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA89JREFUeNrtmu1uqzAMhquyH9PO1NKu6i3k12H3f3fHdj6wEyeEnjBaLdZCJ1hfvX5wnIB26NGjR48ePXr0eI24YLyM7AY2vzAae91IdoP0yabz2s7sA7LGxg/nP/u0ZpdNVske1smS9IeNHyUQ53+9Fq0aMwxDBYLLlwSwIOvV/0DsnX/JqTFvbwBgGQHICgBF2bmm9gcARvNWQ/qLCFCVAyjJGjNNk1PbGwD5zDnF9I/DaON4LCKQAEqyxnx/AwCHYF8AzudV7dj+7o/323i7jQtVwAGUZEP6DsGuANCk7Vap07n4MfsAIIuAASjIYvp/MSZ7BAQ7AvA+lVql4ocYYDgA9DvOAx3BDCAvK+6+jyUAzbdUPv9wn1KrovXFFZCpAg8gL6umbxHkAcCWrfWu0gEgf2G2cqcyfRVAioBUAUBW1ha/q3x5nKYMgHlj3ZCBlfR3yVllzy+289tqt8ewCoQzNBMkAgsgK5u9+6wdFperxtt1ZzQUanAa3/1iMNPW6yEju5i+ioDnX7errAVAszRUqTNqna5InxBIrH4KSNm48+eOEQKZfzsCl2iWOp8EwFCFrwlv2WI9KLJVd1+rgni70hZAatTVqjnXB3tItKrQAxLZFekTAnW1zu3V/p9A8Bl64BoAsWgAMMtSda8JOatYv27YBkGMXCr5PwrAEiAAUhZfdtxrQ7wZ8cuV71ctV8KLMCne4REAt/CNY5KzuCJ7FlpUZVcA0JbreU1t/N5Szd8BuNPzz00BwK/IdQtlVNnHAfBVtfWbVj39AIA2fyoAdiXeDIKQJksAQulEOYvz0RrAttRsq9KcQPS8QmliijoAfkV9JlKKihL1pRMD4OfjpiLTb/+ieYA9bfK8+mgPYKqDVHUAHLkEADufdFW5qLTPP3KqVQA+rIaoqADLVQHgvxgD4Od1AJlabVMBiwDO7rU1Rs0UyAJY2QOQADKA42b51wGQVd+kAnjS2QpI1qoNXg3lAYicnYGUxsMA7IT6WACQ79RbAzjNEQGQV7YH4Als9HIwWwGy8dt2ZCsguxX2X8cBsvTpB6YGRWMHAfj8hB8EwM8bACC+R8M+c28zNG1zRgR8cADymuJ3hHOjObpPPyBPc/KDA+DnYZjoezgG5VyroWmjhzMfHEB0LfF7GMcTjqP79APa3jw4gOga1IL4Hg54I5ecazU0bfQArW4eHEB0LfHbAcDhtDR4E6z5+71HBKD4t9UVwAC8SAW8t50CEO+vBaBxD3i9CugAehP85U2wT4EOoAOoAVD8Z9DleIr/oq12+yR+ezxT/APlM9c6xQ0YWgAAAABJRU5ErkJggg==";
+/* Weather you can see in the scene, drawn in Pixelwright: suns, clouds, a 32×32 rain tile, rainbow, wind gust, leaf and heat shimmer (skyArt). */
+const WEATHER_PNG={
+  sun:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAdCAMAAABhTZc9AAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAHhJREFUeNql0lESgCAIBNC+BO9/4QaXRjdIs/av3igUHDvR7yoiW6XyC+kNbiyW/khaSrWYx/Kwqqrt+BMmPGLkpm5BGYmtX1axvvHd6jpgU8UfgY7Yz3pdQlNqa4ZdDYNenKNzjpgRasYZTee72I1XWezkj22/5wRJTwe9YzYc8QAAAABJRU5ErkJggg==",
+  hotSun:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAhCAMAAABgOjJdAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAJRJREFUeNq108sSgCAIBdCWOeL//24CPgApnSwWLfKEd5SOPwqmi/3xWgDQcydgxLqJjN1jDFhoaLOhCa+HcJ5InI06IKI3wA8kYMLv3Q5OlybquiMssARc0VLkQEVIgEJEZaFAEj1qDg2ysFFnQItkRDnTAZgzFcR2EHcrgXP7NB8c0p2PhRlbntXnWf/ij9oIOKkLa58MkQgCSYwAAAAASUVORK5CYII=",
+  cloud:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAQCAMAAABTCc2fAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAFJJREFUeNrF0ksKACAIRdGW4FbU/e+tD2El8qQm3fEhLSpvsVJPOXOkMyyXa4GjeWOWl2O5CDp5DD0j2ihwndqp4XLR/L9QYOs22InYC3HSzceqPIVK3i27CpIAAAAASUVORK5CYII=",
+  rainCloud:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAQCAMAAABTCc2fAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAD9JREFUeNpjIBMYGIGAAUF1RgZQQKw6IMBnNJIyOMDqOGwK0VViVwRxAnHqQEoRpuJThmL/UFBIUCW5SQcvAAAJnD75pTe6pAAAAABJRU5ErkJggg==",
+  rain:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAADVJREFUeNpjIAKIElIgRrECetlHntHIurAqINtBNPMqveOMcnthOnEqoL6LByqQaO8UqhkHAMCcAswLY63YAAAAAElFTkSuQmCC",
+  rainbow:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAA8CAMAAACac46aAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAUVJREFUeNrt10sOwjAMRVGGDGDCQtj/8pAQjb9J6/TZCJGMiw7XSUC9rHVk3dT6hlmiN+OuVireMY2eoRJyFUvjWNYlHR5HM7YhD7GUjaGJdU2jo+iNVehTLIVvNIp1TaNDaMM2RT4ncU6fydVs73GHnotmufuqtk9EU25jj3xM01GZxhxiNR0eN415cyPfWsqRaJMb3ScTPefOXIkZmbszuSI6ICt3/mcvKqNcLde5MVm45//LD8vvDca5XB5uM9w9Kn8GDXSbPBw2d4HwrkyDBrofeTjsHFfKg2DoBqtt9pNZMPr1Z5jcThZ40GzY/vlKG7Qa9iA4412zn5waPEhODu4nJwd3k9sdznIpWd7l9OBecn4wTy48Wr3jRcGpsE2umLQ364Iz7Z/rkkl7s64Jdmb9d3DRFttNrgo2yQte8IJ/HH4B8Il6//CcuisAAAAASUVORK5CYII=",
+  gust:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAMAAAATZM5jAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAADZJREFUeNpjQAdiYgLYAYZKhA6sAKd6CgEel2BXD0akaiE2VHCGDY5QoW3YkAVw+Q2fDqyeAgDFPgvRStsnmgAAAABJRU5ErkJggg==",
+  leaf:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAHCAMAAADtRZdSAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAACdJREFUeNpjAANBQUEoLSQsBGIKCgEZIBacAWRBGQyCwlD1EE1AAABaPwJruRhchgAAAABJRU5ErkJggg==",
+  shimmer:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAUCAMAAABs8jdaAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAERJREFUeNpjAAF2MAkByGwGXixssAIIB6IWyAYywCIgAiQIomECEAQXhKuDSSBhZDm4EchmoKkHWwazG2wxO4qTsXgMAOpdAg+EcVoEAAAAAElFTkSuQmCC",
+};
 /* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
 const CUSTOMER_PNG={
   kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
@@ -328,6 +377,8 @@ const CUSTOMER_WALK_PNG={
 document.documentElement.style.setProperty("--grassPng",`url(${GRASS_PNG})`);
 document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
 document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
+document.documentElement.style.setProperty("--streetPng",`url(${STREET_PNG})`);
+Object.entries(WEATHER_PNG).forEach(([k,v])=>document.documentElement.style.setProperty(`--${k}Png`,`url(${v})`));
 function sampleWeighted(items){let t=items.reduce((s,i)=>s+i.w,0),r=Math.random()*t;for(const i of items){r-=i.w;if(r<=0)return i}return items[items.length-1]}
 
 /* ---------- audio (tiny WebAudio juice) ---------- */
@@ -362,6 +413,20 @@ function confetti(n=50){
   }
 }
 
+/* ---------- money count-up: a total counts up from $0 as coins drop in; reduced motion shows it at once ---------- */
+function countUp(el,to){
+  if(!el)return;
+  if(to<=0||matchMedia("(prefers-reduced-motion:reduce)").matches){el.textContent=fmt(to);return}
+  const t0=performance.now(),dur=1100;el.textContent=fmt(0);
+  const step=t=>{if(!el.isConnected)return;const p=Math.min(1,(t-t0)/dur);
+    el.textContent=fmt(p<1?Math.floor(to*(1-Math.pow(1-p,3))*100)/100:to);if(p<1)requestAnimationFrame(step)};
+  requestAnimationFrame(step);
+  [-22,12,-6,20,2].forEach((x,i)=>{ // fixed spots: Math.random stays the game's alone
+    const c=document.createElement("span");c.className="dropCoin";c.textContent="🪙";c.style.left=`calc(50% + ${x}px)`;c.style.animationDelay=i*0.2+"s";
+    el.parentNode.appendChild(c);setTimeout(()=>{c.remove();if(el.isConnected)sfx.coin(i*4)},i*200+500);
+  });
+}
+
 /* ============================================================ DATA ============================================================ */
 const WEATHERS={
   sunny:  {name:"Sunny",       icon:"☀️", mult:1.0,  w:34, desc:"A normal day."},
@@ -371,6 +436,23 @@ const WEATHERS={
   rainy:  {name:"Rainy",       icon:"🌧️", mult:0.42, w:11, desc:"Most people stay home."},
   windy:  {name:"Windy",       icon:"🌬️", mult:0.85, w:12, desc:"A little less busy."},
 };
+/* The weather you can see in the scene, then the street in front of it. Moving things start where
+   `left` puts them (the negative delay picks up the animation there), so with reduced motion they just sit there. */
+function skyArt(wx){
+  const at=(cls,x,secs,from,range,v)=>`<i class="wx ${cls}" style="left:${x}%;${v};animation-duration:${secs}s;animation-delay:${(-secs*(x-from)/range).toFixed(2)}s"></i>`;
+  const cloud=(x,y,secs,cls="cloud")=>at(cls,x,secs,-20,130,`--y:${y}`);
+  const blow=(cls,x,b,secs)=>at(cls,x,secs,-12,117,`--b:${b}`);
+  const art={
+    sunny:`<i class="wx sun"></i>`,
+    hot:`<i class="wx sun hot"></i>`+[[6,14],[22,24],[37,10],[61,20],[76,12],[90,26]].map(([x,b],i)=>`<i class="wx shimmer" style="left:${x}%;--b:${b};animation-delay:${-i*.45}s"></i>`).join(""),
+    perfect:`<i class="wx rainbow"></i><i class="wx sun"></i>`,
+    cloudy:cloud(2,5,90)+cloud(22,17,110,"cloud flip")+cloud(44,2,80)+cloud(66,13,100,"cloud flip")+cloud(86,4,95),
+    rainy:cloud(2,3,120,"cloud dark")+cloud(28,10,140,"cloud dark flip")+cloud(55,1,130,"cloud dark")+cloud(80,8,125,"cloud dark flip")+`<i class="wx rain"></i>`,
+    windy:cloud(12,6,16)+cloud(62,16,20,"cloud flip")+blow("gust",8,70,2.6)+blow("gust",40,52,3)+blow("gust",72,64,2.8)+blow("gust",90,36,3.3)
+      +blow("leaf",22,30,3.6)+blow("leaf",50,46,3.2)+blow("leaf",66,18,4)+blow("leaf",95,40,3.4),
+  };
+  return (art[wx]||"")+`<i class="wx street"></i>`;
+}
 const CROWDS={
   kids:      {name:"Kids",         icon:"🧒", pay:1.30, loves:["SWEET"],         hates:"SOUR",  line:"so sweet!!"},
   parents:   {name:"Parents",      icon:"👨‍👧", pay:2.40, loves:["FANCY","SWEET"], hates:null,    line:"worth it."},
@@ -842,7 +924,7 @@ function renderMorning(){
   <div class="scene">
     <div class="sky ${M.shownWx}">
       <div class="crowdMix">📍 Pick a spot below</div>
-      <div class="weatherBig">${wx.icon}</div>
+      ${skyArt(M.shownWx)}
       <div class="standSign">${sellableNow().length?`🍋 ${sellableNow().length} flavor${sellableNow().length>1?"s":""} on the menu`:"🛒 Buy supplies to open"}</div>
       <img class="stand" src="${STAND_PNG}" alt="">
     </div>
@@ -999,7 +1081,7 @@ function renderDayScene(){
   <div class="scene">
     <div class="sky ${M.actualWx}" id="skyBox">
       <div class="crowdMix">${M.loc.icon} ${M.loc.name}<br>${crowdMixLine()}</div>
-      <div class="weatherBig" id="sceneWxIcon">${wx.icon}</div>
+      ${skyArt(M.actualWx)}
       <div class="streak" id="streakBox">🔥 STREAK ×<span id="streakN">0</span></div>
       <div class="standSign">🍋 ${D.menu.length} flavor${D.menu.length>1?"s":""} · from ${fmt(Math.min(...D.menu.map(rk=>menuPrice(rk))))}</div>
       <img class="stand" src="${STAND_PNG}" alt="">
@@ -1164,11 +1246,11 @@ function finishDay(){
   let streakNote="";
   if(served>=0.75&&made>0){
     S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);
-    if(S.streak>=2){const pct=Math.min(25,3*S.streak);const bonus=Math.round(revenue*pct/100*100)/100;S.cash+=bonus;S.lifetimeProfit+=bonus;streakNote=`🔥 Hot streak ×${S.streak}! Bonus: <b>${fmt(bonus)}</b> (${pct}% of sales).`}
+    if(S.streak>=2){const pct=Math.min(25,3*S.streak);const bonus=Math.round(revenue*pct/100*100)/100;S.cash+=bonus;S.lifetimeProfit+=bonus;streakNote=`🔥 Hot streak: ${S.streak} days! Bonus: <b>${fmt(bonus)}</b> (${pct}% of sales).`}
   } else if(S.gear.includes("clover")&&S.streak>=2&&S.cloverAct!==actIndex()){
-    S.cloverAct=actIndex();streakNote=`🍀 Your Four-Leaf Clover saved your hot streak ×${S.streak}!`;
+    S.cloverAct=actIndex();streakNote=`🍀 Your Four-Leaf Clover saved your ${S.streak}-day hot streak!`;
   } else {
-    if(S.streak>=2)streakNote=`💨 Your hot streak ×${S.streak} ended (${served<0.75?"fewer than 3 out of 4 customers got lemonade":"no money made"}).`;
+    if(S.streak>=2)streakNote=`💨 Your ${S.streak}-day hot streak ended (${served<0.75?"fewer than 3 out of 4 customers got lemonade":"no money made"}).`;
     S.streak=0;
   }
   // Compound Piggy: interest on the bank, every evening
@@ -1183,56 +1265,61 @@ function finishDay(){
   S.cash=Math.round(S.cash*100)/100;
   // counterfactual — the near-miss engine
   let counter="";const outCount=Math.max(0,unserved-D.awayPrice-D.awayWarm); // left because supplies ran out
-  if(unserved>0&&(D.awayOut>0||D.unmet>0))counter=`💡 <b>You ran out!</b> ${outCount} more people wanted lemonade. That's about <b>${fmt(outCount*Math.max(avgPrice,1))}</b> you missed. Buy more supplies.`;
-  else if(D.awayPrice>unserved*0.4&&D.awayPrice>0)counter=`💡 <b>Too pricey.</b> ${D.awayPrice} people walked away. Try a lower price.`;
-  else if(D.awayWarm>0)counter=`💡 <b>Too warm.</b> ${D.awayWarm} people wanted colder lemonade. At ${M.temp}°F, use ${iceMinToday()} cubes or more.`;
-  else if(wasted>0)counter=`💡 <b>Leftovers.</b> ${wasted} cups were poured out at closing. That's <b>${fmt(wasted*pourCost)}</b> wasted.`;
-  else if(unserved>0)counter=`💡 <b>So close!</b> ${unserved} people didn't buy. Try a lower price or another sign.`;
-  else counter=`💡 <b>Perfect!</b> Everyone got lemonade, and nothing went to waste.`;
+  if(unserved>0&&(D.awayOut>0||D.unmet>0))counter=`<b>You ran out!</b> ${outCount} more people wanted lemonade. That's about <b>${fmt(outCount*Math.max(avgPrice,1))}</b> you missed. Buy more supplies.`;
+  else if(D.awayPrice>unserved*0.4&&D.awayPrice>0)counter=`<b>Too pricey.</b> ${D.awayPrice} people walked away. Try a lower price.`;
+  else if(D.awayWarm>0)counter=`<b>Too warm.</b> ${D.awayWarm} people wanted colder lemonade. At ${M.temp}°F, use ${iceMinToday()} cubes or more.`;
+  else if(wasted>0)counter=`<b>Leftovers.</b> ${wasted} cups were poured out at closing. That's <b>${fmt(wasted*pourCost)}</b> wasted.`;
+  else if(unserved>0)counter=`<b>So close!</b> ${unserved} people didn't buy. Try a lower price or another sign.`;
+  else counter=`<b>Perfect!</b> Everyone got lemonade, and nothing went to waste.`;
   const tonight=overnight(); // ice melts and old produce goes bad once you close
-  const flavorRows=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]).map(([rk,n])=>`<tr><td>${RECIPES[rk].icon} ${RECIPES[rk].name}</td><td>${n} cups · ${fmt(D.revBy[rk]||0)}</td></tr>`).join("");
-  const sellRows=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]).map(([rk,n])=>`<tr><td>${RECIPES[rk].icon} Sold ${n} cup${n===1?"":"s"} × ${fmt(menuPrice(rk))}</td><td class="amt">${fmt(n*menuPrice(rk))}</td></tr>`).join("");
+  const byCups=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]);
+  const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${RECIPES[rk].icon}</span> ${n} cup${n===1?"":"s"} × ${fmt(menuPrice(rk))}</span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
   const upgradeBonus=Math.round((D.revenue-Object.entries(D.soldBy).reduce((s,[rk,n])=>s+n*menuPrice(rk),0))*100)/100;
   const walked=D.awayPrice,warmAway=D.awayWarm,ranOut=Math.max(0,unserved-walked-warmAway),why=[];
   if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);if(warmAway)why.push(`${warmAway} wanted more ice`);
   const brewedTotal=Object.values(D.brewed).reduce((s,v)=>s+v,0);
   const invLine=Object.keys(INGREDIENTS).filter(id=>(S.inv[id]||0)>0).map(id=>`${S.inv[id]}${INGREDIENTS[id].icon}`).join(" ");
-  const repLine=repNotes.length?`⭐ Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b> (${repNotes.join(", ")})`:`⭐ Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
+  const repExtra=repNotes.slice(D.demand>0?1:0); // the first note (people served) is the line above it
+  const repLine=repNotes.length?`⭐ Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b>${repExtra.length?` (${repExtra.join(", ")})`:""}`:`⭐ Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
+  const stamp=perfect?`<span class="rStamp">PERFECT DAY</span>`:soldOut?`<span class="rStamp">SOLD OUT</span>`:made<0?`<span class="rStamp bad">ROUGH DAY</span>`:"";
+  const today=S.log.slice(M.logStart);
   $("#screen").innerHTML=`
   <div class="panel">
-    <h2>🌇 Day ${S.day} results · ${M.loc.icon} ${M.loc.name}</h2>
-    <p class="headline ${made>=0?"pos":"negc"}">${made>=0?`You made ${fmt(made)} today!`:`You lost ${fmt(-made)} today.`}</p>
-    <div class="center">${perfect?`<span class="stamp">⭐ PERFECT DAY ⭐</span>`:soldOut?`<span class="stamp">SOLD OUT!</span>`:made<0?`<span class="stamp bad">ROUGH DAY</span>`:`<span class="stamp">GOOD DAY</span>`}</div>
-    <h3>🧮 The math</h3>
-    <table class="sum">
-      ${sellRows}
-      ${upgradeBonus>0.004?`<tr><td>🎁 Upgrade bonuses</td><td class="amt">+${fmt(upgradeBonus)}</td></tr>`:""}
-      ${bannerBonus?`<tr><td>🚩 Sellout Banner pre-sales</td><td class="amt">+${fmt(bannerBonus)}</td></tr>`:""}
-      <tr><td>🫙 Tips</td><td class="amt">+${fmt(tips)}</td></tr>
-      <tr><td>🪧 Signs: ${D.paidSigns} × ${fmt(D.signCostEach)}${D.signs-D.paidSigns>0?` (${D.signs-D.paidSigns} free)`:""}</td><td class="amt">−${fmt(D.fixedCost)}</td></tr>
-      <tr class="total"><td>= Money made today</td><td class="amt ${made>=0?"pos":"negc"}">${fmt(made)}</td></tr>
-    </table>
-    <p>👥 ${D.demand} people wanted lemonade. You served ${D.sold}.${why.length?` ${why.join(", ")}.`:""}</p>
-    <div class="proj">${counter}</div>
-    <p>${repLine}</p>
-    ${streakNote||interestNote||jarNote?`<p class="big" style="margin-bottom:0">${[streakNote,interestNote,jarNote].filter(Boolean).join("<br>")}</p>`:""}
-    ${tonight.length?`<p>🌙 <b>Tonight:</b> ${listWords(tonight)}.</p>`:""}
+    <h2>🌇 Day ${S.day} results</h2>
+    <div class="report">
+      <div class="receiptBox">
+        <div class="receiptWrap"><div class="receipt">
+          <div class="rHead">${M.loc.icon} ${M.loc.name}</div>
+          ${sellRows}
+          ${upgradeBonus>0.004?`<div class="rRow"><span>🎁 Upgrade bonuses</span><span class="amt">+${fmt(upgradeBonus)}</span></div>`:""}
+          ${bannerBonus?`<div class="rRow"><span>🚩 Sellout Banner pre-sales</span><span class="amt">+${fmt(bannerBonus)}</span></div>`:""}
+          <div class="rRow"><span>🫙 Tips</span><span class="amt">+${fmt(tips)}</span></div>
+          <div class="rRow"><span>🪧 ${D.paidSigns} sign${D.paidSigns===1?"":"s"} × ${fmt(D.signCostEach)}${D.signs-D.paidSigns>0?` (${D.signs-D.paidSigns} free)`:""}</span><span class="amt">−${fmt(D.fixedCost)}</span></div>
+          <div class="rTotal"><span>Money made today</span><span class="coinSpot"><span class="amt ${made>=0?"pos":"negc"}" id="madeAmt">${fmt(made)}</span></span></div>
+          ${stamp}
+        </div></div>
+      </div>
+      <div class="dayNotes">
+        <p>👥 ${D.sold} of ${D.demand} people got lemonade.${why.length?` ${why.join(", ")}.`:""}</p>
+        <div class="note">${counter}</div>
+        <p>${repLine}</p>
+        ${[streakNote,interestNote,jarNote].filter(Boolean).map(n=>`<p>${n}</p>`).join("")}
+        ${tonight.length?`<p>🌙 <b>Tonight:</b> ${listWords(tonight)}.</p>`:""}
+      </div>
+    </div>
     <details class="numbers"><summary>See every number</summary>
-      <table class="pl">
-        <tr><td>🧑 Customers served</td><td>${D.sold} of about ${D.demand}${D.brotherSpilled?" (2 spilled)":""}</td></tr>
-        ${flavorRows}
-        <tr><td>🍶 Pitchers made</td><td>${brewedTotal}${wasted?` · ${wasted} cups poured out`:""}</td></tr>
-        ${D.crew?`<tr><td>🚧 Road workers at lunch</td><td>${D.crew}</td></tr>`:""}
-        <tr><td>💵 Sales</td><td>${fmt(revenue)}</td></tr>
-        <tr><td>🫙 Tips</td><td>${fmt(tips)}</td></tr>
-        <tr><td>🪧 Signs</td><td>−${fmt(D.fixedCost)}</td></tr>
-        <tr><td>🏦 Money now</td><td>${fmt(S.cash)}</td></tr>
-        <tr><td>🎒 Supplies left</td><td>${invLine||"none"}</td></tr>
-      </table>
-      <div class="log">${S.log.slice(M.logStart).join("<br>")||"A quiet day at the stand."}</div>
+      <ul class="facts">
+        ${byCups.map(([rk,n])=>`<li>${RECIPES[rk].icon} ${RECIPES[rk].name}: <b>${n} cup${n===1?"":"s"}</b></li>`).join("")}
+        <li>🍶 Pitchers made: <b>${brewedTotal}</b></li>
+        ${wasted?`<li>🫗 Cups poured out: <b>${wasted}</b></li>`:""}
+        <li>🎒 Supplies left: <b>${invLine||"none"}</b></li>
+      </ul>
+      <h4 class="todayHead">Today</h4>
+      <ul class="facts">${today.length?today.map(l=>`<li>${l}</li>`).join(""):"<li>A quiet day at the stand.</li>"}</ul>
     </details>
     <div class="center mt"><button class="btn gold" style="font-size:21px" onclick="afterReport()">${S.day%3===0?"📦 Open your bonus crate →":"🎁 Pick an upgrade →"}</button></div>
   </div>`;
+  countUp($("#madeAmt"),made);
   updateHUD();
   D.report={profit:made,perfect};
 }
@@ -1358,16 +1445,25 @@ function summerComplete(){
   const best=Math.max(meta.stats.best,Math.round(S.cash));
   $("#screen").innerHTML=`<div class="panel center">
     <h2>🏆 Summer complete!</h2>
-    <p class="big">Your score: <b style="font-size:26px">${fmt(S.cash)}</b></p>
-    <p>Cups sold: <b>${S.lifetimeSold}</b> · Money made: <b>${fmt(S.lifetimeProfit)}</b> · Best hot streak: <b>🔥 ×${S.bestStreak}</b><br>
-    <span class="muted">Your best score: <b>${fmt(best)}</b></span></p>
+    ${scoreHtml(`Your best: ${fmt(best)}`)}
+    ${highlightsHtml(clamp(S.day,0,14))}
     <div class="flex mt" style="justify-content:center;gap:10px;flex-wrap:wrap">
       <button class="btn gold" style="font-size:20px" onclick="endRun('complete')">🏁 Finish and keep my score</button>
       <button class="btn purple" style="font-size:20px" onclick="goEndless()">♾️ Keep playing (Endless)</button>
     </div>
     <p class="small muted">Endless: keep your stand and play on. Stop any morning, or play until you run out of money.</p>
   </div>`;
+  countUp($("#scoreAmt"),S.cash);
   confetti(80);sfx.fanfare();updateHUD();
+}
+/* The score, big, then four highlights of the run. */
+function scoreHtml(bestLine){
+  return `<div class="scoreLabel">Your score</div><div class="coinSpot"><div class="scoreBig" id="scoreAmt">${fmt(S.cash)}</div></div><p class="muted" style="margin:2px 0 0">${bestLine}</p>`;
+}
+function highlightsHtml(days){
+  const hl=[["📅",S.endless?days:`${days} of 14`,"days played"],["🥤",S.lifetimeSold,"cups sold"],
+    ["🔥",`${S.bestStreak} day${S.bestStreak===1?"":"s"}`,"best hot streak"],["⭐",S.perfectDays,`perfect day${S.perfectDays===1?"":"s"}`]];
+  return `<ul class="highlights">${hl.map(([i,v,l])=>`<li><span class="hlIcon">${i}</span><b>${v}</b><small>${l}</small></li>`).join("")}</ul>`;
 }
 function goEndless(){
   S.endless=true;S.totalDays=Infinity;S.actsCount=Infinity;
@@ -1381,30 +1477,24 @@ function endRun(mode,reason){
   st.runs++;if(S.completed){st.wins++;st.winsFull++}
   st.days+=daysSurvived;st.sold+=S.lifetimeSold;st.profit+=Math.max(0,Math.round(S.lifetimeProfit));
   st.perfect+=S.perfectDays;st.sellouts+=S.sellouts;
-  st.best=Math.max(st.best,Math.round(S.cash));
+  const prevBest=st.best;st.best=Math.max(st.best,Math.round(S.cash));
   saveMeta();
   const heading=mode==="complete"?"🏆 Summer complete!":mode==="retired"?"🏁 Score saved!":"🌅 Out of business";
   if(mode!=="bankrupt"){confetti(120);sfx.fanfare()}
+  const newBest=prevBest>0&&Math.round(S.cash)>prevBest;
   $("#screen").innerHTML=`<div class="panel center">
     <h2>${heading}</h2>
     ${S.endless&&S.completed?`<p class="muted" style="margin:2px 0">Summer complete, then Endless to Day ${S.day}.</p>`:""}
     ${reason?`<p class="big">${reason}</p>`:""}
-    <table class="pl" style="text-align:left">
-      <tr><td>Days played</td><td>${daysSurvived}${S.endless?" (Endless)":" / 14"}</td></tr>
-      <tr><td>Best hot streak</td><td>🔥 ×${S.bestStreak}</td></tr>
-      <tr><td>Total money made</td><td>${fmt(S.lifetimeProfit)}</td></tr>
-      <tr><td>Cups sold</td><td>${S.lifetimeSold}</td></tr>
-      <tr><td>Days you sold out</td><td>${S.sellouts}</td></tr>
-      <tr><td>Perfect days</td><td>${S.perfectDays}</td></tr>
-      <tr><td>Combos found</td><td>${S.discoveredSyn.length?S.discoveredSyn.map(id=>SYNERGIES.find(s=>s.id===id).name).join(", "):"none"}</td></tr>
-      <tr class="total"><td>🏆 Score (your money)</td><td>${fmt(S.cash)}</td></tr>
-      <tr><td>Your best score</td><td>${fmt(st.best)}</td></tr>
-    </table>
+    ${scoreHtml(newBest?"🏅 New best score!":`Your best: ${fmt(st.best)}`)}
+    ${highlightsHtml(daysSurvived)}
     <p class="muted">Your stand: ${buildSummary()}</p>
+    ${S.discoveredSyn.length?`<p class="muted">⚡ Combos found: ${S.discoveredSyn.map(id=>SYNERGIES.find(s=>s.id===id).name).join(", ")}</p>`:""}
     <div class="flex mt" style="justify-content:center">
       <button class="btn gold" style="font-size:21px" onclick="showTitle()">Play again</button>
     </div>
   </div>`;
+  countUp($("#scoreAmt"),S.cash);
   updateHUD();
   S=null;setTimeout(updateHUD,50);$("#hud").style.display="none";
 }
