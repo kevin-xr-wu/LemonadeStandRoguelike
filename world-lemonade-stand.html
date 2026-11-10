@@ -80,10 +80,17 @@ h3{margin:14px 0 6px}
 .standSign{position:absolute;left:50%;bottom:134px;transform:translateX(-50%) rotate(-2deg);background:#fff;border:3px solid var(--ink);border-radius:9px;padding:2px 12px;font-weight:900;font-size:14px;z-index:6;white-space:nowrap}
 .weatherBig{position:absolute;top:10px;right:14px;font-size:46px;z-index:4}
 .crowdMix{position:absolute;top:10px;left:12px;background:rgba(255,253,244,.92);border:2.5px solid var(--ink);border-radius:10px;padding:5px 10px;font-size:12.5px;font-weight:700;z-index:6;max-width:46%;line-height:1.5}
-.cust{position:absolute;bottom:4px;font-size:30px;z-index:6;transition:left .5s linear;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
-.bubble{position:absolute;bottom:150px;font-size:12px;font-weight:800;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 8px;z-index:8;animation:floatUp 1.6s ease-out forwards;white-space:nowrap}
+/* Customers: --fw is the frame width in sprite pixels, --s the scale. left is the centre of the feet. */
+.cust{--s:2;position:absolute;bottom:2px;width:calc(var(--fw)*var(--s)*1px);height:calc(var(--s)*32px);margin-left:calc(var(--fw)*var(--s)*-.5px);background:no-repeat 0 0/calc(var(--fw)*var(--s)*8px) 100%;image-rendering:pixelated;z-index:6;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+.cust.left{transform:scaleX(-1)} /* the walk sheets face right */
+.cust.walk{animation:custWalk .44s steps(4) infinite}
+.cust.carry{animation:custCarry .44s steps(4) infinite}
+.cust.front{background-size:100% 100%}
+@keyframes custWalk{from{background-position-x:0}to{background-position-x:calc(var(--fw)*var(--s)*-4px)}}
+@keyframes custCarry{from{background-position-x:calc(var(--fw)*var(--s)*-4px)}to{background-position-x:calc(var(--fw)*var(--s)*-8px)}}
+.bubble{--rise:34px;position:absolute;bottom:72px;font-size:12px;font-weight:800;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 8px;z-index:8;animation:floatUp 1.6s ease-out forwards;white-space:nowrap}
 .coin{position:absolute;bottom:140px;font-size:19px;z-index:9;animation:coinFly .8s ease-in forwards;pointer-events:none}
-@keyframes floatUp{0%{opacity:0;transform:translateY(8px)}15%{opacity:1}100%{opacity:0;transform:translateY(-42px)}}
+@keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-70px) scale(1.4) rotate(40deg)}}
 .streak{position:absolute;top:64px;right:14px;background:var(--ink);color:var(--lemon);font-weight:900;border-radius:10px;padding:4px 12px;font-size:16px;z-index:7;display:none}
 .streak.hot{display:block;animation:pulse .4s infinite alternate}
@@ -216,8 +223,8 @@ button,input,select{touch-action:manipulation}
   .standSign{bottom:68px;font-size:12px;padding:2px 8px;max-width:92%}
   .weatherBig{font-size:36px;top:8px;right:10px}
   .crowdMix{font-size:11.5px;max-width:54%;padding:4px 8px;line-height:1.4}
-  .cust{font-size:24px;bottom:2px}
-  .bubble{font-size:11px;bottom:96px}
+  .cust{--s:1;bottom:1px}
+  .bubble{font-size:11px;bottom:34px;--rise:8px}
   .coin{bottom:80px}
   .streak{top:54px;right:10px;font-size:14px;padding:3px 9px}
   .dayStats{font-size:13.5px;padding:8px 10px;gap:6px}
@@ -255,7 +262,8 @@ button,input,select{touch-action:manipulation}
   .ground:before{top:-9px;height:14px;background-size:64px 14px}
   .stand{width:64px;bottom:0}
   .standSign{bottom:68px}
-  .bubble{bottom:96px}
+  .cust{--s:1;bottom:1px}
+  .bubble{bottom:34px;--rise:8px}
   .coin{bottom:80px}
 }
 </style>
@@ -295,6 +303,24 @@ const STAND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt
 /* 64×14 grass edge and 64×32 dirt tile, drawn in Pixelwright. They repeat along .ground at 2×, or 1× on small screens. */
 const GRASS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAOCAMAAACo5erwAAAAUVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil9Bc2ApAAAAAXRSTlMAQObYZgAAAMFJREFUeNqlkksOw0AIQ+EIHTa9/0lrPmYg6qJSiRrsh4dGSkREcc3aLkmzMSRV0zPPwD+2VCJwDNc5tYNSrYG6hzP8ijHhyIc8n1TM6xzLEwrRxHwTUDH2FTzie05syxAr5UJ3NigXvHDxXOgWX9md5IJA949LUzQbw574gso/ju3oZkMLHsYr7ri1SxGt5RwSSnb6H9zD4sWroue7ScM+KPUOupM3Cs5bFrVnBky9g+5iwT8VnyV7GfZBb3IG3X0Ahost7N2GQNgAAAAASUVORK5CYII=";
 const GROUND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAMAAACVQ462AAAAUVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil9Bc2ApAAAAAXRSTlMAQObYZgAAAJdJREFUeNrFlVEOgDAIQ3cM5P4Hdck0bihQNtH9kjzb0mDZFh8MICIVoM3eVTAPYM5RcNq+AMOX8FRSM3DcAwDfCHMJVkAwmXoFU31KL5Jb8xQF9vr6adUXVsD19a7iFkQqIECPsgEWTkpiD0BRAmBu8HE4AuSOgEUIBfE0v/uxaKFIgOZBTRdVcJy3O774p9PO9c8Qm7IdZWTH7YBjEDkAAAAASUVORK5CYII=";
+/* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
+const CUSTOMER_PNG={
+  kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
+  parents:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAO5JREFUeNqNktsOgjAMhlchAbORcOPt5gXeaMD3fzt72oBlVf9k6dZ+ND3g/hOozPibtW0GwfFxNAm4SQI7BzyiamnHU0pyEGkRPwEHdwyTjDjWkJL3HuPtGohgLUaNLOqhPU24jqQ5xpkvQ00oMA5qGsAABcCrCejnDSDFI4Cv74ASh36aAITgQxCiAvjtoGcxQY5Nta4CaLzvhIATQMuFntYLSQB0UQzWAkRIEy13yh2dASFwvXvHFSBl0O7KKCrAwYv1tDJkoBBmBgvICTIBXdddcEJidDTUSS4TLigExIgLd8Fn/yt3k118nPsA+2croHT6psQAAAAASUVORK5CYII=",
+  athletes:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMRJREFUeNqVks0SgyAMhMnFodN09FB7D8Wj8v5v16ygJWin7Y6K7MfyM8F9FRUd/KmoIbs/RUtoKOr7BkwxhhBiFJsgNfMrIjX5CBw91YYaf43o0odAJsdAPrOOFnt6jGZOAIlZYxvJIKSgTwOEbqwZHc9X9N4+qcXeG7D+APiL704Bd/DPpoJqgF3JKcABl6J5rgEKtYGBHuOvYMaECsa7LRVmzltviruDth5/AqIBFwpfu0JKaQEorb2IayK3tup169wL/Ycg0CszZV8AAAAASUVORK5CYII=",
+  tourists:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMpJREFUeNq1kcESgyAMRE3RGWcA5eIJ7tD//8FuUtSQTg89dEdA9kFYZbpEont++Yvog3R/mQfCNcJbXtejvS/vm+5dWDTnLjckoEIHDG4561OoFHjSRgASizzG5y3Fe4/1BgiBbCERZxr/C0UWhZyDvIaT0IpZEo/iGsMNSiYBK0DgmQbP1qi1VjVgEuEfIDUoX8LWWgmtDr4EkwTq5BMkDgVowd61bT+AjdBbIN9y9n8DaWcg/Rdg4ibnQPqgfAc9APpobl2N0/QCuPISphTS5LkAAAAASUVORK5CYII=",
+  foodies:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAL9JREFUeNrNks0OwiAQhLuQ2BqadC/2DmJS3v8FnaULQms03pzDks7X4Wdh+CpSnfykOpDqbxtIE6R0D1BKHoDW61gIhTAKCd4DTFMB4q8gBJBJG6BLBcPttUYI8HUqfElVoJs6AonUwEC87CAfmTG95/34CoiZrZ1n5+bZWobbA8fs3AEsZMURbuS3HoCgmKbJBYxSTNPeArLegR8S6IBYunh/3w9VjP3dfgSR4r8Ba4whk2vnw4Clw+mt10H0BMb+HMh5Syd+AAAAAElFTkSuQmCC",
+  artists:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAL9JREFUeNqVkl0OwiAQhJ1YkkbaaDwA+0IfbDXe/3YOYKFL6UMnAZb9GDb8XLaCmq1JamHbpZekWSO8/3mSWZM5S+enLO+3hEAgwuZOgJFgbAERK+L2IBACr0A4NeCoFOX8IyqAGNxXgo9W3gxck0xx+dbhi4nh6sCBA8YYNBwwg+ml4YB5mm/XqsGtOpYpDnG5OMqD8EZw1ZfV53eqwOThj8HA/vI6cgwK9AXU3+QksNbyNLGv87cEONR/vQxBP/VJKFytvpCgAAAAAElFTkSuQmCC",
+};
+/* Side-view walk sheets for the same customers, drawn in Pixelwright: frames 0-3 walk, 4-7 walk carrying a cup. They face right. */
+const CUSTOMER_WALK_PNG={
+  kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAgCAMAAABzRoe3AAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAZRJREFUeNrtmNFugzAMRbF4GFUzFZB4KvuE7f8/b7ZhW0mu04S1kEpYqirde2ynhKRRqiOOOCIeRKSf4nnDIOccDcMQGqXxkUISpfMRgy1jKoviX2aguTNATeNc07wlT/1uPDZYnnRglMZD41V0O4E3A41zYoOdeLtQXdcfo0Ri4514u1BdX1UN9aL4WKFZXxql8ZFC+hjeS+cjhtYZx+BdfDDvMsfj8WZjMTRCeR0PGmu49IFC3mysBvrrXsnDxkSnU7CxZ/J2477renQqWcWDgSoPDgfZPG5Mvehd8kDv8EHjmQeHhjU8aExtO17bS6j3UimLh42V56Xqz2UuXxG3bXHjccQ/TErl8NZA5VH8n+eu2LASVA92uTv883Q74UsjvcGnRjr/oPpqwEIqA51FOFCVgb5BfZIk/5Vj2apPmhToQH1+fd10dSUsF43uxb44rxnhxfblQNyk/pmD72HkBH5jiky++HtcZ35KW96F+OIW9Su6cHCC7I23nt4u+eLPJsrWlObxvrhB/ekO4O8LeoXy38wSZLsnjKlhAAAAAElFTkSuQmCC",
+  parents:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAgCAMAAADKd1bWAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAl5JREFUeNrdmV1OwzAQhNn2IUEJUk8QP+WFqOX+t2N3Hbu7tmObRih1LJCAmfE3OD844aNyAI9ad4P5ggF+aDwyhtbzeYOVezRsOM6R3zZYHQmPNKP1fBkwzxOPVwu+eb4MQN0YwI9z5qsArG8YWs/XAFAzZjppvsowD8MwbxdoOl9pmM+bLxsgcws9Q75kgL7vb7dcgdbzeQPKXYefOUPr+ayB5kdDTm86XwPoezPtKfjW+SoAGfYUfOd8HUAagkfP1vOVgL5zBhiHURpaz9cCOrAGuNIQhtbzZQA+Z+K4Az1vAMtq3916vtaAP0DVmOv1oh+9yvk7jR35/+UXATSBe9kAEwJw+q+/AHB+q2/lj+ajWgL4ly1owGfPQd5mqH/pF1zldP4V/riTL/I0P6BnvYPEBVUBNuDOW59AQHNs50WBVD7FDwpGfHGbS/JVPsGXeXv2yAZxQfG6DWDBofluls0FehaI80l+UDDkf376fU+aHyxQyBf5sECyoCqwmGlZvp/f6wLJBVIFwnyKL3/BFF9s/ZP8YIEivsy7q8cfAur3LMh6UMBI3V29/hAsRNB6UEDlI74umODjBEKP+Tof81U+KoA3UDqCriBcLhdVgI+vNAQF+AAY42X+mywKRPmQrwu+xJf5Et+eYf5UwUsoBJBqtfUS47+2/i7nJTsR8PJFeQdBHS9RlT+Yz0uMa7zuoKzKCLVbdpsrGIZwE+ElnoijPInKe8g4kpqUjuELjb7Ad4u4iiPa9POSM9GCalXnWcOWOMtmXqtH8+2/VsX/WHmu6AWbOmeC1W04/wsu1OLJcjoT4QAAAABJRU5ErkJggg==",
+  athletes:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAgCAMAAABzRoe3AAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAb9JREFUeNrNmF2OwjAMhMnLLohKyxVqwSPb+99u7aQbQT1O67YpsXhA4y8zMRX9O81WiDXPfZw3GuERCzRa43FjlM1Ga7xqhJ9bqqneGF8wuhPR/U6Lgz/D20aPR08U+NM2XzAa9UmjNb5gxBJR3zfOFxrsQ7ebHnhnvtvGm8HSkALyOh4ER76bTuzkzeCooyvfSl4FJ/5y+VYT+HgrOHRcg7EhP6+CR/58RgO4eBzMMvXdcEWNNfw0+J9XG1rBw+C99aUb8uozwcyDA0a9iy9s6MpnS7yfpTw3WDeDr+cvOICLtzbayflyK58HwEYd+qWl4+KNjUpt5k9BYrFRaQAfX1EvDkCmEekLZZGvqEsqbPzGehoD6JvCIu/1X87PNRz8U+pwf9NIFlg6NGIfS6/rz6odgPdjBxzvLz6Be56AIGscA1T3T6v0LRh4fhtJkCAwupmu7B99UlfrMCBq2kp0OMAh/joh6ugJepSmXlEHAbX9rQD5J3kCwjDwDfbyAXbzT0cyH6K313tKe8PywldeP+jU9k8naRFlxulTCtCylBcis+P8+T0YV1yAXoZpLUt5ITI7zj+9Cn7/gpot8n/tm6xcCLdvdgAAAABJRU5ErkJggg==",
+  tourists:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAgCAMAAABzRoe3AAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAfFJREFUeNrNmM1ygzAMhHFLp3SCUy454Tv0/V+wkty4wV7RKARqTQ/N6vOuHBPy06RyXL8Pk/zGhRq18bgRZbVRG5836DnopU7501EZrzSuLlJte9OojV8xasdY9wb/B7/SaFzbsnTJ1Mr4lQbrITgXfHY1VsavGAUqT626+ZUG+YRw2p3vt/FqMDfkUnwWD4KF7/MjMPJqsOjwLfExvgiO/MfHe7EDG68FO+/5Dw9k54vgH77r0AZMPA52vut778GBPcbnwVe+GMjO42Ay6Xs3AP0xvhwo8vcOqvErwUMYedDywGiBiVcGFZ7vmJt4arAOg7nxNc95wMANC68NSmIIW3nZQAeDZaB5ni75UfoujCYeDyq1mW+cHAAyojEHP00TMAqjjcf+ng5zMx83gI3oDRFdKmwURhuvDrqd51TY+JQ6g7uNHLKNt/rfz//VMPBnrsP9VSNeoOnQiHw0fV9/UvUAPI8ecLw/+zjqWQIcrzFsYHf/uKr8CEYvcHSJMl9aMYw+TO/sLz6xW+owQLTSinW4gUP8ywTRQcBVyr1EBwF7+2sB/EqyBLhhGCwbeJp/PMl0RIufNwptgaWFt3z5RWdv/3iTZpH3SJtcNkstSWkhMjvOv3EvVLLglSpvllqS0kJkdpx//C17+Q9q1sh/Ay+Qaa3FflXCAAAAAElFTkSuQmCC",
+  foodies:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAgCAMAAABzRoe3AAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAbVJREFUeNrNmFFvhCAQhA9J6l1qcj71/bbXpP3/f7CA1pzsDrAWFZ4usx8zCyrmvGSHCSPPnc6DgvkJQyi0xsuFWYaF1nhWmPRP+hb1dvikERH1pAg+g08ZPZz80ZcHn8KnjLxuYqfW+ISR2weit9b5RMH5ELGnqTo/KPuJeBjsC24QO5G38kJw4If4Eih5GHwx4zgOHN/Ks8rE327sblfyKNhYa8d34dW9jWfBM3+9sgVoeTnYyfe7HcfSRnN8HPzHs4Y28GLwrHdAV/Ogoa60UcRngnvUkJqXG+opfpi0PAo2xsvWljaa46VGrT9u/s3LwYYoyKWNQj7VaA0eBRt6hAmljSI+3WgFHga7nZYXoONzjVbQYeErjGdxozKPgyvxuYKCf/pxuD808hOQLho5H6Tv6+9UHCD3gwOO9/c+xtU0AcbPUSxgd/9pllCQb1HPcytfkB6Bnf1hANo4FIA27hh/nhB0ad9mKfYKurRvO/ujANN17iAuD/CHt2YB1fynK7lcotXnPaatsGXiK7/WjvAPWxFeeuEFKPzVibRFWiZKZsf5vwRoG2qDnz4Fr39IxRb5XzHNjf0O8OGBAAAAAElFTkSuQmCC",
+  artists:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAgCAMAAABzRoe3AAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAcpJREFUeNrNl1FygzAMRKOvJpBOOQH+CT+0cP/jVQLCANISiwCxZzrTrJ53ZTuJw2UyaPpiFIlq/jNLSfGgQL/90IXUeLtAf4NeLwup8bBQD2Oup8bjAlXDiDT6FI+NRAuBQmzwh/h1I9EXhdT4F0bfoUycf2UUclPfkb+/x+PgB4+yBAvewC8bffJ38y0UzcNguVBY1fJWXgX3/O32NSt4eRh8oUKGoW/jVfDAX69L3cmjYGqatm2ahy5s45fBT14vwMuDYPZp26L4UfpGXjU08LGNIn5LozLBvTDQKH9b2v3E8lwQ3QwOpb0wmeHhUaMFf9noi9XJc0FyzeBQghPgKS4eNCrjbf5CEus8AW7Vx6ON2IGXBSCjEKCRcaOv8gcuTFLNQlVd+U7UeocbR7zKe/3j+dWC8et7hZcr9Hx/aCQTkG4asQ/Sj/VnFQfY/eCA8/3Fh7jmCSCZ41jA4f79LKNgv0WF11ZSsD4CB/vDALRxKABt3Dn+OqHTrX0bpKVXp1v7drA/CqAsyzwBlOf8hBa/gN38+5Mcj2j2VKG0GTZOnPJz7Qz/bit4L/o1qsdcrY3SONEyO89/EuBtKA2+O5teGv+xiiny/7oCweTsCUmlAAAAAElFTkSuQmCC",
+};
 document.documentElement.style.setProperty("--grassPng",`url(${GRASS_PNG})`);
 document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
 function sampleWeighted(items){let t=items.reduce((s,i)=>s+i.w,0),r=Math.random()*t;for(const i of items){r-=i.w;if(r<=0)return i}return items[items.length-1]}
@@ -1012,34 +1038,32 @@ async function runDayPhase(phase){
   const mix=crowdMixFor(M.loc);
   const mixArr=[];Object.entries(mix).forEach(([k,v])=>{for(let i=0;i<v;i++)mixArr.push(k)});
   let streak=0,processed=0,dry=false;
-  const visual=Math.min(Math.max(target,1),26);
+  const visual=Math.min(Math.max(target,1),12);
   const chunk=Math.max(1,Math.ceil(target/Math.max(visual,1)));
   for(let i=0;i<visual&&processed<target;i++){
     const ck=pick(mixArr)||"parents";const c=CROWDS[ck];
-    spawnCustomer(c,ck);
-    let soldChunk=0;
+    let soldChunk=0,miss=null;
     for(let j=0;j<chunk&&processed<target;j++){
       const res=serveOne(ck);
       processed++;
       if(res==="sold"){soldChunk++;streak++}
-      else if(res==="price"){D.awayPrice++;streak=0}
-      else if(res==="warm"){D.awayWarm++;streak=0}
+      else if(res==="price"){D.awayPrice++;streak=0;miss="too pricey…"}
+      else if(res==="warm"){D.awayWarm++;streak=0;miss="too warm… 🧊"}
       else { // out of stock: the rest of this phase's line can't be served
         if(isMorning){D.unmet+=target-processed}
         else D.awayOut+=target-processed;
         processed=target;dry=true;break;
       }
     }
-    if(soldChunk>0){sfx.coin(streak);spawnCoin();if(Math.random()<0.24)spawnBubble(c.line)}
-    else if(!dry)spawnBubble(Math.random()<0.5?"too pricey…":"too warm… 🧊");
+    if(!D.skip)spawnCustomer(ck,soldChunk>0?{buys:true,streak,say:Math.random()<0.24?c.line:null}:{say:miss});
     updateDayStats(streak);
     if(dry)break;
-    await sleep(rnd(120,260));
+    await sleep(rnd(450,750));
   }
   if(dry&&(isMorning?D.unmet>0:D.awayOut>0))logLine(`<span class="bad">🥤 You ran out of supplies!${isMorning?" People in line will wait until noon.":""}</span>`);
-  if(!isMorning){finishDay();return}
+  if(!isMorning){await buyersServed();finishDay();return}
   D.morningSold=D.sold;
-  if(standDry()){finishDay();return}
+  if(standDry()){await buyersServed();finishDay();return}
   const msg=$("#dayMsg");if(msg)msg.textContent="🌞 Noon! More people are coming.";
   setTimeout(resumeAfternoon,D.skip?0:900);
 }
@@ -1052,17 +1076,40 @@ function updateDayStats(streak){
   const sb=$("#streakBox");
   if(streak>=5){sb.style.display="block";$("#streakN").textContent=streak}else sb.style.display="none";
 }
-function spawnCustomer(c,ck){
+/* Customers walk across the scene. Buyers stop at the counter and face you while they pay,
+   then walk on with a cup; everyone else walks past, saying why as they pass the stand. */
+const WALK_SPEED=75; // sprite pixels a second, so phones and desktops walk at the same pace
+function spawnCustomer(ck,{buys=false,say=null,streak=0}={}){
   const sky=$("#skyBox");if(!sky)return;
-  const d=document.createElement("div");d.className="cust";d.textContent=c.icon;
-  const fromLeft=Math.random()<0.5;d.style.left=fromLeft?"-40px":"calc(100% + 10px)";sky.appendChild(d);
-  requestAnimationFrame(()=>{d.style.left=(42+Math.random()*16)+"%"});
-  setTimeout(()=>{d.style.left=fromLeft?"calc(100% + 10px)":"-40px";setTimeout(()=>d.remove(),600)},1500);
+  const day=D,d=document.createElement("div"),fw=ck==="parents"?32:24,fromLeft=Math.random()<0.5;
+  const walkLook=carry=>{d.className=`cust ${carry?"carry":"walk"}${fromLeft?"":" left"}`;d.style.backgroundImage=`url(${CUSTOMER_WALK_PNG[ck]})`};
+  d.style.setProperty("--fw",fw);walkLook(false);sky.appendChild(d);
+  const W=sky.clientWidth,w=d.offsetWidth,speed=WALK_SPEED*(w/fw)/1000; // px per ms
+  const from=fromLeft?-w:W+w,to=fromLeft?W+w:-w;
+  const walk=(a,b)=>d.animate([{left:a+"px"},{left:b+"px"}],{duration:Math.abs(b-a)/speed,fill:"forwards"}).finished;
+  if(!buys){
+    walk(from,to).then(()=>d.remove());
+    if(say)setTimeout(()=>{if(d.isConnected)spawnBubble(say,W/2)},Math.abs(W/2-from)/speed);
+    return;
+  }
+  const standW=($(".stand")||d).offsetWidth,spot=W/2+(Math.random()-0.5)*standW*0.7;
+  day.buying=(day.buying||0)+1;
+  walk(from,spot).then(()=>{
+    if(!d.isConnected){day.buying--;return}
+    d.className="cust front";d.style.backgroundImage=`url(${CUSTOMER_PNG[ck]})`;
+    sfx.coin(streak);spawnCoin();if(say)spawnBubble(say,spot);
+    setTimeout(()=>{day.buying--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())},800);
+  });
 }
-function spawnBubble(txt){
+/* Before the report, let buyers who are on their way finish buying. */
+async function buyersServed(){
+  const t0=performance.now();
+  while(D&&D.buying>0&&!D.skip&&performance.now()-t0<5000)await new Promise(r=>setTimeout(r,100));
+}
+function spawnBubble(txt,x){
   const sky=$("#skyBox");if(!sky)return;
   const d=document.createElement("div");d.className="bubble";d.textContent=txt;
-  d.style.left=(44+Math.random()*14)+"%";sky.appendChild(d);setTimeout(()=>d.remove(),1600);
+  d.style.left=x+"px";sky.appendChild(d);setTimeout(()=>d.remove(),1600);
 }
 function spawnCoin(){
   const layer=$("#fxLayer");if(!layer)return;
