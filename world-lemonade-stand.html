@@ -135,6 +135,7 @@ h3{margin:14px 0 6px}
 .icon.supply{--n:16;background-image:var(--supplyIcons)}
 .icon.flavor{--n:12;background-image:var(--flavorIcons)}
 .icon.spot{--n:13;background-image:var(--spotIcons)}
+.icon.gearA{--n:20;background-image:var(--gearIconsA)}
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
@@ -393,6 +394,8 @@ const SUPPLY_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAQCA
 const FLAVOR_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAQCAMAAAB3PIAaAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAb5JREFUeNrdlltywjAMRauZUqChxcSd/HUN7H93lfWyFOwkncJHuT8gP+R7JI/h5ZkEED87092R5f3DsCHjsj23vLUV9kcahTzOZiGlBI1hXm/h7tzbXzQM8zPhdDO05P+SL7acsyWXvui4ZwMndCsy/xlgzBKqDrJedd5xjAv99kKKMgBbD8N7C6DOcwL9ntFEBBACSl9kGz5UMcEo88hD0vU7kXM8fRXV8FCkAN+qWtHYySJ2xLtJsQM1uaW3I2A6qSTOpJS5AjCdVRK/qSTmeshyOSFVgMmXp1Fxyuf9kKitsw5sBkDvpCUAqAC4Eu17ALTfB9COYk/bADlLDWvC6/Vaaaa9qgMwqroAxX0AgHiev0JKYOEGAF9A8V8J7gEQrxDZn10hvEOuZM6/Xbl657cApFYLbN77dwQWe/+OQF6piS4QQrgTXAP4petfYc4X7lz0P+/AAwCkBfGEewJg/QNAMIDxwLL4wtoOQPXfCNAo4CpAeKVxIPinR8r5Lz+C3j/Gn6Qav5LmvG5DSI/2XX9vASifJ4ZwAR4OUB/2eIAL4+zt+SsA5XfM+29k/GPc/HuwMv2r/Cv5/pN+AD8jNJrR7Nz7AAAAAElFTkSuQmCC";
 /* 13 spot icons, 16×16 each, in LOCATIONS order, drawn in Pixelwright (round 2: closed lifebuoy outline with glass-tint quarters, hinged striped clapperboard). Shown with iconHtml("spot",name). */
 const SPOT_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANAAAAAQCAMAAABQkgHyAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAltJREFUeNrll81ugzAMgGdaqUhhKuo6tNt2A4mq7/948x+J7UBHd9zcChqSOP5sx6Ev/0OAxbTfUGw79OtD310NCCv8xqrNvqbrtqyhhrsJjkECGBLK4PXD8ZgnjCyby2MH3OjyHE3/gKiJPF1Xxi4O1unMcyHRdj8I0DDoAx7pgLoUgKwt9Eva6/aF9fVJX3h0stXZBFUe6LVjSZtAspwC4VJ9n8ABpQAEbdueSuAn+uJlFQgOB/gkoR9iP7FYj7BqzAMD1Pt0QevV/Aqo8AgSULK9o1DiUZt4ECjjVClHxhCP2kQXJtoJZGOTge7wsjiUnzQ4yPEgUCb6ESgJkEyBpECFCMb2VIBIAfBkWQJmiZHsI7d7JZUiUNw5mo/WZWcHRDwEtBDVKZdpqBmBOEK9Bzo5oAtrSK/qoRmmaRynSYFuNzEQ7yVC/FmAAk97J6mAzlWVNXsOTjlDYn9MuWUPOSCbcjiPeXCb6ZYASbmlPc8zbrEWb9KuI+QNYB4LBOcAhA2W9QhJTS5lhHLXFgVd0QG9XRxQKJt0MVsodiPHF0oGEvdkFy2DI1AhwiKC/j5rTSEgyqYE20C+bIdTiEy4WKBjFnPA2ZowuhsDARggSeoIlCMWHZaBcl19DLR2sIYXC59yhyzZhZxupgr6owppug6ZnLaiMYwnh3n9mnLNYnNIuQ8jj1596pNxK0IE1BqgSQyUW3UuSoQsUBiPCwR/rRQFE9H3gUoAXfe/qthDbyUlqmZ4mQCuoDsjtOvd0Rl3zbJ7yjP69ynLKjEw5oMPrteBjaPrH/yj8A3FgDso3HQ+RQAAAABJRU5ErkJggg==";
+/* 20 upgrade icons (first half of GEAR), 16×16 each, drawn in Pixelwright. Shown with gearIconHtml(id). */
+const GEAR_ICONS_A_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAAQCAMAAABQt1bbAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA9ZJREFUeNrtmN1a4jAQhp222LCpthTqiXC4AuJuvf+r28kkmUySRlh99tkTP6G/ND9vvpmk3n3rq4JI/+L5K2W/3F5X/ZVO/n2X0qvybLPh6ytWVRVq+Ukq1KaMNG0VP6/UyL+o3pwKpScEy+NRB4Db7acB5uWnp55HVD0Mw0AXYGt2G/xzN7putZrwbxyr5BFfouWXEQQq0ADUutOE0D+/VqqlnxDAy+Wi1ri5zYNFgPftPfMbx+CAGwPA34cj6slsjp7Y/JvkT+t3Ui2LQ36uv1g37jdsQWi6rpmmaWyqphGPQN93JYC2NQ+2Pa2Rpm0bHGj5VR6gUTreocMv8hTAtv/9PQBpFW2oUBdComvb8bHv+0fda9ndECK+Nju+cEQvkT4CuA4A7cP0BBEcASsX9RPA1dSMZwkQ+QmAB/rwvTMK+QWA2hG0V1jE7656Jfmy4YHFl7BpaFoGuCYFgKCobDZgRB+GcSCAvebqu2Ho2HEtPD1NME144ADudrsBN2WAlI8cQIfO86NcKL0OWutmnpsG+TFAgy8AhMPhsN/v+eb5rE7I73SiAckmkTSHVHF42QbxgJIB8ZATQO7AyolLsIB967Ag6UDQCBAFeFAAiPQSgOjuyIHYGu9AjFxqK0fI2wXMNzhQN83czH1vAVJniV8R4AnRGX4EUMyN7gCwIJLvf5o6c4Ao6UB/Own6wE9OWQ7gDr8WUA7QKQY4SIBqrWIH4idxINiMfgeXVzBf7k+t63qea4078whV9UgKAOGwBwEQ2478jg4gA3IH1wH6T0AigWQOhHYliiOv0sflNAK4wxC2AE1vCSAehCQtMswSwMSBCmuXAHkKFiGcDi+OmxjkBODzYf8cAGLT2/akTq4BGUAcCdIVB7ahTZGjnAPLAB/MACrcBYA7kwMtQMvQ0bMOdPg+AJjkQKo+ciAD9BEso5jSDM9g5CFCKB0IMoQRIAawD+EUoDvIL8cOxEEXM2UguOBAlTrQiB2FKOwkwgCtA9kxAxHEXVjGWBUAxosEmwGZoI9gGcU5QONQCdDwEw408MymAJCqDnZOAdoEaxQA4kyG8gBx/KMcuJIAHUFeNAHa6UOAaD1Dix2YL6RnUnBgFEHOgaFwTIbpTGwA5m8tIqJxFjmE3lp6nwZoE6xRAWDWwRigyyHevwvrSipOznlOtGoIp74DFiA70L+PuVUYDMloUxQnq3W5SMhe++yAhiHlIEhz3G0Ar719LgB0jkh+Xi7uB6n0JrLgwCiEs5ye1pZE7w3dSwD6NiymviU4//vfJYu2ED/45SSNJ6xYLPFbX9cfh5xm/AY2P3MAAAAASUVORK5CYII=";
 /* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
 const CUSTOMER_PNG={
   kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
@@ -417,6 +420,7 @@ document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
 document.documentElement.style.setProperty("--supplyIcons",`url(${SUPPLY_ICONS_PNG})`);
 document.documentElement.style.setProperty("--flavorIcons",`url(${FLAVOR_ICONS_PNG})`);
 document.documentElement.style.setProperty("--spotIcons",`url(${SPOT_ICONS_PNG})`);
+document.documentElement.style.setProperty("--gearIconsA",`url(${GEAR_ICONS_A_PNG})`);
 document.documentElement.style.setProperty("--hudPng",`url(${HUD_PNG})`);
 document.documentElement.style.setProperty("--streetPng",`url(${STREET_PNG})`);
 Object.entries(WEATHER_PNG).forEach(([k,v])=>document.documentElement.style.setProperty(`--${k}Png`,`url(${v})`));
@@ -554,8 +558,10 @@ const INGREDIENTS={
   cucumbering:{name:"Cucumbers",pack:4,price:1.60}
 };
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
-const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id}};
+const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name}};
 function iconHtml(kind,id,big){const k=ICONS[kind];const i=k.ids.indexOf(id);if(i<0)console.warn("iconHtml: unknown "+kind+" icon id",id);return `<span class="icon ${kind}${big?" big":""}" style="--i:${i}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
+/* Upgrade icons ship in two sheets; gearIconHtml picks the drawn one and falls back to the emoji for the second half until its batch lands. */
+function gearIconHtml(id,big){if(ICONS.gearA.ids.includes(id))return iconHtml("gearA",id,big);const g=GEAR.find(x=>x.id===id);return g?g.icon:""}
 /* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice customers want. */
 const WX_TEMP={sunny:[72,86],hot:[88,103],perfect:[80,90],cloudy:[62,76],rainy:[54,68],windy:[66,79]};
 function iceForTemp(t){return t>=100?4:t>=90?3:t>=80?2:t>=70?1:0}
@@ -950,7 +956,7 @@ function ingTip(id){
 function shelfHtml(){
   let slots="";
   for(let i=0;i<gearSlots();i++){const g=GEAR.find(x=>x.id===S.gear[i]);
-    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${g.icon}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You win upgrades after each day.")}></span>`}
+    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${gearIconHtml(g.id,true)}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You win upgrades after each day.")}></span>`}
   return `<div class="shelf"><b>🧰 My Stand</b><div class="slots">${slots}</div><button class="btn sm ghost" onclick="showBuild()">See all</button></div>`;
 }
 const HOW_STEPS=[["🌤️","Check the forecast","Hot days are busy. Rain keeps people home."],["📍","Pick a spot","Where will you sell today?"],["🛒","Buy supplies","Bigger packs cost less each."],["🧊","Set ice, signs and price","Hot days need more ice."],["📊","See how you did","Sales and tips for the day."],["🎁","Pick an upgrade","A new upgrade for tomorrow."]];
@@ -1444,7 +1450,7 @@ function drawDraft(rareOnly){
 }
 function draftCardHtml(p){
   if(p.kind==="gear"){const g=GEAR.find(x=>x.id===p.id);const full=S.gear.length>=gearSlots();
-    return {icon:g.icon,title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"Stand upgrade"}}
+    return {icon:gearIconHtml(g.id,true),title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"Stand upgrade"}}
   if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(pitcherNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
     return {icon:iconHtml("flavor",p.id,true),title:r.name,badge:"",desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`,tags:tagChips(r.tags),type:"New flavor"}}
   return {icon:"💵",title:"Cousin's Gift",badge:"",desc:`+${fmt(18+22*actIndex())} cash right now. It gets bigger later in the summer.`,tags:"",type:"Cash"};
@@ -1499,19 +1505,19 @@ function showSwap(p){
   const owned=S.gear.map(id=>GEAR.find(x=>x.id===id));
   $("#screen").innerHTML=`<div class="panel">
     <h2>🧰 Your stand is full</h2>
-    <p style="margin-top:0">Which upgrade should go? You'll get <b>${c.icon} ${c.title}</b>.</p>
-    <div class="choices">${owned.map((o,i)=>`<button class="choice" onclick="swapFor(${i})"><div class="ttl"><span>${o.icon} ${o.name}</span>${rarBadge(o.rar)}</div><div class="small typeLabel">Remove</div><div class="desc">${o.desc}</div></button>`).join("")}</div>
+    <p style="margin-top:0">Which upgrade should go? You'll get <b>${gearIconHtml(p.id)} ${c.title}</b>.</p>
+    <div class="choices">${owned.map((o,i)=>`<button class="choice" onclick="swapFor(${i})"><div class="ttl"><span>${gearIconHtml(o.id,true)} ${o.name}</span>${rarBadge(o.rar)}</div><div class="small typeLabel">Remove</div><div class="desc">${o.desc}</div></button>`).join("")}</div>
     <div class="flex mt" style="justify-content:center"><button class="btn sm ghost" onclick="pendingDraft=null;renderDraftScreen()">← Back</button><button class="btn sm ghost" onclick="pendingDraft=null;nextDay()">Keep my stand</button></div>
   </div>`;
 }
 function swapFor(i){
   const p=pendingDraft;if(!p)return;pendingDraft=null;
-  const g=GEAR.find(x=>x.id===S.gear[i]);S.gear.splice(i,1);S.log.push(`<span class="info">🔁 Swapped out ${g.icon} ${g.name}.</span>`);
+  const g=GEAR.find(x=>x.id===S.gear[i]);S.gear.splice(i,1);S.log.push(`<span class="info">🔁 Swapped out ${gearIconHtml(g.id)} ${g.name}.</span>`);
   grantDraft(p);
 }
 function grantDraft(p){
   sfx.good();
-  if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">🎁 New upgrade: ${g.icon} ${g.name}</span>`)}
+  if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">🎁 New upgrade: ${gearIconHtml(g.id)} ${g.name}</span>`)}
   if(p.kind==="recipe"){S.recipes.push(p.id);const r=RECIPES[p.id];S.log.push(`<span class="good">🎁 New flavor: ${iconHtml("flavor",p.id)} ${r.name}</span>`)}
   if(p.kind==="cash"){const amt=18+22*actIndex();S.cash+=amt;S.log.push(`<span class="good">🎁 Your cousin gave you ${fmt(amt)}.</span>`)}
   // synergy discovery check
@@ -1593,7 +1599,7 @@ function endRun(mode,reason){
 }
 function buildSummary(){
   const parts=[];
-  S.gear.forEach(gid=>{const g=GEAR.find(x=>x.id===gid);if(g)parts.push(g.icon+" "+g.name)});
+  S.gear.forEach(gid=>{const g=GEAR.find(x=>x.id===gid);if(g)parts.push(gearIconHtml(g.id)+" "+g.name)});
   S.recipes.forEach(rk=>parts.push(iconHtml("flavor",rk)+" "+RECIPES[rk].name));
   return parts.length?parts.join(", "):"nothing yet.";
 }
@@ -1604,7 +1610,7 @@ function showBuild(){
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
     <div class="flex spread"><h2>🧰 My Upgrades</h2><button class="btn sm ghost" onclick="closeModal()">✕ Close</button></div>
     <h3>My Stand (${S.gear.length}/${gearSlots()})</h3>
-    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${g.icon} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty ${plural(empty,"slot")}. You win upgrades after each day.</li>`:""}</ul>
+    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${gearIconHtml(g.id)} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty ${plural(empty,"slot")}. You win upgrades after each day.</li>`:""}</ul>
     <h3>My flavors</h3>
     <ul class="list">${S.recipes.map(rk=>{const r=RECIPES[rk];return `<li><b>${iconHtml("flavor",rk)} ${r.name}</b> ${tagChips(r.tags)}<br><span class="small">Liked by ${flavorFans(r.tags)}</span></li>`}).join("")}</ul>
     <h3>⚡ Combos</h3>
