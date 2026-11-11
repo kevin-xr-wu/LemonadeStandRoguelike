@@ -130,6 +130,7 @@ h3{margin:14px 0 6px}
 .icon.flavor{--n:12;background-image:var(--flavorIcons)}
 .icon.spot{--n:13;background-image:var(--spotIcons)}
 .icon.gearA{--n:20;background-image:var(--gearIconsA)}
+.icon.gearB{--n:19;background-image:var(--gearIconsB)}
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
@@ -389,6 +390,8 @@ const FLAVOR_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAQCA
 const SPOT_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANAAAAAQCAMAAABQkgHyAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAldJREFUeNrll1lvgzAMgGdaqUhQgXqgvW1vIFH1//+8+chhO0CptKfNnQhuc/izHSf7+B8CLEq/omi9R1F6GGSH6wmWVvhVi6u2XbOGFNMIjkKCrm9QHBIcj2nAyLJqMv4AD3q85eR+yweV52nb3Ds6OEzAPBeSoHcYHuKJRNLTALWNA9IRoTfRly1065P0iJOBwmDdoXJTWaBzy9KsADEKUMNfsN6AAWocENR1fcqBn+gPH4tAcDjAFwm9iP2BJ8/PQHqFyqULWh/ML4AyjyAB5dodBUGoB/PgW8IpUo5cSTzBInow0X4gFzEEesIHDEM2uTIbAHkQKBG9AmoiEA8hQAbKRDDWpwxEEwAPliVglhjJPjK7V1KpABL/5AlFtMs6A0Q8BBSJypRLNKR6II5Qb4FOBujCMzTn4KEZpmkcpykAPR5iILY5QvxJQLJEmBDqJ0kB1BVVNvqK3k4pQ/zvPuXiHjJAzqHMg9ssZpCkXNTnecYtVmMj+osIAfNoIOgcECosyxGSmpzLiC8KAdgAXS9FhqiySQ+1hfzPyPGN4iOUgIqUE6BMhAUE/d2F4QSEaYUO3QLSZdudQmTBRQMdk6gDTteE0TQMBKCBbIScgwqHJaBUV7eBiMgfrO5iYVPukCS5kNPNHivqqEKatkWmNJ3ZQ74/OczOH1Kuija7lPtUsnX1KU/GtQgRUK2AJjFQmoVz0Vc51x8XcP5aKAoqoveBSgA9919V9KG3kBKF6i4TQCmiLwbb/XfcHY1xtyS7h7wz/7sX50l/8IvbbWDj6PkH/1H4AchePBtAA9lfAAAAAElFTkSuQmCC";
 /* 20 upgrade icons (first half of GEAR), 16×16 each, drawn in Pixelwright (redrawn after the PR #21 art review: hand-painted sign with brush and drip, angled price tag, laptop food blog, lemon-shaped mascot, fat chalk, two dice, bigger grapevine). Shown with gearIconHtml(id). */
 const GEAR_ICONS_A_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAAQCAMAAABQt1bbAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA8VJREFUeNrtmF13ojAQhh3AghtaEKU31cutbe0u/f+/bieTyWQSiNaes6c3fatIlHzw5J1J6OpHX9N2688g0u0tXa9/pe3nz/dVfvV2b7u15QH7MuzsyRb/uLwWFUWml9+kTG+NlaFjI/WbZpArindWpvWEYH4+ygBwt/sywHn7adHziLqHvu/tF7AbBvzcigWhbdfrEf+GoUiq+BYdP08wGYAFaExrCKGvv2mamq4lgOfzudng4XMezAK8q++E3zAshtC1EKHyCfVoDydPbPpL8sXyg1Tq5pAfEMAVDIB9S/crqNq2GsdxqIqqUlWg69plgK8iAlhbGTrWwYGOX+EBWqXzHW74WRcB3Pg/PgKQuqEDNco5SN3abnjouu7BdEbfbggR35ubXzihl0iXAG4CQFeZatAN40FPlQO4HqvhVQNEfgrgkV78ywupx5cANEzQjVBE/FbFG8m3Dfci+QqHhqYVgBtSAAgNtS0GjOhDP/QEsDPSfdv3rTiuhsfHEcYRTxjgfr/v8ZAHSPmIATI6z28F72ewbxmMMaaapqpCfgLQ4gsA4Xg8Hg4HX3IAX2RCZjGS5JAiDi83IJlQMiCeSgKYO7BgSQsOsB8PNqQdCAYBogBPMgCRXgIQ3R05EEfjHYiRS2OVCDm/gX0HB5qqmqqp6xxAulnidxlgACCpnU8AGyL5+09y0gJAlHag/zkJ+sBPL1kMcI9vB2gOkBUD7DXAZtPEDsRX4kBwGV1CWEZXmrKcptLgh61CXT2QAkA4HiDjQAWIT64D9K+ARAOZORDqtWqOvEovzmkEcI8h7ADacRFAPHG1RXmAiQMb7F0D9EuwimCJYj89OG9qkhOAT8fDUwDokirnwAWAOBOkKw6sA8DIUezAPMB7vBSr3CuAe5sDHUDHkOk5BzK+CwCTHEjdRw4MADmCdRRTmpEVjDxECLUDIYQwphSUNeIyQD6Zfx07ECddrZSB4IIDm9SBVuIoROEWEQHoHCgrTk8E8SNsY5wyAONNgsuAiiDGcroSzwDa3zVAyy8CiCk5D5Db9x2kAF2CtYpWMpQHiPMf5cC1BsgEZdMEaKeLANF6lpY4cL6RnkjBgVEEsQPDYCmK091mWOLCU4uKaFxFjlI4Ud9hBm8F6BKsVQbg7AZjgEQwbDoX9pXUnBQ4Z/OEq6J3gAMoDvTPY7wLgz6ZbYriGb+IYLKlpwmVKZ0N+EaA154+FwCyI5LL8839IuWeRBYcGIXwLKfPerv1fwYxwJlyyS59Ivwuhd1Q7oI/LG08ZcUf/Uf9AxPXaDtYJ8OkAAAAAElFTkSuQmCC";
+/* 19 upgrade icons (second half of GEAR), 16×16 each, drawn in Pixelwright (round 2: pointed ribbed squeezer cone with spout, vertically striped shaved-ice cup with taller mound, clover leaves meeting at the centre, sellout banner centred). Shown with gearIconHtml(id). */
+const GEAR_ICONS_B_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATAAAAAQCAMAAACm/tNDAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA3pJREFUeNrtmMly2kAQhpkSwVKQowUQlUPu8QVX4fd/t/TesxEZUqni4MYgNJr1m797Gm++7P9YCNFXtEf6eLNW0kP38GzumABUxdpyeXS4dMjkVh9L2ZJDCssyLtnQle6SGmG/h/kasDDP8xQ2XfcYsdC1bfvpxYfDYZ5xxMPhLsr2dW47aI1m84eZg/Ft6Ptx1LcyekeDG6QHwJblmDIehyEG9oYWF+z30FeKEI14ZRuUFtV3+D6FAS8CNn8eGBDxxc0tNU6AwY7pnhkwWiQxCu88YUQGdyewYyI0AlZK1HkuI3fmVWCDWq4RtmY2ISJu0MNvsgjnPS5ErOiDF1zZoKKDXdftYncgc1UH4qXA+CUXEVj4Bca8NuEIBo9IaKXCYBqyWCsZxbgAZEWS1iHDthFzYExIGOV66/s+ikepbvnzB1m04inMkwrEpiMTouCWbnCHwExjQmyCIFIDBrcNd8QXA3ZRYEhqWVBowgvm0JvCYLFKjOef7SgGLgDmQxKwtk2B8UuA8YAwZFUgLqXMgyMPR4VZNR7aVuzdW40UGBJDr4xCwt+BcQTjIHYj5iCwLIQ5MPRtervCeMAdyb4KLFFYCuzVjKvv4UAhgzXFOyr1qWQCKwSvktf6KlvYTgIWEcsPSRgTh60Cg9BlRo0swMB6LIa5wqw7PBfl3gIi8sqBh61uuANLK8h6MmDhVR7DQNgahCDjDWKxwvDPgOFeuEvykYd8pH0BbLNpmjJEusZTYM7rcmFgsAKkBsC4m1xvhOv7DWAU7zmAScEW9IVmCoNjII5MDAwHTRVGsYwDF0gWP6X+MHxcrx8GDN1xCnEMY1wKzB1UFGIFLoIImAG2zCJzSSfmwE4CTImkClWXjPYUgFmAkPi1Y48klyReCix8iw5MaVEDJi6Z500A7ApmCkNXBWB+SqoApUIGLPjzXPAxsCQKrgLjk9AOepFUAczTihVgSMsVVgPWArIIGIhL9VVJCobhBC8DdkBelLlWTw0F9qL3w4C3UWYZzuemOZ/LgFF1yQowj2H1oFgmrsmhzfOjTAczVwRGWYXGMARmJ7Q28CC+nkWlQR8yfQZ2K9OXCb0UQKzCT7Kb4ynp6JrsiB5hDqyeOK7llaht2hgzzw+SGJanEaUX1vu3+iu/JVc2QIjd8dvCXtUJ/YPd+mn0fP96eOLJPbn9AUxjVeLH2StnAAAAAElFTkSuQmCC";
 /* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
 const CUSTOMER_PNG={
   kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
@@ -414,6 +417,7 @@ document.documentElement.style.setProperty("--supplyIcons",`url(${SUPPLY_ICONS_P
 document.documentElement.style.setProperty("--flavorIcons",`url(${FLAVOR_ICONS_PNG})`);
 document.documentElement.style.setProperty("--spotIcons",`url(${SPOT_ICONS_PNG})`);
 document.documentElement.style.setProperty("--gearIconsA",`url(${GEAR_ICONS_A_PNG})`);
+document.documentElement.style.setProperty("--gearIconsB",`url(${GEAR_ICONS_B_PNG})`);
 document.documentElement.style.setProperty("--hudPng",`url(${HUD_PNG})`);
 document.documentElement.style.setProperty("--streetPng",`url(${STREET_PNG})`);
 Object.entries(WEATHER_PNG).forEach(([k,v])=>document.documentElement.style.setProperty(`--${k}Png`,`url(${v})`));
@@ -551,10 +555,10 @@ const INGREDIENTS={
   cucumbering:{name:"Cucumbers",pack:4,price:1.60}
 };
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
-const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name}};
+const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name},gearB:{ids:["sunhat","awning","ponchos","icecrush","thermo","jug","shavedice","lemonzest","plaque","zester","tipjar","piggy","selloutbanner","rainjar","clover","wholesale","pitcher","squeezerpro","lemontree"],name:id=>GEAR.find(g=>g.id===id).name}};
 function iconHtml(kind,id,big){const k=ICONS[kind];const i=k.ids.indexOf(id);if(i<0)console.warn("iconHtml: unknown "+kind+" icon id",id);return `<span class="icon ${kind}${big?" big":""}" style="--i:${i}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
-/* Upgrade icons ship in two sheets; gearIconHtml picks the drawn one and falls back to the emoji for the second half until its batch lands. */
-function gearIconHtml(id,big){if(ICONS.gearA.ids.includes(id))return iconHtml("gearA",id,big);const g=GEAR.find(x=>x.id===id);return g?g.icon:""}
+/* Upgrade icons ship in two sheets (A = first 20 of GEAR, B = last 19); gearIconHtml picks the right one. */
+function gearIconHtml(id,big){if(ICONS.gearA.ids.includes(id))return iconHtml("gearA",id,big);if(ICONS.gearB.ids.includes(id))return iconHtml("gearB",id,big);return ""}
 /* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice customers want. */
 const WX_TEMP={sunny:[72,86],hot:[88,103],perfect:[80,90],cloudy:[62,76],rainy:[54,68],windy:[66,79]};
 function iceForTemp(t){return t>=100?4:t>=90?3:t>=80?2:t>=70?1:0}
@@ -597,49 +601,49 @@ function menuPrice(rk){return (M&&M.prices&&M.prices[rk]!=null)?M.prices[rk]:REC
 /* Gear = stand upgrades. Each one does exactly what its text says; effects are applied by id. */
 const GEAR=[
  // signs
- {id:"painted", name:"Hand-Painted Sign",   icon:"🪧", rar:"common",    desc:"3 free signs every day."},
- {id:"mega",    name:"Cardboard Megaphone", icon:"📣", rar:"common",    desc:"Signs bring 40% more customers."},
- {id:"brother", name:"Little Brother",      icon:"👦", rar:"rare",      desc:"2 free signs every day, but he spills 2 cups from your first pitcher."},
- {id:"chalk",   name:"Sidewalk Chalk Art",  icon:"🎨", rar:"rare",      desc:"+0.2★ reputation on days you put out 4 or more signs."},
- {id:"bigsign", name:"ROOF SIGN",           icon:"🏗️", rar:"legendary", desc:"Every sign pulls as many customers as your first one."},
+ {id:"painted", name:"Hand-Painted Sign", rar:"common",    desc:"3 free signs every day."},
+ {id:"mega",    name:"Cardboard Megaphone", rar:"common",    desc:"Signs bring 40% more customers."},
+ {id:"brother", name:"Little Brother", rar:"rare",      desc:"2 free signs every day, but he spills 2 cups from your first pitcher."},
+ {id:"chalk",   name:"Sidewalk Chalk Art", rar:"rare",      desc:"+0.2★ reputation on days you put out 4 or more signs."},
+ {id:"bigsign", name:"ROOF SIGN", rar:"legendary", desc:"Every sign pulls as many customers as your first one."},
  // customers
- {id:"secondcart",name:"Second Cart",       icon:"🛒", rar:"legendary", desc:"+30% customers every day."},
- {id:"franchiseflag",name:"Franchise Flag", icon:"🎌", rar:"epic",      desc:"+7% customers for each upgrade on your stand, this one included (+40% with all 5)."},
- {id:"loyalty", name:"Punch-Card Box",      icon:"🎟️", rar:"epic",      desc:"Each star brings twice as many extra people."},
- {id:"pricetag",name:"Charming Price Tags", icon:"🏷️", rar:"common",    desc:"Flavors priced at a whole or half dollar ($2.00, $2.50…) draw 10% more customers."},
- {id:"chalkmenu",name:"Chalkboard Menu",    icon:"🧾", rar:"rare",      desc:"If every flavor costs $3 or more: +20% customers."},
- {id:"honeypot",name:"Local Honey Pot",     icon:"🍯", rar:"epic",      desc:"Sweet flavors also win over fans of fancy drinks, and athletes stop disliking sweet."},
- {id:"mascot",  name:"Lemon Mascot Suit",   icon:"🎭", rar:"rare",      desc:"+25% customers, but −0.1★ on days fewer than 3 out of 4 customers get lemonade."},
- {id:"map",     name:"Scout's Map",         icon:"🗺️", rar:"common",    desc:"See 4 spots each morning instead of 3."},
- {id:"sponsor", name:"Team Sponsor",        icon:"🏈", rar:"common",    desc:"More athletes at every spot (about +10% of the crowd). They love SOUR and CHILLED, and dislike SWEET."},
- {id:"tourbus", name:"Tour Bus Deal",       icon:"🚌", rar:"common",    desc:"More tourists at every spot (about +10% of the crowd). They love FANCY and pay well."},
- {id:"foodblog",name:"Food Blog",           icon:"📝", rar:"common",    desc:"More foodies at every spot (about +10% of the crowd). They love FANCY and SOUR, and pay the most."},
- {id:"passport",name:"Passport",            icon:"🛂", rar:"epic",      desc:"+4% customers for each different origin on your menu (USA, Brazil, Japan…)."},
- {id:"special", name:"Daily Special Board", icon:"📋", rar:"rare",      desc:"Each morning one flavor is the Special: customers like it more and pay $0.50 extra."},
- {id:"dice",    name:"Lucky Dice",          icon:"🎲", rar:"epic",      desc:"Each morning, roll between −30% and +60% customers. You see the roll before you open."},
- {id:"grapevine",name:"Town Grapevine",     icon:"🗣️", rar:"rare",      desc:"Good street events happen twice as often, bad ones half as often."},
+ {id:"secondcart",name:"Second Cart", rar:"legendary", desc:"+30% customers every day."},
+ {id:"franchiseflag",name:"Franchise Flag", rar:"epic",      desc:"+7% customers for each upgrade on your stand, this one included (+40% with all 5)."},
+ {id:"loyalty", name:"Punch-Card Box", rar:"epic",      desc:"Each star brings twice as many extra people."},
+ {id:"pricetag",name:"Charming Price Tags", rar:"common",    desc:"Flavors priced at a whole or half dollar ($2.00, $2.50…) draw 10% more customers."},
+ {id:"chalkmenu",name:"Chalkboard Menu", rar:"rare",      desc:"If every flavor costs $3 or more: +20% customers."},
+ {id:"honeypot",name:"Local Honey Pot", rar:"epic",      desc:"Sweet flavors also win over fans of fancy drinks, and athletes stop disliking sweet."},
+ {id:"mascot",  name:"Lemon Mascot Suit", rar:"rare",      desc:"+25% customers, but −0.1★ on days fewer than 3 out of 4 customers get lemonade."},
+ {id:"map",     name:"Scout's Map", rar:"common",    desc:"See 4 spots each morning instead of 3."},
+ {id:"sponsor", name:"Team Sponsor", rar:"common",    desc:"More athletes at every spot (about +10% of the crowd). They love SOUR and CHILLED, and dislike SWEET."},
+ {id:"tourbus", name:"Tour Bus Deal", rar:"common",    desc:"More tourists at every spot (about +10% of the crowd). They love FANCY and pay well."},
+ {id:"foodblog",name:"Food Blog", rar:"common",    desc:"More foodies at every spot (about +10% of the crowd). They love FANCY and SOUR, and pay the most."},
+ {id:"passport",name:"Passport", rar:"epic",      desc:"+4% customers for each different origin on your menu (USA, Brazil, Japan…)."},
+ {id:"special", name:"Daily Special Board", rar:"rare",      desc:"Each morning one flavor is the Special: customers like it more and pay $0.50 extra."},
+ {id:"dice",    name:"Lucky Dice", rar:"epic",      desc:"Each morning, roll between −30% and +60% customers. You see the roll before you open."},
+ {id:"grapevine",name:"Town Grapevine", rar:"rare",      desc:"Good street events happen twice as often, bad ones half as often."},
  // weather & temperature
- {id:"sunhat",  name:"Lucky Sun Hat",       icon:"👒", rar:"legendary", desc:"Sunny days are as busy as Hot days (almost twice the customers)."},
- {id:"awning",  name:"Stand Awning",        icon:"⛱️", rar:"common",    desc:"Cloudy and rainy days: +25% customers. The stand stays dry."},
- {id:"ponchos", name:"Rain Ponchos",        icon:"🧥", rar:"rare",      desc:"Rainy days: +60% customers. You hand out free ponchos."},
- {id:"icecrush",name:"Hand-Crank Ice Crusher",icon:"🧊",rar:"rare",     desc:"Hot and Perfect days: +25% customers."},
- {id:"thermo",  name:"Thermometer Sign",    icon:"🌡️", rar:"epic",      desc:"+2% customers for every °F above 75°F, −2% for every °F below (95°F: +40%)."},
- {id:"jug",     name:"Insulated Jug",       icon:"🫗", rar:"common",    desc:"Customers want 1 fewer ice cube per cup."},
- {id:"shavedice",name:"Shaved Ice Machine", icon:"🍧", rar:"rare",      desc:"Each ice cube above what customers want makes them pay 5% more (up to +15%)."},
+ {id:"sunhat",  name:"Lucky Sun Hat", rar:"legendary", desc:"Sunny days are as busy as Hot days (almost twice the customers)."},
+ {id:"awning",  name:"Stand Awning", rar:"common",    desc:"Cloudy and rainy days: +25% customers. The stand stays dry."},
+ {id:"ponchos", name:"Rain Ponchos", rar:"rare",      desc:"Rainy days: +60% customers. You hand out free ponchos."},
+ {id:"icecrush",name:"Hand-Crank Ice Crusher",rar:"rare",     desc:"Hot and Perfect days: +25% customers."},
+ {id:"thermo",  name:"Thermometer Sign", rar:"epic",      desc:"+2% customers for every °F above 75°F, −2% for every °F below (95°F: +40%)."},
+ {id:"jug",     name:"Insulated Jug", rar:"common",    desc:"Customers want 1 fewer ice cube per cup."},
+ {id:"shavedice",name:"Shaved Ice Machine", rar:"rare",      desc:"Each ice cube above what customers want makes them pay 5% more (up to +15%)."},
  // money
- {id:"lemonzest",name:"Golden Lemons",      icon:"✨", rar:"epic",      desc:"Every crowd will pay 15% more."},
- {id:"plaque",  name:"Five-Star Plaque",    icon:"🏆", rar:"epic",      desc:"At 4.5★ or higher, customers pay 20% more."},
- {id:"zester",  name:"Zester of Doom",      icon:"🔪", rar:"rare",      desc:"Sour flavors earn +$0.50 per cup."},
- {id:"tipjar",  name:"Cracked Tip Jar",     icon:"🫙", rar:"common",    desc:"Customers tip 3× as much."},
- {id:"piggy",   name:"Compound Piggy",      icon:"🐷", rar:"epic",      desc:"Each night, your piggy bank adds 4% of your money over $150 (up to $200)."},
- {id:"selloutbanner",name:"Sellout Banner", icon:"🚩", rar:"rare",      desc:"When you sell out, people still in line pre-pay $1 each for tomorrow (max one per cup you sold)."},
- {id:"rainjar", name:"Rainy-Day Jar",       icon:"🌦️", rar:"rare",      desc:"Sunny, hot and perfect days add 15% of the money you made to the jar. The next cloudy or rainy day, it pays out."},
- {id:"clover",  name:"Four-Leaf Clover",    icon:"🍀", rar:"rare",      desc:"Once every 7 days, it saves a hot streak that would end."},
+ {id:"lemonzest",name:"Golden Lemons", rar:"epic",      desc:"Every crowd will pay 15% more."},
+ {id:"plaque",  name:"Five-Star Plaque", rar:"epic",      desc:"At 4.5★ or higher, customers pay 20% more."},
+ {id:"zester",  name:"Zester of Doom", rar:"rare",      desc:"Sour flavors earn +$0.50 per cup."},
+ {id:"tipjar",  name:"Cracked Tip Jar", rar:"common",    desc:"Customers tip 3× as much."},
+ {id:"piggy",   name:"Compound Piggy", rar:"epic",      desc:"Each night, your piggy bank adds 4% of your money over $150 (up to $200)."},
+ {id:"selloutbanner",name:"Sellout Banner", rar:"rare",      desc:"When you sell out, people still in line pre-pay $1 each for tomorrow (max one per cup you sold)."},
+ {id:"rainjar", name:"Rainy-Day Jar", rar:"rare",      desc:"Sunny, hot and perfect days add 15% of the money you made to the jar. The next cloudy or rainy day, it pays out."},
+ {id:"clover",  name:"Four-Leaf Clover", rar:"rare",      desc:"Once every 7 days, it saves a hot streak that would end."},
  // stock & costs
- {id:"wholesale",name:"Wholesale Card",     icon:"💳", rar:"common",    desc:"All ingredient packs cost 20% less."},
- {id:"pitcher", name:"Grandma's Pitcher",   icon:"🏺", rar:"common",    desc:"Every 4th pitcher you brew is free."},
- {id:"squeezerpro",name:"Lemon Squeezer Pro",icon:"🏋️",rar:"epic",      desc:"Every pitcher pours 10 cups instead of 8."},
- {id:"lemontree",name:"Lemon Tree",         icon:"🌳", rar:"legendary", desc:"6 free lemons every morning, plus 1 more for each day you've had it."},
+ {id:"wholesale",name:"Wholesale Card", rar:"common",    desc:"All ingredient packs cost 20% less."},
+ {id:"pitcher", name:"Grandma's Pitcher", rar:"common",    desc:"Every 4th pitcher you brew is free."},
+ {id:"squeezerpro",name:"Lemon Squeezer Pro",rar:"epic",      desc:"Every pitcher pours 10 cups instead of 8."},
+ {id:"lemontree",name:"Lemon Tree", rar:"legendary", desc:"6 free lemons every morning, plus 1 more for each day you've had it."},
 ];
 const SYNERGIES=[
  {id:"coldsnap", name:"COLD SNAP",       need:{FIZZY:1,CHILLED:2},        desc:"1 FIZZY + 2 CHILLED flavors: +45% customers on Hot and Perfect days.", check:s=>s.tags.FIZZY>=1&&s.tags.CHILLED>=2},
