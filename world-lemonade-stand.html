@@ -134,6 +134,7 @@ h3{margin:14px 0 6px}
 .icon.big{--sz:32px;vertical-align:-9px}
 .icon.supply{--n:16;background-image:var(--supplyIcons)}
 .icon.flavor{--n:12;background-image:var(--flavorIcons)}
+.icon.spot{--n:13;background-image:var(--spotIcons)}
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
@@ -390,6 +391,8 @@ const WEATHER_PNG={
 const SUPPLY_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAQCAMAAADODVF7AAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA3FJREFUeNrVl9Fy2kAMRaNCBhgIGAP5Ambq5CH9/7/rlbTSSrsGmrR9iEIyAdYr6ehKaz99DyPYVy76xPZ3XTz4WlZ81fkfBfgLFjdsw5kLj4ZhaBfFbOs1vFIs71H3LAtseU+D6HhMH9E4jvX9XwNmAB9xvx0sXEBvsPZ6GnYxIyox0eHwbLZUIsO+WCIQclAAxQMNr2x5KRbjT/jgNI5H58fhdSHG+Jdi/kEHjF4vl3P9erd7YQLb6oB/plaEqaTEESkAz98BmB1iCMdaQ0CDGQDJv4YjqLA4SkA+MQA0GQALkVcijupN8l+4u+t1ws+1ZkSXAICQ/nbLAIyAEm4BwEXK/zRCpvhPUl+vKwAn4OuJ1rCaUAaAYGI9pCJiJR4uHSnt3GHmQHJHHFZy3RFWvub8FYEtgACqS7hD+vwyh/l6U9ChkfN4qgCQ3ioAyAk80XqzYQKreQW0ALgiu41XRFuHvAFmALBnel4WCdBlep/e+aUZkHXk3hYg/6H6FACQwLYCQH9iewNAk1pTfxVAUcCK878BAPlz+gBgBMqOGYB3Kb1I+ruNBCTtP6KD6ozlES6mcwy5w7W41/cXyR6/dwC0EhAAriDO/80AaLlgey8gl7/kXwDEGdC0gMi/GBOIp4YQPLPpJJSQlB8YuALQ/0cRgm6I1IfBAXRDiBWgCBzAQfOvACCAIUwB5O/1VwWwVQALeRmAWH+fuGnuKgETaMgfAOwIrCehkJD8DYAIwCXJBFB/PwiyAqQAUn8jwArQHmgUEAA0bafHrgNIAgMAzX9RAKT6W/yLH/GcSQAqAWkBOwLjSehzR0NiCbgAigdWQDkI8gxIAKQEAMDljwpoALAraCDOHZGY+ftA8ng5gCIBBZDrb9cDQHNixkNgFUaADcA4B0V1oSbSBFWSEiAkUA6CZgiSlF47oLTAIwWos9ACrADU1UTNLYAp4C2A9GsLyAHQ5N8B0KERFLaClQ6+AaAZSzoBIwC/k7ShbGOUm5CTR/o+BJMC6oxIx9zg3lB7aYE0BOMMUASugC7/FkB/Kxp2nwcgk/Acx1Kbf3j3s1i6l/bbgO4c727Vi7PqLWfU3kf4KVLen05t/h2Ae88hpXbN0drdrGagTcfNPQuki+8/DPS3xqyAm983/GYfzD7xrFb2evxAmC76/8/H/2ij3yacYurn5S06AAAAAElFTkSuQmCC";
 /* 12 flavor icons, 16×16 each, in RECIPES order, drawn in Pixelwright (round 2: sheet shifted down a row, stemmed coupe for rosewater, mason jar for chia, red ramune marble). Shown with iconHtml("flavor",id). */
 const FLAVOR_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAQCAMAAAB3PIAaAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAb5JREFUeNrdlltywjAMRauZUqChxcSd/HUN7H93lfWyFOwkncJHuT8gP+R7JI/h5ZkEED87092R5f3DsCHjsj23vLUV9kcahTzOZiGlBI1hXm/h7tzbXzQM8zPhdDO05P+SL7acsyWXvui4ZwMndCsy/xlgzBKqDrJedd5xjAv99kKKMgBbD8N7C6DOcwL9ntFEBBACSl9kGz5UMcEo88hD0vU7kXM8fRXV8FCkAN+qWtHYySJ2xLtJsQM1uaW3I2A6qSTOpJS5AjCdVRK/qSTmeshyOSFVgMmXp1Fxyuf9kKitsw5sBkDvpCUAqAC4Eu17ALTfB9COYk/bADlLDWvC6/Vaaaa9qgMwqroAxX0AgHiev0JKYOEGAF9A8V8J7gEQrxDZn10hvEOuZM6/Xbl657cApFYLbN77dwQWe/+OQF6piS4QQrgTXAP4petfYc4X7lz0P+/AAwCkBfGEewJg/QNAMIDxwLL4wtoOQPXfCNAo4CpAeKVxIPinR8r5Lz+C3j/Gn6Qav5LmvG5DSI/2XX9vASifJ4ZwAR4OUB/2eIAL4+zt+SsA5XfM+29k/GPc/HuwMv2r/Cv5/pN+AD8jNJrR7Nz7AAAAAElFTkSuQmCC";
+/* 13 spot icons, 16×16 each, in LOCATIONS order, drawn in Pixelwright (round 2: closed lifebuoy outline with glass-tint quarters, hinged striped clapperboard). Shown with iconHtml("spot",name). */
+const SPOT_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANAAAAAQCAMAAABQkgHyAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAltJREFUeNrll81ugzAMgGdaqUhhKuo6tNt2A4mq7/948x+J7UBHd9zcChqSOP5sx6Ev/0OAxbTfUGw79OtD310NCCv8xqrNvqbrtqyhhrsJjkECGBLK4PXD8ZgnjCyby2MH3OjyHE3/gKiJPF1Xxi4O1unMcyHRdj8I0DDoAx7pgLoUgKwt9Eva6/aF9fVJX3h0stXZBFUe6LVjSZtAspwC4VJ9n8ABpQAEbdueSuAn+uJlFQgOB/gkoR9iP7FYj7BqzAMD1Pt0QevV/Aqo8AgSULK9o1DiUZt4ECjjVClHxhCP2kQXJtoJZGOTge7wsjiUnzQ4yPEgUCb6ESgJkEyBpECFCMb2VIBIAfBkWQJmiZHsI7d7JZUiUNw5mo/WZWcHRDwEtBDVKZdpqBmBOEK9Bzo5oAtrSK/qoRmmaRynSYFuNzEQ7yVC/FmAAk97J6mAzlWVNXsOTjlDYn9MuWUPOSCbcjiPeXCb6ZYASbmlPc8zbrEWb9KuI+QNYB4LBOcAhA2W9QhJTS5lhHLXFgVd0QG9XRxQKJt0MVsodiPHF0oGEvdkFy2DI1AhwiKC/j5rTSEgyqYE20C+bIdTiEy4WKBjFnPA2ZowuhsDARggSeoIlCMWHZaBcl19DLR2sIYXC59yhyzZhZxupgr6owppug6ZnLaiMYwnh3n9mnLNYnNIuQ8jj1596pNxK0IE1BqgSQyUW3UuSoQsUBiPCwR/rRQFE9H3gUoAXfe/qthDbyUlqmZ4mQCuoDsjtOvd0Rl3zbJ7yjP69ynLKjEw5oMPrteBjaPrH/yj8A3FgDso3HQ+RQAAAABJRU5ErkJggg==";
 /* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
 const CUSTOMER_PNG={
   kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
@@ -413,6 +416,7 @@ document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
 document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
 document.documentElement.style.setProperty("--supplyIcons",`url(${SUPPLY_ICONS_PNG})`);
 document.documentElement.style.setProperty("--flavorIcons",`url(${FLAVOR_ICONS_PNG})`);
+document.documentElement.style.setProperty("--spotIcons",`url(${SPOT_ICONS_PNG})`);
 document.documentElement.style.setProperty("--hudPng",`url(${HUD_PNG})`);
 document.documentElement.style.setProperty("--streetPng",`url(${STREET_PNG})`);
 Object.entries(WEATHER_PNG).forEach(([k,v])=>document.documentElement.style.setProperty(`--${k}Png`,`url(${v})`));
@@ -499,19 +503,19 @@ const CROWDS={
   artists:   {name:"Artists",      icon:"🎨", pay:2.60, loves:["FANCY","FIZZY"], hates:null,    line:"Beautiful."}
 };
 const LOCATIONS=[
-  {name:"Maple St. Spot", icon:"🏠", traffic:17, bias:{kids:3,parents:3,artists:1}, wx:null,        desc:"Your home street. Lots of families."},
-  {name:"School Gate",      icon:"🎒", traffic:21, bias:{kids:6,parents:2},                 wx:null,        desc:"Lots of kids at lunch. Sweet drinks sell well."},
-  {name:"Riverside Park",   icon:"🌳", traffic:23, bias:{athletes:5,parents:2,kids:1},wx:"windy+",   desc:"Runners and families having picnics."},
-  {name:"Pool Entrance",    icon:"🏊", traffic:26, bias:{athletes:4,kids:3},        wx:"hot+",      desc:"Swimmers come out thirsty."},
-  {name:"Little League Field",icon:"⚾",traffic:25, bias:{parents:4,kids:4},   wx:null,        desc:"Parents watch the game and buy drinks."},
-  {name:"Downtown Crossing",icon:"🚦", traffic:29, bias:{tourists:3,foodies:2,artists:2},             wx:null,        desc:"A mix of everyone passing through."},
-  {name:"Farmers Market",   icon:"🧺", traffic:24, bias:{foodies:4,parents:2,artists:1},  wx:null,        desc:"Foodies shop here. Fancy and sour drinks do well."},
-  {name:"Boardwalk",        icon:"🎡", traffic:32, bias:{tourists:5,kids:2},             wx:"hot+",      desc:"Lots of tourists and big crowds."},
-  {name:"Skate Park",       icon:"🛼", traffic:22, bias:{kids:3,athletes:3},                  wx:"windy+",    desc:"Young and sporty."},
-  {name:"Dog Park",         icon:"🐶", traffic:20, bias:{parents:3,athletes:3},            wx:null,        desc:"Dog owners stop for a drink."},
-  {name:"Outdoor Cinema",   icon:"🎬", traffic:30, bias:{artists:4,tourists:2,parents:1},              wx:null,        desc:"Movie crowds get thirsty at the break."},
-  {name:"Train Station",    icon:"🚉", traffic:27, bias:{tourists:4,athletes:2},             wx:null,        desc:"Travelers in a hurry."},
-  {name:"The Marina",       icon:"⛵", traffic:28, bias:{tourists:4,foodies:3},            wx:"hot+",      desc:"Sailors and tourists with money to spend."}
+  {name:"Maple St. Spot", traffic:17, bias:{kids:3,parents:3,artists:1}, wx:null,        desc:"Your home street. Lots of families."},
+  {name:"School Gate", traffic:21, bias:{kids:6,parents:2},                 wx:null,        desc:"Lots of kids at lunch. Sweet drinks sell well."},
+  {name:"Riverside Park", traffic:23, bias:{athletes:5,parents:2,kids:1},wx:"windy+",   desc:"Runners and families having picnics."},
+  {name:"Pool Entrance", traffic:26, bias:{athletes:4,kids:3},        wx:"hot+",      desc:"Swimmers come out thirsty."},
+  {name:"Little League Field",traffic:25, bias:{parents:4,kids:4},   wx:null,        desc:"Parents watch the game and buy drinks."},
+  {name:"Downtown Crossing", traffic:29, bias:{tourists:3,foodies:2,artists:2},             wx:null,        desc:"A mix of everyone passing through."},
+  {name:"Farmers Market", traffic:24, bias:{foodies:4,parents:2,artists:1},  wx:null,        desc:"Foodies shop here. Fancy and sour drinks do well."},
+  {name:"Boardwalk", traffic:32, bias:{tourists:5,kids:2},             wx:"hot+",      desc:"Lots of tourists and big crowds."},
+  {name:"Skate Park", traffic:22, bias:{kids:3,athletes:3},                  wx:"windy+",    desc:"Young and sporty."},
+  {name:"Dog Park", traffic:20, bias:{parents:3,athletes:3},            wx:null,        desc:"Dog owners stop for a drink."},
+  {name:"Outdoor Cinema", traffic:30, bias:{artists:4,tourists:2,parents:1},              wx:null,        desc:"Movie crowds get thirsty at the break."},
+  {name:"Train Station", traffic:27, bias:{tourists:4,athletes:2},             wx:null,        desc:"Travelers in a hurry."},
+  {name:"The Marina", traffic:28, bias:{tourists:4,foodies:3},            wx:"hot+",      desc:"Sailors and tourists with money to spend."}
 ];
 const RECIPES={
   classic:{name:"Classic Sweet", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.25, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
@@ -550,8 +554,8 @@ const INGREDIENTS={
   cucumbering:{name:"Cucumbers",pack:4,price:1.60}
 };
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
-const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name}};
-function iconHtml(kind,id,big){const k=ICONS[kind];return `<span class="icon ${kind}${big?" big":""}" style="--i:${k.ids.indexOf(id)}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
+const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id}};
+function iconHtml(kind,id,big){const k=ICONS[kind];const i=k.ids.indexOf(id);if(i<0)console.warn("iconHtml: unknown "+kind+" icon id",id);return `<span class="icon ${kind}${big?" big":""}" style="--i:${i}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
 /* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice customers want. */
 const WX_TEMP={sunny:[72,86],hot:[88,103],perfect:[80,90],cloudy:[62,76],rainy:[54,68],windy:[66,79]};
 function iceForTemp(t){return t>=100?4:t>=90?3:t>=80?2:t>=70?1:0}
@@ -1008,7 +1012,7 @@ function renderMorning(){
     <h3>1. Pick a spot</h3>
     <div class="choices" id="locChoices">
       ${M.locs.map((l,i)=>{const top=Object.entries(crowdMixFor(l)).sort((a,b2)=>b2[1]-a[1]).slice(0,3);
-        return `<button class="choice spot ${M.loc===l?"sel":""}" onclick="chooseLoc(${i})"><div class="ttl"><span>${l.icon} ${l.name}</span>${M.loc===l?'<span class="pickTag">✓ Picked</span>':""}</div><div class="crowdRow">${top.map(([k,v])=>`<span class="crowd"${tip(crowdTip(k))}>${CROWDS[k].icon} ${CROWDS[k].name} ${v}%</span>`).join("")}</div></button>`}).join("")}
+        return `<button class="choice spot ${M.loc===l?"sel":""}" onclick="chooseLoc(${i})"><div class="ttl"><span>${iconHtml("spot",l.name,true)} ${l.name}</span>${M.loc===l?'<span class="pickTag">✓ Picked</span>':""}</div><div class="crowdRow">${top.map(([k,v])=>`<span class="crowd"${tip(crowdTip(k))}>${CROWDS[k].icon} ${CROWDS[k].name} ${v}%</span>`).join("")}</div></button>`}).join("")}
     </div>
     <h3>2. Buy supplies</h3>
     ${M.treeLemons?`<p class="small" style="margin:2px 0">🌳 Your Lemon Tree dropped <b>${M.treeLemons}</b> free ${plural(M.treeLemons,"lemon")} this morning.</p>`:""}
@@ -1146,7 +1150,7 @@ function renderDayScene(){
   $("#screen").innerHTML=`
   <div class="scene">
     <div class="sky ${M.actualWx}" id="skyBox">
-      <div class="crowdMix">${M.loc.icon} ${M.loc.name}<br>${crowdMixLine()}</div>
+      <div class="crowdMix">${iconHtml("spot",M.loc.name)} ${M.loc.name}<br>${crowdMixLine()}</div>
       ${skyArt(M.actualWx)}
       <div class="sceneBtns"><button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button> ${spdBtnHtml()}</div>
       <div class="standSign">🍋 ${D.menu.length} ${plural(D.menu.length,"flavor")}, from ${fmt(Math.min(...D.menu.map(rk=>menuPrice(rk))))}</div>
@@ -1379,7 +1383,7 @@ function finishDay(){
     <div class="report">
       <div class="receiptBox">
         <div class="receiptWrap"><div class="receipt">
-          <div class="rHead">${M.loc.icon} ${M.loc.name}</div>
+          <div class="rHead">${iconHtml("spot",M.loc.name)} ${M.loc.name}</div>
           ${sellRows}
           ${upgradeBonus>0.004?`<div class="rRow"><span>🎁 Upgrade bonuses</span><span class="amt">+${fmt(upgradeBonus)}</span></div>`:""}
           ${bannerBonus?`<div class="rRow"><span>🚩 Sellout Banner pre-sales</span><span class="amt">+${fmt(bannerBonus)}</span></div>`:""}
