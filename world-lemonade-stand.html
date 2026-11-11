@@ -129,6 +129,7 @@ h3{margin:14px 0 6px}
 .icon.supply{--n:16;background-image:var(--supplyIcons)}
 .icon.flavor{--n:12;background-image:var(--flavorIcons)}
 .icon.spot{--n:13;background-image:var(--spotIcons)}
+.icon.gearA{--n:20;background-image:var(--gearIconsA)}
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
@@ -386,6 +387,8 @@ const SUPPLY_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAQCA
 const FLAVOR_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAQCAMAAAB3PIAaAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAahJREFUeNrtldFOwzAMRbHE2EYHy5opb3zD/v/vcOzYsdO0q0QreOC+MCexfU8c0RcjAP+30XS5WVnOH4YVFZcE9ngvFY5nWoU4NrsQQoDOMp/X8HCdy88ahrYnXCZLS/5v8abHuVow5bPORzZwQbdF6j8CjLGEolM5L7oeOMaDLh9JUQqgmzC89wDqPufL74gm9ExK+TcTUPksTfgQ+QJj2Ucekpw/FGm+FJQJQTplSfQlqjfqJ5lV89Fslp/A/V5zS3ltAekiKnEkhcg3AOkqKvGbqMTsHlMMQKgAqX9BeuNUz/oh0VibCawGQO+kJQCwAJDtGwC0Pw8gE8WZ9gFiLHcopiE9Hg9DcxTNAIyiWYDsvgKUbm4CPwOwF1j8V4ItAPwTmjZEM2EWoDy5+ubXAITeCHTf+jcEGlv/hkBjuv46cSYwkfU/ecJcz43M+28nsAuAa8gdtgTA+3cArYGBpfGNtQ9A5wKfAtyzzP8h15++c8Z//gha/xh/kmr8Spo9zw1M6AY8AaB6jtg9gL8HMO3/BCB/x6x/+ZbsF9PChv3aev/6RX0D6ts3WmJGUQMAAAAASUVORK5CYII=";
 /* 13 spot icons, 16×16 each, in LOCATIONS order, drawn in Pixelwright (redrawn after the PR #20 art review: plain Riverside canopy with a wider river, produce-crate Farmers Market, clapperboard Cinema, side-on locomotive Train, floppy-eared Dog, outlined cabins and bat, 1px margins). Shown with iconHtml("spot",name). */
 const SPOT_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANAAAAAQCAMAAABQkgHyAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAldJREFUeNrll1lvgzAMgGdaqUhQgXqgvW1vIFH1//+8+chhO0CptKfNnQhuc/izHSf7+B8CLEq/omi9R1F6GGSH6wmWVvhVi6u2XbOGFNMIjkKCrm9QHBIcj2nAyLJqMv4AD3q85eR+yweV52nb3Ds6OEzAPBeSoHcYHuKJRNLTALWNA9IRoTfRly1065P0iJOBwmDdoXJTWaBzy9KsADEKUMNfsN6AAWocENR1fcqBn+gPH4tAcDjAFwm9iP2BJ8/PQHqFyqULWh/ML4AyjyAB5dodBUGoB/PgW8IpUo5cSTzBInow0X4gFzEEesIHDEM2uTIbAHkQKBG9AmoiEA8hQAbKRDDWpwxEEwAPliVglhjJPjK7V1KpABL/5AlFtMs6A0Q8BBSJypRLNKR6II5Qb4FOBujCMzTn4KEZpmkcpykAPR5iILY5QvxJQLJEmBDqJ0kB1BVVNvqK3k4pQ/zvPuXiHjJAzqHMg9ssZpCkXNTnecYtVmMj+osIAfNoIOgcECosyxGSmpzLiC8KAdgAXS9FhqiySQ+1hfzPyPGN4iOUgIqUE6BMhAUE/d2F4QSEaYUO3QLSZdudQmTBRQMdk6gDTteE0TQMBKCBbIScgwqHJaBUV7eBiMgfrO5iYVPukCS5kNPNHivqqEKatkWmNJ3ZQ74/OczOH1Kuija7lPtUsnX1KU/GtQgRUK2AJjFQmoVz0Vc51x8XcP5aKAoqoveBSgA9919V9KG3kBKF6i4TQCmiLwbb/XfcHY1xtyS7h7wz/7sX50l/8IvbbWDj6PkH/1H4AchePBtAA9lfAAAAAElFTkSuQmCC";
+/* 20 upgrade icons (first half of GEAR), 16×16 each, drawn in Pixelwright (redrawn after the PR #21 art review: hand-painted sign with brush and drip, angled price tag, laptop food blog, lemon-shaped mascot, fat chalk, two dice, bigger grapevine). Shown with gearIconHtml(id). */
+const GEAR_ICONS_A_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAAQCAMAAABQt1bbAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA+tJREFUeNrtmNty2jAQhlnbxKJyYmEgN4HLBhLSOu//dN2DzrI5ZKaT6Uw3xgjbWknf/lrJWfyjttl8cwfWa1eCxO73dL3+Nd+vr7e2VXt+w+AHcGsn7x9SftV+b6iwxj/7e+mtqmZa+clWeIfdDhagyDSfla+v1OBrVx/Wpr0jvoTgfDxqD5AG8FWApf/8p+ORNA/GGB40Bg+/116C0HXL5Q7/hqHKqjiPws8ShDc2vAXPyI8Bat1pRujqr5Rq+WEGeD6f1QpPM+F5TUnNAnxoH6YUcusEcPfhiPZMp6PzMP5mcz/rT7Y66RXiY4ALGADZhQBC03XNbrcbmqppoirQ990kwBMbSo/5LaAl03xugwKFX+UAks0OOB08gPT/8zNcaxWf2OkCVtbkNpjN8NT3/ZPudTxcX1auNYkvHFFLbJcArgJAqcw1eMCkmhgUA1zumuEtBoj8IoAHPhKAgs8C1Jag9NAb81tU72zONzx6sx4wtKsVDdMBFD4BICj2LQIkfpIwLBAzGAbYa998Z0znFdfCM3YW043t3tFst1uDp3mA7N0CtOgcvwV8nIE+npTWuhnHpkF+HiDhCwDhcDjs93vr73QyCcBiEclzSJUpzAnAqYRuIhMt459QYGXNwiRyfAhB8hcrEDQCRAMszABEehlAVHeiQPTtFIjh5b76AJ/fgT5BgbppxmbsewHIg2V+MwANAjQnsPzitdEWAB2xufFnOakAKMuQ5UcA3e1s0ktZqUcB+Ign6rAA3OJHnigBWksBmhigWqlUgXhkCsSk5VfjeBpDret6HGuNX1SFm3piCwDhsIdIgSYB6AHZwnWA7pAByXSMAWYKhHYZ3MnjxDFR4BansACk0TJALPgcE6XoSYCZAhW2HgN0S3A0g/0sduHBuIV5JgQDwJfD/sUrEAWIR0iXBUCMBNsVBbYBIKXRXIEzAB3wAIQAbikHCkBhaOmJAi2+CwCzHMjNJwoMAO0Mjmcxpxm/grGGGGGsQIhzICkwqjtdKC+nCsSgu6TP65APXqlAFQMUgmHNR2c0fWOAokDvz3AD+BW2MWIzANNNgmTAiCDO5XwlLgDS/Rgg8cty4AWA1r97JAcoCZYsjBGHGAHE+Cc5cJkAzPeBKKeLAFF6RMsrsNxGjWxBgckMsgr0zmUW57tNu8Qlby3RjMZV5ODcH48mBO8rACXBksW7qdBYOcAM4OWNst1ZBEXLvks2r8lPueAAegW69zG7CwOTRltmccEvIZht6TmgLqTlpv9OgPe8XKeSuNnFD7a5N5EJBSZTuMjpxUvOvf8zSACWNpfsCm19k4Xd0NwDv6zFwouk+N/+ov0BmNNnER4AAQUAAAAASUVORK5CYII=";
 /* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
 const CUSTOMER_PNG={
   kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
@@ -410,6 +413,7 @@ document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
 document.documentElement.style.setProperty("--supplyIcons",`url(${SUPPLY_ICONS_PNG})`);
 document.documentElement.style.setProperty("--flavorIcons",`url(${FLAVOR_ICONS_PNG})`);
 document.documentElement.style.setProperty("--spotIcons",`url(${SPOT_ICONS_PNG})`);
+document.documentElement.style.setProperty("--gearIconsA",`url(${GEAR_ICONS_A_PNG})`);
 document.documentElement.style.setProperty("--hudPng",`url(${HUD_PNG})`);
 document.documentElement.style.setProperty("--streetPng",`url(${STREET_PNG})`);
 Object.entries(WEATHER_PNG).forEach(([k,v])=>document.documentElement.style.setProperty(`--${k}Png`,`url(${v})`));
@@ -547,8 +551,10 @@ const INGREDIENTS={
   cucumbering:{name:"Cucumbers",pack:4,price:1.60}
 };
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
-const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id}};
+const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name}};
 function iconHtml(kind,id,big){const k=ICONS[kind];return `<span class="icon ${kind}${big?" big":""}" style="--i:${k.ids.indexOf(id)}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
+/* Upgrade icons ship in two sheets; gearIconHtml picks the drawn one and falls back to the emoji for the second half until its batch lands. */
+function gearIconHtml(id,big){if(ICONS.gearA.ids.includes(id))return iconHtml("gearA",id,big);const g=GEAR.find(x=>x.id===id);return g?g.icon:""}
 /* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice customers want. */
 const WX_TEMP={sunny:[72,86],hot:[88,103],perfect:[80,90],cloudy:[62,76],rainy:[54,68],windy:[66,79]};
 function iceForTemp(t){return t>=100?4:t>=90?3:t>=80?2:t>=70?1:0}
@@ -942,7 +948,7 @@ function ingTip(id){
 function shelfHtml(){
   let slots="";
   for(let i=0;i<gearSlots();i++){const g=GEAR.find(x=>x.id===S.gear[i]);
-    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${g.icon}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You win upgrades after each day.")}></span>`}
+    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${gearIconHtml(g.id,true)}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You win upgrades after each day.")}></span>`}
   return `<div class="shelf"><b>🧰 My Stand</b><div class="slots">${slots}</div><button class="btn sm ghost" onclick="showBuild()">See all</button></div>`;
 }
 const HOW_STEPS=[["🌤️","Check the forecast","Hot days are busy. Rain keeps people home."],["📍","Pick a spot","Where will you sell today?"],["🛒","Buy supplies","Bigger packs cost less each."],["🧊","Set ice, signs and price","Hot days need more ice."],["📊","See how you did","Sales and tips for the day."],["🎁","Pick an upgrade","It changes tomorrow's math."]];
@@ -1450,7 +1456,7 @@ function drawDraft(rareOnly){
 }
 function draftCardHtml(p){
   if(p.kind==="gear"){const g=GEAR.find(x=>x.id===p.id);const full=S.gear.length>=gearSlots();
-    return {icon:g.icon,title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"STAND UPGRADE"}}
+    return {icon:gearIconHtml(g.id,true),title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"STAND UPGRADE"}}
   if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(pitcherNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
     return {icon:iconHtml("flavor",p.id,true),title:r.name,badge:"",desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`,tags:tagChips(r.tags),type:"NEW FLAVOR"}}
   return {icon:"💵",title:"Cousin's Gift",badge:"",desc:`+${fmt(18+22*actIndex())} cash right now. It gets bigger later in the summer.`,tags:"",type:"CASH"};
@@ -1506,18 +1512,18 @@ function showSwap(p){
   $("#screen").innerHTML=`<div class="panel">
     <h2>🧰 Your stand is full</h2>
     <p style="margin-top:0">Which upgrade should go? You'll get <b>${c.icon} ${c.title}</b>.</p>
-    <div class="choices">${owned.map((o,i)=>`<button class="choice" onclick="swapFor(${i})"><div class="ttl"><span>${o.icon} ${o.name}</span>${rarBadge(o.rar)}</div><div class="small typeLabel">REMOVE</div><div class="desc">${o.desc}</div></button>`).join("")}</div>
+    <div class="choices">${owned.map((o,i)=>`<button class="choice" onclick="swapFor(${i})"><div class="ttl"><span>${gearIconHtml(o.id,true)} ${o.name}</span>${rarBadge(o.rar)}</div><div class="small typeLabel">REMOVE</div><div class="desc">${o.desc}</div></button>`).join("")}</div>
     <div class="flex mt" style="justify-content:center"><button class="btn sm ghost" onclick="pendingDraft=null;renderDraftScreen()">← Back</button><button class="btn sm ghost" onclick="pendingDraft=null;nextDay()">Keep my stand</button></div>
   </div>`;
 }
 function swapFor(i){
   const p=pendingDraft;if(!p)return;pendingDraft=null;
-  const g=GEAR.find(x=>x.id===S.gear[i]);S.gear.splice(i,1);S.log.push(`<span class="info">🔁 Swapped out ${g.icon} ${g.name}.</span>`);
+  const g=GEAR.find(x=>x.id===S.gear[i]);S.gear.splice(i,1);S.log.push(`<span class="info">🔁 Swapped out ${gearIconHtml(g.id)} ${g.name}.</span>`);
   grantDraft(p);
 }
 function grantDraft(p){
   sfx.good();
-  if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">🎁 New upgrade: ${g.icon} ${g.name}</span>`)}
+  if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">🎁 New upgrade: ${gearIconHtml(g.id)} ${g.name}</span>`)}
   if(p.kind==="recipe"){S.recipes.push(p.id);const r=RECIPES[p.id];S.log.push(`<span class="good">🎁 New flavor: ${iconHtml("flavor",p.id)} ${r.name}</span>`)}
   if(p.kind==="cash"){const amt=18+22*actIndex();S.cash+=amt;S.log.push(`<span class="good">🎁 Your cousin gave you ${fmt(amt)}.</span>`)}
   // synergy discovery check
@@ -1599,7 +1605,7 @@ function endRun(mode,reason){
 }
 function buildSummary(){
   const parts=[];
-  S.gear.forEach(gid=>{const g=GEAR.find(x=>x.id===gid);if(g)parts.push(g.icon+" "+g.name)});
+  S.gear.forEach(gid=>{const g=GEAR.find(x=>x.id===gid);if(g)parts.push(gearIconHtml(g.id)+" "+g.name)});
   S.recipes.forEach(rk=>parts.push(iconHtml("flavor",rk)+" "+RECIPES[rk].name));
   return parts.length?parts.join(" · "):"nothing yet.";
 }
@@ -1610,7 +1616,7 @@ function showBuild(){
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
     <div class="flex spread"><h2>🧰 My Upgrades</h2><button class="btn sm ghost" onclick="closeModal()">✕ Close</button></div>
     <h3>My Stand (${S.gear.length}/${gearSlots()})</h3>
-    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${g.icon} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty slot${empty>1?"s":""}. You win upgrades after each day.</li>`:""}</ul>
+    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${gearIconHtml(g.id)} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty slot${empty>1?"s":""}. You win upgrades after each day.</li>`:""}</ul>
     <h3>My flavors</h3>
     <ul class="list">${S.recipes.map(rk=>{const r=RECIPES[rk];return `<li><b>${iconHtml("flavor",rk)} ${r.name}</b> ${tagChips(r.tags)}<br><span class="small">Liked by ${flavorFans(r.tags)}</span></li>`}).join("")}</ul>
     <h3>⚡ Combos</h3>
