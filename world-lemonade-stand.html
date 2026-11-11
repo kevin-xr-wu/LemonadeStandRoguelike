@@ -15,18 +15,36 @@ body{margin:0;font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;backgro
 button{font-family:inherit;cursor:pointer}
 #app{max-width:1060px;margin:0 auto;padding:12px 12px 40px}
 #screen{overflow-x:clip} /* pop-in animations start oversized; never let them scroll the page sideways */
-/* HUD */
-.hud{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;position:sticky;top:8px;z-index:50}
-.hud .box{background:var(--card);border:3px solid var(--ink);border-radius:12px;padding:6px 12px;box-shadow:0 3px 0 rgba(43,33,24,.8);font-weight:700;display:flex;flex-direction:column;justify-content:center}
-.hud .box small{font-weight:600;opacity:.65;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
-.hud .money{font-size:22px;color:var(--green2)}
-.hud .money.neg{color:var(--red)}
+/* HUD: a coin counter, a calendar page and a star meter on one dark bar. Icons are art pixels times --px. */
+.hud{--px:2;display:flex;align-items:center;gap:24px;position:sticky;top:8px;z-index:50;background:var(--ink);color:#fff;border-radius:14px;padding:6px 8px 6px 12px;box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.hudIcon{display:block;flex:none;width:calc(16px*var(--px));height:calc(16px*var(--px));background:var(--hudPng) 0 0/calc(86px*var(--px)) calc(16px*var(--px)) no-repeat;image-rendering:pixelated}
+.hudCoins,.hudDay{display:flex;align-items:center;gap:8px}
+.hud .money{font-size:26px;font-weight:900;line-height:1;color:var(--lemon);font-variant-numeric:tabular-nums}
+.hud .money.neg{color:#ff8f6b}
+.hudCoins.up .money{animation:cashUp .45s}
+.hudCoins.down .money{animation:cashDown .45s}
+.hudCoins.up .hudIcon,.hudCoins.down .hudIcon{animation:coinBump .3s}
+@keyframes cashUp{from{color:#9be15d}}
+@keyframes cashDown{from{color:#ff8f6b}}
+@keyframes coinBump{40%{translate:0 calc(-2px*var(--px))}}
+.calPage{background-position-x:calc(-16px*var(--px));display:flex;align-items:center;justify-content:center;padding-top:calc(5px*var(--px));color:var(--ink);font-size:calc(9px*var(--px) + 1px);font-weight:900;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+.dayOf{font-weight:800;font-size:16px;color:var(--paper2)}
+.starMeter{display:flex;gap:var(--px)}
+.star{position:relative;width:calc(11px*var(--px));height:calc(11px*var(--px));background:var(--hudPng) calc(-75px*var(--px)) 0/calc(86px*var(--px)) calc(16px*var(--px)) no-repeat;image-rendering:pixelated}
+.star:after{content:"";position:absolute;inset:0 auto 0 0;width:calc(var(--f)*var(--px)*1px);background:inherit;background-position-x:calc(-64px*var(--px))} /* --f: art pixels of the star filled in */
+.hudBtn{flex:none;display:flex;align-items:center;justify-content:center;background:none;border:0;border-radius:10px;padding:4px;color:inherit}
+.hudBtn:hover{background:rgba(255,247,224,.12)}
+.hudBtn:focus-visible{outline:3px solid var(--blue)}
+#btnSound{margin-left:auto}
+#btnSound .hudIcon{background-position-x:calc(-32px*var(--px))}
+#btnSound.off .hudIcon{background-position-x:calc(-48px*var(--px))}
+.helpBtn{width:34px;height:34px;padding:0;border-radius:50%;background:var(--lemon);color:var(--ink);font-size:21px;font-weight:900;box-shadow:inset 0 -3px 0 var(--lemon2)}
+.helpBtn:hover{background:#ffe470}
+@media (prefers-reduced-motion:reduce){.hudCoins .money,.hudCoins .hudIcon{animation:none!important}}
 .quotaWrap{flex:1;min-width:180px}
 .qbar{height:14px;background:#e8dcc0;border:2px solid var(--ink);border-radius:99px;overflow:hidden;margin-top:3px}
 .qfill{height:100%;background:linear-gradient(90deg,var(--green),#9be15d);width:0%;transition:width .6s cubic-bezier(.2,1.4,.4,1)}
 .qfill.danger{background:linear-gradient(90deg,var(--red),#ff9a3d)}
-.stars{color:var(--lemon2);font-size:17px;letter-spacing:1px}
-.halfStar{background:linear-gradient(90deg,var(--lemon2) 50%,#c9bc9c 50%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .iconBtn{background:var(--card);border:3px solid var(--ink);border-radius:12px;padding:6px 12px;font-weight:800;box-shadow:0 3px 0 rgba(43,33,24,.8)}
 .iconBtn:active{transform:translateY(2px);box-shadow:none}
 /* Panels */
@@ -201,7 +219,6 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 #guessText{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;flex:1 1 260px;font-weight:800;font-size:15px}
 #guessText .nums{display:flex;flex-wrap:wrap;gap:4px 16px}
 .guessBar i,.hud i{font-style:normal}
-.starsNum{display:none}
 .ctrl .hint{font-size:13.5px;opacity:.85}
 #guessText b{color:var(--lemon);font-size:18px}
 #guessText .pos{color:#9be15d} #guessText .negc{color:#ff8f6b}
@@ -215,14 +232,11 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
   .guessBar i.long{display:none}
   .guessBar #btnOpen{flex:0 0 auto;margin-left:auto;font-size:18px!important;padding:10px 16px!important}
 }
-@media (max-width:560px){ /* phones: one-row top bar (sound moves into ❓ help), stacked shelf */
+@media (max-width:560px){ /* phones: one-row top bar (sound moves into the ? help), stacked shelf */
   .playBtn{font-size:24px;padding:14px 40px}
-  .hud i.long,.hud .box small,.hud .stars,#btnSound{display:none}
-  .hud{gap:4px}
-  .hud .box{padding:3px 6px}
-  .hud .money{font-size:17px}
-  .hud .iconBtn{padding:5px 6px}
-  .starsNum{display:inline;font-weight:900}
+  .hud .dayOf,#btnSound{display:none} /* the calendar page shows the day; its tip says "of 14" */
+  .hud{gap:12px}
+  .helpBtn{margin-left:auto}
   .shelf .slots{order:3;flex:1 1 100%}
   .shelf .btn{margin-left:auto}
   .slot{width:40px;height:40px;font-size:22px}
@@ -249,12 +263,12 @@ button,input,select{touch-action:manipulation}
   h2{font-size:21px}
   .big{font-size:17px}
   .panel{padding:13px;margin-top:10px}
-  /* HUD: same info, half the height */
-  .hud{gap:6px;top:4px}
-  .hud .box{padding:5px 9px;border-radius:10px}
-  .hud .box small{font-size:10px}
-  .hud .money{font-size:19px}
-  .stars{font-size:15px}
+  /* HUD: icons stay at 2× so they read on a phone; the bar gets tighter instead */
+  .hud{gap:16px;top:4px;padding:4px 6px 4px 10px;border-radius:12px}
+  .hud .money{font-size:20px}
+  .hudCoins,.hudDay{gap:5px}
+  .dayOf{font-size:14px}
+  .helpBtn{width:30px;height:30px;font-size:18px}
   .quotaWrap{min-width:150px}
   .qbar{height:12px}
   .iconBtn{padding:6px 9px;border-radius:10px}
@@ -294,11 +308,13 @@ button,input,select{touch-action:manipulation}
   .choices{grid-template-columns:1fr} /* draft picks, spots, kids: one clean column */
 }
 @media (max-width:380px){
+  .hud{gap:8px}
   .hud .money{font-size:17px}
   .btn{padding:12px 18px;font-size:17px}
   .panel{padding:11px}
 }
 @media (max-height:500px) and (orientation:landscape){
+  .hud{top:4px}
   .sky{height:148px;--px:1}
   .ground{background-size:64px 32px}
   .ground:before{top:-9px;height:14px;background-size:64px 14px}
@@ -313,12 +329,11 @@ button,input,select{touch-action:manipulation}
 <body>
 <div id="app">
   <div class="hud" id="hud" style="display:none">
-    <div class="box" tabindex="0" data-tip="Your money. It's also your score."><small>💰 Money</small><span class="money" id="hudCash">$30</span></div>
-    <div class="box" tabindex="0" id="hudDayBox" data-tip=""><small>📅 Day</small><span id="hudDay">—</span></div>
-    <div class="box" tabindex="0" id="hudRepBox" data-tip=""><small>⭐ Stars</small><span class="stars" id="hudRep">★★★☆☆</span><span class="starsNum" id="hudRepNum"></span></div>
-    <button class="iconBtn" id="btnBuild" data-tip="Your upgrades, flavors and combos">🧰 <i class="long">Upgrades </i><span id="hudUpg">0/5</span></button>
-    <button class="iconBtn" id="btnSound" data-tip="Sound on or off" aria-label="Sound on or off">🔊</button>
-    <button class="iconBtn" id="btnHelp" data-tip="How to play" aria-label="How to play">❓</button>
+    <div class="hudCoins" id="hudMoney" tabindex="0" data-tip="Your money. It's also your score."><i class="hudIcon"></i><span class="money" id="hudCash">$30</span></div>
+    <div class="hudDay" id="hudDayBox" tabindex="0" data-tip=""><span class="hudIcon calPage" id="hudDay"></span><span class="dayOf" id="hudDayOf"></span></div>
+    <div class="starMeter" id="hudRepBox" tabindex="0" data-tip="" role="img"></div>
+    <button class="hudBtn" id="btnSound" data-tip="Sound on or off" aria-label="Sound on or off"><i class="hudIcon"></i></button>
+    <button class="hudBtn helpBtn" id="btnHelp" data-tip="How to play" aria-label="How to play">?</button>
   </div>
   <div id="screen"></div>
 </div>
@@ -347,6 +362,8 @@ const GRASS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAOCAMAAACo5
 const GROUND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAMAAACVQ462AAAAUVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil9Bc2ApAAAAAXRSTlMAQObYZgAAAJdJREFUeNrFlVEOgDAIQ3cM5P4Hdck0bihQNtH9kjzb0mDZFh8MICIVoM3eVTAPYM5RcNq+AMOX8FRSM3DcAwDfCHMJVkAwmXoFU31KL5Jb8xQF9vr6adUXVsD19a7iFkQqIECPsgEWTkpiD0BRAmBu8HE4AuSOgEUIBfE0v/uxaKFIgOZBTRdVcJy3O774p9PO9c8Qm7IdZWTH7YBjEDkAAAAASUVORK5CYII=";
 /* 10×10 coin with 4 spin frames, drawn in Pixelwright. CSS shows it at 2×, or 1× on small screens (.coin). */
 const COIN_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAKCAMAAADxROxiAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAG1JREFUeNp9kEsOwCAIROtG4f4X7szwqYmNxIQX58GCBzVQ7DsBGzp1NxMPwIrfYTNh7mnkohVCifIqXSiyFh4ivRLxJBqHUvAWHXsoYoBP4v/GT1RJRD/ECNvUDCGF6jO36G+nukoDzePMl4O//RgE2mM6JDUAAAAASUVORK5CYII=";
+/* HUD icons, drawn in Pixelwright: 16×16 coin, calendar page, sound on and sound off, then 11×11 full and empty stars. CSS shows them at 2×, or 1× on small screens (.hud). */
+const HUD_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFYAAAAQCAMAAAC7iXi0AAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAS1JREFUeNqVlAGuhCAMRK0mCvn8rNfw/hfcmZZS3GWNTqLQ0j4LCNNIcmpuqIvsk0TVrEO7tRmEf6XnyF1iQHLOKSVzgH/YZ9jEhz+ofYE5bT7BZZl9BFRAk43JfylHUbHx8J2dFCS1faLEVhFr1cBr2sgltlOdwW4Y57odNW1IBpOaZxbMb20rhBFw5e8kOKCdGDLxNLuUiY84VZfAqYpd6bcxpoRezYFQMIltNmdDgFNtaY2qXq2URT/Car0EIBmZigX1CRadE5a2YUkV45IqvgjEGXYdYl+qwDbbFgH5CHIsuhWrSF32MRZSTLdlavuW2e/Ed9etXIrUb6yGaHXdD1bt6xNtTKWOseB8HIcb2EnINOoP7OXh/c2Nq6buiCsuhYur5tYld9LDZNcbwyIWVawvmjQAAAAASUVORK5CYII=";
 /* 256×56 street (houses, trees, picket fence), drawn in Pixelwright. It repeats along the back of .sky at 2×, or 1× on small screens. */
 const STREET_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAA4CAMAAAAl8tYgAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA89JREFUeNrtmu1uqzAMhquyH9PO1NKu6i3k12H3f3fHdj6wEyeEnjBaLdZCJ1hfvX5wnIB26NGjR48ePXr0eI24YLyM7AY2vzAae91IdoP0yabz2s7sA7LGxg/nP/u0ZpdNVske1smS9IeNHyUQ53+9Fq0aMwxDBYLLlwSwIOvV/0DsnX/JqTFvbwBgGQHICgBF2bmm9gcARvNWQ/qLCFCVAyjJGjNNk1PbGwD5zDnF9I/DaON4LCKQAEqyxnx/AwCHYF8AzudV7dj+7o/323i7jQtVwAGUZEP6DsGuANCk7Vap07n4MfsAIIuAASjIYvp/MSZ7BAQ7AvA+lVql4ocYYDgA9DvOAx3BDCAvK+6+jyUAzbdUPv9wn1KrovXFFZCpAg8gL6umbxHkAcCWrfWu0gEgf2G2cqcyfRVAioBUAUBW1ha/q3x5nKYMgHlj3ZCBlfR3yVllzy+289tqt8ewCoQzNBMkAgsgK5u9+6wdFperxtt1ZzQUanAa3/1iMNPW6yEju5i+ioDnX7errAVAszRUqTNqna5InxBIrH4KSNm48+eOEQKZfzsCl2iWOp8EwFCFrwlv2WI9KLJVd1+rgni70hZAatTVqjnXB3tItKrQAxLZFekTAnW1zu3V/p9A8Bl64BoAsWgAMMtSda8JOatYv27YBkGMXCr5PwrAEiAAUhZfdtxrQ7wZ8cuV71ctV8KLMCne4REAt/CNY5KzuCJ7FlpUZVcA0JbreU1t/N5Szd8BuNPzz00BwK/IdQtlVNnHAfBVtfWbVj39AIA2fyoAdiXeDIKQJksAQulEOYvz0RrAttRsq9KcQPS8QmliijoAfkV9JlKKihL1pRMD4OfjpiLTb/+ieYA9bfK8+mgPYKqDVHUAHLkEADufdFW5qLTPP3KqVQA+rIaoqADLVQHgvxgD4Od1AJlabVMBiwDO7rU1Rs0UyAJY2QOQADKA42b51wGQVd+kAnjS2QpI1qoNXg3lAYicnYGUxsMA7IT6WACQ79RbAzjNEQGQV7YH4Als9HIwWwGy8dt2ZCsguxX2X8cBsvTpB6YGRWMHAfj8hB8EwM8bACC+R8M+c28zNG1zRgR8cADymuJ3hHOjObpPPyBPc/KDA+DnYZjoezgG5VyroWmjhzMfHEB0LfF7GMcTjqP79APa3jw4gOga1IL4Hg54I5ecazU0bfQArW4eHEB0LfHbAcDhtDR4E6z5+71HBKD4t9UVwAC8SAW8t50CEO+vBaBxD3i9CugAehP85U2wT4EOoAOoAVD8Z9DleIr/oq12+yR+ezxT/APlM9c6xQ0YWgAAAABJRU5ErkJggg==";
 /* Weather you can see in the scene, drawn in Pixelwright: suns, clouds, a 32×32 rain tile, rainbow, wind gust, leaf and heat shimmer (skyArt). */
@@ -385,6 +402,7 @@ document.documentElement.style.setProperty("--grassPng",`url(${GRASS_PNG})`);
 document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
 document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
 document.documentElement.style.setProperty("--supplyIcons",`url(${SUPPLY_ICONS_PNG})`);
+document.documentElement.style.setProperty("--hudPng",`url(${HUD_PNG})`);
 document.documentElement.style.setProperty("--streetPng",`url(${STREET_PNG})`);
 Object.entries(WEATHER_PNG).forEach(([k,v])=>document.documentElement.style.setProperty(`--${k}Png`,`url(${v})`));
 function sampleWeighted(items){let t=items.reduce((s,i)=>s+i.w,0),r=Math.random()*t;for(const i of items){r-=i.w;if(r<=0)return i}return items[items.length-1]}
@@ -865,17 +883,31 @@ function demandEstimate(loc,signs,opts={}){
 
 /* ============================================================ UI ============================================================ */
 function updateHUD(){
-  if(!S){$("#hud").style.display="none";return}
+  if(!S){$("#hud").style.display="none";hudCash.shown=null;return}
   $("#hud").style.display="flex";
-  const cashEl=$("#hudCash");cashEl.textContent=fmt(S.cash);cashEl.classList.toggle("neg",S.cash<5);
+  showCash(S.cash);
   const area=actFor(actIndex()).name.split("·")[1].trim();
-  $("#hudDay").innerHTML=S.endless?`Day ${S.day}<i class="long"> · Endless</i>`:`Day ${S.day}<i class="long"> of ${S.totalDays}</i>`;
-  $("#hudRepNum").textContent=`⭐ ${S.rep.toFixed(1)}`;
-  $("#hudDayBox").dataset.tip=S.endless?`Endless: play as long as you like. You're at ${area}.`:`The summer lasts ${S.totalDays} days. You're at ${area}.`;
-  const full=Math.floor(S.rep),half=S.rep-full>=0.5;
-  $("#hudRep").innerHTML="★".repeat(full)+(half?'<span class="halfStar">★</span>':"")+"☆".repeat(Math.max(0,5-full-(half?1:0)));
+  $("#hudDay").textContent=S.day;
+  $("#hudDayOf").innerHTML=S.endless?"Endless":`of ${S.totalDays}<i class="long"> days</i>`;
+  $("#hudDayBox").dataset.tip=S.endless?`Day ${S.day}. Endless: play as long as you like. You're at ${area}.`:`Day ${S.day} of ${S.totalDays}. You're at ${area}.`;
+  // each star fills from the left, one art pixel at a time: 3.4 stars is three full stars and a star 4 of 11 pixels full
+  $("#hudRepBox").innerHTML=[0,1,2,3,4].map(i=>`<i class="star" style="--f:${Math.round(clamp(S.rep-i,0,1)*11)}"></i>`).join("");
+  $("#hudRepBox").setAttribute("aria-label",`${S.rep.toFixed(1)} out of 5 stars`);
   $("#hudRepBox").dataset.tip=`${S.rep.toFixed(1)} stars. They go up when most people get lemonade. More stars bring more people.`;
-  $("#hudUpg").textContent=`${S.gear.length}/${gearSlots()}`;
+}
+/* The HUD's money counts to each new amount, so buying and selling feel like coins changing hands. */
+const hudCash={shown:null,raf:0};
+function showCash(to){
+  const el=$("#hudCash"),box=$("#hudMoney"),from=hudCash.shown;
+  el.classList.toggle("neg",to<5);
+  if(from===to)return;
+  cancelAnimationFrame(hudCash.raf);
+  if(from===null||matchMedia("(prefers-reduced-motion:reduce)").matches){hudCash.shown=to;el.textContent=fmt(to);return}
+  box.classList.remove("up","down");void box.offsetWidth;box.classList.add(to>from?"up":"down"); // restart the flash
+  const whole=from%1===0&&to%1===0,t0=performance.now(),dur=300; // whole dollars count in whole dollars
+  const step=t=>{const p=Math.min(1,(t-t0)/dur),v=p<1?from+(to-from)*(1-Math.pow(1-p,3)):to;
+    hudCash.shown=v;el.textContent=fmt(whole?Math.round(v):v);if(p<1)hudCash.raf=requestAnimationFrame(step)};
+  hudCash.raf=requestAnimationFrame(step);
 }
 /* ---------- Words and tips: tips explain things; nothing you need to play hides in one ---------- */
 function escAttr(t){return String(t).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
@@ -1199,6 +1231,7 @@ function updateDayStats(){
   const st=$("#stStock");if(!st)return;
   st.textContent=servingsReady();
   $("#stTill").textContent=fmt(D.revenue+D.tips);
+  showCash(S.cash+D.revenue+D.tips); // the HUD counts up with each sale; the evening adds bonuses on top
   $("#stDem").textContent=Math.max(0,D.demand-D.sold-D.awayPrice-D.awayWarm-D.awayOut);
 }
 /* Customers walk across the scene. Buyers stop at the counter and face you while they pay,
@@ -1616,9 +1649,8 @@ document.addEventListener("focusout",()=>{if(!touchOnly())hideTip()});
 document.addEventListener("click",e=>{if(!touchOnly())return;const el=e.target.closest("[data-tip]");
   if(el&&!el.matches("button,input")){if(el===tipFor)hideTip();else showTip(el)}else hideTip()});
 addEventListener("scroll",()=>{if(tipFor&&performance.now()-tipAt>250)hideTip()},{passive:true,capture:true}); // a tap can nudge the page; don't close the tip it just opened
-$("#btnBuild").addEventListener("click",showBuild);
 $("#btnHelp").addEventListener("click",showHelp);
-function toggleSound(){soundOn=!soundOn;$("#btnSound").textContent=soundOn?"🔊":"🔇";const h=$("#helpSound");if(h)h.textContent=soundOn?"🔊 Sound on":"🔇 Sound off";if(soundOn)sfx.pop()}
+function toggleSound(){soundOn=!soundOn;$("#btnSound").classList.toggle("off",!soundOn);const h=$("#helpSound");if(h)h.textContent=soundOn?"🔊 Sound on":"🔇 Sound off";if(soundOn)sfx.pop()}
 $("#btnSound").addEventListener("click",toggleSound);
 showTitle();
 </script>
