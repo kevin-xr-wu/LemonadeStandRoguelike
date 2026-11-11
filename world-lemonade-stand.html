@@ -464,7 +464,7 @@ function countUp(el,to){
 const WEATHERS={
   sunny:  {name:"Sunny",       icon:"☀️", mult:1.0,  w:34, desc:"A normal day."},
   hot:    {name:"Hot & Dry",   icon:"🔥", mult:1.9,  w:16, desc:"Lots of thirsty people. They pay more."},
-  perfect:{name:"Perfect day", icon:"🌈", mult:2.3,  w:5,  desc:"Big crowds and good tips. It does not happen often."},
+  perfect:{name:"Perfect day", icon:"🌈", mult:2.3,  w:5,  desc:"Big crowds and good tips. It doesn't happen often."},
   cloudy: {name:"Cloudy",      icon:"☁️", mult:0.68, w:22, desc:"Fewer people today."},
   rainy:  {name:"Rainy",       icon:"🌧️", mult:0.42, w:11, desc:"Most people stay home."},
   windy:  {name:"Windy",       icon:"🌬️", mult:0.85, w:12, desc:"A little less busy."},
@@ -571,11 +571,11 @@ function syncBatches(id){
 function overnight(){ // tonight, after the stand closes: returns what melts, goes bad and breaks, for the report
   const notes=[],tomorrow=S.day+1;
   // signs wear out: about 1 in 4 of the signs you put out today breaks overnight (free signs from upgrades are gear, they don't break)
-  if(typeof D!=="undefined"&&D&&D.signs>0&&(S.inv.signs||0)>0){let broke=0;for(let i=0;i<D.signs;i++)if(Math.random()<0.25)broke++;broke=Math.min(broke,S.inv.signs||0);if(broke>0){S.inv.signs-=broke;notes.push(`${broke} ${iconHtml("supply","signs")} ${plural(broke,"sign")} broke`)}}
+  if(typeof D!=="undefined"&&D&&D.signs>0&&(S.inv.signs||0)>0){let broke=0;for(let i=0;i<D.signs;i++)if(Math.random()<0.25)broke++;broke=Math.min(broke,S.inv.signs||0);if(broke>0){S.inv.signs-=broke;notes.push(`${broke} ${iconHtml("supply","signs")} ${plural(broke,"sign")} ${broke===1?"breaks":"break"}`)}}
   const melt=Math.ceil((S.inv.ice||0)/2);if(melt>0){S.inv.ice-=melt;notes.push(`${melt} ${iconHtml("supply","ice")} ice melts`)}
   Object.entries(SHELF).forEach(([id,days])=>{if(!(S.inv[id]>0))return;syncBatches(id);const lots=S.lots[id];let bad=0;
     while(lots.length&&tomorrow-lots[0].day>=days){bad+=lots[0].qty;lots.shift()}
-    if(bad){S.inv[id]-=bad;const oneName={lemons:"lemon",strawberries:"strawberry",mint:"mint sprig",cucumbering:"cucumber"}[id]||INGREDIENTS[id].name.toLowerCase();notes.push(`${bad} ${iconHtml("supply",id)} ${plural(bad,oneName,INGREDIENTS[id].name.toLowerCase())} went bad`)}});
+    if(bad){S.inv[id]-=bad;const names={lemons:["lemon","lemons"],strawberries:["strawberry","strawberries"],mint:["mint sprig","mint sprigs"],cucumbering:["cucumber","cucumbers"]};const nm=names[id]||[INGREDIENTS[id].name.toLowerCase(),INGREDIENTS[id].name.toLowerCase()];notes.push(`${bad} ${iconHtml("supply",id)} ${plural(bad,nm[0],nm[1])} ${bad===1?"goes":"go"} bad`)}});
   return notes;
 }
 function pitcherNeeds(rk){return {...BASE_NEEDS,...(RECIPES[rk].needs||{})}}
@@ -666,7 +666,7 @@ function actFor(i){if(i<ACTS.length)return ACTS[i];const a=ACTS[i%4];return {...
 const EVENTS=[
  {id:"crewbuy", w:6,  txt:()=>`🚧 ${crewSize()} road workers stop by at lunch. They only buy if a flavor costs ${fmt(CREW_MAX_PRICE)} or less.`},
  {id:"closure", w:7,  txt:"🚧 Street closed for repairs. 65% fewer customers."},
- {id:"heatwave",w:6,  txt:"🥵 Heat wave. 50% more customers, and it is 8°F hotter.", fn:()=>{M.temp+=8}},
+ {id:"heatwave",w:6,  txt:"🥵 Heat wave. 50% more customers, and it's 8°F hotter.", fn:()=>{M.temp+=8}},
  {id:"bees",    w:5,  txt:"🐝 Bees swarm your stand. 20% fewer customers."},
  {id:"critic",  w:4,  txt:"🧐 A food critic is coming. Serve almost everyone to gain half a star. Serve too few and you lose half a star."},
  {id:"lemonsale",w:7, txt:"🍋 Market sale. Supplies cost 30% less tomorrow.", fn:s=>{s.tomorrowCostMult=0.7}},
@@ -706,7 +706,7 @@ function toggleSpeed(){
   SPEED=SPEED===1?2:1;
   try{localStorage.setItem("wls_speed",String(SPEED))}catch(e){}
   liveAnims.forEach(a=>{try{a.playbackRate=SPEED}catch(e){}});
-  const b=document.querySelector("#spdBtn");if(b)b.textContent="⏩ Speed: "+SPEED;
+  const b=document.querySelector("#spdBtn");if(b)b.textContent=spdLabel();
   sfx.flip();
 }
 /* setTimeout that runs on simulation time: after(800) fires after 800ms
@@ -719,7 +719,8 @@ function after(ms,fn){
   },40);
   return iv;
 }
-const spdBtnHtml=()=>`<button class="btn sm ghost" id="spdBtn" onclick="toggleSpeed()">⏩ Speed: ${SPEED}</button>`;
+const spdLabel=()=>SPEED===2?"⏩ Fast":"▶ Normal";
+const spdBtnHtml=()=>`<button class="btn sm ghost" id="spdBtn" onclick="toggleSpeed()">${spdLabel()}</button>`;
 function newRun(kidId){
   const kid=KIDS.find(k=>k.id===kidId);
   S={
@@ -958,7 +959,7 @@ function showTitle(){
     <h2>How it works</h2>
     ${howSteps()}
     <p class="small muted" style="margin:10px 0 0">Not sure what something means? Point at it, or tap it.</p>
-    <p class="small" style="margin:10px 0 0">Tap <b>?</b> at the top of the screen for the full rules.</p>
+    <p style="margin:12px 0 0"><button class="btn sm ghost" onclick="showHelp()">Full rules</button></p>
   </div>`;
 }
 function selectKid(kidId){
@@ -977,7 +978,7 @@ function renderMorning(){
   const streakHtml=S.streak>=2?`<div class="synBanner" style="background:linear-gradient(90deg,#ff7b00,#ffb300)">🔥 Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Serve 3 out of 4 customers and make money today for a +${Math.min(25,3*(S.streak+1))}% bonus tonight.</div>`:"";
   const synHtml=b.synergies.length?`<div class="synBanner">⚡ Combos: ${b.synergies.map(s=>`<span tabindex="0"${tip(s.desc)}>${s.name}</span>`).join(", ")}</div>`:"";
   const evTxt=M.event?eventText(M.event):"";
-  const eventHtml=evTxt?`<div class="panel" style="background:#eaf6ff;margin-top:10px;padding:10px 14px">📣 ${evTxt}</div>`:"";
+  const eventHtml=evTxt?`<div class="panel" style="background:#eaf6ff;margin-top:10px;padding:10px 14px">${evTxt}</div>`:"";
   const basics=["cups","lemons","sugar","ice","signs"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
   const signsOwned=S.inv.signs||0;
   if(M.signs>signsOwned)M.signs=signsOwned; // you can only put out signs you own — last night's breakage may have shrunk the pile
@@ -1354,7 +1355,7 @@ function finishDay(){
   else if(D.awayPrice>unserved*0.4&&D.awayPrice>0)counter=`${D.awayPrice} ${plural(D.awayPrice,"person","people")} walked away. The price was too high. Try a lower price.`;
   else if(D.awayWarm>0)counter=`${D.awayWarm} ${plural(D.awayWarm,"person","people")} wanted colder lemonade. At ${M.temp}°F, use ${iceMinToday()} ${plural(iceMinToday(),"cube")} or more.`;
   else if(wasted>0)counter=`${wasted} ${plural(wasted,"cup")} ${wasted===1?"was":"were"} poured out at closing. That's <b>${fmt(wasted*pourCost)}</b> wasted.`;
-  else if(unserved>0)counter=`${unserved} ${plural(unserved,"person","people")} did not buy. Try a lower price or another sign.`;
+  else if(unserved>0)counter=`${unserved} ${plural(unserved,"person","people")} didn't buy. Try a lower price or another sign.`;
   else counter=`Everyone got lemonade, and nothing went to waste.`;
   const tonight=overnight(); // ice melts and old produce goes bad once you close
   const byCups=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]);
@@ -1608,17 +1609,18 @@ function showHelp(){
     <div class="flex spread"><h2>❓ How to play</h2><div class="flex"><button class="btn sm ghost" id="helpSound" onclick="toggleSound()">${soundOn?"🔊 Sound on":"🔇 Sound off"}</button><button class="btn sm ghost" onclick="closeModal()">✕ Close</button></div></div>
     <p style="margin:0 0 10px">Make as much money as you can in 14 days. The money you end with is your score.</p>
     ${howSteps()}
-    <h3>What the words mean</h3>
+    <h3>Rules</h3>
     <ul class="list">
       <li>💰 Money made is your sales and tips. Supplies and signs are paid for when you buy them. Starting a day never costs money.</li>
-      <li>💵 You start with $30. If you cannot pay for one cup, the game ends.</li>
+      <li>💵 You start with $30. If you can't pay for one cup, the game ends.</li>
       <li>🌤️ The forecast is always right. Hot days bring more people. Rain brings fewer.</li>
       <li>🧊 Hot days need more ice. Under 70°F, no ice. In the 70s, 1 cube. In the 80s, 2. In the 90s, 3. At 100°F and up, 4.</li>
       <li>🛒 Bigger packs cost less for each one.</li>
       <li>🫠 Half of your leftover ice melts each night. Lemons last 7 days, cucumbers 5, mint 4 and strawberries 3.</li>
       <li>🪧 Signs bring in more customers. About 1 in 4 signs you put out breaks overnight.</li>
-      <li>⭐ Stars go up when most people get lemonade. More stars bring more people.</li>
+      <li>⭐ Stars go up when most people get lemonade. They go down when many people leave without any. More stars bring more people.</li>
       <li>🏷️ Flavor tags are Sweet, Sour, Fancy, Chilled and Fizzy. Each crowd likes different ones.</li>
+      <li>👥 Kids like sweet drinks. Parents like fancy and sweet. Athletes like sour and chilled. Tourists like fancy. Foodies like fancy and sour. Artists like fancy and fizzy.</li>
       <li>⚡ Combos give a bonus when the right mix of flavors is on your menu.</li>
       <li>🔥 A hot streak gives a bonus each night. Serve 3 out of 4 customers and make money, day after day.</li>
       <li>💎 Upgrades can be common, rare, epic or legendary. Rarer ones show up less often.</li>
