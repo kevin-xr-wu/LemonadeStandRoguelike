@@ -133,6 +133,7 @@ h3{margin:14px 0 6px}
 .icon{--sz:16px;display:inline-block;width:var(--sz);height:var(--sz);vertical-align:-3px;background:no-repeat calc(var(--i)*var(--sz)*-1) 0/calc(var(--n)*var(--sz)) var(--sz);image-rendering:pixelated}
 .icon.big{--sz:32px;vertical-align:-9px}
 .icon.supply{--n:16;background-image:var(--supplyIcons)}
+.icon.flavor{--n:12;background-image:var(--flavorIcons)}
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
@@ -387,6 +388,8 @@ const WEATHER_PNG={
 };
 /* 16 supply icons, 16×16 each, in ICONS.supply order, drawn in Pixelwright. Shown with iconHtml("supply",id). */
 const SUPPLY_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAQCAMAAADODVF7AAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA3FJREFUeNrVl9Fy2kAMRaNCBhgIGAP5Ambq5CH9/7/rlbTSSrsGmrR9iEIyAdYr6ehKaz99DyPYVy76xPZ3XTz4WlZ81fkfBfgLFjdsw5kLj4ZhaBfFbOs1vFIs71H3LAtseU+D6HhMH9E4jvX9XwNmAB9xvx0sXEBvsPZ6GnYxIyox0eHwbLZUIsO+WCIQclAAxQMNr2x5KRbjT/jgNI5H58fhdSHG+Jdi/kEHjF4vl3P9erd7YQLb6oB/plaEqaTEESkAz98BmB1iCMdaQ0CDGQDJv4YjqLA4SkA+MQA0GQALkVcijupN8l+4u+t1ws+1ZkSXAICQ/nbLAIyAEm4BwEXK/zRCpvhPUl+vKwAn4OuJ1rCaUAaAYGI9pCJiJR4uHSnt3GHmQHJHHFZy3RFWvub8FYEtgACqS7hD+vwyh/l6U9ChkfN4qgCQ3ioAyAk80XqzYQKreQW0ALgiu41XRFuHvAFmALBnel4WCdBlep/e+aUZkHXk3hYg/6H6FACQwLYCQH9iewNAk1pTfxVAUcCK878BAPlz+gBgBMqOGYB3Kb1I+ruNBCTtP6KD6ozlES6mcwy5w7W41/cXyR6/dwC0EhAAriDO/80AaLlgey8gl7/kXwDEGdC0gMi/GBOIp4YQPLPpJJSQlB8YuALQ/0cRgm6I1IfBAXRDiBWgCBzAQfOvACCAIUwB5O/1VwWwVQALeRmAWH+fuGnuKgETaMgfAOwIrCehkJD8DYAIwCXJBFB/PwiyAqQAUn8jwArQHmgUEAA0bafHrgNIAgMAzX9RAKT6W/yLH/GcSQAqAWkBOwLjSehzR0NiCbgAigdWQDkI8gxIAKQEAMDljwpoALAraCDOHZGY+ftA8ng5gCIBBZDrb9cDQHNixkNgFUaADcA4B0V1oSbSBFWSEiAkUA6CZgiSlF47oLTAIwWos9ACrADU1UTNLYAp4C2A9GsLyAHQ5N8B0KERFLaClQ6+AaAZSzoBIwC/k7ShbGOUm5CTR/o+BJMC6oxIx9zg3lB7aYE0BOMMUASugC7/FkB/Kxp2nwcgk/Acx1Kbf3j3s1i6l/bbgO4c727Vi7PqLWfU3kf4KVLen05t/h2Ae88hpXbN0drdrGagTcfNPQuki+8/DPS3xqyAm983/GYfzD7xrFb2evxAmC76/8/H/2ij3yacYurn5S06AAAAAElFTkSuQmCC";
+/* 12 flavor icons, 16×16 each, in RECIPES order, drawn in Pixelwright (round 2: sheet shifted down a row, stemmed coupe for rosewater, mason jar for chia, red ramune marble). Shown with iconHtml("flavor",id). */
+const FLAVOR_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAQCAMAAAB3PIAaAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAb5JREFUeNrdlltywjAMRauZUqChxcSd/HUN7H93lfWyFOwkncJHuT8gP+R7JI/h5ZkEED87092R5f3DsCHjsj23vLUV9kcahTzOZiGlBI1hXm/h7tzbXzQM8zPhdDO05P+SL7acsyWXvui4ZwMndCsy/xlgzBKqDrJedd5xjAv99kKKMgBbD8N7C6DOcwL9ntFEBBACSl9kGz5UMcEo88hD0vU7kXM8fRXV8FCkAN+qWtHYySJ2xLtJsQM1uaW3I2A6qSTOpJS5AjCdVRK/qSTmeshyOSFVgMmXp1Fxyuf9kKitsw5sBkDvpCUAqAC4Eu17ALTfB9COYk/bADlLDWvC6/Vaaaa9qgMwqroAxX0AgHiev0JKYOEGAF9A8V8J7gEQrxDZn10hvEOuZM6/Xbl657cApFYLbN77dwQWe/+OQF6piS4QQrgTXAP4petfYc4X7lz0P+/AAwCkBfGEewJg/QNAMIDxwLL4wtoOQPXfCNAo4CpAeKVxIPinR8r5Lz+C3j/Gn6Qav5LmvG5DSI/2XX9vASifJ4ZwAR4OUB/2eIAL4+zt+SsA5XfM+29k/GPc/HuwMv2r/Cv5/pN+AD8jNJrR7Nz7AAAAAElFTkSuQmCC";
 /* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
 const CUSTOMER_PNG={
   kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
@@ -409,6 +412,7 @@ document.documentElement.style.setProperty("--grassPng",`url(${GRASS_PNG})`);
 document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
 document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
 document.documentElement.style.setProperty("--supplyIcons",`url(${SUPPLY_ICONS_PNG})`);
+document.documentElement.style.setProperty("--flavorIcons",`url(${FLAVOR_ICONS_PNG})`);
 document.documentElement.style.setProperty("--hudPng",`url(${HUD_PNG})`);
 document.documentElement.style.setProperty("--streetPng",`url(${STREET_PNG})`);
 Object.entries(WEATHER_PNG).forEach(([k,v])=>document.documentElement.style.setProperty(`--${k}Png`,`url(${v})`));
@@ -510,18 +514,18 @@ const LOCATIONS=[
   {name:"The Marina",       icon:"⛵", traffic:28, bias:{tourists:4,foodies:3},            wx:"hot+",      desc:"Sailors and tourists with money to spend."}
 ];
 const RECIPES={
-  classic:{name:"Classic Sweet",    icon:"🍋", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.25, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
-  strawberry:{name:"Strawberry Lemonade", icon:"🍓", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:2.75, needs:{strawberries:3},    desc:"Lemonade with fresh strawberries."},
-  limonana:{name:"Limonana",        icon:"🌿", origin:"Levant",             tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{mint:2},            desc:"Mint blended with crushed ice."},
-  brazilian:{name:"Brazilian Lemonade", icon:"🥛", origin:"Brazil",         tags:["SWEET","FANCY"], appeal:1.08,price:3.25, needs:{condmilk:2},        desc:"Creamy with condensed milk."},
-  shikanji:{name:"Shikanji",        icon:"🫚", origin:"India",              tags:["SOUR"],          appeal:1.04,price:2.50, needs:{ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
-  chia:{name:"Agua de Limón con Chía", icon:"🌱", origin:"Mexico",          tags:["CHILLED"],       appeal:1.03,price:2.75, needs:{chia:1},            desc:"Lemonade with chia seeds."},
-  citron:{name:"Citron Pressé",    icon:"🇫🇷", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.04,price:2.75, needs:{sparkling:1},       desc:"Paris cafe style. Tart and sparkling."},
-  rosewater:{name:"Sharbat-e-Limoo",icon:"🌹", origin:"Iran",               tags:["FANCY","SWEET"], appeal:1.07,price:3.25, needs:{rosewater:1},       desc:"Lemon with rosewater."},
-  salted:{name:"Salted Lemonade",   icon:"🧂", origin:"Vietnam",            tags:["SOUR"],          appeal:1.02,price:2.25, needs:{seasalt:1},         desc:"Salty lemon drink."},
-  palmer:{name:"Arnold Palmer",     icon:"⛳", origin:"USA",                tags:["SWEET","SOUR"],  appeal:1.08,price:2.75, needs:{blacktea:2},        desc:"Half iced tea, half lemonade."},
-  cucumber:{name:"Cucumber Lemonade",icon:"🥒", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{cucumbering:2},     desc:"Cool cucumber lemonade."},
-  ramune:{name:"Ramune Lemonade",   icon:"🫧", origin:"Japan",              tags:["FIZZY","SWEET"], appeal:1.06,price:2.75, needs:{sparkling:2},       desc:"Japanese soda-shop fizz."}
+  classic:{name:"Classic Sweet", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.25, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
+  strawberry:{name:"Strawberry Lemonade", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:2.75, needs:{strawberries:3},    desc:"Lemonade with fresh strawberries."},
+  limonana:{name:"Limonana", origin:"Levant",             tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{mint:2},            desc:"Mint blended with crushed ice."},
+  brazilian:{name:"Brazilian Lemonade", origin:"Brazil",         tags:["SWEET","FANCY"], appeal:1.08,price:3.25, needs:{condmilk:2},        desc:"Creamy with condensed milk."},
+  shikanji:{name:"Shikanji", origin:"India",              tags:["SOUR"],          appeal:1.04,price:2.50, needs:{ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
+  chia:{name:"Agua de Limón con Chía", origin:"Mexico",          tags:["CHILLED"],       appeal:1.03,price:2.75, needs:{chia:1},            desc:"Lemonade with chia seeds."},
+  citron:{name:"Citron Pressé", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.04,price:2.75, needs:{sparkling:1},       desc:"Paris cafe style. Tart and sparkling."},
+  rosewater:{name:"Sharbat-e-Limoo", origin:"Iran",               tags:["FANCY","SWEET"], appeal:1.07,price:3.25, needs:{rosewater:1},       desc:"Lemon with rosewater."},
+  salted:{name:"Salted Lemonade", origin:"Vietnam",            tags:["SOUR"],          appeal:1.02,price:2.25, needs:{seasalt:1},         desc:"Salty lemon drink."},
+  palmer:{name:"Arnold Palmer", origin:"USA",                tags:["SWEET","SOUR"],  appeal:1.08,price:2.75, needs:{blacktea:2},        desc:"Half iced tea, half lemonade."},
+  cucumber:{name:"Cucumber Lemonade", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{cucumbering:2},     desc:"Cool cucumber lemonade."},
+  ramune:{name:"Ramune Lemonade", origin:"Japan",              tags:["FIZZY","SWEET"], appeal:1.06,price:2.75, needs:{sparkling:2},       desc:"Japanese soda-shop fizz."}
 };
 /* ---------- Inventory: pitchers, ingredients, the shop ----------
    1 pitcher = 8 cups, from 6 lemons + 4 sugar + the recipe's specials.
@@ -546,7 +550,7 @@ const INGREDIENTS={
   cucumbering:{name:"Cucumbers",pack:4,price:1.60}
 };
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
-const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name}};
+const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name}};
 function iconHtml(kind,id,big){const k=ICONS[kind];return `<span class="icon ${kind}${big?" big":""}" style="--i:${k.ids.indexOf(id)}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
 /* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice customers want. */
 const WX_TEMP={sunny:[72,86],hot:[88,103],perfect:[80,90],cloudy:[62,76],rainy:[54,68],windy:[66,79]};
@@ -1019,7 +1023,7 @@ function renderMorning(){
       <div class="hint">You own <b>${signsOwned}</b> ${plural(signsOwned,"sign")}. Buy more in the shop above. Putting them out costs nothing today${b.freeSigns?`; your upgrades add ${b.freeSigns} free on top`:""}. ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}</div></div>
     <h3>4. Set your price</h3>
     ${S.recipes.map(rk=>{const r=RECIPES[rk];const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">⭐ Special +$0.50</span>':"";return `<div class="ctrl">
-      <label><span><span tabindex="0"${tip(`${r.desc} From: ${r.origin.replace(" · ",", ")}.`)}>${r.icon} ${r.name}</span> ${tagChips(r.tags)}${special}</span><span id="priceVal-${rk}">${fmt(M.prices[rk])}</span></label>
+      <label><span><span tabindex="0"${tip(`${r.desc} From: ${r.origin.replace(" · ",", ")}.`)}>${iconHtml("flavor",rk,true)} ${r.name}</span> ${tagChips(r.tags)}${special}</span><span id="priceVal-${rk}">${fmt(M.prices[rk])}</span></label>
       <input type="range" class="menuPrice" data-rk="${rk}" min="0.50" max="${priceMax()}" step="0.25" value="${M.prices[rk]}" aria-label="Price for ${r.name}">
       ${canBrew(rk,S.inv)?"":`<div class="hint">Not selling today: you need ${missingFor(rk)}.</div>`}
     </div>`}).join("")}
@@ -1359,7 +1363,7 @@ function finishDay(){
   else counter=`Everyone got lemonade, and nothing went to waste.`;
   const tonight=overnight(); // ice melts and old produce goes bad once you close
   const byCups=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]);
-  const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${RECIPES[rk].icon}</span> ${n} ${plural(n,"cup")} at ${fmt(menuPrice(rk))}</span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
+  const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${iconHtml("flavor",rk)}</span> ${n} ${plural(n,"cup")} at ${fmt(menuPrice(rk))}</span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
   const upgradeBonus=Math.round((D.revenue-Object.entries(D.soldBy).reduce((s,[rk,n])=>s+n*menuPrice(rk),0))*100)/100;
   const walked=D.awayPrice,warmAway=D.awayWarm,ranOut=Math.max(0,unserved-walked-warmAway),why=[];
   if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);if(warmAway)why.push(`${warmAway} wanted more ice`);
@@ -1394,7 +1398,7 @@ function finishDay(){
     </div>
     <details class="numbers"><summary>See every number</summary>
       <ul class="facts">
-        ${byCups.map(([rk,n])=>`<li>${RECIPES[rk].icon} ${RECIPES[rk].name}: <b>${n} ${plural(n,"cup")}</b></li>`).join("")}
+        ${byCups.map(([rk,n])=>`<li>${iconHtml("flavor",rk)} ${RECIPES[rk].name}: <b>${n} ${plural(n,"cup")}</b></li>`).join("")}
         <li>🍶 Pitchers made: <b>${brewedTotal}</b></li>
         ${wasted?`<li>🫗 Cups poured out: <b>${wasted}</b></li>`:""}
         <li>🎒 Supplies left: <b>${invLine||"none"}</b></li>
@@ -1438,7 +1442,7 @@ function draftCardHtml(p){
   if(p.kind==="gear"){const g=GEAR.find(x=>x.id===p.id);const full=S.gear.length>=gearSlots();
     return {icon:g.icon,title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"Stand upgrade"}}
   if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(pitcherNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
-    return {icon:r.icon,title:r.name,badge:"",desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`,tags:tagChips(r.tags),type:"New flavor"}}
+    return {icon:iconHtml("flavor",p.id,true),title:r.name,badge:"",desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`,tags:tagChips(r.tags),type:"New flavor"}}
   return {icon:"💵",title:"Cousin's Gift",badge:"",desc:`+${fmt(18+22*actIndex())} cash right now. It gets bigger later in the summer.`,tags:"",type:"Cash"};
 }
 function renderDraftScreen(){
@@ -1504,7 +1508,7 @@ function swapFor(i){
 function grantDraft(p){
   sfx.good();
   if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">🎁 New upgrade: ${g.icon} ${g.name}</span>`)}
-  if(p.kind==="recipe"){S.recipes.push(p.id);const r=RECIPES[p.id];S.log.push(`<span class="good">🎁 New flavor: ${r.icon} ${r.name}</span>`)}
+  if(p.kind==="recipe"){S.recipes.push(p.id);const r=RECIPES[p.id];S.log.push(`<span class="good">🎁 New flavor: ${iconHtml("flavor",p.id)} ${r.name}</span>`)}
   if(p.kind==="cash"){const amt=18+22*actIndex();S.cash+=amt;S.log.push(`<span class="good">🎁 Your cousin gave you ${fmt(amt)}.</span>`)}
   // synergy discovery check
   const b=computeBuild();const newOnes=b.synergies.filter(s=>!S.discoveredSyn.includes(s.id));
@@ -1586,7 +1590,7 @@ function endRun(mode,reason){
 function buildSummary(){
   const parts=[];
   S.gear.forEach(gid=>{const g=GEAR.find(x=>x.id===gid);if(g)parts.push(g.icon+" "+g.name)});
-  S.recipes.forEach(rk=>parts.push(RECIPES[rk].icon+" "+RECIPES[rk].name));
+  S.recipes.forEach(rk=>parts.push(iconHtml("flavor",rk)+" "+RECIPES[rk].name));
   return parts.length?parts.join(", "):"nothing yet.";
 }
 /* ---------- Modals: build + help ---------- */
@@ -1598,7 +1602,7 @@ function showBuild(){
     <h3>My Stand (${S.gear.length}/${gearSlots()})</h3>
     <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${g.icon} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty ${plural(empty,"slot")}. You win upgrades after each day.</li>`:""}</ul>
     <h3>My flavors</h3>
-    <ul class="list">${S.recipes.map(rk=>{const r=RECIPES[rk];return `<li><b>${r.icon} ${r.name}</b> ${tagChips(r.tags)}<br><span class="small">Liked by ${flavorFans(r.tags)}</span></li>`}).join("")}</ul>
+    <ul class="list">${S.recipes.map(rk=>{const r=RECIPES[rk];return `<li><b>${iconHtml("flavor",rk)} ${r.name}</b> ${tagChips(r.tags)}<br><span class="small">Liked by ${flavorFans(r.tags)}</span></li>`}).join("")}</ul>
     <h3>⚡ Combos</h3>
     <p class="small muted" style="margin:0">The right mix of flavors on your menu gives a bonus.</p>
     <ul class="list">${SYNERGIES.map(s=>`<li>${b.activeSynergies.includes(s.id)?"✅":"🔒"} <b>${s.name}</b>: ${s.desc}</li>`).join("")}</ul>
