@@ -572,7 +572,7 @@ function overnight(){ // tonight, after the stand closes: returns what melts, go
   const notes=[],tomorrow=S.day+1;
   // signs wear out: about 1 in 4 of the signs you put out today breaks overnight (free signs from upgrades are gear, they don't break)
   if(typeof D!=="undefined"&&D&&D.signs>0&&(S.inv.signs||0)>0){let broke=0;for(let i=0;i<D.signs;i++)if(Math.random()<0.25)broke++;broke=Math.min(broke,S.inv.signs||0);if(broke>0){S.inv.signs-=broke;notes.push(`${broke} ${iconHtml("supply","signs")} ${plural(broke,"sign")} ${broke===1?"breaks":"break"}`)}}
-  const melt=Math.ceil((S.inv.ice||0)/2);if(melt>0){S.inv.ice-=melt;notes.push(`${melt} ${iconHtml("supply","ice")} ice melts`)}
+  const melt=Math.ceil((S.inv.ice||0)/2);if(melt>0){S.inv.ice-=melt;notes.push(`${melt} ${iconHtml("supply","ice")} ${plural(melt,"ice cube")} ${melt===1?"melts":"melt"}`)}
   Object.entries(SHELF).forEach(([id,days])=>{if(!(S.inv[id]>0))return;syncBatches(id);const lots=S.lots[id];let bad=0;
     while(lots.length&&tomorrow-lots[0].day>=days){bad+=lots[0].qty;lots.shift()}
     if(bad){S.inv[id]-=bad;const names={lemons:["lemon","lemons"],strawberries:["strawberry","strawberries"],mint:["mint sprig","mint sprigs"],cucumbering:["cucumber","cucumbers"]};const nm=names[id]||[INGREDIENTS[id].name.toLowerCase(),INGREDIENTS[id].name.toLowerCase()];notes.push(`${bad} ${iconHtml("supply",id)} ${plural(bad,nm[0],nm[1])} ${bad===1?"goes":"go"} bad`)}});
@@ -671,11 +671,11 @@ const EVENTS=[
  {id:"critic",  w:4,  txt:"🧐 A food critic is coming. Serve almost everyone to gain half a star. Serve too few and you lose half a star."},
  {id:"lemonsale",w:7, txt:"🍋 Market sale. Supplies cost 30% less tomorrow.", fn:s=>{s.tomorrowCostMult=0.7}},
  {id:"sugarant",w:5,  txt:"🐜 Ants got in the sugar. Supplies cost 25% more today.", fn:s=>{s.todayCostMult*=1.25}},
- {id:"puppy",   w:6,  txt:"🐶 A very good dog guards your stand. +15% customers."},
+ {id:"puppy",   w:6,  txt:"🐶 A very good dog guards your stand. 15% more customers."},
  {id:"newspaper",w:4, txt:"📰 The newspaper wrote about you. 20% more customers and 50% more tips."},
  {id:"nothing", w:50, txt:""},
- {id:"birthday",w:5,  txt:"🎂 Block birthday party. +25% customers."},
- {id:"foodtruck",w:4, txt:"🚚 Food truck festival next door. +20% customers."}
+ {id:"birthday",w:5,  txt:"🎂 Block birthday party. 25% more customers."},
+ {id:"foodtruck",w:4, txt:"🚚 Food truck festival next door. 20% more customers."}
 ];
 function eventText(ev){return typeof ev.txt==="function"?ev.txt():ev.txt}
 const GOOD_EVENTS=["crewbuy","heatwave","lemonsale","puppy","newspaper","birthday","foodtruck"],BAD_EVENTS=["closure","bees","sugarant"];
