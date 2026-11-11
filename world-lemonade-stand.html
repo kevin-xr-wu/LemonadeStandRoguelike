@@ -499,6 +499,7 @@ const INGREDIENTS={
   lemons:{name:"Lemons",icon:"🍋",pack:12,price:3.00},
   sugar:{name:"Sugar",icon:"🧂",pack:10,price:2.00},
   ice:{name:"Ice Cubes",icon:"🧊",pack:40,price:1.20},
+  signs:{name:"Signs",icon:"🪧",pack:2,price:9.00},
   strawberries:{name:"Strawberries",icon:"🍓",pack:6,price:2.40},
   mint:{name:"Fresh Mint",icon:"🌿",pack:6,price:1.80},
   condmilk:{name:"Condensed Milk",icon:"🥛",pack:4,price:2.00},
@@ -531,8 +532,10 @@ function syncBatches(id){
   while(tot>have&&lots.length){const take=Math.min(lots[0].qty,tot-have);lots[0].qty-=take;tot-=take;if(lots[0].qty<=0)lots.shift()}
   if(tot<have)lots.push({qty:have-tot,day:S.day});
 }
-function overnight(){ // tonight, after the stand closes: returns what melts and goes bad, for the report
+function overnight(){ // tonight, after the stand closes: returns what melts, goes bad and breaks, for the report
   const notes=[],tomorrow=S.day+1;
+  // signs wear out: about 1 in 4 of the signs you put out today breaks overnight (free signs from upgrades are gear, they don't break)
+  if(typeof D!=="undefined"&&D&&D.signs>0&&(S.inv.signs||0)>0){let broke=0;for(let i=0;i<D.signs;i++)if(Math.random()<0.25)broke++;broke=Math.min(broke,S.inv.signs||0);if(broke>0){S.inv.signs-=broke;notes.push(`${broke} 🪧 sign${broke===1?"":"s"} broke`)}}
   const melt=Math.ceil((S.inv.ice||0)/2);if(melt>0){S.inv.ice-=melt;notes.push(`${melt} 🧊 ice melts`)}
   Object.entries(SHELF).forEach(([id,days])=>{if(!(S.inv[id]>0))return;syncBatches(id);const lots=S.lots[id];let bad=0;
     while(lots.length&&tomorrow-lots[0].day>=days){bad+=lots[0].qty;lots.shift()}
@@ -664,7 +667,7 @@ function newRun(kidId){
     cash:kid.start,
     rep:3,
     recipes:["classic"], activeRecipe:"classic",
-    inv:{cups:25,lemons:12,sugar:8,ice:40}, menuPrices:{},
+    inv:{cups:25,lemons:12,sugar:8,ice:40,signs:3}, menuPrices:{},
     gear:[],
     log:[], lifetimeProfit:0, lifetimeSold:0,
     todayCostMult:1, tomorrowCostMult:1,
@@ -679,9 +682,8 @@ function newRun(kidId){
 function actIndex(){return clamp(Math.floor((S.day-1)/7),0,S.actsCount-1)}
 function gearSlots(){return GEAR_SLOTS}
 function cheapestServingCost(){return Math.min(...S.recipes.map(rk=>servingCost(rk)))}
-function signCost(){
-  let c=2.50; return Math.round(c*100)/100;
-}
+/* Signs are a supply, not a daily charge: you buy them in the shop (paid for up front, like
+   every other supply), put out up to what you own, and they wear out — see overnight(). */
 /* ---------- build aggregation ---------- */
 /* b.tags = flavor tags on your menu's recipes (feeds synergies). Gear carries no tags. */
 function computeBuild(){
@@ -858,6 +860,7 @@ function ingTip(id){
   if(id==="lemons")return `Each pitcher needs ${BASE_NEEDS.lemons} lemons and makes ${pitcherServes()} cups. Lemons stay fresh for ${SHELF.lemons} days.`;
   if(id==="sugar")return `Each pitcher needs ${BASE_NEEDS.sugar} sugar.`;
   if(id==="ice")return "Ice goes in every cup. Hot days need more. Half of your leftover ice melts each night.";
+  if(id==="signs")return "Signs bring in more customers. You own them until they break — about 1 in 4 you put out breaks overnight.";
   return `Needed for ${listWords(S.recipes.filter(rk=>(RECIPES[rk].needs||{})[id]).map(rk=>`${RECIPES[rk].name} (${RECIPES[rk].needs[id]} per pitcher)`))}.`;
 }
 /* Your upgrade slots, shown wherever you make choices so upgrades never hide. */
@@ -867,7 +870,7 @@ function shelfHtml(){
     slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${g.icon}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You win upgrades after each day.")}></span>`}
   return `<div class="shelf"><b>🧰 My Stand</b><div class="slots">${slots}</div><button class="btn sm ghost" onclick="showBuild()">See all</button></div>`;
 }
-const HOW_STEPS=[["🌤️","Check the forecast","Hot days are busy. Rain keeps people home."],["📍","Pick a spot","Where will you sell today?"],["🛒","Buy supplies","Bigger packs cost less each."],["🧊","Set ice, signs and price","Hot days need more ice."],["📊","See how you did","Sales and tips, minus signs."],["🎁","Pick an upgrade","It changes tomorrow's math."]];
+const HOW_STEPS=[["🌤️","Check the forecast","Hot days are busy. Rain keeps people home."],["📍","Pick a spot","Where will you sell today?"],["🛒","Buy supplies","Bigger packs cost less each."],["🧊","Set ice, signs and price","Hot days need more ice."],["📊","See how you did","Sales and tips for the day."],["🎁","Pick an upgrade","It changes tomorrow's math."]];
 function howSteps(){return `<ol class="steps">${HOW_STEPS.map(([i,t,d],n)=>`<li class="step"><span class="stepIcon">${i}</span><b>${n+1}. ${t}</b><span>${d}</span></li>`).join("")}</ol>`}
 
 /* ---------- Title / character select ---------- */
@@ -915,9 +918,11 @@ function renderMorning(){
   const synHtml=b.synergies.length?`<div class="synBanner">⚡ Combos: ${b.synergies.map(s=>`<span tabindex="0"${tip(s.desc)}>${s.name}</span>`).join(" · ")}</div>`:"";
   const evTxt=M.event?eventText(M.event):"";
   const eventHtml=evTxt?`<div class="panel" style="background:#eaf6ff;margin-top:10px;padding:10px 14px"><b>📣 Today:</b> ${evTxt}</div>`:"";
-  const basics=["cups","lemons","sugar","ice"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
+  const basics=["cups","lemons","sugar","ice","signs"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
+  const signsOwned=S.inv.signs||0;
+  if(M.signs>signsOwned)M.signs=signsOwned; // you can only put out signs you own — last night's breakage may have shrunk the pile
   const shopCard=id=>{const ing=INGREDIENTS[id];
-    return `<div class="choice shop" style="cursor:default"><div class="ttl"><span tabindex="0"${tip(ingTip(id))}>${ing.icon} ${ing.name}</span></div><div class="desc">You have <b>${S.inv[id]||0}</b>${S.gear.includes("wholesale")?" · 20% off":""}${id==="ice"?'<br><span class="small">🫠 Half melts every night</span>':SHELF[id]?`<br><span class="small">🕒 Fresh for ${SHELF[id]} days</span>`:""}</div>
+    return `<div class="choice shop" style="cursor:default"><div class="ttl"><span tabindex="0"${tip(ingTip(id))}>${ing.icon} ${ing.name}</span></div><div class="desc">You have <b>${S.inv[id]||0}</b>${S.gear.includes("wholesale")?" · 20% off":""}${id==="ice"?'<br><span class="small">🫠 Half melts every night</span>':id==="signs"?'<br><span class="small">🪧 Signs last a few days — about 1 in 4 you put out breaks overnight</span>':SHELF[id]?`<br><span class="small">🕒 Fresh for ${SHELF[id]} days</span>`:""}</div>
       <div class="packs">${BULK.map((t,i)=>{const price=packPrice(id,i),poor=S.cash<price;
         return `<button class="btn sm ${poor?"ghost":""}" ${poor?"disabled":""} onclick="buyItem('${id}',${i})">+${ing.pack*t.mult} for ${fmt(price)}</button>`}).join("")}</div></div>`};
   $("#screen").innerHTML=`
@@ -948,9 +953,9 @@ function renderMorning(){
     <div class="ctrl"><label><span>🧊 Ice in each cup</span><span id="iceVal">${M.icePerCup}</span></label>
       <input type="range" id="inIce" min="0" max="4" step="1" value="${M.icePerCup}" aria-label="Ice cubes in each cup">
     </div>
-    <div class="ctrl"><label><span>🪧 Signs</span><span id="signsVal">${M.signs}</span></label>
-      <input type="range" id="inSigns" min="0" max="14" step="1" value="${M.signs}" aria-label="Number of signs">
-      <div class="hint">${fmt(signCost())} each${b.freeSigns?`, ${b.freeSigns} free from your upgrades`:""}. ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}</div></div>
+    <div class="ctrl"><label><span>🪧 Signs to put out</span><span id="signsVal">${M.signs}</span></label>
+      <input type="range" id="inSigns" min="0" max="${signsOwned}" step="1" value="${M.signs}" aria-label="Number of signs to put out">
+      <div class="hint">You own <b>${signsOwned}</b> sign${signsOwned===1?"":"s"} — buy more in the shop above. Putting them out costs nothing today${b.freeSigns?`; your upgrades add ${b.freeSigns} free on top`:""}. ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}</div></div>
     <h3>4 · Set your price</h3>
     ${S.recipes.map(rk=>{const r=RECIPES[rk];const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">⭐ SPECIAL +$0.50</span>':"";return `<div class="ctrl">
       <label><span><span tabindex="0"${tip(`${r.desc} From: ${r.origin}.`)}>${r.icon} ${r.name}</span> ${tagChips(r.tags)}${special}</span><span id="priceVal-${rk}">${fmt(M.prices[rk])}</span></label>
@@ -1050,15 +1055,13 @@ function serveOne(ck){
 }
 function openStand(){
   if(!M.loc){alert("Pick a spot first.");return}
-  S.last={signs:M.signs,ice:M.icePerCup};
-  S.recipes.forEach(rk=>{S.menuPrices[rk]=M.prices[rk]});
   const b=computeBuild();
-  const sc=signCost();
-  const paidSigns=Math.max(0,M.signs-b.freeSigns);
-  const fixed=paidSigns*sc;
+  const putOut=Math.min(M.signs,S.inv.signs||0); // signs come from stock you already paid for — starting the day never charges you
+  S.last={signs:putOut,ice:M.icePerCup};
+  S.recipes.forEach(rk=>{S.menuPrices[rk]=M.prices[rk]});
   sfx.pop();
   M.actualWx=M.trueWx;
-  D={signs:M.signs,paidSigns,signCostEach:sc,fixedCost:fixed,build:b,
+  D={signs:putOut,build:b,
      roll:rnd(0.87,1.13),open:{},brewed:{},soldBy:{},sold:0,morningSold:0,unmet:0,
      awayPrice:0,awayWarm:0,awayOut:0,revenue:0,revBy:{},tips:0,cogs:0,
      skip:false,done:false,brotherSpilled:false,crewLeft:0};
@@ -1066,12 +1069,11 @@ function openStand(){
   const minPrice=Math.min(...D.menu.map(rk=>menuPrice(rk)));
   D.crew=M.event&&M.event.id==="crewbuy"&&minPrice<=CREW_MAX_PRICE+1e-9?crewSize():0;
   D.crewLeft=D.crew;
-  let full=demandEstimate(M.loc,M.signs,{wx:M.actualWx,noCrew:true,menu:D.menu}).demand;
+  let full=demandEstimate(M.loc,putOut,{wx:M.actualWx,noCrew:true,menu:D.menu}).demand;
   full=Math.round(full*D.roll);
   D.morningDemand=Math.round(full*MORNING_SHARE)+D.crew;
   D.aftDemand=full-Math.round(full*MORNING_SHARE);
   D.demand=D.morningDemand+D.aftDemand;
-  S.cash-=fixed; S.cash=Math.round(S.cash*100)/100;
   renderDayScene();
   runDayPhase("morning");
 }
@@ -1221,7 +1223,7 @@ function finishDay(){
   let bannerBonus=0;
   if(S.gear.includes("selloutbanner")&&soldOut&&unserved>0){bannerBonus=Math.min(unserved,D.sold);revenue+=bannerBonus}
   const totalIn=revenue+tips;
-  const made=Math.round((totalIn-D.fixedCost)*100)/100; // money made today: sales and tips minus signs (supplies were paid for when bought)
+  const made=Math.round(totalIn*100)/100; // money made today: sales and tips (supplies — signs included — were paid for when bought)
   S.cash+=totalIn;S.cash=Math.round(S.cash*100)/100;
   S.lifetimeProfit+=made;S.lifetimeSold+=D.sold;
   if(soldOut)S.sellouts++;
@@ -1230,7 +1232,7 @@ function finishDay(){
   if(D.demand>0){const step=served>=0.9?0.2:served>=0.7?0.1:served>=0.5?0:served>=0.3?-0.1:-0.2;
     repDelta+=step;repNotes.push(`${D.sold} of ${D.demand} people got lemonade${step?` ${step>0?"+":"−"}${Math.abs(step)}`:""}`)}
   const avgPrice=D.sold>0?Object.entries(D.soldBy).reduce((s,[rk,n])=>s+menuPrice(rk)*n,0)/D.sold:0;
-  if(S.gear.includes("chalk")&&D.signs>=4){repDelta+=0.2;repNotes.push("chalk art +0.2")}
+  if(S.gear.includes("chalk")&&D.signs+D.build.freeSigns>=4){repDelta+=0.2;repNotes.push("chalk art +0.2")}
   if(S.gear.includes("mascot")&&served<0.75){repDelta-=0.1;repNotes.push("mascot suit −0.1")}
   if(M.event&&M.event.id==="critic"){
     if(served>=0.9){repDelta+=0.5;repNotes.push("the critic loved it +0.5")}
@@ -1294,7 +1296,6 @@ function finishDay(){
           ${upgradeBonus>0.004?`<div class="rRow"><span>🎁 Upgrade bonuses</span><span class="amt">+${fmt(upgradeBonus)}</span></div>`:""}
           ${bannerBonus?`<div class="rRow"><span>🚩 Sellout Banner pre-sales</span><span class="amt">+${fmt(bannerBonus)}</span></div>`:""}
           <div class="rRow"><span>🫙 Tips</span><span class="amt">+${fmt(tips)}</span></div>
-          <div class="rRow"><span>🪧 ${D.paidSigns} sign${D.paidSigns===1?"":"s"} × ${fmt(D.signCostEach)}${D.signs-D.paidSigns>0?` (${D.signs-D.paidSigns} free)`:""}</span><span class="amt">−${fmt(D.fixedCost)}</span></div>
           <div class="rTotal"><span>Money made today</span><span class="coinSpot"><span class="amt ${made>=0?"pos":"negc"}" id="madeAmt">${fmt(made)}</span></span></div>
           ${stamp}
         </div></div>
@@ -1526,7 +1527,7 @@ function showHelp(){
     ${howSteps()}
     <h3>What the words mean</h3>
     <ul class="list">
-      <li><b>💰 Money made:</b> your sales and tips, minus what your signs cost. Supplies are paid for when you buy them.</li>
+      <li><b>💰 Money made:</b> your sales and tips. Everything you sell with — supplies and signs — is paid for when you buy it, so starting a day never costs money.</li>
       <li><b>🛒 Bulk:</b> bigger packs cost less for each one.</li>
       <li><b>🫠 Melts and goes bad:</b> half your leftover ice melts each night. Lemons, strawberries, mint and cucumbers go bad after a few days.</li>
       <li><b>⭐ Stars:</b> they go up when most people get lemonade. More stars bring more people.</li>
