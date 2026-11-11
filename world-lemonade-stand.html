@@ -111,6 +111,7 @@ h3{margin:14px 0 6px}
 .icon.supply{--n:15;background-image:var(--supplyIcons)}
 .icon.flavor{--n:12;background-image:var(--flavorIcons)}
 .icon.spot{--n:13;background-image:var(--spotIcons)}
+.icon.gearA{--n:20;background-image:var(--gearIconsA)}
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
@@ -368,6 +369,8 @@ const SUPPLY_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAAQCA
 const FLAVOR_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAQCAMAAAB3PIAaAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAXVJREFUeNrtVdFugzAMbKRlwGDDwMbbvoH//7s5ju2EJFRkaldN6pWqPTicOzstlwLmKT+3zCXlMYr6vq5GNYzxH8vsv+wyFRyxXjHa6/rMfz9U+vMLwtH1tiOBGSALcJkK/lmv3I6BF/SZ/+GtxxtMk69W9jctk5PCepDAdC2PwNVNA1zRC2xEc33e7bl3KpNUOQ6wwELS1D9ORvEYDnL86n5sgcIL3hWeLwrPAaDFF8Jza/Hwb+KrwvNO4fm3onwdC1kb8bRewvFEI2DBIGA+C5iPAuavAuZfBIOH50mD1qRB2fquVKxPGrhuG2yE0wGgNgCapwwSAG4cAOEy8K9HKyiP/esIQP5dNYHy2L+MQAYQjUB57L+0PgdQHvvXBOr/bAAewNkAMgAJgEO4YQDaQzUBaBNVBKA9dN8JgAa4mN367kFACHwiBP5BCPyFEPgnIfCmgeDPPSrj/hTWx2I7/W4D5PX/IkDU4DsE4GfD/+VPPBA/QSAy3N+KLc8AAAAASUVORK5CYII=";
 /* 13 spot icons, 16×16 each, in LOCATIONS order, drawn in Pixelwright. Shown with iconHtml("spot",name). */
 const SPOT_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANAAAAAQCAMAAABQkgHyAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAArhJREFUeNrFlt2OnDAMhTEgEQm6IGYY7V3nDqRup1Lf/+F67MTBSWA0baXdIxYSNj/+bONJ9UUahk/djkSmf4Fsf4JMX2cl07WrPbMk0TDY9f/FutTCOvdQsrxaYnEMEnB6KEeittUBq8j3iEfqX3hF1ZZt+ZL9YQb9DkqAsknw2JkHhMddZkheSHjYut0+GWmBhv4JUNzpmKhto5W138/xXtM0jmHFh7fuYYGytVKgb4Ooj0DuIjw7EK+nQNyQrSIRrf0OVHiYCOHBVW2HMaK20dGNmElv2KDjTd7UgTdoWZKUS9MFPH0wvwDyCSc8QkTs6AXizOP+xN5nIgNkUq4SN5smXm8bLs66E6DvIgViHgeiGKESiOrkAwAPgCJRAeRhnAL1CiRTGNCjwRYFct0Z0MeHvF5XGTjPyafE7RKoiFCRcjQmQMzDQEpUpFwIj0+5l4C6BGiuwuWBEJxtXfkOIAqEMo/b1AAISLjtEWK5GKFfQSlQ+O9RFYG67qju+o9cU24c+9GmHNqNf6QpBwdVfV85RxwsvwonXIjID8hB/OQ+gN45QO82QlIUYoSCIsGYAnF2eoUJaYR8Yu9lRIsCT0iKggG6zBYoKn5DqNtcGkKRSDzGQHTf6B6Lglq3V7nHw3UFUCSiiW5wN9aJQEgrpNMTIGSb7GDLtvkU1jkBQrHwlwdiFC5zscrJ9xQfPOIOnf4wZxEq/88ZBKDuRSD9YVWeg0KVpVwKtCwhMkhCtcg8uMUVAZeulwHTz6Bgbtu2jZcCScrV9Q70NOU0y85w8qMPJ5Hdz9fbDaMUCBm4Pw6OXjlQdvQBkV3/uCiYIrCg5ENy5zfcxG258e08RqcnjxI4j1CuFAhhlkjrs1jvb89SdI06XSIBKn45o14yIdufy/0uyWB2drh90mn9+WHzP7X793qtqj+LI0S45YAQSAAAAABJRU5ErkJggg==";
+/* 20 upgrade icons (first half of GEAR), 16×16 each, drawn in Pixelwright. Shown with gearIconHtml(id). */
+const GEAR_ICONS_A_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAAQCAMAAABQt1bbAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA41JREFUeNrtl91a4jAQhgmCDVu0tYAnwiGuCvtz/1e3M5OZyeSnFF0983u0NDSdJG++TMLsA+o/8tK3xgC6RLX6l56Rnq9t+SbeDpv3dPli8/+rqfHP3JEVHvc+Ieg8qqWr1wDeD1pjfmaNjOF5dryuPzcGoHv4PIB5c1MzPmzC4B5CH9yStBmWy/QVCSH8jjzOzIGIr123hFACrLxv6CEBPJ1OfgWXsR6lDhwFeNvcZhWuMkDlebiLxT+/SVoORDRaHv1hIHJD+KDqOHj7Cn7ddWsuuyO+zga0PaNrg2rp2kQHBn5zAYiSaPmAsrJzf1mxy42nCwWdudUKJkiny/Wb4b7ruvu2a7VrfR+H7yW6zu80QEsDgpG6COB8IpD8fLFYYI/gwyACfhHg4XDY7/cZQBf6SABbJsgERMRvNn8jaX/uVFIdiJAEYChFgM5T7GDAEuDQE8Cu1ebXfb/WCWnc4+PO7XZwU3dkAXDh14AjAiSELgI8nd+AoCQRBLjwDV7jrEGHJgAiv666ifAK0CmcpwtAJhT7xA7JAWYOnLMkQA6wDwDZga4FgCAHN1WA7esr9ufl5SUCBHdbgAtrp9KBwO+s/ALAoGBsEPETgE4AJis8rhFN7XyjAWX8uXNTgAAC8iiusEAEAMrjbNFLCUgjPnjHANzCPwMqALIYIPDbPu62QDAC9CufALR2wgbw3yxhyy+3NH3ekxjgkzu4w97t3VPBDy0YAfHNNED5E4B92MMVYOZA1yxNODJsqB4SLQHcwhIOI8ThEkC4iUnaZBgEuNumAHMH5gCzHPjGG3C+IcSiBVhxoPFfBeANa8KBjXVgApAejwEEB94RwDvjwC3mQB1hiC/tNYzQOhCUAMxy4BTA8gxlj1gYgRDGHBgcWOdXAOSb8uvUgTDpkgORHV1GHOgtQMqB9JLmQFy+FmBwoHqjJ4LwIQDLHJgCzA49+SZS2K8ECFWBoNlEnDObiPKjFVySorZjB3KAIcGiZFdMlxg6kEyoAJcFwACde7PlXXgEIFjvJ8g48BXgoRQgSQHKCso7zM+rR/gSoEGQ7cL5gfW9AEOCRY2cA4tjRgWg2YUrB+UWpAWmJcDGAKoD5/K1GY+NfjXAWHwiVc751U1kAuD7f1pKUlVLicZC/CCNxHNoR1Z1CY/lnkv84Kh1aUi4IuKaKN693OBX/o6/ckaqtjAVfrFS46kVv/WF+gfyCVX76NxREQAAAABJRU5ErkJggg==";
 /* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
 const CUSTOMER_PNG={
   kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
@@ -392,6 +395,7 @@ document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
 document.documentElement.style.setProperty("--supplyIcons",`url(${SUPPLY_ICONS_PNG})`);
 document.documentElement.style.setProperty("--flavorIcons",`url(${FLAVOR_ICONS_PNG})`);
 document.documentElement.style.setProperty("--spotIcons",`url(${SPOT_ICONS_PNG})`);
+document.documentElement.style.setProperty("--gearIconsA",`url(${GEAR_ICONS_A_PNG})`);
 document.documentElement.style.setProperty("--streetPng",`url(${STREET_PNG})`);
 Object.entries(WEATHER_PNG).forEach(([k,v])=>document.documentElement.style.setProperty(`--${k}Png`,`url(${v})`));
 function sampleWeighted(items){let t=items.reduce((s,i)=>s+i.w,0),r=Math.random()*t;for(const i of items){r-=i.w;if(r<=0)return i}return items[items.length-1]}
@@ -527,8 +531,10 @@ const INGREDIENTS={
   cucumbering:{name:"Cucumbers",pack:4,price:1.60}
 };
 /* Pixel-art icons: each group's sheet follows its data's order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
-const ICONS={supply:{ids:Object.keys(INGREDIENTS),name:id=>INGREDIENTS[id].name},flavor:{ids:Object.keys(RECIPES),name:id=>RECIPES[id].name},spot:{ids:LOCATIONS.map(l=>l.name),name:id=>id}};
+const ICONS={supply:{ids:Object.keys(INGREDIENTS),name:id=>INGREDIENTS[id].name},flavor:{ids:Object.keys(RECIPES),name:id=>RECIPES[id].name},spot:{ids:LOCATIONS.map(l=>l.name),name:id=>id},gearA:{get ids(){return GEAR.slice(0,20).map(g=>g.id)},name:id=>GEAR.find(g=>g.id===id).name}};
 function iconHtml(kind,id,big){const k=ICONS[kind];return `<span class="icon ${kind}${big?" big":""}" style="--i:${k.ids.indexOf(id)}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
+/* Upgrade icons ship in two sheets; gearIconHtml picks the drawn one and falls back to the emoji for the second half until its batch lands. */
+function gearIconHtml(id,big){if(ICONS.gearA.ids.includes(id))return iconHtml("gearA",id,big);const g=GEAR.find(x=>x.id===id);return g?g.icon:""}
 /* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice customers want. */
 const WX_TEMP={sunny:[72,86],hot:[88,103],perfect:[80,90],cloudy:[62,76],rainy:[54,68],windy:[66,79]};
 function iceForTemp(t){return t>=100?4:t>=90?3:t>=80?2:t>=70?1:0}
@@ -882,7 +888,7 @@ function ingTip(id){
 function shelfHtml(){
   let slots="";
   for(let i=0;i<gearSlots();i++){const g=GEAR.find(x=>x.id===S.gear[i]);
-    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${g.icon}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You win upgrades after each day.")}></span>`}
+    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${gearIconHtml(g.id,true)}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You win upgrades after each day.")}></span>`}
   return `<div class="shelf"><b>🧰 My Stand</b><div class="slots">${slots}</div><button class="btn sm ghost" onclick="showBuild()">See all</button></div>`;
 }
 const HOW_STEPS=[["🌤️","Check the forecast","Hot days are busy. Rain keeps people home."],["📍","Pick a spot","Where will you sell today?"],["🛒","Buy supplies","Bigger packs cost less each."],["🧊","Set ice, signs and price","Hot days need more ice."],["📊","See how you did","Sales and tips, minus signs."],["🎁","Pick an upgrade","It changes tomorrow's math."]];
@@ -1369,7 +1375,7 @@ function drawDraft(rareOnly){
 }
 function draftCardHtml(p){
   if(p.kind==="gear"){const g=GEAR.find(x=>x.id===p.id);const full=S.gear.length>=gearSlots();
-    return {icon:g.icon,title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"STAND UPGRADE"}}
+    return {icon:gearIconHtml(g.id,true),title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"STAND UPGRADE"}}
   if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(pitcherNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
     return {icon:iconHtml("flavor",p.id,true),title:r.name,badge:"",desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`,tags:tagChips(r.tags),type:"NEW FLAVOR"}}
   return {icon:"💵",title:"Cousin's Gift",badge:"",desc:`+${fmt(18+22*actIndex())} cash right now. It gets bigger later in the summer.`,tags:"",type:"CASH"};
@@ -1425,18 +1431,18 @@ function showSwap(p){
   $("#screen").innerHTML=`<div class="panel">
     <h2>🧰 Your stand is full</h2>
     <p style="margin-top:0">Which upgrade should go? You'll get <b>${c.icon} ${c.title}</b>.</p>
-    <div class="choices">${owned.map((o,i)=>`<button class="choice" onclick="swapFor(${i})"><div class="ttl"><span>${o.icon} ${o.name}</span>${rarBadge(o.rar)}</div><div class="small typeLabel">REMOVE</div><div class="desc">${o.desc}</div></button>`).join("")}</div>
+    <div class="choices">${owned.map((o,i)=>`<button class="choice" onclick="swapFor(${i})"><div class="ttl"><span>${gearIconHtml(o.id,true)} ${o.name}</span>${rarBadge(o.rar)}</div><div class="small typeLabel">REMOVE</div><div class="desc">${o.desc}</div></button>`).join("")}</div>
     <div class="flex mt" style="justify-content:center"><button class="btn sm ghost" onclick="pendingDraft=null;renderDraftScreen()">← Back</button><button class="btn sm ghost" onclick="pendingDraft=null;nextDay()">Keep my stand</button></div>
   </div>`;
 }
 function swapFor(i){
   const p=pendingDraft;if(!p)return;pendingDraft=null;
-  const g=GEAR.find(x=>x.id===S.gear[i]);S.gear.splice(i,1);S.log.push(`<span class="info">🔁 Swapped out ${g.icon} ${g.name}.</span>`);
+  const g=GEAR.find(x=>x.id===S.gear[i]);S.gear.splice(i,1);S.log.push(`<span class="info">🔁 Swapped out ${gearIconHtml(g.id)} ${g.name}.</span>`);
   grantDraft(p);
 }
 function grantDraft(p){
   sfx.good();
-  if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">🎁 New upgrade: ${g.icon} ${g.name}</span>`)}
+  if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">🎁 New upgrade: ${gearIconHtml(g.id)} ${g.name}</span>`)}
   if(p.kind==="recipe"){S.recipes.push(p.id);const r=RECIPES[p.id];S.log.push(`<span class="good">🎁 New flavor: ${iconHtml("flavor",p.id)} ${r.name}</span>`)}
   if(p.kind==="cash"){const amt=18+22*actIndex();S.cash+=amt;S.log.push(`<span class="good">🎁 Your cousin gave you ${fmt(amt)}.</span>`)}
   // synergy discovery check
@@ -1518,7 +1524,7 @@ function endRun(mode,reason){
 }
 function buildSummary(){
   const parts=[];
-  S.gear.forEach(gid=>{const g=GEAR.find(x=>x.id===gid);if(g)parts.push(g.icon+" "+g.name)});
+  S.gear.forEach(gid=>{const g=GEAR.find(x=>x.id===gid);if(g)parts.push(gearIconHtml(g.id)+" "+g.name)});
   S.recipes.forEach(rk=>parts.push(iconHtml("flavor",rk)+" "+RECIPES[rk].name));
   return parts.length?parts.join(" · "):"nothing yet.";
 }
@@ -1529,7 +1535,7 @@ function showBuild(){
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
     <div class="flex spread"><h2>🧰 My Upgrades</h2><button class="btn sm ghost" onclick="closeModal()">✕ Close</button></div>
     <h3>My Stand (${S.gear.length}/${gearSlots()})</h3>
-    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${g.icon} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty slot${empty>1?"s":""}. You win upgrades after each day.</li>`:""}</ul>
+    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${gearIconHtml(g.id)} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty slot${empty>1?"s":""}. You win upgrades after each day.</li>`:""}</ul>
     <h3>My flavors</h3>
     <ul class="list">${S.recipes.map(rk=>{const r=RECIPES[rk];return `<li><b>${iconHtml("flavor",rk)} ${r.name}</b> ${tagChips(r.tags)}<br><span class="small">Liked by ${flavorFans(r.tags)}</span></li>`}).join("")}</ul>
     <h3>⚡ Combos</h3>
