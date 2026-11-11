@@ -105,6 +105,10 @@ h3{margin:14px 0 6px}
 @keyframes custCarry{from{background-position-x:calc(var(--fw)*var(--s)*-4px)}to{background-position-x:calc(var(--fw)*var(--s)*-8px)}}
 .bubble{--rise:6px;position:absolute;font-size:12px;font-weight:800;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 8px;z-index:8;animation:floatUp 1.6s ease-out forwards;white-space:nowrap;pointer-events:none}
 /* The coin pops up over the head of the customer who paid, spinning. left is its centre. */
+/* Pixel-art item icons, drawn in Pixelwright: 16×16 art shown at 16px in text, or 32px with .big. --i is the icon's place on its sheet. */
+.icon{--sz:16px;display:inline-block;width:var(--sz);height:var(--sz);vertical-align:-3px;background:no-repeat calc(var(--i)*var(--sz)*-1) 0/calc(var(--n)*var(--sz)) var(--sz);image-rendering:pixelated}
+.icon.big{--sz:32px;vertical-align:-9px}
+.icon.supply{--n:16;background-image:var(--supplyIcons)}
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
@@ -357,6 +361,8 @@ const WEATHER_PNG={
   leaf:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAHCAMAAADtRZdSAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAACdJREFUeNpjAANBQUEoLSQsBGIKCgEZIBacAWRBGQyCwlD1EE1AAABaPwJruRhchgAAAABJRU5ErkJggg==",
   shimmer:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAUCAMAAABs8jdaAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAERJREFUeNpjAAF2MAkByGwGXixssAIIB6IWyAYywCIgAiQIomECEAQXhKuDSSBhZDm4EchmoKkHWwazG2wxO4qTsXgMAOpdAg+EcVoEAAAAAElFTkSuQmCC",
 };
+/* 16 supply icons, 16×16 each, in ICONS.supply order, drawn in Pixelwright. Shown with iconHtml("supply",id). */
+const SUPPLY_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAQCAMAAADODVF7AAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA3FJREFUeNrVl9Fy2kAMRaNCBhgIGAP5Ambq5CH9/7/rlbTSSrsGmrR9iEIyAdYr6ehKaz99DyPYVy76xPZ3XTz4WlZ81fkfBfgLFjdsw5kLj4ZhaBfFbOs1vFIs71H3LAtseU+D6HhMH9E4jvX9XwNmAB9xvx0sXEBvsPZ6GnYxIyox0eHwbLZUIsO+WCIQclAAxQMNr2x5KRbjT/jgNI5H58fhdSHG+Jdi/kEHjF4vl3P9erd7YQLb6oB/plaEqaTEESkAz98BmB1iCMdaQ0CDGQDJv4YjqLA4SkA+MQA0GQALkVcijupN8l+4u+t1ws+1ZkSXAICQ/nbLAIyAEm4BwEXK/zRCpvhPUl+vKwAn4OuJ1rCaUAaAYGI9pCJiJR4uHSnt3GHmQHJHHFZy3RFWvub8FYEtgACqS7hD+vwyh/l6U9ChkfN4qgCQ3ioAyAk80XqzYQKreQW0ALgiu41XRFuHvAFmALBnel4WCdBlep/e+aUZkHXk3hYg/6H6FACQwLYCQH9iewNAk1pTfxVAUcCK878BAPlz+gBgBMqOGYB3Kb1I+ruNBCTtP6KD6ozlES6mcwy5w7W41/cXyR6/dwC0EhAAriDO/80AaLlgey8gl7/kXwDEGdC0gMi/GBOIp4YQPLPpJJSQlB8YuALQ/0cRgm6I1IfBAXRDiBWgCBzAQfOvACCAIUwB5O/1VwWwVQALeRmAWH+fuGnuKgETaMgfAOwIrCehkJD8DYAIwCXJBFB/PwiyAqQAUn8jwArQHmgUEAA0bafHrgNIAgMAzX9RAKT6W/yLH/GcSQAqAWkBOwLjSehzR0NiCbgAigdWQDkI8gxIAKQEAMDljwpoALAraCDOHZGY+ftA8ng5gCIBBZDrb9cDQHNixkNgFUaADcA4B0V1oSbSBFWSEiAkUA6CZgiSlF47oLTAIwWos9ACrADU1UTNLYAp4C2A9GsLyAHQ5N8B0KERFLaClQ6+AaAZSzoBIwC/k7ShbGOUm5CTR/o+BJMC6oxIx9zg3lB7aYE0BOMMUASugC7/FkB/Kxp2nwcgk/Acx1Kbf3j3s1i6l/bbgO4c727Vi7PqLWfU3kf4KVLen05t/h2Ae88hpXbN0drdrGagTcfNPQuki+8/DPS3xqyAm983/GYfzD7xrFb2evxAmC76/8/H/2ij3yacYurn5S06AAAAAElFTkSuQmCC";
 /* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
 const CUSTOMER_PNG={
   kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
@@ -378,6 +384,7 @@ const CUSTOMER_WALK_PNG={
 document.documentElement.style.setProperty("--grassPng",`url(${GRASS_PNG})`);
 document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
 document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
+document.documentElement.style.setProperty("--supplyIcons",`url(${SUPPLY_ICONS_PNG})`);
 document.documentElement.style.setProperty("--streetPng",`url(${STREET_PNG})`);
 Object.entries(WEATHER_PNG).forEach(([k,v])=>document.documentElement.style.setProperty(`--${k}Png`,`url(${v})`));
 function sampleWeighted(items){let t=items.reduce((s,i)=>s+i.w,0),r=Math.random()*t;for(const i of items){r-=i.w;if(r<=0)return i}return items[items.length-1]}
@@ -496,23 +503,26 @@ const RECIPES={
    Stock persists between days — buying well IS the production decision now. */
 const PITCHER_SERVES=8, BASE_NEEDS={lemons:6,sugar:4};
 const INGREDIENTS={
-  cups:{name:"Cups",icon:"🥤",pack:25,price:2.50},
-  lemons:{name:"Lemons",icon:"🍋",pack:12,price:3.00},
-  sugar:{name:"Sugar",icon:"🧂",pack:10,price:2.00},
-  ice:{name:"Ice Cubes",icon:"🧊",pack:40,price:1.20},
-  signs:{name:"Signs",icon:"🪧",pack:2,price:9.00},
-  strawberries:{name:"Strawberries",icon:"🍓",pack:6,price:2.40},
-  mint:{name:"Fresh Mint",icon:"🌿",pack:6,price:1.80},
-  condmilk:{name:"Condensed Milk",icon:"🥛",pack:4,price:2.00},
-  ginger:{name:"Ginger",icon:"🫚",pack:4,price:1.60},
-  blacksalt:{name:"Black Salt",icon:"🧂",pack:4,price:1.20},
-  chia:{name:"Chia Seeds",icon:"🌱",pack:4,price:1.60},
-  sparkling:{name:"Sparkling Water",icon:"🫧",pack:6,price:1.80},
-  rosewater:{name:"Rosewater",icon:"🌹",pack:4,price:2.00},
-  seasalt:{name:"Sea Salt",icon:"🧂",pack:4,price:1.00},
-  blacktea:{name:"Black Tea",icon:"🍵",pack:6,price:1.80},
-  cucumbering:{name:"Cucumbers",icon:"🥒",pack:4,price:1.60}
+  cups:{name:"Cups",pack:25,price:2.50},
+  lemons:{name:"Lemons",pack:12,price:3.00},
+  sugar:{name:"Sugar",pack:10,price:2.00},
+  ice:{name:"Ice Cubes",pack:40,price:1.20},
+  signs:{name:"Signs",pack:2,price:9.00},
+  strawberries:{name:"Strawberries",pack:6,price:2.40},
+  mint:{name:"Fresh Mint",pack:6,price:1.80},
+  condmilk:{name:"Condensed Milk",pack:4,price:2.00},
+  ginger:{name:"Ginger",pack:4,price:1.60},
+  blacksalt:{name:"Black Salt",pack:4,price:1.20},
+  chia:{name:"Chia Seeds",pack:4,price:1.60},
+  sparkling:{name:"Sparkling Water",pack:6,price:1.80},
+  rosewater:{name:"Rosewater",pack:4,price:2.00},
+  seasalt:{name:"Sea Salt",pack:4,price:1.00},
+  blacktea:{name:"Black Tea",pack:6,price:1.80},
+  cucumbering:{name:"Cucumbers",pack:4,price:1.60}
 };
+/* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
+const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name}};
+function iconHtml(kind,id,big){const k=ICONS[kind];return `<span class="icon ${kind}${big?" big":""}" style="--i:${k.ids.indexOf(id)}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
 /* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice customers want. */
 const WX_TEMP={sunny:[72,86],hot:[88,103],perfect:[80,90],cloudy:[62,76],rainy:[54,68],windy:[66,79]};
 function iceForTemp(t){return t>=100?4:t>=90?3:t>=80?2:t>=70?1:0}
@@ -536,11 +546,11 @@ function syncBatches(id){
 function overnight(){ // tonight, after the stand closes: returns what melts, goes bad and breaks, for the report
   const notes=[],tomorrow=S.day+1;
   // signs wear out: about 1 in 4 of the signs you put out today breaks overnight (free signs from upgrades are gear, they don't break)
-  if(typeof D!=="undefined"&&D&&D.signs>0&&(S.inv.signs||0)>0){let broke=0;for(let i=0;i<D.signs;i++)if(Math.random()<0.25)broke++;broke=Math.min(broke,S.inv.signs||0);if(broke>0){S.inv.signs-=broke;notes.push(`${broke} 🪧 sign${broke===1?"":"s"} broke`)}}
-  const melt=Math.ceil((S.inv.ice||0)/2);if(melt>0){S.inv.ice-=melt;notes.push(`${melt} 🧊 ice melts`)}
+  if(typeof D!=="undefined"&&D&&D.signs>0&&(S.inv.signs||0)>0){let broke=0;for(let i=0;i<D.signs;i++)if(Math.random()<0.25)broke++;broke=Math.min(broke,S.inv.signs||0);if(broke>0){S.inv.signs-=broke;notes.push(`${broke} ${iconHtml("supply","signs")} sign${broke===1?"":"s"} broke`)}}
+  const melt=Math.ceil((S.inv.ice||0)/2);if(melt>0){S.inv.ice-=melt;notes.push(`${melt} ${iconHtml("supply","ice")} ice melts`)}
   Object.entries(SHELF).forEach(([id,days])=>{if(!(S.inv[id]>0))return;syncBatches(id);const lots=S.lots[id];let bad=0;
     while(lots.length&&tomorrow-lots[0].day>=days){bad+=lots[0].qty;lots.shift()}
-    if(bad){S.inv[id]-=bad;notes.push(`${bad} ${INGREDIENTS[id].icon} ${INGREDIENTS[id].name.toLowerCase()} go bad`)}});
+    if(bad){S.inv[id]-=bad;notes.push(`${bad} ${iconHtml("supply",id)} ${INGREDIENTS[id].name.toLowerCase()} go bad`)}});
   return notes;
 }
 function pitcherNeeds(rk){return {...BASE_NEEDS,...(RECIPES[rk].needs||{})}}
@@ -947,7 +957,7 @@ function renderMorning(){
   const signsOwned=S.inv.signs||0;
   if(M.signs>signsOwned)M.signs=signsOwned; // you can only put out signs you own — last night's breakage may have shrunk the pile
   const shopCard=id=>{const ing=INGREDIENTS[id];
-    return `<div class="choice shop" style="cursor:default"><div class="ttl"><span tabindex="0"${tip(ingTip(id))}>${ing.icon} ${ing.name}</span></div><div class="desc">You have <b>${S.inv[id]||0}</b>${S.gear.includes("wholesale")?" · 20% off":""}${id==="ice"?'<br><span class="small">🫠 Half melts every night</span>':id==="signs"?'<br><span class="small">🪧 Signs last a few days — about 1 in 4 you put out breaks overnight</span>':SHELF[id]?`<br><span class="small">🕒 Fresh for ${SHELF[id]} days</span>`:""}</div>
+    return `<div class="choice shop" style="cursor:default"><div class="ttl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id,true)} ${ing.name}</span></div><div class="desc">You have <b>${S.inv[id]||0}</b>${S.gear.includes("wholesale")?" · 20% off":""}${id==="ice"?'<br><span class="small">🫠 Half melts every night</span>':id==="signs"?'<br><span class="small">'+iconHtml("supply","signs")+' Signs last a few days — about 1 in 4 you put out breaks overnight</span>':SHELF[id]?`<br><span class="small">🕒 Fresh for ${SHELF[id]} days</span>`:""}</div>
       <div class="packs">${BULK.map((t,i)=>{const price=packPrice(id,i),poor=S.cash<price;
         return `<button class="btn sm ${poor?"ghost":""}" ${poor?"disabled":""} onclick="buyItem('${id}',${i})">+${ing.pack*t.mult} for ${fmt(price)}</button>`}).join("")}</div></div>`};
   $("#screen").innerHTML=`
@@ -975,10 +985,10 @@ function renderMorning(){
     <div class="choices">${basics.map(shopCard).join("")}</div>
     ${extras.length?`<p class="small" style="margin:12px 0 0"><b>Extras for your flavors</b></p><div class="choices">${extras.map(shopCard).join("")}</div>`:""}
     <h3>3 · Ice and signs</h3>
-    <div class="ctrl"><label><span>🧊 Ice in each cup</span><span id="iceVal">${M.icePerCup}</span></label>
+    <div class="ctrl"><label><span>${iconHtml("supply","ice")} Ice in each cup</span><span id="iceVal">${M.icePerCup}</span></label>
       <input type="range" id="inIce" min="0" max="4" step="1" value="${M.icePerCup}" aria-label="Ice cubes in each cup">
     </div>
-    <div class="ctrl"><label><span>🪧 Signs to put out</span><span id="signsVal">${M.signs}</span></label>
+    <div class="ctrl"><label><span>${iconHtml("supply","signs")} Signs to put out</span><span id="signsVal">${M.signs}</span></label>
       <input type="range" id="inSigns" min="0" max="${signsOwned}" step="1" value="${M.signs}" aria-label="Number of signs to put out">
       <div class="hint">You own <b>${signsOwned}</b> sign${signsOwned===1?"":"s"} — buy more in the shop above. Putting them out costs nothing today${b.freeSigns?`; your upgrades add ${b.freeSigns} free on top`:""}. ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}</div></div>
     <h3>4 · Set your price</h3>
@@ -1007,7 +1017,7 @@ function buyItem(id,tier=0){
 function chooseLoc(i){M.loc=M.locs[i];sfx.flip();renderMorning()}
 /* Today's menu: flavors you have supplies for. A flavor missing an ingredient sits out until you buy it. */
 function sellableNow(){return S.recipes.filter(rk=>canBrew(rk,S.inv))}
-function missingFor(rk){return listWords(Object.entries(pitcherNeeds(rk)).filter(([k,v])=>(S.inv[k]||0)<v).map(([k])=>`${INGREDIENTS[k].icon} ${INGREDIENTS[k].name.toLowerCase()}`))}
+function missingFor(rk){return listWords(Object.entries(pitcherNeeds(rk)).filter(([k,v])=>(S.inv[k]||0)<v).map(([k])=>`${iconHtml("supply",k)} ${INGREDIENTS[k].name.toLowerCase()}`))}
 /* Cups a stock of supplies can still pour: brew any flavor you can make until nothing brews. */
 function brewableServings(inv){let n=0,guard=0;while(guard++<300){const rk=S.recipes.find(r=>canBrew(r,inv));if(!rk)break;Object.entries(pitcherNeeds(rk)).forEach(([k,v])=>inv[k]-=v);n+=pitcherServes()}return n}
 function cupsFromSupplies(){return Math.min(brewableServings({...S.inv}),S.inv.cups||0,M.icePerCup>0?Math.floor((S.inv.ice||0)/M.icePerCup):Infinity)}
@@ -1016,7 +1026,7 @@ function renderProj(){
   const wx=WEATHERS[M.shownWx];
   $("#btnOpen").disabled=!M.loc;
   const cap=cupsFromSupplies();
-  gt.innerHTML=`<span class="nums"><span>${wx.icon} <b>${wx.name}</b> · <b>${M.temp}°F</b></span><span>🥤 <i class="long">Supplies for </i><b>${cap}</b> cups</span>${M.loc?"":"<span>📍 Pick a spot first</span>"}</span>`;
+  gt.innerHTML=`<span class="nums"><span>${wx.icon} <b>${wx.name}</b> · <b>${M.temp}°F</b></span><span>${iconHtml("supply","cups")} <i class="long">Supplies for </i><b>${cap}</b> cups</span>${M.loc?"":"<span>📍 Pick a spot first</span>"}</span>`;
 }
 
 /* ---------- Day resolution ---------- */
@@ -1166,7 +1176,7 @@ async function runDayPhase(phase){
       processed++;
       if(res==="sold"){soldChunk++;streak++}
       else if(res==="price"){D.awayPrice++;streak=0;miss="too pricey…"}
-      else if(res==="warm"){D.awayWarm++;streak=0;miss="too warm… 🧊"}
+      else if(res==="warm"){D.awayWarm++;streak=0;miss=`too warm… ${iconHtml("supply","ice")}`}
       else { // out of stock: the rest of this phase's line can't be served
         if(isMorning){D.unmet+=target-processed}
         else D.awayOut+=target-processed;
@@ -1178,7 +1188,7 @@ async function runDayPhase(phase){
     if(dry)break;
     await sleep(rnd(450,750));
   }
-  if(dry&&(isMorning?D.unmet>0:D.awayOut>0))logLine(`<span class="bad">🥤 You ran out of supplies!${isMorning?" People in line will wait until noon.":""}</span>`);
+  if(dry&&(isMorning?D.unmet>0:D.awayOut>0))logLine(`<span class="bad">${iconHtml("supply","cups")} You ran out of supplies!${isMorning?" People in line will wait until noon.":""}</span>`);
   if(!isMorning){await buyersServed();finishDay();return}
   D.morningSold=D.sold;
   if(standDry()){await buyersServed();finishDay();return}
@@ -1235,7 +1245,7 @@ let bubbleNow=null;
 function spawnBubble(txt,anchor){
   const sky=$("#skyBox");if(!sky||!anchor||!anchor.isConnected)return;
   if(bubbleNow&&bubbleNow.isConnected)return; // one at a time: drop extras
-  const d=document.createElement("div");d.className="bubble";d.textContent=txt;
+  const d=document.createElement("div");d.className="bubble";d.innerHTML=txt; // the game's own lines, some with an icon
   sky.appendChild(d);bubbleNow=d;
   const place=()=>{
     if(!d.isConnected||!anchor.isConnected)return;
@@ -1327,7 +1337,7 @@ function finishDay(){
   const walked=D.awayPrice,warmAway=D.awayWarm,ranOut=Math.max(0,unserved-walked-warmAway),why=[];
   if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);if(warmAway)why.push(`${warmAway} wanted more ice`);
   const brewedTotal=Object.values(D.brewed).reduce((s,v)=>s+v,0);
-  const invLine=Object.keys(INGREDIENTS).filter(id=>(S.inv[id]||0)>0).map(id=>`${S.inv[id]}${INGREDIENTS[id].icon}`).join(" ");
+  const invLine=Object.keys(INGREDIENTS).filter(id=>(S.inv[id]||0)>0).map(id=>`${S.inv[id]}${iconHtml("supply",id)}`).join(" ");
   const repExtra=repNotes.slice(D.demand>0?1:0); // the first note (people served) is the line above it
   const repLine=repNotes.length?`⭐ Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b>${repExtra.length?` (${repExtra.join(", ")})`:""}`:`⭐ Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
   const stamp=perfect?`<span class="rStamp">PERFECT DAY</span>`:soldOut?`<span class="rStamp">SOLD OUT</span>`:made<0?`<span class="rStamp bad">ROUGH DAY</span>`:"";
@@ -1400,7 +1410,7 @@ function drawDraft(rareOnly){
 function draftCardHtml(p){
   if(p.kind==="gear"){const g=GEAR.find(x=>x.id===p.id);const full=S.gear.length>=gearSlots();
     return {icon:g.icon,title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"STAND UPGRADE"}}
-  if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(pitcherNeeds(p.id)).map(([k,v])=>v+INGREDIENTS[k].icon).join(" ");
+  if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(pitcherNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
     return {icon:r.icon,title:r.name,badge:"",desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`,tags:tagChips(r.tags),type:"NEW FLAVOR"}}
   return {icon:"💵",title:"Cousin's Gift",badge:"",desc:`+${fmt(18+22*actIndex())} cash right now. It gets bigger later in the summer.`,tags:"",type:"CASH"};
 }
