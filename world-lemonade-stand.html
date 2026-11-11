@@ -3,9 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- The game has one fixed sunny palette. Declaring it light-only keeps
+     phone browsers and webviews in dark mode from auto-darkening the page,
+     which used to wash out or hide text on phones. -->
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffe259">
 <title>World Lemonade Stand — A Roguelite</title>
 <style>
 :root{
+  color-scheme:light; /* fixed light palette: opt out of browser auto-darkening (see meta above) */
   --ink:#2b2118; --paper:#fff7e0; --paper2:#ffedb8; --lemon:#ffd83d; --lemon2:#f5b301;
   --green:#58b368; --green2:#2e7d46; --red:#e4572e; --blue:#4aa3df; --purple:#8b5fbf;
   --card:#fffdf4; --shadow:0 6px 0 rgba(43,33,24,.9); --radius:16px;
