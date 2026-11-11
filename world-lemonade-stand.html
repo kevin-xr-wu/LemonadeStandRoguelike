@@ -3,9 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>World Lemonade Stand — A Roguelite</title>
+<!-- The game has one fixed sunny palette. Declaring it light-only keeps
+     phone browsers and webviews in dark mode from auto-darkening the page,
+     which used to wash out or hide text on phones. -->
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffe259">
+<title>World Lemonade Stand</title>
 <style>
 :root{
+  color-scheme:light; /* fixed light palette: opt out of browser auto-darkening (see meta above) */
   --ink:#2b2118; --paper:#fff7e0; --paper2:#ffedb8; --lemon:#ffd83d; --lemon2:#f5b301;
   --green:#58b368; --green2:#2e7d46; --red:#e4572e; --blue:#4aa3df; --purple:#8b5fbf;
   --card:#fffdf4; --shadow:0 6px 0 rgba(43,33,24,.9); --radius:16px;
@@ -356,6 +362,7 @@ const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const fmt=n=>{const v=Math.round(n*100)/100;return (v<0?"-$":"$")+Math.abs(v).toFixed(2).replace(/\.00$/,"")};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const plural=(n,one,many)=>n===1?one:(many||one+"s");
 /* 64×64 pixel-art stand, drawn in Pixelwright. CSS shows it at 2×, or 1× on small screens (.stand). */
 const STAND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAARVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v+Jh7gjAAAAAXRSTlMAQObYZgAAAfNJREFUeNrdl+12wiAMhsW6SaebHs+x93+pC+SDAIFS6y/jduAN4WkILdrDB5nbaDXgN9odDQWpTJCqAPn8+xXNECxLQg6gKTmACSbAWRdpAEyCDejKDEDzNwEyQpHACqBOoZHAmk6ERgJNQJlCmcAoQAjuB+2PjbQ4Ss0OAVzQbmykxVFqdrwb4BwNu8JR6uSQKuLwAQPAjQ5oLQ0OJOgbAewYAvhJ77UhbqqOBDcFwPDpU0c3ANYJdLUBp9xFGS9PtjQaAEV0BEzZ0/VAJYQ0eK+ja4B7cEcAsoh1gFqyW2ayM+wdL6APcG6evfdcg9kvi/ezHwbgdDCYEZT3yxMAlAHvSA+A0/1ZAMILgFiSHiBe4Ayz6Y5jQOCJbgNk/ak1AKFrA3j9qg6yAsiJF9gBULSqA3fO31KhmEwBSHc8xqYWZ1CfAoznw32xRX/ZslB+FApwesHUKvYDXjRdxuNmK040yspqGm4TMJR4CxD8Tr79mnaLAPhvAS4QBGc+tNALf9GBbfCPARQk/wxnUAC4D/42IBZGZWB+GNDcBbqyroFkoWvQBMgXeNv6gD33wf47EQZUSFLaTSMbANFTAeKWrwASR08bAKgkDYBKpFVEDj5O+wDVLlQLfPc2TputAOw7UimH4d95Zqz5Mtl5Sf2gd+5/Q2ZNQf2Dk0AAAAAASUVORK5CYII=";
 /* 64×14 grass edge and 64×32 dirt tile, drawn in Pixelwright. They repeat along .ground at 2×, or 1× on small screens. */
@@ -381,7 +388,7 @@ const WEATHER_PNG={
 };
 /* 16 supply icons, 16×16 each, in ICONS.supply order, drawn in Pixelwright. Shown with iconHtml("supply",id). */
 const SUPPLY_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAQCAMAAADODVF7AAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA3FJREFUeNrVl9Fy2kAMRaNCBhgIGAP5Ambq5CH9/7/rlbTSSrsGmrR9iEIyAdYr6ehKaz99DyPYVy76xPZ3XTz4WlZ81fkfBfgLFjdsw5kLj4ZhaBfFbOs1vFIs71H3LAtseU+D6HhMH9E4jvX9XwNmAB9xvx0sXEBvsPZ6GnYxIyox0eHwbLZUIsO+WCIQclAAxQMNr2x5KRbjT/jgNI5H58fhdSHG+Jdi/kEHjF4vl3P9erd7YQLb6oB/plaEqaTEESkAz98BmB1iCMdaQ0CDGQDJv4YjqLA4SkA+MQA0GQALkVcijupN8l+4u+t1ws+1ZkSXAICQ/nbLAIyAEm4BwEXK/zRCpvhPUl+vKwAn4OuJ1rCaUAaAYGI9pCJiJR4uHSnt3GHmQHJHHFZy3RFWvub8FYEtgACqS7hD+vwyh/l6U9ChkfN4qgCQ3ioAyAk80XqzYQKreQW0ALgiu41XRFuHvAFmALBnel4WCdBlep/e+aUZkHXk3hYg/6H6FACQwLYCQH9iewNAk1pTfxVAUcCK878BAPlz+gBgBMqOGYB3Kb1I+ruNBCTtP6KD6ozlES6mcwy5w7W41/cXyR6/dwC0EhAAriDO/80AaLlgey8gl7/kXwDEGdC0gMi/GBOIp4YQPLPpJJSQlB8YuALQ/0cRgm6I1IfBAXRDiBWgCBzAQfOvACCAIUwB5O/1VwWwVQALeRmAWH+fuGnuKgETaMgfAOwIrCehkJD8DYAIwCXJBFB/PwiyAqQAUn8jwArQHmgUEAA0bafHrgNIAgMAzX9RAKT6W/yLH/GcSQAqAWkBOwLjSehzR0NiCbgAigdWQDkI8gxIAKQEAMDljwpoALAraCDOHZGY+ftA8ng5gCIBBZDrb9cDQHNixkNgFUaADcA4B0V1oSbSBFWSEiAkUA6CZgiSlF47oLTAIwWos9ACrADU1UTNLYAp4C2A9GsLyAHQ5N8B0KERFLaClQ6+AaAZSzoBIwC/k7ShbGOUm5CTR/o+BJMC6oxIx9zg3lB7aYE0BOMMUASugC7/FkB/Kxp2nwcgk/Acx1Kbf3j3s1i6l/bbgO4c727Vi7PqLWfU3kf4KVLen05t/h2Ae88hpXbN0drdrGagTcfNPQuki+8/DPS3xqyAm983/GYfzD7xrFb2evxAmC76/8/H/2ij3yacYurn5S06AAAAAElFTkSuQmCC";
-/* 12 flavor icons, 16×16 each, in RECIPES order, drawn in Pixelwright (redrawn after the PR #19 art review: taller glasses, outlined garnishes, distinct Classic/Citron/Salted silhouettes, Ramune as a codd-neck bottle). Shown with iconHtml("flavor",id). */
+/* 12 flavor icons, 16×16 each, in RECIPES order, drawn in Pixelwright (round 2: sheet shifted down a row, stemmed coupe for rosewater, mason jar for chia, red ramune marble). Shown with iconHtml("flavor",id). */
 const FLAVOR_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAQCAMAAAB3PIAaAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAb5JREFUeNrdlltywjAMRauZUqChxcSd/HUN7H93lfWyFOwkncJHuT8gP+R7JI/h5ZkEED87092R5f3DsCHjsj23vLUV9kcahTzOZiGlBI1hXm/h7tzbXzQM8zPhdDO05P+SL7acsyWXvui4ZwMndCsy/xlgzBKqDrJedd5xjAv99kKKMgBbD8N7C6DOcwL9ntFEBBACSl9kGz5UMcEo88hD0vU7kXM8fRXV8FCkAN+qWtHYySJ2xLtJsQM1uaW3I2A6qSTOpJS5AjCdVRK/qSTmeshyOSFVgMmXp1Fxyuf9kKitsw5sBkDvpCUAqAC4Eu17ALTfB9COYk/bADlLDWvC6/Vaaaa9qgMwqroAxX0AgHiev0JKYOEGAF9A8V8J7gEQrxDZn10hvEOuZM6/Xbl657cApFYLbN77dwQWe/+OQF6piS4QQrgTXAP4petfYc4X7lz0P+/AAwCkBfGEewJg/QNAMIDxwLL4wtoOQPXfCNAo4CpAeKVxIPinR8r5Lz+C3j/Gn6Qav5LmvG5DSI/2XX9vASifJ4ZwAR4OUB/2eIAL4+zt+SsA5XfM+29k/GPc/HuwMv2r/Cv5/pN+AD8jNJrR7Nz7AAAAAElFTkSuQmCC";
 /* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
 const CUSTOMER_PNG={
@@ -460,8 +467,8 @@ function countUp(el,to){
 /* ============================================================ DATA ============================================================ */
 const WEATHERS={
   sunny:  {name:"Sunny",       icon:"☀️", mult:1.0,  w:34, desc:"A normal day."},
-  hot:    {name:"Hot & Dry",   icon:"🔥", mult:1.9,  w:16, desc:"Lots of thirsty people! They pay more."},
-  perfect:{name:"PERFECT DAY", icon:"🌈", mult:2.3,  w:5,  desc:"Rare! The biggest crowds and the best tips."},
+  hot:    {name:"Hot & Dry",   icon:"🔥", mult:1.9,  w:16, desc:"Lots of thirsty people. They pay more."},
+  perfect:{name:"Perfect day", icon:"🌈", mult:2.3,  w:5,  desc:"Big crowds and good tips. It doesn't happen often."},
   cloudy: {name:"Cloudy",      icon:"☁️", mult:0.68, w:22, desc:"Fewer people today."},
   rainy:  {name:"Rainy",       icon:"🌧️", mult:0.42, w:11, desc:"Most people stay home."},
   windy:  {name:"Windy",       icon:"🌬️", mult:0.85, w:12, desc:"A little less busy."},
@@ -484,44 +491,44 @@ function skyArt(wx){
   return (art[wx]||"")+`<i class="wx street"></i>`;
 }
 const CROWDS={
-  kids:      {name:"Kids",         icon:"🧒", pay:1.30, loves:["SWEET"],         hates:"SOUR",  line:"so sweet!!"},
+  kids:      {name:"Kids",         icon:"🧒", pay:1.30, loves:["SWEET"],         hates:"SOUR",  line:"So sweet."},
   parents:   {name:"Parents",      icon:"👨‍👧", pay:2.40, loves:["FANCY","SWEET"], hates:null,    line:"worth it."},
-  athletes:  {name:"Athletes",     icon:"🏅", pay:1.70, loves:["SOUR","CHILLED"],hates:"SWEET", line:"electrolytes. now."},
-  tourists:  {name:"Tourists",     icon:"📸", pay:3.10, loves:["FANCY"],         hates:null,    line:"when in Lemonsville!"},
-  foodies:   {name:"Foodies",      icon:"🧐", pay:4.20, loves:["FANCY","SOUR"],  hates:null,    line:"notes of genius."},
-  artists:   {name:"Artists",      icon:"🎨", pay:2.60, loves:["FANCY","FIZZY"], hates:null,    line:"tastes like a gallery opening."}
+  athletes:  {name:"Athletes",     icon:"🏅", pay:1.70, loves:["SOUR","CHILLED"],hates:"SWEET", line:"That hit the spot."},
+  tourists:  {name:"Tourists",     icon:"📸", pay:3.10, loves:["FANCY"],         hates:null,    line:"What a treat."},
+  foodies:   {name:"Foodies",      icon:"🧐", pay:4.20, loves:["FANCY","SOUR"],  hates:null,    line:"Really tasty."},
+  artists:   {name:"Artists",      icon:"🎨", pay:2.60, loves:["FANCY","FIZZY"], hates:null,    line:"Beautiful."}
 };
 const LOCATIONS=[
-  {name:"Maple St. Spot", icon:"🏠", traffic:17, bias:{kids:3,parents:3,artists:1}, wx:null,        desc:"Home turf. Families."},
-  {name:"School Gate",      icon:"🎒", traffic:21, bias:{kids:6,parents:2},                 wx:null,        desc:"Kid rush at lunch. Sweet sells."},
-  {name:"Riverside Park",   icon:"🌳", traffic:23, bias:{athletes:5,parents:2,kids:1},wx:"windy+",   desc:"Runners and picnic families."},
-  {name:"Pool Entrance",    icon:"🏊", traffic:26, bias:{athletes:4,kids:3},        wx:"hot+",      desc:"Thirsty swimmers."},
-  {name:"Little League Field",icon:"⚾",traffic:25, bias:{parents:4,kids:4},   wx:null,        desc:"Game-day parents with wallets out."},
-  {name:"Downtown Crossing",icon:"🚦", traffic:29, bias:{tourists:3,foodies:2,artists:2},             wx:null,        desc:"A bit of everyone, passing through."},
-  {name:"Farmers Market",   icon:"🧺", traffic:24, bias:{foodies:4,parents:2,artists:1},  wx:null,        desc:"Foodies prowl. Fancy & sour shine."},
-  {name:"Boardwalk",        icon:"🎡", traffic:32, bias:{tourists:5,kids:2},             wx:"hot+",      desc:"Tourist money. Big traffic."},
+  {name:"Maple St. Spot", icon:"🏠", traffic:17, bias:{kids:3,parents:3,artists:1}, wx:null,        desc:"Your home street. Lots of families."},
+  {name:"School Gate",      icon:"🎒", traffic:21, bias:{kids:6,parents:2},                 wx:null,        desc:"Lots of kids at lunch. Sweet drinks sell well."},
+  {name:"Riverside Park",   icon:"🌳", traffic:23, bias:{athletes:5,parents:2,kids:1},wx:"windy+",   desc:"Runners and families having picnics."},
+  {name:"Pool Entrance",    icon:"🏊", traffic:26, bias:{athletes:4,kids:3},        wx:"hot+",      desc:"Swimmers come out thirsty."},
+  {name:"Little League Field",icon:"⚾",traffic:25, bias:{parents:4,kids:4},   wx:null,        desc:"Parents watch the game and buy drinks."},
+  {name:"Downtown Crossing",icon:"🚦", traffic:29, bias:{tourists:3,foodies:2,artists:2},             wx:null,        desc:"A mix of everyone passing through."},
+  {name:"Farmers Market",   icon:"🧺", traffic:24, bias:{foodies:4,parents:2,artists:1},  wx:null,        desc:"Foodies shop here. Fancy and sour drinks do well."},
+  {name:"Boardwalk",        icon:"🎡", traffic:32, bias:{tourists:5,kids:2},             wx:"hot+",      desc:"Lots of tourists and big crowds."},
   {name:"Skate Park",       icon:"🛼", traffic:22, bias:{kids:3,athletes:3},                  wx:"windy+",    desc:"Young and sporty."},
-  {name:"Dog Park",         icon:"🐶", traffic:20, bias:{parents:3,athletes:3},            wx:null,        desc:"Dogs bring humans. Humans bring wallets."},
-  {name:"Outdoor Cinema",   icon:"🎬", traffic:30, bias:{artists:4,tourists:2,parents:1},              wx:null,        desc:"Movie crowds with intermission thirst."},
+  {name:"Dog Park",         icon:"🐶", traffic:20, bias:{parents:3,athletes:3},            wx:null,        desc:"Dog owners stop for a drink."},
+  {name:"Outdoor Cinema",   icon:"🎬", traffic:30, bias:{artists:4,tourists:2,parents:1},              wx:null,        desc:"Movie crowds get thirsty at the break."},
   {name:"Train Station",    icon:"🚉", traffic:27, bias:{tourists:4,athletes:2},             wx:null,        desc:"Travelers in a hurry."},
-  {name:"The Marina",       icon:"⛵", traffic:28, bias:{tourists:4,foodies:3},            wx:"hot+",      desc:"Boat money."}
+  {name:"The Marina",       icon:"⛵", traffic:28, bias:{tourists:4,foodies:3},            wx:"hot+",      desc:"Sailors and tourists with money to spend."}
 ];
 const RECIPES={
-  classic:{name:"Classic Sweet", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.25, needs:{},                  desc:"The original: lemons, sugar, water."},
-  strawberry:{name:"Strawberry Lemonade", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:2.75, needs:{strawberries:3},    desc:"Muddled strawberries. Kids go wild."},
+  classic:{name:"Classic Sweet", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.25, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
+  strawberry:{name:"Strawberry Lemonade", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:2.75, needs:{strawberries:3},    desc:"Lemonade with fresh strawberries."},
   limonana:{name:"Limonana", origin:"Levant",             tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{mint:2},            desc:"Mint blended with crushed ice."},
   brazilian:{name:"Brazilian Lemonade", origin:"Brazil",         tags:["SWEET","FANCY"], appeal:1.08,price:3.25, needs:{condmilk:2},        desc:"Creamy with condensed milk."},
-  shikanji:{name:"Shikanji", origin:"India",              tags:["SOUR"],          appeal:1.04,price:2.50, needs:{ginger:1,blacksalt:1},desc:"Nimbu pani with black salt and ginger."},
-  chia:{name:"Agua de Limón con Chía", origin:"Mexico",          tags:["CHILLED"],       appeal:1.03,price:2.75, needs:{chia:1},            desc:"Chia seeds swell into tiny pearls."},
-  citron:{name:"Citron Pressé", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.04,price:2.75, needs:{sparkling:1},       desc:"Parisian café style: tart and sparkling."},
+  shikanji:{name:"Shikanji", origin:"India",              tags:["SOUR"],          appeal:1.04,price:2.50, needs:{ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
+  chia:{name:"Agua de Limón con Chía", origin:"Mexico",          tags:["CHILLED"],       appeal:1.03,price:2.75, needs:{chia:1},            desc:"Lemonade with chia seeds."},
+  citron:{name:"Citron Pressé", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.04,price:2.75, needs:{sparkling:1},       desc:"Paris cafe style. Tart and sparkling."},
   rosewater:{name:"Sharbat-e-Limoo", origin:"Iran",               tags:["FANCY","SWEET"], appeal:1.07,price:3.25, needs:{rosewater:1},       desc:"Lemon with rosewater."},
-  salted:{name:"Salted Lemonade", origin:"Vietnam",            tags:["SOUR"],          appeal:1.02,price:2.25, needs:{seasalt:1},         desc:"Salty preserved lemon."},
+  salted:{name:"Salted Lemonade", origin:"Vietnam",            tags:["SOUR"],          appeal:1.02,price:2.25, needs:{seasalt:1},         desc:"Salty lemon drink."},
   palmer:{name:"Arnold Palmer", origin:"USA",                tags:["SWEET","SOUR"],  appeal:1.08,price:2.75, needs:{blacktea:2},        desc:"Half iced tea, half lemonade."},
-  cucumber:{name:"Cucumber Lemonade", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{cucumbering:2},     desc:"Cool as the other side of the pillow."},
+  cucumber:{name:"Cucumber Lemonade", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{cucumbering:2},     desc:"Cool cucumber lemonade."},
   ramune:{name:"Ramune Lemonade", origin:"Japan",              tags:["FIZZY","SWEET"], appeal:1.06,price:2.75, needs:{sparkling:2},       desc:"Japanese soda-shop fizz."}
 };
 /* ---------- Inventory: pitchers, ingredients, the shop ----------
-   1 pitcher = 8 servings, from 6 lemons + 4 sugar + the recipe's specials.
+   1 pitcher = 8 cups, from 6 lemons + 4 sugar + the recipe's specials.
    Stock persists between days — buying well IS the production decision now. */
 const PITCHER_SERVES=8, BASE_NEEDS={lemons:6,sugar:4};
 const INGREDIENTS={
@@ -568,11 +575,11 @@ function syncBatches(id){
 function overnight(){ // tonight, after the stand closes: returns what melts, goes bad and breaks, for the report
   const notes=[],tomorrow=S.day+1;
   // signs wear out: about 1 in 4 of the signs you put out today breaks overnight (free signs from upgrades are gear, they don't break)
-  if(typeof D!=="undefined"&&D&&D.signs>0&&(S.inv.signs||0)>0){let broke=0;for(let i=0;i<D.signs;i++)if(Math.random()<0.25)broke++;broke=Math.min(broke,S.inv.signs||0);if(broke>0){S.inv.signs-=broke;notes.push(`${broke} ${iconHtml("supply","signs")} sign${broke===1?"":"s"} broke`)}}
-  const melt=Math.ceil((S.inv.ice||0)/2);if(melt>0){S.inv.ice-=melt;notes.push(`${melt} ${iconHtml("supply","ice")} ice melts`)}
+  if(typeof D!=="undefined"&&D&&D.signs>0&&(S.inv.signs||0)>0){let broke=0;for(let i=0;i<D.signs;i++)if(Math.random()<0.25)broke++;broke=Math.min(broke,S.inv.signs||0);if(broke>0){S.inv.signs-=broke;notes.push(`${broke} ${iconHtml("supply","signs")} ${plural(broke,"sign")} ${broke===1?"breaks":"break"}`)}}
+  const melt=Math.ceil((S.inv.ice||0)/2);if(melt>0){S.inv.ice-=melt;notes.push(`${melt} ${iconHtml("supply","ice")} ${plural(melt,"ice cube")} ${melt===1?"melts":"melt"}`)}
   Object.entries(SHELF).forEach(([id,days])=>{if(!(S.inv[id]>0))return;syncBatches(id);const lots=S.lots[id];let bad=0;
     while(lots.length&&tomorrow-lots[0].day>=days){bad+=lots[0].qty;lots.shift()}
-    if(bad){S.inv[id]-=bad;notes.push(`${bad} ${iconHtml("supply",id)} ${INGREDIENTS[id].name.toLowerCase()} go bad`)}});
+    if(bad){S.inv[id]-=bad;const names={lemons:["lemon","lemons"],strawberries:["strawberry","strawberries"],mint:["mint sprig","mint sprigs"],cucumbering:["cucumber","cucumbers"]};const nm=names[id]||[INGREDIENTS[id].name.toLowerCase(),INGREDIENTS[id].name.toLowerCase()];notes.push(`${bad} ${iconHtml("supply",id)} ${plural(bad,nm[0],nm[1])} ${bad===1?"goes":"go"} bad`)}});
   return notes;
 }
 function pitcherNeeds(rk){return {...BASE_NEEDS,...(RECIPES[rk].needs||{})}}
@@ -591,7 +598,7 @@ const GEAR=[
  {id:"mega",    name:"Cardboard Megaphone", icon:"📣", rar:"common",    desc:"Signs bring 40% more customers."},
  {id:"brother", name:"Little Brother",      icon:"👦", rar:"rare",      desc:"2 free signs every day, but he spills 2 cups from your first pitcher."},
  {id:"chalk",   name:"Sidewalk Chalk Art",  icon:"🎨", rar:"rare",      desc:"+0.2★ reputation on days you put out 4 or more signs."},
- {id:"bigsign", name:"ROOF SIGN",           icon:"🏗️", rar:"legendary", desc:"Every sign pulls as many customers as your first one."},
+ {id:"bigsign", name:"Roof sign",           icon:"🏗️", rar:"legendary", desc:"Every sign pulls as many customers as your first one."},
  // customers
  {id:"secondcart",name:"Second Cart",       icon:"🛒", rar:"legendary", desc:"+30% customers every day."},
  {id:"franchiseflag",name:"Franchise Flag", icon:"🎌", rar:"epic",      desc:"+7% customers for each upgrade on your stand, this one included (+40% with all 5)."},
@@ -601,18 +608,18 @@ const GEAR=[
  {id:"honeypot",name:"Local Honey Pot",     icon:"🍯", rar:"epic",      desc:"Sweet flavors also win over fans of fancy drinks, and athletes stop disliking sweet."},
  {id:"mascot",  name:"Lemon Mascot Suit",   icon:"🎭", rar:"rare",      desc:"+25% customers, but −0.1★ on days fewer than 3 out of 4 customers get lemonade."},
  {id:"map",     name:"Scout's Map",         icon:"🗺️", rar:"common",    desc:"See 4 spots each morning instead of 3."},
- {id:"sponsor", name:"Team Sponsor",        icon:"🏈", rar:"common",    desc:"More athletes at every spot (about +10% of the crowd). They love SOUR and CHILLED, and dislike SWEET."},
- {id:"tourbus", name:"Tour Bus Deal",       icon:"🚌", rar:"common",    desc:"More tourists at every spot (about +10% of the crowd). They love FANCY and pay well."},
- {id:"foodblog",name:"Food Blog",           icon:"📝", rar:"common",    desc:"More foodies at every spot (about +10% of the crowd). They love FANCY and SOUR, and pay the most."},
+ {id:"sponsor", name:"Team Sponsor",        icon:"🏈", rar:"common",    desc:"More athletes at every spot (about +10% of the crowd). They love sour and chilled drinks, and dislike sweet."},
+ {id:"tourbus", name:"Tour Bus Deal",       icon:"🚌", rar:"common",    desc:"More tourists at every spot (about +10% of the crowd). They love fancy drinks and pay well."},
+ {id:"foodblog",name:"Food Blog",           icon:"📝", rar:"common",    desc:"More foodies at every spot (about +10% of the crowd). They love fancy and sour drinks, and pay the most."},
  {id:"passport",name:"Passport",            icon:"🛂", rar:"epic",      desc:"+4% customers for each different origin on your menu (USA, Brazil, Japan…)."},
  {id:"special", name:"Daily Special Board", icon:"📋", rar:"rare",      desc:"Each morning one flavor is the Special: customers like it more and pay $0.50 extra."},
  {id:"dice",    name:"Lucky Dice",          icon:"🎲", rar:"epic",      desc:"Each morning, roll between −30% and +60% customers. You see the roll before you open."},
  {id:"grapevine",name:"Town Grapevine",     icon:"🗣️", rar:"rare",      desc:"Good street events happen twice as often, bad ones half as often."},
  // weather & temperature
- {id:"sunhat",  name:"Lucky Sun Hat",       icon:"👒", rar:"legendary", desc:"Sunny days are as busy as Hot days (almost twice the customers)."},
+ {id:"sunhat",  name:"Lucky Sun Hat",       icon:"👒", rar:"legendary", desc:"Sunny days are as busy as hot days (almost twice the customers)."},
  {id:"awning",  name:"Stand Awning",        icon:"⛱️", rar:"common",    desc:"Cloudy and rainy days: +25% customers. The stand stays dry."},
  {id:"ponchos", name:"Rain Ponchos",        icon:"🧥", rar:"rare",      desc:"Rainy days: +60% customers. You hand out free ponchos."},
- {id:"icecrush",name:"Hand-Crank Ice Crusher",icon:"🧊",rar:"rare",     desc:"Hot and Perfect days: +25% customers."},
+ {id:"icecrush",name:"Hand-Crank Ice Crusher",icon:"🧊",rar:"rare",     desc:"Hot and perfect days: +25% customers."},
  {id:"thermo",  name:"Thermometer Sign",    icon:"🌡️", rar:"epic",      desc:"+2% customers for every °F above 75°F, −2% for every °F below (95°F: +40%)."},
  {id:"jug",     name:"Insulated Jug",       icon:"🫗", rar:"common",    desc:"Customers want 1 fewer ice cube per cup."},
  {id:"shavedice",name:"Shaved Ice Machine", icon:"🍧", rar:"rare",      desc:"Each ice cube above what customers want makes them pay 5% more (up to +15%)."},
@@ -620,7 +627,7 @@ const GEAR=[
  {id:"lemonzest",name:"Golden Lemons",      icon:"✨", rar:"epic",      desc:"Every crowd will pay 15% more."},
  {id:"plaque",  name:"Five-Star Plaque",    icon:"🏆", rar:"epic",      desc:"At 4.5★ or higher, customers pay 20% more."},
  {id:"zester",  name:"Zester of Doom",      icon:"🔪", rar:"rare",      desc:"Sour flavors earn +$0.50 per cup."},
- {id:"tipjar",  name:"Cracked Tip Jar",     icon:"🫙", rar:"common",    desc:"Customers tip 3× as much."},
+ {id:"tipjar",  name:"Cracked Tip Jar",     icon:"🫙", rar:"common",    desc:"Customers tip three times as much."},
  {id:"piggy",   name:"Compound Piggy",      icon:"🐷", rar:"epic",      desc:"Each night, your piggy bank adds 4% of your money over $150 (up to $200)."},
  {id:"selloutbanner",name:"Sellout Banner", icon:"🚩", rar:"rare",      desc:"When you sell out, people still in line pre-pay $1 each for tomorrow (max one per cup you sold)."},
  {id:"rainjar", name:"Rainy-Day Jar",       icon:"🌦️", rar:"rare",      desc:"Sunny, hot and perfect days add 15% of the money you made to the jar. The next cloudy or rainy day, it pays out."},
@@ -632,11 +639,11 @@ const GEAR=[
  {id:"lemontree",name:"Lemon Tree",         icon:"🌳", rar:"legendary", desc:"6 free lemons every morning, plus 1 more for each day you've had it."},
 ];
 const SYNERGIES=[
- {id:"coldsnap", name:"COLD SNAP",       need:{FIZZY:1,CHILLED:2},        desc:"1 FIZZY + 2 CHILLED flavors: +45% customers on Hot and Perfect days.", check:s=>s.tags.FIZZY>=1&&s.tags.CHILLED>=2},
- {id:"palate",   name:"ADULT PALATE",    need:{SOUR:1,FANCY:1},           desc:"SOUR + FANCY flavors: parents, tourists and foodies pay 30% more.",      check:s=>s.tags.SOUR>=1&&s.tags.FANCY>=1},
- {id:"sugarrush",name:"SUGAR RUSH",      need:{SWEET:3},                  desc:"3+ SWEET flavors: 80% more kids show up.",       check:s=>s.tags.SWEET>=3},
- {id:"fullhouse",name:"FULL HOUSE",      need:{},                          desc:"All 5 flavor tags on your menu: +15% customers and tips.", check:s=>Object.values(s.tags).filter(v=>v>0).length>=5},
- {id:"goldenhour",name:"GOLDEN HOUR",    need:{SWEET:1,SOUR:1,FANCY:1},   desc:"SWEET + SOUR + FANCY flavors: everyone pays 20% more.", check:s=>s.tags.SWEET>=1&&s.tags.SOUR>=1&&s.tags.FANCY>=1},
+ {id:"coldsnap", name:"Cold snap",       need:{FIZZY:1,CHILLED:2},        desc:"1 fizzy and 2 chilled flavors: +45% customers on hot and perfect days.", check:s=>s.tags.FIZZY>=1&&s.tags.CHILLED>=2},
+ {id:"palate",   name:"Adult palate",    need:{SOUR:1,FANCY:1},           desc:"1 sour and 1 fancy flavor: parents, tourists and foodies pay 30% more.",      check:s=>s.tags.SOUR>=1&&s.tags.FANCY>=1},
+ {id:"sugarrush",name:"Sugar rush",      need:{SWEET:3},                  desc:"3 or more sweet flavors: 80% more kids show up.",       check:s=>s.tags.SWEET>=3},
+ {id:"fullhouse",name:"Full house",      need:{},                          desc:"All 5 flavor tags on your menu: +15% customers and +15% tips.", check:s=>Object.values(s.tags).filter(v=>v>0).length>=5},
+ {id:"goldenhour",name:"Golden hour",    need:{SWEET:1,SOUR:1,FANCY:1},   desc:"1 sweet, 1 sour and 1 fancy flavor: everyone pays 20% more.", check:s=>s.tags.SWEET>=1&&s.tags.SOUR>=1&&s.tags.FANCY>=1},
 ];
 const KIDS=[
  {id:"classic", name:"The Classic",    icon:"🧢", start:30, desc:"The 1979 experience, plus drafts. No bias, no excuses.", gear:null},
@@ -663,16 +670,16 @@ function actFor(i){if(i<ACTS.length)return ACTS[i];const a=ACTS[i%4];return {...
 const EVENTS=[
  {id:"crewbuy", w:6,  txt:()=>`🚧 ${crewSize()} road workers stop by at lunch. They only buy if a flavor costs ${fmt(CREW_MAX_PRICE)} or less.`},
  {id:"closure", w:7,  txt:"🚧 Street closed for repairs. 65% fewer customers."},
- {id:"heatwave",w:6,  txt:"🥵 Heat wave! +50% customers, and it's 8°F hotter.", fn:()=>{M.temp+=8}},
+ {id:"heatwave",w:6,  txt:"🥵 Heat wave. 50% more customers, and it's 8°F hotter.", fn:()=>{M.temp+=8}},
  {id:"bees",    w:5,  txt:"🐝 Bees swarm your stand. 20% fewer customers."},
- {id:"critic",  w:4,  txt:"🧐 A food critic is coming! Serve almost everyone to gain half a star. Serve too few to lose half a star."},
- {id:"lemonsale",w:7, txt:"🍋 Market sale! Supplies cost 30% less tomorrow.", fn:s=>{s.tomorrowCostMult=0.7}},
- {id:"sugarant",w:5,  txt:"🐜 Ants got in the sugar! Supplies cost 25% more today.", fn:s=>{s.todayCostMult*=1.25}},
- {id:"puppy",   w:6,  txt:"🐶 A very good dog guards your stand. +15% customers."},
- {id:"newspaper",w:4, txt:"📰 The newspaper wrote about you! +20% customers and +50% tips."},
+ {id:"critic",  w:4,  txt:"🧐 A food critic is coming. Serve almost everyone to gain half a star. Serve too few and you lose half a star."},
+ {id:"lemonsale",w:7, txt:"🍋 Market sale. Supplies cost 30% less tomorrow.", fn:s=>{s.tomorrowCostMult=0.7}},
+ {id:"sugarant",w:5,  txt:"🐜 Ants got in the sugar. Supplies cost 25% more today.", fn:s=>{s.todayCostMult*=1.25}},
+ {id:"puppy",   w:6,  txt:"🐶 A very good dog guards your stand. 15% more customers."},
+ {id:"newspaper",w:4, txt:"📰 The newspaper wrote about you. 20% more customers and 50% more tips."},
  {id:"nothing", w:50, txt:""},
- {id:"birthday",w:5,  txt:"🎂 Block birthday party. +25% customers."},
- {id:"foodtruck",w:4, txt:"🚚 Food truck festival next door. +20% customers."}
+ {id:"birthday",w:5,  txt:"🎂 Block birthday party. 25% more customers."},
+ {id:"foodtruck",w:4, txt:"🚚 Food truck festival next door. 20% more customers."}
 ];
 function eventText(ev){return typeof ev.txt==="function"?ev.txt():ev.txt}
 const GOOD_EVENTS=["crewbuy","heatwave","lemonsale","puppy","newspaper","birthday","foodtruck"],BAD_EVENTS=["closure","bees","sugarant"];
@@ -703,7 +710,7 @@ function toggleSpeed(){
   SPEED=SPEED===1?2:1;
   try{localStorage.setItem("wls_speed",String(SPEED))}catch(e){}
   liveAnims.forEach(a=>{try{a.playbackRate=SPEED}catch(e){}});
-  const b=document.querySelector("#spdBtn");if(b)b.textContent="⏩ Speed: "+SPEED+"×";
+  const b=document.querySelector("#spdBtn");if(b)b.textContent=spdLabel();
   sfx.flip();
 }
 /* setTimeout that runs on simulation time: after(800) fires after 800ms
@@ -716,7 +723,8 @@ function after(ms,fn){
   },40);
   return iv;
 }
-const spdBtnHtml=()=>`<button class="btn sm ghost" id="spdBtn" onclick="toggleSpeed()">⏩ Speed: ${SPEED}×</button>`;
+const spdLabel=()=>SPEED===2?"⏩ Fast":"▶ Normal";
+const spdBtnHtml=()=>`<button class="btn sm ghost" id="spdBtn" onclick="toggleSpeed()">${spdLabel()}</button>`;
 function newRun(kidId){
   const kid=KIDS.find(k=>k.id===kidId);
   S={
@@ -922,16 +930,16 @@ function tagTip(t){
   const fans=Object.values(CROWDS).filter(c=>c.loves.includes(t)).map(c=>c.name),foes=Object.values(CROWDS).filter(c=>c.hates===t).map(c=>c.name);
   return `${TAG_INFO[t]||""}${fans.length?` ${listWords(fans)} love them.`:""}${foes.length?` ${listWords(foes)} don't.`:""}`;
 }
-function crowdTip(ck){const c=CROWDS[ck];return `${c.name} like ${listWords(c.loves)} drinks.${c.hates?` They don't like ${c.hates}.`:""} They pay up to about ${fmt(c.pay)}.`}
-function flavorFans(tags){return Object.values(CROWDS).filter(c=>c.loves.some(t=>tags.includes(t))).map(c=>`${c.icon} ${c.name}`).join(" · ")}
-function tagChips(tags){return tags.map(t=>`<span class="tag"${tip(tagTip(t))}>${t}</span>`).join("")}
+function crowdTip(ck){const c=CROWDS[ck];return `${c.name} like ${listWords(c.loves.map(x=>x.toLowerCase()))} drinks.${c.hates?` They don't like ${c.hates.toLowerCase()}.`:""} They pay up to about ${fmt(c.pay)}.`}
+function flavorFans(tags){return Object.values(CROWDS).filter(c=>c.loves.some(t=>tags.includes(t))).map(c=>`${c.icon} ${c.name}`).join(", ")}
+function tagChips(tags){return tags.map(t=>`<span class="tag"${tip(tagTip(t))}>${t.charAt(0)+t.slice(1).toLowerCase()}</span>`).join("")}
 function rarBadge(r){return `<span class="rar ${r}"${tip("Rarer upgrades show up less often: common, rare, epic, then legendary.")}>${r}</span>`}
 function ingTip(id){
   if(id==="cups")return "Every customer needs 1 cup.";
-  if(id==="lemons")return `Each pitcher needs ${BASE_NEEDS.lemons} lemons and makes ${pitcherServes()} cups. Lemons stay fresh for ${SHELF.lemons} days.`;
+  if(id==="lemons")return `Each pitcher needs ${BASE_NEEDS.lemons} lemons and makes ${pitcherServes()} ${plural(pitcherServes(),"cup")}. Lemons stay fresh for ${SHELF.lemons} ${plural(SHELF.lemons,"day")}.`;
   if(id==="sugar")return `Each pitcher needs ${BASE_NEEDS.sugar} sugar.`;
   if(id==="ice")return "Ice goes in every cup. Hot days need more. Half of your leftover ice melts each night.";
-  if(id==="signs")return "Signs bring in more customers. You own them until they break — about 1 in 4 you put out breaks overnight.";
+  if(id==="signs")return "Signs bring in more customers. You own them until they break. About 1 in 4 you put out breaks overnight.";
   return `Needed for ${listWords(S.recipes.filter(rk=>(RECIPES[rk].needs||{})[id]).map(rk=>`${RECIPES[rk].name} (${RECIPES[rk].needs[id]} per pitcher)`))}.`;
 }
 /* Your upgrade slots, shown wherever you make choices so upgrades never hide. */
@@ -941,7 +949,7 @@ function shelfHtml(){
     slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${g.icon}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You win upgrades after each day.")}></span>`}
   return `<div class="shelf"><b>🧰 My Stand</b><div class="slots">${slots}</div><button class="btn sm ghost" onclick="showBuild()">See all</button></div>`;
 }
-const HOW_STEPS=[["🌤️","Check the forecast","Hot days are busy. Rain keeps people home."],["📍","Pick a spot","Where will you sell today?"],["🛒","Buy supplies","Bigger packs cost less each."],["🧊","Set ice, signs and price","Hot days need more ice."],["📊","See how you did","Sales and tips for the day."],["🎁","Pick an upgrade","It changes tomorrow's math."]];
+const HOW_STEPS=[["🌤️","Check the forecast","Hot days are busy. Rain keeps people home."],["📍","Pick a spot","Where will you sell today?"],["🛒","Buy supplies","Bigger packs cost less each."],["🧊","Set ice, signs and price","Hot days need more ice."],["📊","See how you did","Sales and tips for the day."],["🎁","Pick an upgrade","A new upgrade for tomorrow."]];
 function howSteps(){return `<ol class="steps">${HOW_STEPS.map(([i,t,d],n)=>`<li class="step"><span class="stepIcon">${i}</span><b>${n+1}. ${t}</b><span>${d}</span></li>`).join("")}</ol>`}
 
 /* ---------- Title / character select ---------- */
@@ -949,27 +957,13 @@ function showTitle(){
   S=null;updateHUD();
   $("#screen").innerHTML=`
   <h1 class="logo"><span class="nowrap">🍋 WORLD</span> LEMONADE <span class="nowrap">STAND 🍋</span></h1>
-  <p class="goal">Make as much money as you can in 14 days!</p>
+  <p class="goal">Make as much money as you can in 14 days.</p>
   <div class="center"><button class="btn gold playBtn" onclick="selectKid('classic')">▶ PLAY</button></div>
   <div class="panel">
     <h2>How it works</h2>
     ${howSteps()}
     <p class="small muted" style="margin:10px 0 0">Not sure what something means? Point at it, or tap it.</p>
-    <details class="more"><summary>More rules</summary>
-      <ul class="rules">
-        <li>💰 You start with $30. The money you end with is your score. If you can't pay for one cup, the game ends.</li>
-        <li>🌤️ The forecast is always right. Hot days bring more people. Rain brings fewer.</li>
-        <li>🧊 Hot days need more ice. Under 70°F, no ice. In the 70s, 1 cube. 80s, 2. 90s, 3. 100°F and up, 4.</li>
-        <li>🏷️ Each flavor has tags. Kids like SWEET. Parents like FANCY and SWEET. Athletes like SOUR and CHILLED. Tourists like FANCY. Foodies like FANCY and SOUR. Artists like FANCY and FIZZY.</li>
-        <li>⚡ Combos: the right mix of flavors gives you a bonus.</li>
-        <li>⭐ Stars go up when most people get lemonade. They go down when many leave without any. More stars bring more people.</li>
-        <li>🔥 Serve 3 out of 4 customers and make money, days in a row, for a bonus each night.</li>
-        <li>🛒 Bigger packs cost less for each one. Most supplies keep, so buying big saves money if you'll use it.</li>
-        <li>🫠 Half of your leftover ice melts each night. Fresh fruit and herbs go bad: lemons after 7 days, cucumbers 5, mint 4, strawberries 3.</li>
-        <li>📦 Every 3rd day you get a bonus crate.</li>
-        <li>♾️ After day 14, keep your score or keep playing in Endless.</li>
-      </ul>
-    </details>
+    <p style="margin:12px 0 0"><button class="btn sm ghost" onclick="showHelp()">Full rules</button></p>
   </div>`;
 }
 function selectKid(kidId){
@@ -985,15 +979,15 @@ function renderMorning(){
   const wx=WEATHERS[M.shownWx];
   const newSyn=b.synergies.filter(s=>!S.discoveredSyn.includes(s.id));
   newSyn.forEach(s=>S.discoveredSyn.push(s.id));
-  const streakHtml=S.streak>=2?`<div class="synBanner" style="background:linear-gradient(90deg,#ff7b00,#ffb300)">🔥 Hot streak ×${S.streak}! Serve 3 out of 4 customers and make money today for a +${Math.min(25,3*(S.streak+1))}% bonus tonight.</div>`:"";
-  const synHtml=b.synergies.length?`<div class="synBanner">⚡ Combos: ${b.synergies.map(s=>`<span tabindex="0"${tip(s.desc)}>${s.name}</span>`).join(" · ")}</div>`:"";
+  const streakHtml=S.streak>=2?`<div class="synBanner" style="background:linear-gradient(90deg,#ff7b00,#ffb300)">🔥 Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Serve 3 out of 4 customers and make money today for a +${Math.min(25,3*(S.streak+1))}% bonus tonight.</div>`:"";
+  const synHtml=b.synergies.length?`<div class="synBanner">⚡ Combos: ${b.synergies.map(s=>`<span tabindex="0"${tip(s.desc)}>${s.name}</span>`).join(", ")}</div>`:"";
   const evTxt=M.event?eventText(M.event):"";
-  const eventHtml=evTxt?`<div class="panel" style="background:#eaf6ff;margin-top:10px;padding:10px 14px"><b>📣 Today:</b> ${evTxt}</div>`:"";
+  const eventHtml=evTxt?`<div class="panel" style="background:#eaf6ff;margin-top:10px;padding:10px 14px">${evTxt}</div>`:"";
   const basics=["cups","lemons","sugar","ice","signs"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
   const signsOwned=S.inv.signs||0;
   if(M.signs>signsOwned)M.signs=signsOwned; // you can only put out signs you own — last night's breakage may have shrunk the pile
   const shopCard=id=>{const ing=INGREDIENTS[id];
-    return `<div class="choice shop" style="cursor:default"><div class="ttl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id,true)} ${ing.name}</span></div><div class="desc">You have <b>${S.inv[id]||0}</b>${S.gear.includes("wholesale")?" · 20% off":""}${id==="ice"?'<br><span class="small">🫠 Half melts every night</span>':id==="signs"?'<br><span class="small">'+iconHtml("supply","signs")+' Signs last a few days — about 1 in 4 you put out breaks overnight</span>':SHELF[id]?`<br><span class="small">🕒 Fresh for ${SHELF[id]} days</span>`:""}</div>
+    return `<div class="choice shop" style="cursor:default"><div class="ttl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id,true)} ${ing.name}</span></div><div class="desc">You have <b>${S.inv[id]||0}</b>${S.gear.includes("wholesale")?" (20% off)":""}${id==="ice"?'<br><span class="small">🫠 Half melts every night</span>':id==="signs"?'<br><span class="small">'+iconHtml("supply","signs")+' Signs last a few days. About 1 in 4 you put out breaks overnight</span>':SHELF[id]?`<br><span class="small">🕒 Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}</span>`:""}</div>
       <div class="packs">${BULK.map((t,i)=>{const price=packPrice(id,i),poor=S.cash<price;
         return `<button class="btn sm ${poor?"ghost":""}" ${poor?"disabled":""} onclick="buyItem('${id}',${i})">+${ing.pack*t.mult} for ${fmt(price)}</button>`}).join("")}</div></div>`};
   $("#screen").innerHTML=`
@@ -1001,35 +995,35 @@ function renderMorning(){
     <div class="sky ${M.shownWx}">
       <div class="crowdMix">📍 Pick a spot below</div>
       ${skyArt(M.shownWx)}
-      <div class="standSign">${sellableNow().length?`🍋 ${sellableNow().length} flavor${sellableNow().length>1?"s":""} on the menu`:"🛒 Buy supplies to open"}</div>
+      <div class="standSign">${sellableNow().length?`🍋 ${sellableNow().length} ${plural(sellableNow().length,"flavor")} on the menu`:"🛒 Buy supplies to open"}</div>
       <img class="stand" src="${STAND_PNG}" alt="">
     </div>
     <div class="ground"></div>
-    <div class="dayStats forecastBar" tabindex="0"${tip("The forecast is always right. Use it to guess how many people will come and what they'll pay.")}><span class="fcLabel">Today's forecast</span><span class="fcMain">${wx.icon} <b>${wx.name}</b> · 🌡️ <b>${M.temp}°F</b></span><span class="fcDesc">${wx.desc}</span>${M.dice?`<span>🎲 Lucky Dice: <b>${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers</b> today</span>`:""}</div>
+    <div class="dayStats forecastBar" tabindex="0"${tip("The forecast is always right. Use it to guess how many people will come and what they'll pay.")}><span class="fcLabel">Today's forecast</span><span class="fcMain">${wx.icon} <b>${wx.name}</b>, 🌡️ <b>${M.temp}°F</b></span><span class="fcDesc">${wx.desc}</span>${M.dice?`<span>🎲 Lucky Dice: <b>${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers</b> today</span>`:""}</div>
   </div>
   ${synHtml}${streakHtml}${eventHtml}
   <div class="panel">
     <div class="flex spread"><h2 style="margin:0">🌅 Day ${S.day}</h2>${S.endless?`<button class="btn sm ghost" onclick="endRun('retired')">🏁 Stop and keep my score (${fmt(S.cash)})</button>`:""}</div>
     ${shelfHtml()}
-    <h3>1 · Pick a spot</h3>
+    <h3>1. Pick a spot</h3>
     <div class="choices" id="locChoices">
       ${M.locs.map((l,i)=>{const top=Object.entries(crowdMixFor(l)).sort((a,b2)=>b2[1]-a[1]).slice(0,3);
         return `<button class="choice spot ${M.loc===l?"sel":""}" onclick="chooseLoc(${i})"><div class="ttl"><span>${l.icon} ${l.name}</span>${M.loc===l?'<span class="pickTag">✓ Picked</span>':""}</div><div class="crowdRow">${top.map(([k,v])=>`<span class="crowd"${tip(crowdTip(k))}>${CROWDS[k].icon} ${CROWDS[k].name} ${v}%</span>`).join("")}</div></button>`}).join("")}
     </div>
-    <h3>2 · Buy supplies</h3>
-    ${M.treeLemons?`<p class="small" style="margin:2px 0">🌳 Your Lemon Tree dropped <b>${M.treeLemons}</b> free lemons this morning.</p>`:""}
+    <h3>2. Buy supplies</h3>
+    ${M.treeLemons?`<p class="small" style="margin:2px 0">🌳 Your Lemon Tree dropped <b>${M.treeLemons}</b> free ${plural(M.treeLemons,"lemon")} this morning.</p>`:""}
     <div class="choices">${basics.map(shopCard).join("")}</div>
     ${extras.length?`<p class="small" style="margin:12px 0 0"><b>Extras for your flavors</b></p><div class="choices">${extras.map(shopCard).join("")}</div>`:""}
-    <h3>3 · Ice and signs</h3>
+    <h3>3. Ice and signs</h3>
     <div class="ctrl"><label><span>${iconHtml("supply","ice")} Ice in each cup</span><span id="iceVal">${M.icePerCup}</span></label>
       <input type="range" id="inIce" min="0" max="4" step="1" value="${M.icePerCup}" aria-label="Ice cubes in each cup">
     </div>
     <div class="ctrl"><label><span>${iconHtml("supply","signs")} Signs to put out</span><span id="signsVal">${M.signs}</span></label>
       <input type="range" id="inSigns" min="0" max="${signsOwned}" step="1" value="${M.signs}" aria-label="Number of signs to put out">
-      <div class="hint">You own <b>${signsOwned}</b> sign${signsOwned===1?"":"s"} — buy more in the shop above. Putting them out costs nothing today${b.freeSigns?`; your upgrades add ${b.freeSigns} free on top`:""}. ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}</div></div>
-    <h3>4 · Set your price</h3>
-    ${S.recipes.map(rk=>{const r=RECIPES[rk];const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">⭐ SPECIAL +$0.50</span>':"";return `<div class="ctrl">
-      <label><span><span tabindex="0"${tip(`${r.desc} From: ${r.origin}.`)}>${iconHtml("flavor",rk,true)} ${r.name}</span> ${tagChips(r.tags)}${special}</span><span id="priceVal-${rk}">${fmt(M.prices[rk])}</span></label>
+      <div class="hint">You own <b>${signsOwned}</b> ${plural(signsOwned,"sign")}. Buy more in the shop above. Putting them out costs nothing today${b.freeSigns?`; your upgrades add ${b.freeSigns} free on top`:""}. ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}</div></div>
+    <h3>4. Set your price</h3>
+    ${S.recipes.map(rk=>{const r=RECIPES[rk];const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">⭐ Special +$0.50</span>':"";return `<div class="ctrl">
+      <label><span><span tabindex="0"${tip(`${r.desc} From: ${r.origin.replace(" · ",", ")}.`)}>${iconHtml("flavor",rk,true)} ${r.name}</span> ${tagChips(r.tags)}${special}</span><span id="priceVal-${rk}">${fmt(M.prices[rk])}</span></label>
       <input type="range" class="menuPrice" data-rk="${rk}" min="0.50" max="${priceMax()}" step="0.25" value="${M.prices[rk]}" aria-label="Price for ${r.name}">
       ${canBrew(rk,S.inv)?"":`<div class="hint">Not selling today: you need ${missingFor(rk)}.</div>`}
     </div>`}).join("")}
@@ -1062,7 +1056,7 @@ function renderProj(){
   const wx=WEATHERS[M.shownWx];
   $("#btnOpen").disabled=!M.loc;
   const cap=cupsFromSupplies();
-  gt.innerHTML=`<span class="nums"><span>${wx.icon} <b>${wx.name}</b> · <b>${M.temp}°F</b></span><span>${iconHtml("supply","cups")} <i class="long">Supplies for </i><b>${cap}</b> cups</span>${M.loc?"":"<span>📍 Pick a spot first</span>"}</span>`;
+  gt.innerHTML=`<span class="nums"><span>${wx.icon} <b>${wx.name}</b>, <b>${M.temp}°F</b></span><span>${iconHtml("supply","cups")} <i class="long">Supplies for </i><b>${cap}</b> ${plural(cap,"cup")}</span>${M.loc?"":"<span>📍 Pick a spot first</span>"}</span>`;
 }
 
 /* ---------- Day resolution ---------- */
@@ -1079,7 +1073,7 @@ function brewPitcher(rk){
   if(!canBrew(rk,S.inv))return false;
   S.brewCount=(S.brewCount||0)+1;
   const freePitcher=S.gear.includes("pitcher")&&S.brewCount%4===0; // Grandma's Pitcher: every 4th is on her
-  if(freePitcher)logLine(`<span class="good">🏺 Grandma's Pitcher: this pitcher is free!</span>`);
+  if(freePitcher)logLine(`<span class="good">🏺 Grandma's Pitcher: this pitcher is free.</span>`);
   else Object.entries(pitcherNeeds(rk)).forEach(([k,v])=>{S.inv[k]-=v});
   let servings=pitcherServes();
   if(S.gear.includes("brother")&&!D.brotherSpilled){D.brotherSpilled=true;servings-=2;logLine(`<span class="bad">👦 Little Brother spilled 2 cups.</span>`)}
@@ -1155,7 +1149,7 @@ function renderDayScene(){
       <div class="crowdMix">${M.loc.icon} ${M.loc.name}<br>${crowdMixLine()}</div>
       ${skyArt(M.actualWx)}
       <div class="sceneBtns"><button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button> ${spdBtnHtml()}</div>
-      <div class="standSign">🍋 ${D.menu.length} flavor${D.menu.length>1?"s":""} · from ${fmt(Math.min(...D.menu.map(rk=>menuPrice(rk))))}</div>
+      <div class="standSign">🍋 ${D.menu.length} ${plural(D.menu.length,"flavor")}, from ${fmt(Math.min(...D.menu.map(rk=>menuPrice(rk))))}</div>
       <img class="stand" src="${STAND_PNG}" alt="">
       <div id="fxLayer"></div>
     </div>
@@ -1170,7 +1164,7 @@ function renderDayScene(){
   <div class="log" id="dayLog">${S.log.slice(M.logStart).map(l=>l+"<br>").join("")}</div>`;
   updateHUD();
 }
-function crowdMixLine(){const mix=crowdMixFor(M.loc);return Object.entries(mix).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${CROWDS[k].icon} ${v}%`).join(" · ")}
+function crowdMixLine(){const mix=crowdMixFor(M.loc);return Object.entries(mix).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${CROWDS[k].icon} ${v}%`).join(", ")}
 function logLine(html){const el=$("#dayLog");if(el){el.innerHTML+=html+"<br>";el.scrollTop=el.scrollHeight} S.log.push(html)}
 function sleep(ms){ // simulation-time wait: scales with SPEED, live, and Skip ends it now
   return new Promise(res=>{
@@ -1224,11 +1218,11 @@ async function runDayPhase(phase){
     if(dry)break;
     await sleep(rnd(450,750));
   }
-  if(dry&&(isMorning?D.unmet>0:D.awayOut>0))logLine(`<span class="bad">${iconHtml("supply","cups")} You ran out of supplies!${isMorning?" People in line will wait until noon.":""}</span>`);
+  if(dry&&(isMorning?D.unmet>0:D.awayOut>0))logLine(`<span class="bad">${iconHtml("supply","cups")} You ran out of supplies.${isMorning?" People in line will wait until noon.":""}</span>`);
   if(!isMorning){await buyersServed();finishDay();return}
   D.morningSold=D.sold;
   if(standDry()){await buyersServed();finishDay();return}
-  const msg=$("#dayMsg");if(msg)msg.textContent="Noon! More people are coming.";
+  const msg=$("#dayMsg");if(msg)msg.textContent="Noon. More people are coming.";
   if(D.skip)resumeAfternoon();else after(900,resumeAfternoon);
 }
 function updateDayStats(){
@@ -1324,7 +1318,7 @@ function finishDay(){
   // stars: the more of today's customers got lemonade, the better
   let repDelta=0,repNotes=[];
   if(D.demand>0){const step=served>=0.9?0.2:served>=0.7?0.1:served>=0.5?0:served>=0.3?-0.1:-0.2;
-    repDelta+=step;repNotes.push(`${D.sold} of ${D.demand} people got lemonade${step?` ${step>0?"+":"−"}${Math.abs(step)}`:""}`)}
+    repDelta+=step;repNotes.push(`${D.sold} of ${D.demand} ${plural(D.demand,"person","people")} got lemonade${step?` ${step>0?"+":"−"}${Math.abs(step)}`:""}`)}
   const avgPrice=D.sold>0?Object.entries(D.soldBy).reduce((s,[rk,n])=>s+menuPrice(rk)*n,0)/D.sold:0;
   if(S.gear.includes("chalk")&&D.signs+D.build.freeSigns>=4){repDelta+=0.2;repNotes.push("chalk art +0.2")}
   if(S.gear.includes("mascot")&&served<0.75){repDelta-=0.1;repNotes.push("mascot suit −0.1")}
@@ -1342,11 +1336,11 @@ function finishDay(){
   let streakNote="";
   if(served>=0.75&&made>0){
     S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);
-    if(S.streak>=2){const pct=Math.min(25,3*S.streak);const bonus=Math.round(revenue*pct/100*100)/100;S.cash+=bonus;S.lifetimeProfit+=bonus;streakNote=`🔥 Hot streak: ${S.streak} days! Bonus: <b>${fmt(bonus)}</b> (${pct}% of sales).`}
+    if(S.streak>=2){const pct=Math.min(25,3*S.streak);const bonus=Math.round(revenue*pct/100*100)/100;S.cash+=bonus;S.lifetimeProfit+=bonus;streakNote=`🔥 Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Bonus: <b>${fmt(bonus)}</b> (${pct}% of sales).`}
   } else if(S.gear.includes("clover")&&S.streak>=2&&S.cloverAct!==actIndex()){
-    S.cloverAct=actIndex();streakNote=`🍀 Your Four-Leaf Clover saved your ${S.streak}-day hot streak!`;
+    S.cloverAct=actIndex();streakNote=`🍀 Your Four-Leaf Clover saved your streak of ${S.streak} ${plural(S.streak,"day")}.`;
   } else {
-    if(S.streak>=2)streakNote=`💨 Your ${S.streak}-day hot streak ended (${served<0.75?"fewer than 3 out of 4 customers got lemonade":"no money made"}).`;
+    if(S.streak>=2)streakNote=`💨 Your streak of ${S.streak} ${plural(S.streak,"day")} ended (${served<0.75?"fewer than 3 out of 4 customers got lemonade":"no money made"}).`;
     S.streak=0;
   }
   // Compound Piggy: interest on the bank, every evening
@@ -1361,15 +1355,15 @@ function finishDay(){
   S.cash=Math.round(S.cash*100)/100;
   // counterfactual — the near-miss engine
   let counter="";const outCount=Math.max(0,unserved-D.awayPrice-D.awayWarm); // left because supplies ran out
-  if(unserved>0&&(D.awayOut>0||D.unmet>0))counter=`<b>You ran out!</b> ${outCount} more people wanted lemonade. That's about <b>${fmt(outCount*Math.max(avgPrice,1))}</b> you missed. Buy more supplies.`;
-  else if(D.awayPrice>unserved*0.4&&D.awayPrice>0)counter=`<b>Too pricey.</b> ${D.awayPrice} people walked away. Try a lower price.`;
-  else if(D.awayWarm>0)counter=`<b>Too warm.</b> ${D.awayWarm} people wanted colder lemonade. At ${M.temp}°F, use ${iceMinToday()} cubes or more.`;
-  else if(wasted>0)counter=`<b>Leftovers.</b> ${wasted} cups were poured out at closing. That's <b>${fmt(wasted*pourCost)}</b> wasted.`;
-  else if(unserved>0)counter=`<b>So close!</b> ${unserved} people didn't buy. Try a lower price or another sign.`;
-  else counter=`<b>Perfect!</b> Everyone got lemonade, and nothing went to waste.`;
+  if(unserved>0&&(D.awayOut>0||D.unmet>0))counter=`You ran out. ${outCount} more ${plural(outCount,"person","people")} wanted lemonade. That's about <b>${fmt(outCount*Math.max(avgPrice,1))}</b> you missed. Buy more supplies.`;
+  else if(D.awayPrice>unserved*0.4&&D.awayPrice>0)counter=`${D.awayPrice} ${plural(D.awayPrice,"person","people")} walked away. The price was too high. Try a lower price.`;
+  else if(D.awayWarm>0)counter=`${D.awayWarm} ${plural(D.awayWarm,"person","people")} wanted colder lemonade. At ${M.temp}°F, use ${iceMinToday()} ${plural(iceMinToday(),"cube")} or more.`;
+  else if(wasted>0)counter=`${wasted} ${plural(wasted,"cup")} ${wasted===1?"was":"were"} poured out at closing. That's <b>${fmt(wasted*pourCost)}</b> wasted.`;
+  else if(unserved>0)counter=`${unserved} ${plural(unserved,"person","people")} didn't buy. Try a lower price or another sign.`;
+  else counter=`Everyone got lemonade, and nothing went to waste.`;
   const tonight=overnight(); // ice melts and old produce goes bad once you close
   const byCups=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]);
-  const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${iconHtml("flavor",rk)}</span> ${n} cup${n===1?"":"s"} × ${fmt(menuPrice(rk))}</span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
+  const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${iconHtml("flavor",rk)}</span> ${n} ${plural(n,"cup")} at ${fmt(menuPrice(rk))}</span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
   const upgradeBonus=Math.round((D.revenue-Object.entries(D.soldBy).reduce((s,[rk,n])=>s+n*menuPrice(rk),0))*100)/100;
   const walked=D.awayPrice,warmAway=D.awayWarm,ranOut=Math.max(0,unserved-walked-warmAway),why=[];
   if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);if(warmAway)why.push(`${warmAway} wanted more ice`);
@@ -1377,7 +1371,7 @@ function finishDay(){
   const invLine=Object.keys(INGREDIENTS).filter(id=>(S.inv[id]||0)>0).map(id=>`${S.inv[id]}${iconHtml("supply",id)}`).join(" ");
   const repExtra=repNotes.slice(D.demand>0?1:0); // the first note (people served) is the line above it
   const repLine=repNotes.length?`⭐ Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b>${repExtra.length?` (${repExtra.join(", ")})`:""}`:`⭐ Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
-  const stamp=perfect?`<span class="rStamp">PERFECT DAY</span>`:soldOut?`<span class="rStamp">SOLD OUT</span>`:made<0?`<span class="rStamp bad">ROUGH DAY</span>`:"";
+  const stamp=perfect?`<span class="rStamp">Perfect day</span>`:soldOut?`<span class="rStamp">Sold out</span>`:made<0?`<span class="rStamp bad">Rough day</span>`:"";
   const today=S.log.slice(M.logStart);
   $("#screen").innerHTML=`
   <div class="panel">
@@ -1395,16 +1389,16 @@ function finishDay(){
         </div></div>
       </div>
       <div class="dayNotes">
-        <p>👥 ${D.sold} of ${D.demand} people got lemonade.${why.length?` ${why.join(", ")}.`:""}</p>
+        <p>👥 ${D.sold} of ${D.demand} ${plural(D.demand,"person","people")} got lemonade.${why.length?` ${why.join(", ")}.`:""}</p>
         <div class="note">${counter}</div>
         <p>${repLine}</p>
         ${[streakNote,interestNote,jarNote].filter(Boolean).map(n=>`<p>${n}</p>`).join("")}
-        ${tonight.length?`<p>🌙 <b>Tonight:</b> ${listWords(tonight)}.</p>`:""}
+        ${tonight.length?`<p>🌙 Tonight: ${listWords(tonight)}.</p>`:""}
       </div>
     </div>
     <details class="numbers"><summary>See every number</summary>
       <ul class="facts">
-        ${byCups.map(([rk,n])=>`<li>${iconHtml("flavor",rk)} ${RECIPES[rk].name}: <b>${n} cup${n===1?"":"s"}</b></li>`).join("")}
+        ${byCups.map(([rk,n])=>`<li>${iconHtml("flavor",rk)} ${RECIPES[rk].name}: <b>${n} ${plural(n,"cup")}</b></li>`).join("")}
         <li>🍶 Pitchers made: <b>${brewedTotal}</b></li>
         ${wasted?`<li>🫗 Cups poured out: <b>${wasted}</b></li>`:""}
         <li>🎒 Supplies left: <b>${invLine||"none"}</b></li>
@@ -1446,10 +1440,10 @@ function drawDraft(rareOnly){
 }
 function draftCardHtml(p){
   if(p.kind==="gear"){const g=GEAR.find(x=>x.id===p.id);const full=S.gear.length>=gearSlots();
-    return {icon:g.icon,title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"STAND UPGRADE"}}
+    return {icon:g.icon,title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"Stand upgrade"}}
   if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(pitcherNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
-    return {icon:iconHtml("flavor",p.id,true),title:r.name,badge:"",desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`,tags:tagChips(r.tags),type:"NEW FLAVOR"}}
-  return {icon:"💵",title:"Cousin's Gift",badge:"",desc:`+${fmt(18+22*actIndex())} cash right now. It gets bigger later in the summer.`,tags:"",type:"CASH"};
+    return {icon:iconHtml("flavor",p.id,true),title:r.name,badge:"",desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`,tags:tagChips(r.tags),type:"New flavor"}}
+  return {icon:"💵",title:"Cousin's Gift",badge:"",desc:`+${fmt(18+22*actIndex())} cash right now. It gets bigger later in the summer.`,tags:"",type:"Cash"};
 }
 function renderDraftScreen(){
   $("#screen").innerHTML=`<div class="panel">
@@ -1467,7 +1461,7 @@ function offerDraft(){
 }
 function offerCrate(){
   $("#screen").innerHTML=`<div class="panel center">
-    <h2>📦 Bonus crate!</h2>
+    <h2>📦 Bonus crate</h2>
     <p class="big">Every 3rd day you get a free crate. Which one?</p>
     <div class="choices">
       <button class="choice" onclick="openCrate('gear')"><div class="ttl"><span>🧰 Upgrade crate</span></div><div class="desc">3 rare (or better) stand upgrades.</div></button>
@@ -1502,7 +1496,7 @@ function showSwap(p){
   $("#screen").innerHTML=`<div class="panel">
     <h2>🧰 Your stand is full</h2>
     <p style="margin-top:0">Which upgrade should go? You'll get <b>${c.icon} ${c.title}</b>.</p>
-    <div class="choices">${owned.map((o,i)=>`<button class="choice" onclick="swapFor(${i})"><div class="ttl"><span>${o.icon} ${o.name}</span>${rarBadge(o.rar)}</div><div class="small typeLabel">REMOVE</div><div class="desc">${o.desc}</div></button>`).join("")}</div>
+    <div class="choices">${owned.map((o,i)=>`<button class="choice" onclick="swapFor(${i})"><div class="ttl"><span>${o.icon} ${o.name}</span>${rarBadge(o.rar)}</div><div class="small typeLabel">Remove</div><div class="desc">${o.desc}</div></button>`).join("")}</div>
     <div class="flex mt" style="justify-content:center"><button class="btn sm ghost" onclick="pendingDraft=null;renderDraftScreen()">← Back</button><button class="btn sm ghost" onclick="pendingDraft=null;nextDay()">Keep my stand</button></div>
   </div>`;
 }
@@ -1521,7 +1515,7 @@ function grantDraft(p){
   if(newOnes.length){
     newOnes.forEach(s=>{S.discoveredSyn.push(s.id);if(!meta.discoveredSyn.includes(s.id))meta.discoveredSyn.push(s.id)});
     confetti(60);sfx.fanfare();
-    $("#screen").innerHTML=`<div class="panel center"><div class="synBanner" style="font-size:23px">⚡ NEW COMBO! ⚡</div>
+    $("#screen").innerHTML=`<div class="panel center"><div class="synBanner" style="font-size:23px">⚡ New combo ⚡</div>
       <h2 class="mt">${newOnes.map(s=>s.name).join(" + ")}</h2>
       <p class="big">${newOnes.map(s=>s.desc).join("<br>")}</p>
       <button class="btn gold" style="font-size:20px" onclick="nextDay()">Start Day ${S.day+1} →</button></div>`;
@@ -1557,12 +1551,12 @@ function scoreHtml(bestLine){
 }
 function highlightsHtml(days){
   const hl=[["📅",S.endless?days:`${days} of 14`,"days played"],["🥤",S.lifetimeSold,"cups sold"],
-    ["🔥",`${S.bestStreak} day${S.bestStreak===1?"":"s"}`,"best hot streak"],["⭐",S.perfectDays,`perfect day${S.perfectDays===1?"":"s"}`]];
+    ["🔥",`${S.bestStreak} ${plural(S.bestStreak,"day")}`,"best hot streak"],["⭐",S.perfectDays,`${plural(S.perfectDays,"perfect day")}`]];
   return `<ul class="highlights">${hl.map(([i,v,l])=>`<li><span class="hlIcon">${i}</span><b>${v}</b><small>${l}</small></li>`).join("")}</ul>`;
 }
 function goEndless(){
   S.endless=true;S.totalDays=Infinity;S.actsCount=Infinity;
-  S.log.push(`<span class="info">♾️ Endless! Stop any morning to keep your score.</span>`);
+  S.log.push(`<span class="info">♾️ Endless. Stop any morning to keep your score.</span>`);
   sfx.fanfare();startMorning();
 }
 /* ---------- Run end / meta ---------- */
@@ -1574,7 +1568,7 @@ function endRun(mode,reason){
   st.perfect+=S.perfectDays;st.sellouts+=S.sellouts;
   const prevBest=st.best;st.best=Math.max(st.best,Math.round(S.cash));
   saveMeta();
-  const heading=mode==="complete"?"🏆 Summer complete!":mode==="retired"?"🏁 Score saved!":"🌅 Out of business";
+  const heading=mode==="complete"?"🏆 Summer complete!":mode==="retired"?"🏁 Score saved":"🌅 Out of business";
   if(mode!=="bankrupt"){confetti(120);sfx.fanfare()}
   const newBest=prevBest>0&&Math.round(S.cash)>prevBest;
   $("#screen").innerHTML=`<div class="panel center">
@@ -1597,7 +1591,7 @@ function buildSummary(){
   const parts=[];
   S.gear.forEach(gid=>{const g=GEAR.find(x=>x.id===gid);if(g)parts.push(g.icon+" "+g.name)});
   S.recipes.forEach(rk=>parts.push(iconHtml("flavor",rk)+" "+RECIPES[rk].name));
-  return parts.length?parts.join(" · "):"nothing yet.";
+  return parts.length?parts.join(", "):"nothing yet.";
 }
 /* ---------- Modals: build + help ---------- */
 function showBuild(){
@@ -1606,7 +1600,7 @@ function showBuild(){
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
     <div class="flex spread"><h2>🧰 My Upgrades</h2><button class="btn sm ghost" onclick="closeModal()">✕ Close</button></div>
     <h3>My Stand (${S.gear.length}/${gearSlots()})</h3>
-    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${g.icon} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty slot${empty>1?"s":""}. You win upgrades after each day.</li>`:""}</ul>
+    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${g.icon} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty ${plural(empty,"slot")}. You win upgrades after each day.</li>`:""}</ul>
     <h3>My flavors</h3>
     <ul class="list">${S.recipes.map(rk=>{const r=RECIPES[rk];return `<li><b>${iconHtml("flavor",rk)} ${r.name}</b> ${tagChips(r.tags)}<br><span class="small">Liked by ${flavorFans(r.tags)}</span></li>`}).join("")}</ul>
     <h3>⚡ Combos</h3>
@@ -1617,19 +1611,25 @@ function showBuild(){
 function showHelp(){
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
     <div class="flex spread"><h2>❓ How to play</h2><div class="flex"><button class="btn sm ghost" id="helpSound" onclick="toggleSound()">${soundOn?"🔊 Sound on":"🔇 Sound off"}</button><button class="btn sm ghost" onclick="closeModal()">✕ Close</button></div></div>
-    <p style="margin:0 0 10px"><b>Goal:</b> make as much money as you can in 14 days.</p>
+    <p style="margin:0 0 10px">Make as much money as you can in 14 days. The money you end with is your score.</p>
     ${howSteps()}
-    <h3>What the words mean</h3>
+    <h3>Rules</h3>
     <ul class="list">
-      <li><b>💰 Money made:</b> your sales and tips. Everything you sell with — supplies and signs — is paid for when you buy it, so starting a day never costs money.</li>
-      <li><b>🛒 Bulk:</b> bigger packs cost less for each one.</li>
-      <li><b>🫠 Melts and goes bad:</b> half your leftover ice melts each night. Lemons, strawberries, mint and cucumbers go bad after a few days.</li>
-      <li><b>⭐ Stars:</b> they go up when most people get lemonade. More stars bring more people.</li>
-      <li><b>🏷️ Flavor tags:</b> SWEET, SOUR, FANCY, CHILLED, FIZZY. Each crowd likes different ones.</li>
-      <li><b>⚡ Combos:</b> the right mix of flavors gives a bonus.</li>
-      <li><b>🔥 Hot streak:</b> serve 3 out of 4 customers and make money, days in a row, for a bonus each night.</li>
-      <li><b>💎 Rarity:</b> common, rare, epic, legendary. Rarer upgrades show up less often.</li>
-      <li><b>♾️ Endless:</b> after day 14, keep playing as long as you like.</li>
+      <li>💰 Money made is your sales and tips. Supplies and signs are paid for when you buy them. Starting a day never costs money.</li>
+      <li>💵 You start with $30. If you can't pay for one cup, the game ends.</li>
+      <li>🌤️ The forecast is always right. Hot days bring more people. Rain brings fewer.</li>
+      <li>🧊 Hot days need more ice. Under 70°F, no ice. In the 70s, 1 cube. In the 80s, 2. In the 90s, 3. At 100°F and up, 4.</li>
+      <li>🛒 Bigger packs cost less for each one.</li>
+      <li>🫠 Half of your leftover ice melts each night. Lemons last 7 days, cucumbers 5, mint 4 and strawberries 3.</li>
+      <li>🪧 Signs bring in more customers. About 1 in 4 signs you put out breaks overnight.</li>
+      <li>⭐ Stars go up when most people get lemonade. They go down when many people leave without any. More stars bring more people.</li>
+      <li>🏷️ Flavor tags are Sweet, Sour, Fancy, Chilled and Fizzy. Each crowd likes different ones.</li>
+      <li>👥 Kids like sweet drinks. Parents like fancy and sweet. Athletes like sour and chilled. Tourists like fancy. Foodies like fancy and sour. Artists like fancy and fizzy.</li>
+      <li>⚡ Combos give a bonus when the right mix of flavors is on your menu.</li>
+      <li>🔥 A hot streak gives a bonus each night. Serve 3 out of 4 customers and make money, day after day.</li>
+      <li>💎 Upgrades can be common, rare, epic or legendary. Rarer ones show up less often.</li>
+      <li>📦 Every 3rd day you get a bonus crate.</li>
+      <li>♾️ Endless starts after day 14. Play as long as you like.</li>
     </ul>
     <p class="small muted">Point at or tap anything in the game to learn more.</p>
   </div></div>`;
