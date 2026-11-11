@@ -134,6 +134,9 @@ h3{margin:14px 0 6px}
 .icon.big{--sz:32px;vertical-align:-9px}
 .icon.supply{--n:16;background-image:var(--supplyIcons)}
 .icon.flavor{--n:12;background-image:var(--flavorIcons)}
+.icon.spot{--n:13;background-image:var(--spotIcons)}
+.icon.gearA{--n:20;background-image:var(--gearIconsA)}
+.icon.gearB{--n:19;background-image:var(--gearIconsB)}
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
@@ -390,6 +393,12 @@ const WEATHER_PNG={
 const SUPPLY_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAQCAMAAADODVF7AAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA3FJREFUeNrVl9Fy2kAMRaNCBhgIGAP5Ambq5CH9/7/rlbTSSrsGmrR9iEIyAdYr6ehKaz99DyPYVy76xPZ3XTz4WlZ81fkfBfgLFjdsw5kLj4ZhaBfFbOs1vFIs71H3LAtseU+D6HhMH9E4jvX9XwNmAB9xvx0sXEBvsPZ6GnYxIyox0eHwbLZUIsO+WCIQclAAxQMNr2x5KRbjT/jgNI5H58fhdSHG+Jdi/kEHjF4vl3P9erd7YQLb6oB/plaEqaTEESkAz98BmB1iCMdaQ0CDGQDJv4YjqLA4SkA+MQA0GQALkVcijupN8l+4u+t1ws+1ZkSXAICQ/nbLAIyAEm4BwEXK/zRCpvhPUl+vKwAn4OuJ1rCaUAaAYGI9pCJiJR4uHSnt3GHmQHJHHFZy3RFWvub8FYEtgACqS7hD+vwyh/l6U9ChkfN4qgCQ3ioAyAk80XqzYQKreQW0ALgiu41XRFuHvAFmALBnel4WCdBlep/e+aUZkHXk3hYg/6H6FACQwLYCQH9iewNAk1pTfxVAUcCK878BAPlz+gBgBMqOGYB3Kb1I+ruNBCTtP6KD6ozlES6mcwy5w7W41/cXyR6/dwC0EhAAriDO/80AaLlgey8gl7/kXwDEGdC0gMi/GBOIp4YQPLPpJJSQlB8YuALQ/0cRgm6I1IfBAXRDiBWgCBzAQfOvACCAIUwB5O/1VwWwVQALeRmAWH+fuGnuKgETaMgfAOwIrCehkJD8DYAIwCXJBFB/PwiyAqQAUn8jwArQHmgUEAA0bafHrgNIAgMAzX9RAKT6W/yLH/GcSQAqAWkBOwLjSehzR0NiCbgAigdWQDkI8gxIAKQEAMDljwpoALAraCDOHZGY+ftA8ng5gCIBBZDrb9cDQHNixkNgFUaADcA4B0V1oSbSBFWSEiAkUA6CZgiSlF47oLTAIwWos9ACrADU1UTNLYAp4C2A9GsLyAHQ5N8B0KERFLaClQ6+AaAZSzoBIwC/k7ShbGOUm5CTR/o+BJMC6oxIx9zg3lB7aYE0BOMMUASugC7/FkB/Kxp2nwcgk/Acx1Kbf3j3s1i6l/bbgO4c727Vi7PqLWfU3kf4KVLen05t/h2Ae88hpXbN0drdrGagTcfNPQuki+8/DPS3xqyAm983/GYfzD7xrFb2evxAmC76/8/H/2ij3yacYurn5S06AAAAAElFTkSuQmCC";
 /* 12 flavor icons, 16×16 each, in RECIPES order, drawn in Pixelwright (round 2: sheet shifted down a row, stemmed coupe for rosewater, mason jar for chia, red ramune marble). Shown with iconHtml("flavor",id). */
 const FLAVOR_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAQCAMAAAB3PIAaAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAb5JREFUeNrdlltywjAMRauZUqChxcSd/HUN7H93lfWyFOwkncJHuT8gP+R7JI/h5ZkEED87092R5f3DsCHjsj23vLUV9kcahTzOZiGlBI1hXm/h7tzbXzQM8zPhdDO05P+SL7acsyWXvui4ZwMndCsy/xlgzBKqDrJedd5xjAv99kKKMgBbD8N7C6DOcwL9ntFEBBACSl9kGz5UMcEo88hD0vU7kXM8fRXV8FCkAN+qWtHYySJ2xLtJsQM1uaW3I2A6qSTOpJS5AjCdVRK/qSTmeshyOSFVgMmXp1Fxyuf9kKitsw5sBkDvpCUAqAC4Eu17ALTfB9COYk/bADlLDWvC6/Vaaaa9qgMwqroAxX0AgHiev0JKYOEGAF9A8V8J7gEQrxDZn10hvEOuZM6/Xbl657cApFYLbN77dwQWe/+OQF6piS4QQrgTXAP4petfYc4X7lz0P+/AAwCkBfGEewJg/QNAMIDxwLL4wtoOQPXfCNAo4CpAeKVxIPinR8r5Lz+C3j/Gn6Qav5LmvG5DSI/2XX9vASifJ4ZwAR4OUB/2eIAL4+zt+SsA5XfM+29k/GPc/HuwMv2r/Cv5/pN+AD8jNJrR7Nz7AAAAAElFTkSuQmCC";
+/* 13 spot icons, 16×16 each, in LOCATIONS order, drawn in Pixelwright (round 2: closed lifebuoy outline with glass-tint quarters, hinged striped clapperboard). Shown with iconHtml("spot",name). */
+const SPOT_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANAAAAAQCAMAAABQkgHyAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAltJREFUeNrll81ugzAMgGdaqUhhKuo6tNt2A4mq7/948x+J7UBHd9zcChqSOP5sx6Ev/0OAxbTfUGw79OtD310NCCv8xqrNvqbrtqyhhrsJjkECGBLK4PXD8ZgnjCyby2MH3OjyHE3/gKiJPF1Xxi4O1unMcyHRdj8I0DDoAx7pgLoUgKwt9Eva6/aF9fVJX3h0stXZBFUe6LVjSZtAspwC4VJ9n8ABpQAEbdueSuAn+uJlFQgOB/gkoR9iP7FYj7BqzAMD1Pt0QevV/Aqo8AgSULK9o1DiUZt4ECjjVClHxhCP2kQXJtoJZGOTge7wsjiUnzQ4yPEgUCb6ESgJkEyBpECFCMb2VIBIAfBkWQJmiZHsI7d7JZUiUNw5mo/WZWcHRDwEtBDVKZdpqBmBOEK9Bzo5oAtrSK/qoRmmaRynSYFuNzEQ7yVC/FmAAk97J6mAzlWVNXsOTjlDYn9MuWUPOSCbcjiPeXCb6ZYASbmlPc8zbrEWb9KuI+QNYB4LBOcAhA2W9QhJTS5lhHLXFgVd0QG9XRxQKJt0MVsodiPHF0oGEvdkFy2DI1AhwiKC/j5rTSEgyqYE20C+bIdTiEy4WKBjFnPA2ZowuhsDARggSeoIlCMWHZaBcl19DLR2sIYXC59yhyzZhZxupgr6owppug6ZnLaiMYwnh3n9mnLNYnNIuQ8jj1596pNxK0IE1BqgSQyUW3UuSoQsUBiPCwR/rRQFE9H3gUoAXfe/qthDbyUlqmZ4mQCuoDsjtOvd0Rl3zbJ7yjP69ynLKjEw5oMPrteBjaPrH/yj8A3FgDso3HQ+RQAAAABJRU5ErkJggg==";
+/* 20 upgrade icons (first half of GEAR), 16×16 each, drawn in Pixelwright. Shown with gearIconHtml(id). */
+const GEAR_ICONS_A_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAAQCAMAAABQt1bbAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA89JREFUeNrtmN16ojAQhjuAJW6wIEpPKodbae0uvf+r28kkmUwCqW777LMn/UQElPy8+WYSvPvWVwWR/sX9V8p+vr2u8iud/PsupVfl2X7P1zesosjU8pOUqU0Zadorvl+pnn9RvDllSk8I5sejDAAPh08DXJafnnoeUfXQdR1dgIP52OPLfdE0m82Ar74vklt8iZZfhqABqHWjCaG/f6tUTV8SwMvlora4u82DWYD39T3z6/vggBsDwH8PZ9Sj2Z09sfk3yZ+W76RSFof8gAAC1o2fe7YgVE1TDcPQV0VViVugbZubANZGmvZ1cKDlV3iARul4hw4/y1MA2/739wCkVrSjQl0Iia4d+oe2bR90q2V3wwj72uz4whm9RPoI4DYAtDfTHUSwB6xc1E8AN0PVv0iAyE8AHGnLA9SOoG0hi/jdFa8kXzbsWHwJm4amZYBbUgAIispmA0b0oes7Athqrr7puoYdV8Pj4wDDgAcO4PF47HCXB0j5yAF06Dw/yoXS66C1rua5qpAfAzT4AkAYx/F0Oq1H4HISSXNIEYeXbRAPKBkQDzkBLB1YOHEJFrBvHRYkHQgaAaIADzIAkV4CEN0dORBb4x2IkUtt5Qh5u4B5BwfqqpqruW0tQOos8csBfFH4mqbJ5gQxN7oDwIJIvv8J8RWAKOlA/3US9IGfnLIcwCO+LaAlQKcYYCcBqq2KHYhb4kCwGf0OLq9g3tyfUpflPJcaP8wtVNUDKQCE8QQe4PSiFOKbYOe6xIDcwXWAfgtIJJCFA6HeiOLIq7S5nEYAjxjCFqDpLQHEg5CkRYZZA5g4UGHtEiBPwSKE0+HFcRODnAB8Gk9PHqDpaq0Mv2laB4gjQbriwDq0KXKUc2Ae4A5/irfsBMCjyYEWoGXo6FkHOnwfAExyIFUfOZAB+giWUUxphmcw8hAhlA4EH8LGgHVt+a0DdAfLy7EDcdDFTBkIrjhQpQ6kQfSOQhR2EmGA1oHsmI4I4kdYxlhlAMaLBJsBmaCPYBnFS4DGoRKg4ecBqsnxwzy4DpCqDnZOAdoEaxQA4kyG8gBx/KMcuJEAHUFeNAHa6UOAaD1Dix24XEjPpODAKIKcA0PhmAzTmdgAXD61iIjGWWT0J2g8Zf33SYA2wRplAC46GAMkgmHRubKupOL4hFpKomVcOLUXPEB2oH8ec6sw6JLRpihO1iJykbB47LMDKob0fJ7stha5VwFee/pcAegckfw8X9wPUu5JZMWBUQgvcnpaWxK9N3QvBpgql+zSJ8L/93fJqi3ED345SeMJK2ZL/NbX9QeJcGYWBiYqegAAAABJRU5ErkJggg==";
+/* 19 upgrade icons (second half of GEAR), 16×16 each, drawn in Pixelwright. Shown with gearIconHtml(id). */
+const GEAR_ICONS_B_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATAAAAAQCAMAAACm/tNDAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA4BJREFUeNrtmNty2jAQhtkxJXaBGptgphe9b27IDHn/d+ueV5LlEOh0hosuCY5sHT/9u1pn9d/+jQEkf5I90BzevJX20D08mzsmgFWptl4eHS4fMivaY703lZBgmg5TMXSlu7QGHA50x4HBOI4DrLruMWLQtW375cXD8TiONOLxeBdl/3NsO2xN5vPHmaNJEXa7w8F+jdE7GRaIHgKbptec8aHvU2BvZMmQ2Nl+t8umy+2ZV7FB+a36Dt+nMOTFwMavA0Misbix5cYZMNwx2zMHtt0yMGQE7zJhQoalE9prJjQGNpeolfdIC22brhg3qJUasHbzFkzcocNvtgTnPS7ErPhLFlzZoFkHm67bpO7AFqoG5mXA5KMXFRj8QhNeK3hFw0cstLnCyPVksQGMeRkwlBVL2oaEdaMWwISQMir1hl0l8SjXrXz/YEtWPMA4mEBQ72bavY0Q+iJgrjElNmAQqQHDYiMdycWBXQwYkZomEprywjnsXGG4WCNm89+qcZECFwKLIRlY2+bA5KPAZEAcsiqQkFLhwYmHk8K8mgztK47uvUYOjIiRVyYO8jkwiWASxBZiDgErQpgDK+uTwmTADcu+CixTWA5s7ybVaSfYcE3pjmp9vjOgxWRzhXl9ky1uJwNLiJWHZCKAGTAMXW6aHajhejyGhcJCUQaMvDFG6EqAsLYND2B5BV1PAQz2+hi7pdYoBAXQq6UKox8HRnsRLilHHvHR9jNgq1XTzENkaDwHFrwuF02ncPYCTLop9cZwvhswmiHPX4IKx3sJYPp4jfoic4XhMZAlJcqrVBjHMglcKFn61vp9/3G9fjgwcscB0hgmuAxYOKhO0G+ECBJgDtgzi8Ilg1gAOymwLEiVZ1zEBAamQdjj10Y8kl2SeRkw+JYcmNqiBkxdssybENgVzRVGrorA4pQ0AWqFAhjE81LwKbAsCt4EJiehH/QqqRmwNE37FBjRCoXVgLWILAEmx+5CVoArPuHHgR2JF2eu1ZhqwF6s3PdUTDJLOJ+b5nyeB4yqS1aARQyrB8UyceVNjVNe5seZDmWuBIyzCothBMxPaGsQQfx2FpUHfcz0BdhSpq8TepkB8Qo/2RbHM9LJNdsRO8ICWD1xXHpX8t7k1QgsDWv8WC5erMo0Yu6F1bw16t94l7yxAUrsjncL/1Qn9Be29Gr0fP96eOLJPbn9AY5dVllBrqJ/AAAAAElFTkSuQmCC";
 /* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
 const CUSTOMER_PNG={
   kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
@@ -413,6 +422,9 @@ document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
 document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
 document.documentElement.style.setProperty("--supplyIcons",`url(${SUPPLY_ICONS_PNG})`);
 document.documentElement.style.setProperty("--flavorIcons",`url(${FLAVOR_ICONS_PNG})`);
+document.documentElement.style.setProperty("--spotIcons",`url(${SPOT_ICONS_PNG})`);
+document.documentElement.style.setProperty("--gearIconsA",`url(${GEAR_ICONS_A_PNG})`);
+document.documentElement.style.setProperty("--gearIconsB",`url(${GEAR_ICONS_B_PNG})`);
 document.documentElement.style.setProperty("--hudPng",`url(${HUD_PNG})`);
 document.documentElement.style.setProperty("--streetPng",`url(${STREET_PNG})`);
 Object.entries(WEATHER_PNG).forEach(([k,v])=>document.documentElement.style.setProperty(`--${k}Png`,`url(${v})`));
@@ -499,19 +511,19 @@ const CROWDS={
   artists:   {name:"Artists",      icon:"🎨", pay:2.60, loves:["FANCY","FIZZY"], hates:null,    line:"Beautiful."}
 };
 const LOCATIONS=[
-  {name:"Maple St. Spot", icon:"🏠", traffic:17, bias:{kids:3,parents:3,artists:1}, wx:null,        desc:"Your home street. Lots of families."},
-  {name:"School Gate",      icon:"🎒", traffic:21, bias:{kids:6,parents:2},                 wx:null,        desc:"Lots of kids at lunch. Sweet drinks sell well."},
-  {name:"Riverside Park",   icon:"🌳", traffic:23, bias:{athletes:5,parents:2,kids:1},wx:"windy+",   desc:"Runners and families having picnics."},
-  {name:"Pool Entrance",    icon:"🏊", traffic:26, bias:{athletes:4,kids:3},        wx:"hot+",      desc:"Swimmers come out thirsty."},
-  {name:"Little League Field",icon:"⚾",traffic:25, bias:{parents:4,kids:4},   wx:null,        desc:"Parents watch the game and buy drinks."},
-  {name:"Downtown Crossing",icon:"🚦", traffic:29, bias:{tourists:3,foodies:2,artists:2},             wx:null,        desc:"A mix of everyone passing through."},
-  {name:"Farmers Market",   icon:"🧺", traffic:24, bias:{foodies:4,parents:2,artists:1},  wx:null,        desc:"Foodies shop here. Fancy and sour drinks do well."},
-  {name:"Boardwalk",        icon:"🎡", traffic:32, bias:{tourists:5,kids:2},             wx:"hot+",      desc:"Lots of tourists and big crowds."},
-  {name:"Skate Park",       icon:"🛼", traffic:22, bias:{kids:3,athletes:3},                  wx:"windy+",    desc:"Young and sporty."},
-  {name:"Dog Park",         icon:"🐶", traffic:20, bias:{parents:3,athletes:3},            wx:null,        desc:"Dog owners stop for a drink."},
-  {name:"Outdoor Cinema",   icon:"🎬", traffic:30, bias:{artists:4,tourists:2,parents:1},              wx:null,        desc:"Movie crowds get thirsty at the break."},
-  {name:"Train Station",    icon:"🚉", traffic:27, bias:{tourists:4,athletes:2},             wx:null,        desc:"Travelers in a hurry."},
-  {name:"The Marina",       icon:"⛵", traffic:28, bias:{tourists:4,foodies:3},            wx:"hot+",      desc:"Sailors and tourists with money to spend."}
+  {name:"Maple St. Spot", traffic:17, bias:{kids:3,parents:3,artists:1}, wx:null,        desc:"Your home street. Lots of families."},
+  {name:"School Gate", traffic:21, bias:{kids:6,parents:2},                 wx:null,        desc:"Lots of kids at lunch. Sweet drinks sell well."},
+  {name:"Riverside Park", traffic:23, bias:{athletes:5,parents:2,kids:1},wx:"windy+",   desc:"Runners and families having picnics."},
+  {name:"Pool Entrance", traffic:26, bias:{athletes:4,kids:3},        wx:"hot+",      desc:"Swimmers come out thirsty."},
+  {name:"Little League Field",traffic:25, bias:{parents:4,kids:4},   wx:null,        desc:"Parents watch the game and buy drinks."},
+  {name:"Downtown Crossing", traffic:29, bias:{tourists:3,foodies:2,artists:2},             wx:null,        desc:"A mix of everyone passing through."},
+  {name:"Farmers Market", traffic:24, bias:{foodies:4,parents:2,artists:1},  wx:null,        desc:"Foodies shop here. Fancy and sour drinks do well."},
+  {name:"Boardwalk", traffic:32, bias:{tourists:5,kids:2},             wx:"hot+",      desc:"Lots of tourists and big crowds."},
+  {name:"Skate Park", traffic:22, bias:{kids:3,athletes:3},                  wx:"windy+",    desc:"Young and sporty."},
+  {name:"Dog Park", traffic:20, bias:{parents:3,athletes:3},            wx:null,        desc:"Dog owners stop for a drink."},
+  {name:"Outdoor Cinema", traffic:30, bias:{artists:4,tourists:2,parents:1},              wx:null,        desc:"Movie crowds get thirsty at the break."},
+  {name:"Train Station", traffic:27, bias:{tourists:4,athletes:2},             wx:null,        desc:"Travelers in a hurry."},
+  {name:"The Marina", traffic:28, bias:{tourists:4,foodies:3},            wx:"hot+",      desc:"Sailors and tourists with money to spend."}
 ];
 const RECIPES={
   classic:{name:"Classic Sweet", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.25, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
@@ -550,8 +562,10 @@ const INGREDIENTS={
   cucumbering:{name:"Cucumbers",pack:4,price:1.60}
 };
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
-const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name}};
-function iconHtml(kind,id,big){const k=ICONS[kind];return `<span class="icon ${kind}${big?" big":""}" style="--i:${k.ids.indexOf(id)}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
+const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name},gearB:{ids:["sunhat","awning","ponchos","icecrush","thermo","jug","shavedice","lemonzest","plaque","zester","tipjar","piggy","selloutbanner","rainjar","clover","wholesale","pitcher","squeezerpro","lemontree"],name:id=>GEAR.find(g=>g.id===id).name}};
+function iconHtml(kind,id,big){const k=ICONS[kind];const i=k.ids.indexOf(id);if(i<0)console.warn("iconHtml: unknown "+kind+" icon id",id);return `<span class="icon ${kind}${big?" big":""}" style="--i:${i}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
+/* Upgrade icons ship in two sheets (A = first 20 of GEAR, B = last 19); gearIconHtml picks the right one. */
+function gearIconHtml(id,big){if(ICONS.gearA.ids.includes(id))return iconHtml("gearA",id,big);if(ICONS.gearB.ids.includes(id))return iconHtml("gearB",id,big);return ""}
 /* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice customers want. */
 const WX_TEMP={sunny:[72,86],hot:[88,103],perfect:[80,90],cloudy:[62,76],rainy:[54,68],windy:[66,79]};
 function iceForTemp(t){return t>=100?4:t>=90?3:t>=80?2:t>=70?1:0}
@@ -594,49 +608,49 @@ function menuPrice(rk){return (M&&M.prices&&M.prices[rk]!=null)?M.prices[rk]:REC
 /* Gear = stand upgrades. Each one does exactly what its text says; effects are applied by id. */
 const GEAR=[
  // signs
- {id:"painted", name:"Hand-Painted Sign",   icon:"🪧", rar:"common",    desc:"3 free signs every day."},
- {id:"mega",    name:"Cardboard Megaphone", icon:"📣", rar:"common",    desc:"Signs bring 40% more customers."},
- {id:"brother", name:"Little Brother",      icon:"👦", rar:"rare",      desc:"2 free signs every day, but he spills 2 cups from your first pitcher."},
- {id:"chalk",   name:"Sidewalk Chalk Art",  icon:"🎨", rar:"rare",      desc:"+0.2★ reputation on days you put out 4 or more signs."},
- {id:"bigsign", name:"Roof sign",           icon:"🏗️", rar:"legendary", desc:"Every sign pulls as many customers as your first one."},
+ {id:"painted", name:"Hand-Painted Sign", rar:"common",    desc:"3 free signs every day."},
+ {id:"mega",    name:"Cardboard Megaphone", rar:"common",    desc:"Signs bring 40% more customers."},
+ {id:"brother", name:"Little Brother", rar:"rare",      desc:"2 free signs every day, but he spills 2 cups from your first pitcher."},
+ {id:"chalk",   name:"Sidewalk Chalk Art", rar:"rare",      desc:"+0.2★ reputation on days you put out 4 or more signs."},
+ {id:"bigsign", name:"Roof sign", rar:"legendary", desc:"Every sign pulls as many customers as your first one."},
  // customers
- {id:"secondcart",name:"Second Cart",       icon:"🛒", rar:"legendary", desc:"+30% customers every day."},
- {id:"franchiseflag",name:"Franchise Flag", icon:"🎌", rar:"epic",      desc:"+7% customers for each upgrade on your stand, this one included (+40% with all 5)."},
- {id:"loyalty", name:"Punch-Card Box",      icon:"🎟️", rar:"epic",      desc:"Each star brings twice as many extra people."},
- {id:"pricetag",name:"Charming Price Tags", icon:"🏷️", rar:"common",    desc:"Flavors priced at a whole or half dollar ($2.00, $2.50…) draw 10% more customers."},
- {id:"chalkmenu",name:"Chalkboard Menu",    icon:"🧾", rar:"rare",      desc:"If every flavor costs $3 or more: +20% customers."},
- {id:"honeypot",name:"Local Honey Pot",     icon:"🍯", rar:"epic",      desc:"Sweet flavors also win over fans of fancy drinks, and athletes stop disliking sweet."},
- {id:"mascot",  name:"Lemon Mascot Suit",   icon:"🎭", rar:"rare",      desc:"+25% customers, but −0.1★ on days fewer than 3 out of 4 customers get lemonade."},
- {id:"map",     name:"Scout's Map",         icon:"🗺️", rar:"common",    desc:"See 4 spots each morning instead of 3."},
- {id:"sponsor", name:"Team Sponsor",        icon:"🏈", rar:"common",    desc:"More athletes at every spot (about +10% of the crowd). They love sour and chilled drinks, and dislike sweet."},
- {id:"tourbus", name:"Tour Bus Deal",       icon:"🚌", rar:"common",    desc:"More tourists at every spot (about +10% of the crowd). They love fancy drinks and pay well."},
- {id:"foodblog",name:"Food Blog",           icon:"📝", rar:"common",    desc:"More foodies at every spot (about +10% of the crowd). They love fancy and sour drinks, and pay the most."},
- {id:"passport",name:"Passport",            icon:"🛂", rar:"epic",      desc:"+4% customers for each different origin on your menu (USA, Brazil, Japan…)."},
- {id:"special", name:"Daily Special Board", icon:"📋", rar:"rare",      desc:"Each morning one flavor is the Special: customers like it more and pay $0.50 extra."},
- {id:"dice",    name:"Lucky Dice",          icon:"🎲", rar:"epic",      desc:"Each morning, roll between −30% and +60% customers. You see the roll before you open."},
- {id:"grapevine",name:"Town Grapevine",     icon:"🗣️", rar:"rare",      desc:"Good street events happen twice as often, bad ones half as often."},
+ {id:"secondcart",name:"Second Cart", rar:"legendary", desc:"+30% customers every day."},
+ {id:"franchiseflag",name:"Franchise Flag", rar:"epic",      desc:"+7% customers for each upgrade on your stand, this one included (+40% with all 5)."},
+ {id:"loyalty", name:"Punch-Card Box", rar:"epic",      desc:"Each star brings twice as many extra people."},
+ {id:"pricetag",name:"Charming Price Tags", rar:"common",    desc:"Flavors priced at a whole or half dollar ($2.00, $2.50…) draw 10% more customers."},
+ {id:"chalkmenu",name:"Chalkboard Menu", rar:"rare",      desc:"If every flavor costs $3 or more: +20% customers."},
+ {id:"honeypot",name:"Local Honey Pot", rar:"epic",      desc:"Sweet flavors also win over fans of fancy drinks, and athletes stop disliking sweet."},
+ {id:"mascot",  name:"Lemon Mascot Suit", rar:"rare",      desc:"+25% customers, but −0.1★ on days fewer than 3 out of 4 customers get lemonade."},
+ {id:"map",     name:"Scout's Map", rar:"common",    desc:"See 4 spots each morning instead of 3."},
+ {id:"sponsor", name:"Team Sponsor", rar:"common",    desc:"More athletes at every spot (about +10% of the crowd). They love sour and chilled drinks, and dislike sweet."},
+ {id:"tourbus", name:"Tour Bus Deal", rar:"common",    desc:"More tourists at every spot (about +10% of the crowd). They love fancy drinks and pay well."},
+ {id:"foodblog",name:"Food Blog", rar:"common",    desc:"More foodies at every spot (about +10% of the crowd). They love fancy and sour drinks, and pay the most."},
+ {id:"passport",name:"Passport", rar:"epic",      desc:"+4% customers for each different origin on your menu (USA, Brazil, Japan…)."},
+ {id:"special", name:"Daily Special Board", rar:"rare",      desc:"Each morning one flavor is the Special: customers like it more and pay $0.50 extra."},
+ {id:"dice",    name:"Lucky Dice", rar:"epic",      desc:"Each morning, roll between −30% and +60% customers. You see the roll before you open."},
+ {id:"grapevine",name:"Town Grapevine", rar:"rare",      desc:"Good street events happen twice as often, bad ones half as often."},
  // weather & temperature
- {id:"sunhat",  name:"Lucky Sun Hat",       icon:"👒", rar:"legendary", desc:"Sunny days are as busy as hot days (almost twice the customers)."},
- {id:"awning",  name:"Stand Awning",        icon:"⛱️", rar:"common",    desc:"Cloudy and rainy days: +25% customers. The stand stays dry."},
- {id:"ponchos", name:"Rain Ponchos",        icon:"🧥", rar:"rare",      desc:"Rainy days: +60% customers. You hand out free ponchos."},
- {id:"icecrush",name:"Hand-Crank Ice Crusher",icon:"🧊",rar:"rare",     desc:"Hot and perfect days: +25% customers."},
- {id:"thermo",  name:"Thermometer Sign",    icon:"🌡️", rar:"epic",      desc:"+2% customers for every °F above 75°F, −2% for every °F below (95°F: +40%)."},
- {id:"jug",     name:"Insulated Jug",       icon:"🫗", rar:"common",    desc:"Customers want 1 fewer ice cube per cup."},
- {id:"shavedice",name:"Shaved Ice Machine", icon:"🍧", rar:"rare",      desc:"Each ice cube above what customers want makes them pay 5% more (up to +15%)."},
+ {id:"sunhat",  name:"Lucky Sun Hat", rar:"legendary", desc:"Sunny days are as busy as hot days (almost twice the customers)."},
+ {id:"awning",  name:"Stand Awning", rar:"common",    desc:"Cloudy and rainy days: +25% customers. The stand stays dry."},
+ {id:"ponchos", name:"Rain Ponchos", rar:"rare",      desc:"Rainy days: +60% customers. You hand out free ponchos."},
+ {id:"icecrush",name:"Hand-Crank Ice Crusher",rar:"rare",     desc:"Hot and perfect days: +25% customers."},
+ {id:"thermo",  name:"Thermometer Sign", rar:"epic",      desc:"+2% customers for every °F above 75°F, −2% for every °F below (95°F: +40%)."},
+ {id:"jug",     name:"Insulated Jug", rar:"common",    desc:"Customers want 1 fewer ice cube per cup."},
+ {id:"shavedice",name:"Shaved Ice Machine", rar:"rare",      desc:"Each ice cube above what customers want makes them pay 5% more (up to +15%)."},
  // money
- {id:"lemonzest",name:"Golden Lemons",      icon:"✨", rar:"epic",      desc:"Every crowd will pay 15% more."},
- {id:"plaque",  name:"Five-Star Plaque",    icon:"🏆", rar:"epic",      desc:"At 4.5★ or higher, customers pay 20% more."},
- {id:"zester",  name:"Zester of Doom",      icon:"🔪", rar:"rare",      desc:"Sour flavors earn +$0.50 per cup."},
- {id:"tipjar",  name:"Cracked Tip Jar",     icon:"🫙", rar:"common",    desc:"Customers tip three times as much."},
- {id:"piggy",   name:"Compound Piggy",      icon:"🐷", rar:"epic",      desc:"Each night, your piggy bank adds 4% of your money over $150 (up to $200)."},
- {id:"selloutbanner",name:"Sellout Banner", icon:"🚩", rar:"rare",      desc:"When you sell out, people still in line pre-pay $1 each for tomorrow (max one per cup you sold)."},
- {id:"rainjar", name:"Rainy-Day Jar",       icon:"🌦️", rar:"rare",      desc:"Sunny, hot and perfect days add 15% of the money you made to the jar. The next cloudy or rainy day, it pays out."},
- {id:"clover",  name:"Four-Leaf Clover",    icon:"🍀", rar:"rare",      desc:"Once every 7 days, it saves a hot streak that would end."},
+ {id:"lemonzest",name:"Golden Lemons", rar:"epic",      desc:"Every crowd will pay 15% more."},
+ {id:"plaque",  name:"Five-Star Plaque", rar:"epic",      desc:"At 4.5★ or higher, customers pay 20% more."},
+ {id:"zester",  name:"Zester of Doom", rar:"rare",      desc:"Sour flavors earn +$0.50 per cup."},
+ {id:"tipjar",  name:"Cracked Tip Jar", rar:"common",    desc:"Customers tip three times as much."},
+ {id:"piggy",   name:"Compound Piggy", rar:"epic",      desc:"Each night, your piggy bank adds 4% of your money over $150 (up to $200)."},
+ {id:"selloutbanner",name:"Sellout Banner", rar:"rare",      desc:"When you sell out, people still in line pre-pay $1 each for tomorrow (max one per cup you sold)."},
+ {id:"rainjar", name:"Rainy-Day Jar", rar:"rare",      desc:"Sunny, hot and perfect days add 15% of the money you made to the jar. The next cloudy or rainy day, it pays out."},
+ {id:"clover",  name:"Four-Leaf Clover", rar:"rare",      desc:"Once every 7 days, it saves a hot streak that would end."},
  // stock & costs
- {id:"wholesale",name:"Wholesale Card",     icon:"💳", rar:"common",    desc:"All ingredient packs cost 20% less."},
- {id:"pitcher", name:"Grandma's Pitcher",   icon:"🏺", rar:"common",    desc:"Every 4th pitcher you brew is free."},
- {id:"squeezerpro",name:"Lemon Squeezer Pro",icon:"🏋️",rar:"epic",      desc:"Every pitcher pours 10 cups instead of 8."},
- {id:"lemontree",name:"Lemon Tree",         icon:"🌳", rar:"legendary", desc:"6 free lemons every morning, plus 1 more for each day you've had it."},
+ {id:"wholesale",name:"Wholesale Card", rar:"common",    desc:"All ingredient packs cost 20% less."},
+ {id:"pitcher", name:"Grandma's Pitcher", rar:"common",    desc:"Every 4th pitcher you brew is free."},
+ {id:"squeezerpro",name:"Lemon Squeezer Pro",rar:"epic",      desc:"Every pitcher pours 10 cups instead of 8."},
+ {id:"lemontree",name:"Lemon Tree", rar:"legendary", desc:"6 free lemons every morning, plus 1 more for each day you've had it."},
 ];
 const SYNERGIES=[
  {id:"coldsnap", name:"Cold snap",       need:{FIZZY:1,CHILLED:2},        desc:"1 fizzy and 2 chilled flavors: +45% customers on hot and perfect days.", check:s=>s.tags.FIZZY>=1&&s.tags.CHILLED>=2},
@@ -946,7 +960,7 @@ function ingTip(id){
 function shelfHtml(){
   let slots="";
   for(let i=0;i<gearSlots();i++){const g=GEAR.find(x=>x.id===S.gear[i]);
-    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${g.icon}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You win upgrades after each day.")}></span>`}
+    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${gearIconHtml(g.id,true)}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You win upgrades after each day.")}></span>`}
   return `<div class="shelf"><b>🧰 My Stand</b><div class="slots">${slots}</div><button class="btn sm ghost" onclick="showBuild()">See all</button></div>`;
 }
 const HOW_STEPS=[["🌤️","Check the forecast","Hot days are busy. Rain keeps people home."],["📍","Pick a spot","Where will you sell today?"],["🛒","Buy supplies","Bigger packs cost less each."],["🧊","Set ice, signs and price","Hot days need more ice."],["📊","See how you did","Sales and tips for the day."],["🎁","Pick an upgrade","A new upgrade for tomorrow."]];
@@ -1008,7 +1022,7 @@ function renderMorning(){
     <h3>1. Pick a spot</h3>
     <div class="choices" id="locChoices">
       ${M.locs.map((l,i)=>{const top=Object.entries(crowdMixFor(l)).sort((a,b2)=>b2[1]-a[1]).slice(0,3);
-        return `<button class="choice spot ${M.loc===l?"sel":""}" onclick="chooseLoc(${i})"><div class="ttl"><span>${l.icon} ${l.name}</span>${M.loc===l?'<span class="pickTag">✓ Picked</span>':""}</div><div class="crowdRow">${top.map(([k,v])=>`<span class="crowd"${tip(crowdTip(k))}>${CROWDS[k].icon} ${CROWDS[k].name} ${v}%</span>`).join("")}</div></button>`}).join("")}
+        return `<button class="choice spot ${M.loc===l?"sel":""}" onclick="chooseLoc(${i})"><div class="ttl"><span>${iconHtml("spot",l.name,true)} ${l.name}</span>${M.loc===l?'<span class="pickTag">✓ Picked</span>':""}</div><div class="crowdRow">${top.map(([k,v])=>`<span class="crowd"${tip(crowdTip(k))}>${CROWDS[k].icon} ${CROWDS[k].name} ${v}%</span>`).join("")}</div></button>`}).join("")}
     </div>
     <h3>2. Buy supplies</h3>
     ${M.treeLemons?`<p class="small" style="margin:2px 0">🌳 Your Lemon Tree dropped <b>${M.treeLemons}</b> free ${plural(M.treeLemons,"lemon")} this morning.</p>`:""}
@@ -1146,7 +1160,7 @@ function renderDayScene(){
   $("#screen").innerHTML=`
   <div class="scene">
     <div class="sky ${M.actualWx}" id="skyBox">
-      <div class="crowdMix">${M.loc.icon} ${M.loc.name}<br>${crowdMixLine()}</div>
+      <div class="crowdMix">${iconHtml("spot",M.loc.name)} ${M.loc.name}<br>${crowdMixLine()}</div>
       ${skyArt(M.actualWx)}
       <div class="sceneBtns"><button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button> ${spdBtnHtml()}</div>
       <div class="standSign">🍋 ${D.menu.length} ${plural(D.menu.length,"flavor")}, from ${fmt(Math.min(...D.menu.map(rk=>menuPrice(rk))))}</div>
@@ -1379,7 +1393,7 @@ function finishDay(){
     <div class="report">
       <div class="receiptBox">
         <div class="receiptWrap"><div class="receipt">
-          <div class="rHead">${M.loc.icon} ${M.loc.name}</div>
+          <div class="rHead">${iconHtml("spot",M.loc.name)} ${M.loc.name}</div>
           ${sellRows}
           ${upgradeBonus>0.004?`<div class="rRow"><span>🎁 Upgrade bonuses</span><span class="amt">+${fmt(upgradeBonus)}</span></div>`:""}
           ${bannerBonus?`<div class="rRow"><span>🚩 Sellout Banner pre-sales</span><span class="amt">+${fmt(bannerBonus)}</span></div>`:""}
@@ -1440,7 +1454,7 @@ function drawDraft(rareOnly){
 }
 function draftCardHtml(p){
   if(p.kind==="gear"){const g=GEAR.find(x=>x.id===p.id);const full=S.gear.length>=gearSlots();
-    return {icon:g.icon,title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"Stand upgrade"}}
+    return {icon:gearIconHtml(g.id,true),title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"Stand upgrade"}}
   if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(pitcherNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
     return {icon:iconHtml("flavor",p.id,true),title:r.name,badge:"",desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`,tags:tagChips(r.tags),type:"New flavor"}}
   return {icon:"💵",title:"Cousin's Gift",badge:"",desc:`+${fmt(18+22*actIndex())} cash right now. It gets bigger later in the summer.`,tags:"",type:"Cash"};
@@ -1495,19 +1509,19 @@ function showSwap(p){
   const owned=S.gear.map(id=>GEAR.find(x=>x.id===id));
   $("#screen").innerHTML=`<div class="panel">
     <h2>🧰 Your stand is full</h2>
-    <p style="margin-top:0">Which upgrade should go? You'll get <b>${c.icon} ${c.title}</b>.</p>
-    <div class="choices">${owned.map((o,i)=>`<button class="choice" onclick="swapFor(${i})"><div class="ttl"><span>${o.icon} ${o.name}</span>${rarBadge(o.rar)}</div><div class="small typeLabel">Remove</div><div class="desc">${o.desc}</div></button>`).join("")}</div>
+    <p style="margin-top:0">Which upgrade should go? You'll get <b>${gearIconHtml(p.id)} ${c.title}</b>.</p>
+    <div class="choices">${owned.map((o,i)=>`<button class="choice" onclick="swapFor(${i})"><div class="ttl"><span>${gearIconHtml(o.id,true)} ${o.name}</span>${rarBadge(o.rar)}</div><div class="small typeLabel">Remove</div><div class="desc">${o.desc}</div></button>`).join("")}</div>
     <div class="flex mt" style="justify-content:center"><button class="btn sm ghost" onclick="pendingDraft=null;renderDraftScreen()">← Back</button><button class="btn sm ghost" onclick="pendingDraft=null;nextDay()">Keep my stand</button></div>
   </div>`;
 }
 function swapFor(i){
   const p=pendingDraft;if(!p)return;pendingDraft=null;
-  const g=GEAR.find(x=>x.id===S.gear[i]);S.gear.splice(i,1);S.log.push(`<span class="info">🔁 Swapped out ${g.icon} ${g.name}.</span>`);
+  const g=GEAR.find(x=>x.id===S.gear[i]);S.gear.splice(i,1);S.log.push(`<span class="info">🔁 Swapped out ${gearIconHtml(g.id)} ${g.name}.</span>`);
   grantDraft(p);
 }
 function grantDraft(p){
   sfx.good();
-  if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">🎁 New upgrade: ${g.icon} ${g.name}</span>`)}
+  if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">🎁 New upgrade: ${gearIconHtml(g.id)} ${g.name}</span>`)}
   if(p.kind==="recipe"){S.recipes.push(p.id);const r=RECIPES[p.id];S.log.push(`<span class="good">🎁 New flavor: ${iconHtml("flavor",p.id)} ${r.name}</span>`)}
   if(p.kind==="cash"){const amt=18+22*actIndex();S.cash+=amt;S.log.push(`<span class="good">🎁 Your cousin gave you ${fmt(amt)}.</span>`)}
   // synergy discovery check
@@ -1589,7 +1603,7 @@ function endRun(mode,reason){
 }
 function buildSummary(){
   const parts=[];
-  S.gear.forEach(gid=>{const g=GEAR.find(x=>x.id===gid);if(g)parts.push(g.icon+" "+g.name)});
+  S.gear.forEach(gid=>{const g=GEAR.find(x=>x.id===gid);if(g)parts.push(gearIconHtml(g.id)+" "+g.name)});
   S.recipes.forEach(rk=>parts.push(iconHtml("flavor",rk)+" "+RECIPES[rk].name));
   return parts.length?parts.join(", "):"nothing yet.";
 }
@@ -1600,7 +1614,7 @@ function showBuild(){
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
     <div class="flex spread"><h2>🧰 My Upgrades</h2><button class="btn sm ghost" onclick="closeModal()">✕ Close</button></div>
     <h3>My Stand (${S.gear.length}/${gearSlots()})</h3>
-    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${g.icon} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty ${plural(empty,"slot")}. You win upgrades after each day.</li>`:""}</ul>
+    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${gearIconHtml(g.id)} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty ${plural(empty,"slot")}. You win upgrades after each day.</li>`:""}</ul>
     <h3>My flavors</h3>
     <ul class="list">${S.recipes.map(rk=>{const r=RECIPES[rk];return `<li><b>${iconHtml("flavor",rk)} ${r.name}</b> ${tagChips(r.tags)}<br><span class="small">Liked by ${flavorFans(r.tags)}</span></li>`}).join("")}</ul>
     <h3>⚡ Combos</h3>
