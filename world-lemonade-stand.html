@@ -660,6 +660,30 @@ function saveMeta(){try{localStorage.setItem("squeezed_meta",JSON.stringify(meta
 
 
 let S=null; // run state
+/* Selling-loop playback speed: 1× or 2×, a saved player preference.
+   It scales the whole day simulation and applies LIVE: walks carry a
+   playbackRate and timers accumulate scaled time, so toggling mid-day
+   speeds up customers and waits that are already in progress. */
+let SPEED=1;try{SPEED=localStorage.getItem("wls_speed")==="2"?2:1}catch(e){}
+const liveAnims=new Set(); // walk animations currently on screen
+function toggleSpeed(){
+  SPEED=SPEED===1?2:1;
+  try{localStorage.setItem("wls_speed",String(SPEED))}catch(e){}
+  liveAnims.forEach(a=>{try{a.playbackRate=SPEED}catch(e){}});
+  const b=document.querySelector("#spdBtn");if(b)b.textContent="⏩ Speed: "+SPEED+"×";
+  sfx.flip();
+}
+/* setTimeout that runs on simulation time: after(800) fires after 800ms
+   of scaled time, so a mid-wait speed toggle stretches/shrinks it too. */
+function after(ms,fn){
+  let acc=0,last=performance.now();
+  const iv=setInterval(()=>{
+    const now=performance.now();acc+=(now-last)*SPEED;last=now;
+    if(acc>=ms){clearInterval(iv);fn()}
+  },40);
+  return iv;
+}
+const spdBtnHtml=()=>`<button class="btn sm ghost" id="spdBtn" onclick="toggleSpeed()">⏩ Speed: ${SPEED}×</button>`;
 function newRun(kidId){
   const kid=KIDS.find(k=>k.id===kidId);
   S={
@@ -1100,14 +1124,24 @@ function renderDayScene(){
   </div>
   <div class="panel center" id="dayControl">
     <p class="big" id="dayMsg">Open for business…</p>
-    <button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button>
+    <button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button> ${spdBtnHtml()}
   </div>
   <div class="log" id="dayLog">${S.log.slice(M.logStart).map(l=>l+"<br>").join("")}</div>`;
   updateHUD();
 }
 function crowdMixLine(){const mix=crowdMixFor(M.loc);return Object.entries(mix).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${CROWDS[k].icon} ${v}%`).join(" · ")}
 function logLine(html){const el=$("#dayLog");if(el){el.innerHTML+=html+"<br>";el.scrollTop=el.scrollHeight} S.log.push(html)}
-function sleep(ms){return D&&D.skip?Promise.resolve():new Promise(r=>setTimeout(r,ms))}
+function sleep(ms){ // simulation-time wait: scales with SPEED, live, and Skip ends it now
+  return new Promise(res=>{
+    if(D&&D.skip)return res();
+    let acc=0,last=performance.now();
+    const iv=setInterval(()=>{
+      if(D&&D.skip){clearInterval(iv);return res()}
+      const now=performance.now();acc+=(now-last)*SPEED;last=now;
+      if(acc>=ms){clearInterval(iv);res()}
+    },40);
+  });
+}
 function specialBonus(rk){return S.gear.includes("special")&&M&&M.special===rk?0.5:0}
 function saleRevenue(n,price,rk){
   let rev=n*price;
@@ -1154,7 +1188,7 @@ async function runDayPhase(phase){
   D.morningSold=D.sold;
   if(standDry()){await buyersServed();finishDay();return}
   const msg=$("#dayMsg");if(msg)msg.textContent="🌞 Noon! More people are coming.";
-  setTimeout(resumeAfternoon,D.skip?0:900);
+  if(D.skip)resumeAfternoon();else after(900,resumeAfternoon);
 }
 function updateDayStats(streak){
   const st=$("#stStock");if(!st)return;
@@ -1173,12 +1207,17 @@ function spawnCustomer(ck,{buys=false,say=null,streak=0}={}){
   const day=D,d=document.createElement("div"),fw=ck==="parents"?32:24,fromLeft=Math.random()<0.5;
   const walkLook=carry=>{d.className=`cust ${carry?"carry":"walk"}${fromLeft?"":" left"}`;d.style.backgroundImage=`url(${CUSTOMER_WALK_PNG[ck]})`};
   d.style.setProperty("--fw",fw);walkLook(false);sky.appendChild(d);
-  const W=sky.clientWidth,w=d.offsetWidth,speed=WALK_SPEED*(w/fw)/1000; // px per ms
+  const W=sky.clientWidth,w=d.offsetWidth,speed=WALK_SPEED*(w/fw)/1000; // px per ms at 1×
   const from=fromLeft?-w:W+w,to=fromLeft?W+w:-w;
-  const walk=(a,b)=>d.animate([{left:a+"px"},{left:b+"px"}],{duration:Math.abs(b-a)/speed,fill:"forwards"}).finished;
+  const walk=(a,b)=>{ // duration is authored at 1×; playbackRate carries the live speed
+    const anim=d.animate([{left:a+"px"},{left:b+"px"}],{duration:Math.abs(b-a)/speed,fill:"forwards"});
+    anim.playbackRate=SPEED;liveAnims.add(anim);
+    anim.finished.finally(()=>liveAnims.delete(anim));
+    return anim.finished;
+  };
   if(!buys){
     walk(from,to).then(()=>d.remove());
-    if(say)setTimeout(()=>{if(d.isConnected)spawnBubble(say,W/2)},Math.abs(W/2-from)/speed);
+    if(say)after(Math.abs(W/2-from)/speed,()=>{if(d.isConnected)spawnBubble(say,W/2)}); // talk as they pass the stand
     return;
   }
   const standW=($(".stand")||d).offsetWidth,spot=W/2+(Math.random()-0.5)*standW*0.7;
@@ -1187,26 +1226,26 @@ function spawnCustomer(ck,{buys=false,say=null,streak=0}={}){
     if(!d.isConnected){day.buying--;return}
     d.className="cust front";d.style.backgroundImage=`url(${CUSTOMER_PNG[ck]})`;
     sfx.coin(streak);spawnCoin(spot);
-    if(say)setTimeout(()=>{if(d.isConnected)spawnBubble(say,spot)},700); // pay first, then talk, so the coin and bubble don't overlap
-    setTimeout(()=>{day.buying--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())},800);
+    if(say)after(700,()=>{if(d.isConnected)spawnBubble(say,spot)}); // pay first, then talk, so the coin and bubble don't overlap
+    after(800,()=>{day.buying--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())});
   });
 }
 /* Before the report, let buyers who are on their way finish buying. */
 async function buyersServed(){
-  const t0=performance.now();
-  while(D&&D.buying>0&&!D.skip&&performance.now()-t0<5000)await new Promise(r=>setTimeout(r,100));
+  let waited=0; // in simulation ms, so the grace period scales with SPEED too
+  while(D&&D.buying>0&&!D.skip&&waited<5000){await sleep(100);waited+=100}
 }
 function spawnBubble(txt,x){
   const sky=$("#skyBox");if(!sky)return;
   const d=document.createElement("div");d.className="bubble";d.textContent=txt;
-  d.style.left=x+"px";sky.appendChild(d);setTimeout(()=>d.remove(),1600);
+  d.style.left=x+"px";sky.appendChild(d);after(1600,()=>d.remove());
 }
 function spawnCoin(x){
   const layer=$("#fxLayer");if(!layer)return;
   const d=document.createElement("div");d.className="coin";
-  d.style.left=x+"px";layer.appendChild(d);setTimeout(()=>d.remove(),800);
+  d.style.left=x+"px";layer.appendChild(d);after(800,()=>d.remove());
 }
-function resumeAfternoon(){if(!D||D.done)return;const ctl=$("#dayControl");if(ctl)ctl.innerHTML=`<p class="big">Afternoon rush…</p><button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button>`;runDayPhase("afternoon")}
+function resumeAfternoon(){if(!D||D.done)return;const ctl=$("#dayControl");if(ctl)ctl.innerHTML=`<p class="big">Afternoon rush…</p><button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button> ${spdBtnHtml()}`;runDayPhase("afternoon")}
 
 /* ---------- Evening: report, draft, quotas ---------- */
 function finishDay(){
@@ -1242,7 +1281,7 @@ function finishDay(){
   S.rep=clamp(Math.round((S.rep+repDelta)*10)/10,1,5);
   // perfect day: everyone served, nothing poured out
   const perfect=unserved===0&&wasted===0&&D.sold>0&&made>0;
-  if(perfect){S.perfectDays++;setTimeout(()=>{confetti(70);sfx.fanfare()},250)}
+  if(perfect){S.perfectDays++;after(250,()=>{confetti(70);sfx.fanfare()})}
   else if(made>20){sfx.good()} else if(made<0){sfx.bad()}
   // HOT STREAK: serve 3 of 4 customers and make money, and the day chains.
   let streakNote="";
