@@ -91,7 +91,7 @@ h3{margin:14px 0 6px}
 @keyframes leafSpin{to{rotate:360deg}}
 @keyframes leafBob{to{translate:0 calc(-10px*var(--px))}}
 @keyframes shimmer{0%{translate:0 0;opacity:0}30%{opacity:.8}100%{translate:0 calc(-28px*var(--px));opacity:0}}
-@media (prefers-reduced-motion:reduce){.cloud,.rain,.gust,.leaf,.shimmer{animation:none}}
+@media (prefers-reduced-motion:reduce){.cloud,.rain,.gust,.leaf,.shimmer,.bubble,.coin,.cust.walk,.cust.carry{animation:none}}
 .stand{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:128px;image-rendering:pixelated;z-index:5;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
 .standSign{position:absolute;left:50%;bottom:134px;transform:translateX(-50%) rotate(-2deg);background:#fff;border:3px solid var(--ink);border-radius:9px;padding:2px 12px;font-weight:900;font-size:14px;z-index:6;white-space:nowrap}
 .crowdMix{position:absolute;top:10px;left:12px;background:rgba(255,253,244,.92);border:2.5px solid var(--ink);border-radius:10px;padding:5px 10px;font-size:12.5px;font-weight:700;z-index:6;max-width:46%;line-height:1.5}
@@ -103,16 +103,17 @@ h3{margin:14px 0 6px}
 .cust.front{background-size:100% 100%}
 @keyframes custWalk{from{background-position-x:0}to{background-position-x:calc(var(--fw)*var(--s)*-4px)}}
 @keyframes custCarry{from{background-position-x:calc(var(--fw)*var(--s)*-4px)}to{background-position-x:calc(var(--fw)*var(--s)*-8px)}}
-.bubble{--rise:34px;position:absolute;bottom:72px;font-size:12px;font-weight:800;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 8px;z-index:8;animation:floatUp 1.6s ease-out forwards;white-space:nowrap}
+.bubble{--rise:6px;position:absolute;font-size:12px;font-weight:800;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 8px;z-index:8;animation:floatUp 1.6s ease-out forwards;white-space:nowrap;pointer-events:none}
 /* The coin pops up over the head of the customer who paid, spinning. left is its centre. */
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
 @keyframes coinSpin{to{background-position-x:calc(var(--s)*-40px)}}
-.streak{position:absolute;top:64px;right:14px;background:var(--ink);color:var(--lemon);font-weight:900;border-radius:10px;padding:4px 12px;font-size:16px;z-index:7;display:none}
-.streak.hot{display:block;animation:pulse .4s infinite alternate}
-@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.09) rotate(1.5deg)}}
+/* Day controls live in the scene: Skip and Speed as small corner buttons. */
+.sceneBtns{position:absolute;top:10px;right:12px;z-index:7;display:flex;gap:6px}
+.sceneBtns .btn{box-shadow:0 2px 0 rgba(43,33,24,.85)}
 .dayStats{display:flex;flex-wrap:wrap;gap:8px;background:#2b2118;color:#fff;padding:10px 14px;font-weight:800;font-size:15px}
+.dayStats .phaseTxt{color:var(--lemon);margin-right:auto}
 .dayStats span b{color:var(--lemon)}
 /* Evening report: the day's math is a till receipt, the tip a sticky note */
 .pos{color:var(--green2)} .negc{color:var(--red)}
@@ -152,8 +153,8 @@ h3{margin:14px 0 6px}
 .inv{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .inv .item{background:#fff;border:2.5px solid var(--ink);border-radius:10px;padding:4px 9px;font-size:12.5px;font-weight:800}
 .synBanner{background:linear-gradient(90deg,var(--purple),#c86bfa);color:#fff;border:3px solid var(--ink);border-radius:12px;padding:10px 14px;font-weight:900;font-size:17px;margin-top:10px;box-shadow:0 4px 0 rgba(43,33,24,.85);animation:stampIn .4s cubic-bezier(.2,2,.4,1)}
-.log{background:#2b2118;color:#ffe9a8;border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.6;max-height:170px;overflow-y:auto;margin-top:10px;font-family:ui-monospace,Menlo,monospace}
-.log .good{color:#9be15d}.log .bad{color:#ff8f6b}.log .info{color:#8fd0ff}
+.log{background:#fffdf4;color:var(--ink);border:2.5px solid var(--ink);border-radius:12px;padding:10px 14px;font-size:14px;line-height:1.6;max-height:170px;overflow-y:auto;margin-top:10px;box-shadow:var(--shadow)}
+.log .good{color:var(--green2)}.log .bad{color:var(--red)}.log .info{color:#1c5fa8}
 /* Confetti + modal */
 .confetti{position:fixed;width:11px;height:15px;z-index:999;pointer-events:none;border-radius:2px}
 .modalWrap{position:fixed;inset:0;background:rgba(30,20,8,.62);display:flex;align-items:center;justify-content:center;z-index:200;padding:14px}
@@ -260,10 +261,10 @@ button,input,select{touch-action:manipulation}
   .stand{width:64px;bottom:0}
   .standSign{bottom:68px;font-size:12px;padding:2px 8px;max-width:92%}
   .crowdMix{font-size:11.5px;max-width:54%;padding:4px 8px;line-height:1.4}
+  .sceneBtns{flex-direction:column;align-items:flex-end;gap:5px}
   .cust{--s:1;bottom:1px}
-  .bubble{font-size:11px;bottom:34px;--rise:8px}
+  .bubble{font-size:11px;--rise:4px}
   .coin{--s:1;--rise:14px;bottom:32px}
-  .streak{top:54px;right:10px;font-size:14px;padding:3px 9px}
   .dayStats{font-size:13.5px;padding:8px 10px;gap:6px}
   /* Sliders get fat thumbs; labels can breathe */
   .ctrl{margin:12px 0}
@@ -300,7 +301,7 @@ button,input,select{touch-action:manipulation}
   .stand{width:64px;bottom:0}
   .standSign{bottom:68px}
   .cust{--s:1;bottom:1px}
-  .bubble{bottom:34px;--rise:8px}
+  .bubble{--rise:4px}
   .coin{--s:1;--rise:14px;bottom:32px}
 }
 </style>
@@ -1102,29 +1103,23 @@ function openStand(){
   runDayPhase("morning");
 }
 function renderDayScene(){
-  const wx=WEATHERS[M.actualWx];
   $("#screen").innerHTML=`
   <div class="scene">
     <div class="sky ${M.actualWx}" id="skyBox">
       <div class="crowdMix">${M.loc.icon} ${M.loc.name}<br>${crowdMixLine()}</div>
       ${skyArt(M.actualWx)}
-      <div class="streak" id="streakBox">🔥 STREAK ×<span id="streakN">0</span></div>
+      <div class="sceneBtns"><button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button> ${spdBtnHtml()}</div>
       <div class="standSign">🍋 ${D.menu.length} flavor${D.menu.length>1?"s":""} · from ${fmt(Math.min(...D.menu.map(rk=>menuPrice(rk))))}</div>
       <img class="stand" src="${STAND_PNG}" alt="">
       <div id="fxLayer"></div>
     </div>
     <div class="ground"></div>
     <div class="dayStats">
-      <span>🌤️ <b id="stWx">${wx.name}</b> · 🌡️ <b>${M.temp}°F</b></span>
-      <span tabindex="0"${tip("Cups you can still make with your supplies.")}>🥤 Cups left: <b id="stStock">${servingsReady()}</b></span>
-      <span>🧑 Sold: <b id="stSold">0</b></span>
-      <span tabindex="0"${tip("Money from sales and tips today.")}>💰 Money: <b id="stTill">$0</b></span>
-      <span tabindex="0"${tip("People still waiting to buy.")}>📈 In line: <b id="stDem">${D.demand}</b></span>
+      <span class="phaseTxt" id="dayMsg">Open for business…</span>
+      <span tabindex="0"${tip("Cups you can still make with your supplies.")}>Cups left: <b id="stStock">${servingsReady()}</b></span>
+      <span tabindex="0"${tip("Money from sales and tips today.")}>Money: <b id="stTill">$0</b></span>
+      <span tabindex="0"${tip("People still waiting to buy.")}>In line: <b id="stDem">${D.demand}</b></span>
     </div>
-  </div>
-  <div class="panel center" id="dayControl">
-    <p class="big" id="dayMsg">Open for business…</p>
-    <button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button> ${spdBtnHtml()}
   </div>
   <div class="log" id="dayLog">${S.log.slice(M.logStart).map(l=>l+"<br>").join("")}</div>`;
   updateHUD();
@@ -1179,7 +1174,7 @@ async function runDayPhase(phase){
       }
     }
     if(!D.skip)spawnCustomer(ck,soldChunk>0?{buys:true,streak,say:Math.random()<0.24?c.line:null}:{say:miss});
-    updateDayStats(streak);
+    updateDayStats();
     if(dry)break;
     await sleep(rnd(450,750));
   }
@@ -1187,17 +1182,14 @@ async function runDayPhase(phase){
   if(!isMorning){await buyersServed();finishDay();return}
   D.morningSold=D.sold;
   if(standDry()){await buyersServed();finishDay();return}
-  const msg=$("#dayMsg");if(msg)msg.textContent="🌞 Noon! More people are coming.";
+  const msg=$("#dayMsg");if(msg)msg.textContent="Noon! More people are coming.";
   if(D.skip)resumeAfternoon();else after(900,resumeAfternoon);
 }
-function updateDayStats(streak){
+function updateDayStats(){
   const st=$("#stStock");if(!st)return;
   st.textContent=servingsReady();
-  $("#stSold").textContent=D.sold;
   $("#stTill").textContent=fmt(D.revenue+D.tips);
   $("#stDem").textContent=Math.max(0,D.demand-D.sold-D.awayPrice-D.awayWarm-D.awayOut);
-  const sb=$("#streakBox");
-  if(streak>=5){sb.style.display="block";$("#streakN").textContent=streak}else sb.style.display="none";
 }
 /* Customers walk across the scene. Buyers stop at the counter and face you while they pay,
    then walk on with a cup; everyone else walks past, saying why as they pass the stand. */
@@ -1217,7 +1209,7 @@ function spawnCustomer(ck,{buys=false,say=null,streak=0}={}){
   };
   if(!buys){
     walk(from,to).then(()=>d.remove());
-    if(say)after(Math.abs(W/2-from)/speed,()=>{if(d.isConnected)spawnBubble(say,W/2)}); // talk as they pass the stand
+    if(say)after(Math.abs(W/2-from)/speed,()=>spawnBubble(say,d)); // talk as they pass the stand
     return;
   }
   const standW=($(".stand")||d).offsetWidth,spot=W/2+(Math.random()-0.5)*standW*0.7;
@@ -1226,7 +1218,7 @@ function spawnCustomer(ck,{buys=false,say=null,streak=0}={}){
     if(!d.isConnected){day.buying--;return}
     d.className="cust front";d.style.backgroundImage=`url(${CUSTOMER_PNG[ck]})`;
     sfx.coin(streak);spawnCoin(spot);
-    if(say)after(700,()=>{if(d.isConnected)spawnBubble(say,spot)}); // pay first, then talk, so the coin and bubble don't overlap
+    if(say)after(700,()=>spawnBubble(say,d)); // pay first, then talk, so the coin and bubble don't overlap
     after(800,()=>{day.buying--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())});
   });
 }
@@ -1235,17 +1227,33 @@ async function buyersServed(){
   let waited=0; // in simulation ms, so the grace period scales with SPEED too
   while(D&&D.buying>0&&!D.skip&&waited<5000){await sleep(100);waited+=100}
 }
-function spawnBubble(txt,x){
-  const sky=$("#skyBox");if(!sky)return;
+/* One speech bubble at a time, sitting above the customer who is talking
+   and following them as they walk. If someone else is mid-sentence, the
+   new line is dropped instead of stacking. Anchoring above the head also
+   keeps bubbles clear of the stand sign, which hangs higher. */
+let bubbleNow=null;
+function spawnBubble(txt,anchor){
+  const sky=$("#skyBox");if(!sky||!anchor||!anchor.isConnected)return;
+  if(bubbleNow&&bubbleNow.isConnected)return; // one at a time: drop extras
   const d=document.createElement("div");d.className="bubble";d.textContent=txt;
-  d.style.left=x+"px";sky.appendChild(d);after(1600,()=>d.remove());
+  sky.appendChild(d);bubbleNow=d;
+  const place=()=>{
+    if(!d.isConnected||!anchor.isConnected)return;
+    const r=anchor.getBoundingClientRect(),sr=sky.getBoundingClientRect();
+    const half=d.offsetWidth/2,cx=r.left+r.width/2-sr.left;
+    d.style.left=Math.max(half+2,Math.min(sr.width-half-2,cx))+"px";
+    d.style.bottom=(sr.bottom-r.top+4)+"px"; // just above the speaker's head
+  };
+  place();
+  const iv=setInterval(place,40);
+  after(1600,()=>{clearInterval(iv);d.remove();if(bubbleNow===d)bubbleNow=null});
 }
 function spawnCoin(x){
   const layer=$("#fxLayer");if(!layer)return;
   const d=document.createElement("div");d.className="coin";
   d.style.left=x+"px";layer.appendChild(d);after(800,()=>d.remove());
 }
-function resumeAfternoon(){if(!D||D.done)return;const ctl=$("#dayControl");if(ctl)ctl.innerHTML=`<p class="big">Afternoon rush…</p><button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button> ${spdBtnHtml()}`;runDayPhase("afternoon")}
+function resumeAfternoon(){if(!D||D.done)return;const msg=$("#dayMsg");if(msg)msg.textContent="Afternoon rush…";runDayPhase("afternoon")}
 
 /* ---------- Evening: report, draft, quotas ---------- */
 function finishDay(){
