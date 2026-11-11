@@ -682,6 +682,8 @@ function cheapestServingCost(){return Math.min(...S.recipes.map(rk=>servingCost(
 function signCost(){
   let c=2.50; return Math.round(c*100)/100;
 }
+/* What the signs picked for today will actually charge: free signs from upgrades don't cost anything. */
+function signsTotalCost(signs,build){return Math.max(0,signs-(build?build.freeSigns:computeBuild().freeSigns))*signCost()}
 /* ---------- build aggregation ---------- */
 /* b.tags = flavor tags on your menu's recipes (feeds synergies). Gear carries no tags. */
 function computeBuild(){
@@ -984,9 +986,11 @@ function cupsFromSupplies(){return Math.min(brewableServings({...S.inv}),S.inv.c
 function renderProj(){
   const gt=$("#guessText");if(!gt)return;
   const wx=WEATHERS[M.shownWx];
-  $("#btnOpen").disabled=!M.loc;
+  const signsDue=signsTotalCost(M.signs);
+  const cantAffordSigns=signsDue>S.cash;
+  $("#btnOpen").disabled=!M.loc||cantAffordSigns;
   const cap=cupsFromSupplies();
-  gt.innerHTML=`<span class="nums"><span>${wx.icon} <b>${wx.name}</b> · <b>${M.temp}°F</b></span><span>🥤 <i class="long">Supplies for </i><b>${cap}</b> cups</span>${M.loc?"":"<span>📍 Pick a spot first</span>"}</span>`;
+  gt.innerHTML=`<span class="nums"><span>${wx.icon} <b>${wx.name}</b> · <b>${M.temp}°F</b></span><span>🥤 <i class="long">Supplies for </i><b>${cap}</b> cups</span>${M.loc?"":"<span>📍 Pick a spot first</span>"}${cantAffordSigns?`<span>🪧 Signs cost <b>${fmt(signsDue)}</b> — you have <b>${fmt(S.cash)}</b>. Use fewer signs.</span>`:""}</span>`;
 }
 
 /* ---------- Day resolution ---------- */
@@ -1050,12 +1054,13 @@ function serveOne(ck){
 }
 function openStand(){
   if(!M.loc){alert("Pick a spot first.");return}
-  S.last={signs:M.signs,ice:M.icePerCup};
-  S.recipes.forEach(rk=>{S.menuPrices[rk]=M.prices[rk]});
   const b=computeBuild();
   const sc=signCost();
   const paidSigns=Math.max(0,M.signs-b.freeSigns);
   const fixed=paidSigns*sc;
+  if(fixed>S.cash){sfx.bad();alert(`Those signs cost ${fmt(fixed)}, but you only have ${fmt(S.cash)}. Use fewer signs.`);return}
+  S.last={signs:M.signs,ice:M.icePerCup};
+  S.recipes.forEach(rk=>{S.menuPrices[rk]=M.prices[rk]});
   sfx.pop();
   M.actualWx=M.trueWx;
   D={signs:M.signs,paidSigns,signCostEach:sc,fixedCost:fixed,build:b,
