@@ -1094,7 +1094,7 @@ function mSceneHtml(){
 function mSpotHtml(){
   const top=M.loc?Object.entries(crowdMixFor(M.loc)).sort((a,b)=>b[1]-a[1]).slice(0,3):[];
   return `<div class="mLbl">📍 Where today?</div>
-    <div class="posts">${M.locs.map((l,i)=>`<button class="post" onclick="chooseLoc(${i})" data-f="loc${i}" aria-pressed="${M.loc===l}"><span class="postFace">${iconHtml("spot",l.name,true)}<span>${l.name}</span></span></button>`).join("")}</div>
+    <div class="posts">${M.locs.map((l,i)=>`<button class="post" onclick="chooseLoc(${i})" data-f="loc${i}" aria-pressed="${M.loc===l}" aria-label="${l.name}"><span class="postFace">${iconHtml("spot",l.name,true)}<span>${l.name}</span></span></button>`).join("")}</div>
     ${M.loc?`<div class="crowdRow">${top.map(([k,v])=>`<span class="crowd" tabindex="0"${tip(crowdTip(k))}>${CROWDS[k].icon} ${CROWDS[k].name} ${v}%</span>`).join("")}</div>`:`<div class="mHint">Tap a spot to see who comes.</div>`}`;
 }
 function mShopHtml(){
