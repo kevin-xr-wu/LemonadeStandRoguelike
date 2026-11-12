@@ -109,7 +109,7 @@ h3{margin:14px 0 6px}
 @keyframes leafSpin{to{rotate:360deg}}
 @keyframes leafBob{to{translate:0 calc(-10px*var(--px))}}
 @keyframes shimmer{0%{translate:0 0;opacity:0}30%{opacity:.8}100%{translate:0 calc(-28px*var(--px));opacity:0}}
-@media (prefers-reduced-motion:reduce){.cloud,.rain,.gust,.leaf,.shimmer,.bubble,.coin,.cust.walk,.cust.carry{animation:none}}
+@media (prefers-reduced-motion:reduce){.cloud,.rain,.gust,.leaf,.shimmer,.bubble,.coin,.cust.walk,.cust.carry,.flavorPop{animation:none}}
 .stand{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:128px;image-rendering:pixelated;z-index:5;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
 .standSign{position:absolute;left:50%;bottom:134px;transform:translateX(-50%) rotate(-2deg);background:#fff;border-radius:8px;padding:3px 12px;font-weight:900;font-size:14px;z-index:6;white-space:nowrap}
 .crowdMix{position:absolute;top:10px;left:12px;background:rgba(255,253,244,.92);border-radius:10px;padding:5px 10px;font-size:12.5px;font-weight:700;z-index:6;max-width:46%;line-height:1.5}
@@ -134,6 +134,11 @@ h3{margin:14px 0 6px}
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
+/* What they bought pops up beside the coin: the flavor's chalkboard icon at the scene's pixel size, on a badge like the speech bubbles
+   so it reads in front of the stand. left is the coin's centre; the badge's right edge sits just left of the coin. */
+.flavorPop{position:absolute;bottom:calc(var(--px)*32px);margin-left:calc(var(--px)*-27px - 4px);background:#fff;border:2px solid var(--ink);border-radius:8px;padding:calc(var(--px)*2px);z-index:9;pointer-events:none;animation:flavorPop 1s ease-out forwards}
+.flavorPop .icon{--sz:calc(16px*var(--px));display:block;filter:drop-shadow(0 2px 1px rgba(0,0,0,.3))}
+@keyframes flavorPop{0%{opacity:0;transform:scale(.5)}15%{opacity:1;transform:scale(1.15)}25%{transform:scale(1)}70%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--px)*-8px))}}
 @keyframes coinSpin{to{background-position-x:calc(var(--s)*-40px)}}
 /* Day controls live in the scene: Skip and Speed as small corner buttons. */
 .sceneBtns{position:absolute;top:10px;right:12px;z-index:7;display:flex;gap:6px}
@@ -1236,7 +1241,7 @@ function serveOne(ck){
   const rev=saleRevenue(1,menuPrice(rk),rk);
   D.revenue+=rev;D.revBy[rk]=(D.revBy[rk]||0)+rev;D.tips+=rev*tipRate()*Math.random();
   D.cogs+=servingCost(rk);
-  D.sold++;D.soldBy[rk]=(D.soldBy[rk]||0)+1;
+  D.sold++;D.soldBy[rk]=(D.soldBy[rk]||0)+1;D.lastFlavor=rk; // the day scene shows it over the buyer
   if(D.crewLeft>0)D.crewLeft--;
   return "sold";
 }
@@ -1322,11 +1327,11 @@ async function runDayPhase(phase){
   const chunk=Math.max(1,Math.ceil(target/Math.max(visual,1)));
   for(let i=0;i<visual&&processed<target;i++){
     const ck=pick(mixArr)||"parents";const c=CROWDS[ck];
-    let soldChunk=0,miss=null;
+    let soldChunk=0,miss=null,flavor=null;
     for(let j=0;j<chunk&&processed<target;j++){
       const res=serveOne(ck);
       processed++;
-      if(res==="sold"){soldChunk++;streak++}
+      if(res==="sold"){soldChunk++;streak++;flavor=flavor||D.lastFlavor}
       else if(res==="price"){D.awayPrice++;streak=0;miss="too pricey…"}
       else if(res==="warm"){D.awayWarm++;streak=0;miss=`too warm… ${iconHtml("supply","ice")}`}
       else { // out of stock: the rest of this phase's line can't be served
@@ -1335,7 +1340,7 @@ async function runDayPhase(phase){
         processed=target;dry=true;break;
       }
     }
-    if(!D.skip)spawnCustomer(ck,soldChunk>0?{buys:true,streak,say:Math.random()<0.24?c.line:null}:{say:miss});
+    if(!D.skip)spawnCustomer(ck,soldChunk>0?{buys:true,flavor,streak,say:Math.random()<0.24?c.line:null}:{say:miss});
     updateDayStats();
     if(dry)break;
     await sleep(rnd(450,750));
@@ -1357,7 +1362,7 @@ function updateDayStats(){
 /* Customers walk across the scene. Buyers stop at the counter and face you while they pay,
    then walk on with a cup; everyone else walks past, saying why as they pass the stand. */
 const WALK_SPEED=75; // sprite pixels a second, so phones and desktops walk at the same pace
-function spawnCustomer(ck,{buys=false,say=null,streak=0}={}){
+function spawnCustomer(ck,{buys=false,flavor=null,say=null,streak=0}={}){
   const sky=$("#skyBox");if(!sky)return;
   const day=D,d=document.createElement("div"),fw=ck==="parents"?32:24,fromLeft=Math.random()<0.5;
   const walkLook=carry=>{d.className=`cust ${carry?"carry":"walk"}${fromLeft?"":" left"}`;d.style.backgroundImage=`url(${CUSTOMER_WALK_PNG[ck]})`};
@@ -1380,8 +1385,8 @@ function spawnCustomer(ck,{buys=false,say=null,streak=0}={}){
   walk(from,spot).then(()=>{
     if(!d.isConnected){day.buying--;return}
     d.className="cust front";d.style.backgroundImage=`url(${CUSTOMER_PNG[ck]})`;
-    sfx.coin(streak);spawnCoin(spot);
-    if(say)after(700,()=>spawnBubble(say,d)); // pay first, then talk, so the coin and bubble don't overlap
+    sfx.coin(streak);spawnCoin(spot);if(flavor)spawnFlavor(spot,flavor);
+    if(say)after(1000,()=>spawnBubble(say,d)); // pay first, then talk, so the coin and flavor don't overlap the bubble
     after(800,()=>{day.buying--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())});
   });
 }
@@ -1415,6 +1420,11 @@ function spawnCoin(x){
   const layer=$("#fxLayer");if(!layer)return;
   const d=document.createElement("div");d.className="coin";
   d.style.left=x+"px";layer.appendChild(d);after(800,()=>d.remove());
+}
+function spawnFlavor(x,rk){ // the flavor they bought, as on the chalkboard
+  const layer=$("#fxLayer");if(!layer)return;
+  const d=document.createElement("div");d.className="flavorPop";d.setAttribute("aria-hidden","true");d.innerHTML=iconHtml("flavor",rk);
+  d.style.left=x+"px";d.style.animationDuration=1/SPEED+"s";layer.appendChild(d);after(1000,()=>d.remove());
 }
 function resumeAfternoon(){if(!D||D.done)return;const msg=$("#dayMsg");if(msg)msg.textContent="Afternoon rush…";runDayPhase("afternoon")}
 
