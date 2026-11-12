@@ -47,8 +47,8 @@ button{font-family:inherit;cursor:pointer}
 .hudBtn:hover{background:rgba(255,247,224,.12)}
 .hudBtn:focus-visible{outline:3px solid var(--blue)}
 #btnSound{margin-left:auto}
-#btnSound .hudIcon{background-position-x:calc(-32px*var(--px))}
-#btnSound.off .hudIcon{background-position-x:calc(-48px*var(--px))}
+.soundBtn .hudIcon{background-position-x:calc(-32px*var(--px))}
+.soundBtn.off .hudIcon{background-position-x:calc(-48px*var(--px))}
 .helpBtn{width:34px;height:34px;padding:0;border-radius:50%;background:var(--lemon);color:var(--ink);font-size:21px;font-weight:900;box-shadow:inset 0 -3px 0 var(--lemon2)}
 .helpBtn:hover{background:#ffe470}
 @media (prefers-reduced-motion:reduce){.hudCoins .money,.hudCoins .hudIcon{animation:none!important}}
@@ -131,6 +131,7 @@ h3{margin:14px 0 6px}
 .icon.spot{--n:13;background-image:var(--spotIcons)}
 .icon.gearA{--n:20;background-image:var(--gearIconsA)}
 .icon.gearB{--n:19;background-image:var(--gearIconsB)}
+.cashIcon{--px:2;display:inline-block;vertical-align:-9px} /* the HUD coin, as Cousin's Gift's icon */
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
@@ -160,7 +161,7 @@ h3{margin:14px 0 6px}
 .rTotal{border-top:2px dashed #cdbf9d;margin-top:8px;padding-top:10px;font-weight:900}
 .rTotal .amt{font-size:30px;line-height:1}
 .coinSpot{position:relative;display:inline-block}
-.dropCoin{position:absolute;bottom:30%;font-size:20px;margin-left:-10px;pointer-events:none;animation:coinDrop .5s ease-in both}
+.dropCoin{--s:2;position:absolute;bottom:30%;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;pointer-events:none;animation:coinDrop .5s ease-in both}
 @keyframes coinDrop{0%{transform:translateY(-60px) rotate(-30deg);opacity:0}25%,80%{opacity:1}100%{transform:translateY(0) rotate(20deg) scale(.6);opacity:0}}
 .rStamp{display:block;width:max-content;margin:12px auto 0;border:3px solid currentColor;border-radius:8px;padding:1px 10px;font-size:15px;font-weight:900;letter-spacing:.08em;color:var(--green2);transform:rotate(-4deg);opacity:.85;animation:stampPress .2s ease-out 1.2s both}
 .rStamp.bad{color:var(--red)}
@@ -175,7 +176,6 @@ h3{margin:14px 0 6px}
 .scoreBig{font-size:64px;font-weight:900;line-height:1.1;color:var(--lemon);text-shadow:3px 3px 0 var(--ink),-1.5px -1.5px 0 var(--ink),1.5px -1.5px 0 var(--ink),-1.5px 1.5px 0 var(--ink);font-variant-numeric:tabular-nums}
 .highlights{list-style:none;margin:16px auto;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px 8px;max-width:560px}
 .highlights li{display:flex;flex-direction:column;align-items:center;line-height:1.25}
-.highlights .hlIcon{font-size:30px}
 .highlights b{font-size:22px}
 .highlights small{font-size:13px;opacity:.75}
 @media (prefers-reduced-motion:reduce){.dropCoin{display:none}.rStamp{animation:none}}
@@ -211,7 +211,7 @@ h3{margin:14px 0 6px}
 .title .ground{height:calc(var(--px)*48px);min-height:84px;background-size:calc(var(--px)*64px) calc(var(--px)*32px);display:flex;align-items:center;justify-content:center}
 .title .ground:before{top:calc(var(--px)*-9px);height:calc(var(--px)*14px);background-size:calc(var(--px)*64px) calc(var(--px)*14px)}
 .title .playBtn{position:relative;z-index:6}
-.titleBtns{position:absolute;top:10px;right:10px;display:flex;gap:8px;z-index:8}
+.titleBtns{--px:2;position:absolute;top:10px;right:10px;display:flex;align-items:center;gap:4px;z-index:8;background:var(--ink);border-radius:14px;padding:4px 6px} /* the HUD's sound and help buttons */
 @media (min-width:900px) and (min-height:720px){.scene.title,.title .sky{--px:3}}
 @media (max-width:359px),(max-height:500px){.scene.title,.title .sky{--px:1}}
 /* First-day hints: one line under the step it explains */
@@ -220,6 +220,10 @@ h3{margin:14px 0 6px}
 details.numbers{margin-top:12px;border-top:2px dotted #cdbf9d;padding-top:6px}
 details summary{cursor:pointer;font-weight:900;padding:6px 0}
 .list{margin:6px 0 0;padding-left:20px;display:grid;gap:6px;line-height:1.45}
+.list li.off{color:rgba(43,33,24,.6)}
+.onOff{display:inline-block;min-width:38px;text-align:center;background:var(--paper2);border-radius:99px;font-size:11px;font-weight:900;text-transform:uppercase;padding:2px 8px}
+.onOff.on{background:var(--green2);color:#fff}
+.btn.soundBtn{--px:1;display:inline-flex;align-items:center;gap:6px}
 .shelf{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--paper2);border-radius:12px;padding:8px 12px;margin:10px 0 4px}
 .slots{display:flex;gap:8px;flex-wrap:wrap;flex:1}
 .slot{width:46px;height:46px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:26px}
@@ -408,7 +412,7 @@ button,input,select{touch-action:manipulation}
     <div class="hudCoins" id="hudMoney" tabindex="0" data-tip="Your money. It's also your score."><i class="hudIcon"></i><span class="money" id="hudCash">$30</span></div>
     <div class="hudDay" id="hudDayBox" tabindex="0" data-tip=""><span class="hudIcon calPage" id="hudDay"></span><span class="dayOf" id="hudDayOf"></span></div>
     <div class="starMeter" id="hudRepBox" tabindex="0" data-tip="" role="img"></div>
-    <button class="hudBtn" id="btnSound" data-tip="Sound on or off" aria-label="Sound on or off"><i class="hudIcon"></i></button>
+    <button class="hudBtn soundBtn" id="btnSound" data-tip="Sound on or off" aria-label="Sound on or off"><i class="hudIcon"></i></button>
     <button class="hudBtn helpBtn" id="btnHelp" data-tip="How to play" aria-label="How to play">?</button>
   </div>
   <div id="screen"></div>
@@ -540,7 +544,7 @@ function countUp(el,to){
     el.textContent=fmt(p<1?Math.floor(to*(1-Math.pow(1-p,3))*100)/100:to);if(p<1)requestAnimationFrame(step)};
   requestAnimationFrame(step);
   [-22,12,-6,20,2].forEach((x,i)=>{ // fixed spots: Math.random stays the game's alone
-    const c=document.createElement("span");c.className="dropCoin";c.textContent="🪙";c.style.left=`calc(50% + ${x}px)`;c.style.animationDelay=i*0.2+"s";
+    const c=document.createElement("span");c.className="dropCoin";c.style.left=`calc(50% + ${x}px)`;c.style.animationDelay=i*0.2+"s";
     el.parentNode.appendChild(c);setTimeout(()=>{c.remove();if(el.isConnected)sfx.coin(i*4)},i*200+500);
   });
 }
@@ -751,18 +755,18 @@ function glassMax(){return GLASS_MAX}
 
 function actFor(i){if(i<ACTS.length)return ACTS[i];const a=ACTS[i%4];return {...a,name:"Act "+(i+1)+" · "+a.name.split("· ")[1]}}
 const EVENTS=[
- {id:"crewbuy", w:6,  txt:()=>`🚧 ${crewSize()} road workers stop by at lunch. They only buy if a flavor costs ${fmt(CREW_MAX_PRICE)} or less.`},
- {id:"closure", w:7,  txt:"🚧 Street closed for repairs. 65% fewer customers."},
- {id:"heatwave",w:6,  txt:"🥵 Heat wave. 50% more customers, and it's 8°F hotter.", fn:()=>{M.temp+=8}},
- {id:"bees",    w:5,  txt:"🐝 Bees swarm your stand. 20% fewer customers."},
- {id:"critic",  w:4,  txt:"🧐 A food critic is coming. Serve almost everyone to gain half a star. Serve too few and you lose half a star."},
- {id:"lemonsale",w:7, txt:"🍋 Market sale. Supplies cost 30% less tomorrow.", fn:s=>{s.tomorrowCostMult=0.7}},
- {id:"sugarant",w:5,  txt:"🐜 Ants got in the sugar. Supplies cost 25% more today.", fn:s=>{s.todayCostMult*=1.25}},
- {id:"puppy",   w:6,  txt:"🐶 A very good dog guards your stand. 15% more customers."},
- {id:"newspaper",w:4, txt:"📰 The newspaper wrote about you. 20% more customers and 50% more tips."},
+ {id:"crewbuy", w:6,  txt:()=>`${crewSize()} road workers stop by at lunch. They only buy if a flavor costs ${fmt(CREW_MAX_PRICE)} or less.`},
+ {id:"closure", w:7,  txt:"Street closed for repairs. 65% fewer customers."},
+ {id:"heatwave",w:6,  txt:"Heat wave. 50% more customers, and it's 8°F hotter.", fn:()=>{M.temp+=8}},
+ {id:"bees",    w:5,  txt:"Bees swarm your stand. 20% fewer customers."},
+ {id:"critic",  w:4,  txt:"A food critic is coming. Serve almost everyone to gain half a star. Serve too few and you lose half a star."},
+ {id:"lemonsale",w:7, txt:"Market sale. Supplies cost 30% less tomorrow.", fn:s=>{s.tomorrowCostMult=0.7}},
+ {id:"sugarant",w:5,  txt:"Ants got in the sugar. Supplies cost 25% more today.", fn:s=>{s.todayCostMult*=1.25}},
+ {id:"puppy",   w:6,  txt:"A very good dog guards your stand. 15% more customers."},
+ {id:"newspaper",w:4, txt:"The newspaper wrote about you. 20% more customers and 50% more tips."},
  {id:"nothing", w:50, txt:""},
- {id:"birthday",w:5,  txt:"🎂 Block birthday party. 25% more customers."},
- {id:"foodtruck",w:4, txt:"🚚 Food truck festival next door. 20% more customers."}
+ {id:"birthday",w:5,  txt:"Block birthday party. 25% more customers."},
+ {id:"foodtruck",w:4, txt:"Food truck festival next door. 20% more customers."}
 ];
 function eventText(ev){return typeof ev.txt==="function"?ev.txt():ev.txt}
 const GOOD_EVENTS=["crewbuy","heatwave","lemonsale","puppy","newspaper","birthday","foodtruck"],BAD_EVENTS=["closure","bees","sugarant"];
@@ -807,7 +811,7 @@ function after(ms,fn){
   },40);
   return iv;
 }
-const spdLabel=()=>SPEED===2?"⏩ Fast":"▶ Normal";
+const spdLabel=()=>SPEED===2?"Fast":"Normal";
 const spdBtnHtml=()=>`<button class="btn sm ghost" id="spdBtn" onclick="toggleSpeed()">${spdLabel()}</button>`;
 function newRun(kidId){
   const kid=KIDS.find(k=>k.id===kidId);
@@ -1031,11 +1035,11 @@ function shelfHtml(){
   let slots="";
   for(let i=0;i<gearSlots();i++){const g=GEAR.find(x=>x.id===S.gear[i]);
     slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${gearIconHtml(g.id,true)}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You win upgrades after each day.")}></span>`}
-  return `<div class="shelf"><b>🧰 My Stand</b><div class="slots">${slots}</div><button class="btn sm ghost" onclick="showBuild()">See all</button></div>`;
+  return `<div class="shelf"><b>My Stand</b><div class="slots">${slots}</div><button class="btn sm ghost" onclick="showBuild()">See all</button></div>`;
 }
 /* The day, step by step. The ? help lists them all; on a player's first day each hint shows where its step happens. */
 const FORECAST_HINT="Hot days are busy. Rain keeps people home.";
-const HOW_STEPS=[["📍","Pick a spot","Each spot brings different people."],["🛒","Buy supplies","Each cup uses supplies."],["🧊","Ice and signs","Signs bring more people."],["🏷️","Set your price","Too high, and people walk away."],["📊","See how you did","Sales and tips for the day."],["🎁","Pick an upgrade",`Upgrades make your stand better. You can keep ${GEAR_SLOTS}.`]];
+const HOW_STEPS=[["Pick a spot","Each spot brings different people."],["Buy supplies","Each cup uses supplies."],["Ice and signs","Signs bring more people."],["Set your price","Too high, and people walk away."],["See how you did","Sales and tips for the day."],["Pick an upgrade",`Upgrades make your stand better. You can keep ${GEAR_SLOTS}.`]];
 function firstDay(){return S&&S.day===1&&!meta.hintsSeen}
 function learnHint(t){return firstDay()?`<span class="learn">${t}</span>`:""}
 
@@ -1045,11 +1049,11 @@ function showTitle(){
   $("#screen").innerHTML=`
   <div class="scene title">
     <div class="sky sunny">
-      <div class="titleBtns"><button class="iconBtn" id="titleSound" onclick="toggleSound()" aria-label="Sound on or off">${soundOn?"🔊":"🔇"}</button><button class="iconBtn" onclick="showHelp()" aria-label="How to play">❓</button></div>
+      <div class="titleBtns"><button class="hudBtn soundBtn${soundOn?"":" off"}" onclick="toggleSound()" aria-label="Sound on or off"><i class="hudIcon"></i></button><button class="hudBtn helpBtn" onclick="showHelp()" aria-label="How to play">?</button></div>
       <h1 class="logo"><img src="${LOGO_PNG}" alt="World Lemonade Stand"></h1>
       <img class="stand" src="${STAND_PNG}" alt="">
     </div>
-    <div class="ground"><button class="btn gold playBtn" onclick="selectKid('classic')">▶ PLAY</button></div>
+    <div class="ground"><button class="btn gold playBtn" onclick="selectKid('classic')">PLAY</button></div>
   </div>`;
 }
 function selectKid(kidId){
@@ -1065,8 +1069,8 @@ function renderMorning(){
   const wx=WEATHERS[M.shownWx];
   const newSyn=b.synergies.filter(s=>!S.discoveredSyn.includes(s.id));
   newSyn.forEach(s=>S.discoveredSyn.push(s.id));
-  const streakHtml=S.streak>=2?`<div class="synBanner streak">🔥 Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Serve 3 out of 4 customers and make money today for a +${Math.min(25,3*(S.streak+1))}% bonus tonight.</div>`:"";
-  const synHtml=b.synergies.length?`<div class="synBanner">⚡ Combos: ${b.synergies.map(s=>`<span tabindex="0"${tip(s.desc)}>${s.name}</span>`).join(", ")}</div>`:"";
+  const streakHtml=S.streak>=2?`<div class="synBanner streak">Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Serve 3 out of 4 customers and make money today for a +${Math.min(25,3*(S.streak+1))}% bonus tonight.</div>`:"";
+  const synHtml=b.synergies.length?`<div class="synBanner">Combos: ${b.synergies.map(s=>`<span tabindex="0"${tip(s.desc)}>${s.name}</span>`).join(", ")}</div>`:"";
   const evTxt=M.event?eventText(M.event):"";
   const eventHtml=evTxt?`<div class="callout">${evTxt}</div>`:"";
   $("#screen").innerHTML=`
@@ -1077,18 +1081,18 @@ function renderMorning(){
       <div id="mScene" style="display:contents"></div>
     </div>
     <div class="ground"></div>
-    <div class="dayStats forecastBar" tabindex="0"${tip("The forecast is always right. Use it to guess how many people will come and what they'll pay.")}><span class="fcLabel">Today's forecast</span><span class="fcMain">${wx.icon} <b>${wx.name}</b>, 🌡️ <b>${M.temp}°F</b></span><span class="fcDesc">${wx.desc}</span>${learnHint(FORECAST_HINT)}${M.dice?`<span>🎲 Lucky Dice: <b>${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers</b> today</span>`:""}</div>
+    <div class="dayStats forecastBar" tabindex="0"${tip("The forecast is always right. Use it to guess how many people will come and what they'll pay.")}><span class="fcLabel">Today's forecast</span><span class="fcMain">${wx.icon} <b>${wx.name}</b>, <b>${M.temp}°F</b></span><span class="fcDesc">${wx.desc}</span>${learnHint(FORECAST_HINT)}${M.dice?`<span>Lucky Dice: <b>${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers</b> today</span>`:""}</div>
   </div>
   ${synHtml}${streakHtml}${eventHtml}
   <div class="panel">
-    <div class="flex spread"><h2 style="margin:0">🌅 Day ${S.day}</h2>${S.endless?`<button class="btn sm ghost" onclick="endRun('retired')">🏁 Stop and keep my score (${fmt(S.cash)})</button>`:""}</div>
+    <div class="flex spread"><h2 style="margin:0">Day ${S.day}</h2>${S.endless?`<button class="btn sm ghost" onclick="endRun('retired')">Stop and keep my score (${fmt(S.cash)})</button>`:""}</div>
     ${shelfHtml()}
     <div id="mSpot"></div>
   </div>
   <div class="supShelf" id="mShop" role="group" aria-label="Supplies"></div>
   <div class="panel gear" id="mGear"></div>
   <div class="board" id="mBoard" role="group" aria-label="Today's prices"></div>
-  <div class="guessBar"><div id="guessText"></div><button class="btn gold" id="btnOpen" onclick="openStand()">☀️ Open<i class="long"> the stand</i></button></div>`;
+  <div class="guessBar"><div id="guessText"></div><button class="btn gold" id="btnOpen" onclick="openStand()">Open<i class="long"> the stand</i></button></div>`;
   morningParts();
 }
 /* Redraw the morning's controls in place, so the sky keeps drifting, and keep focus on the control just used. */
@@ -1109,12 +1113,12 @@ function mSceneHtml(){
   let signs="";
   for(let k=0;k<Math.min(owned,SIGN_SPOTS);k++){const on=k<M.signs; // alternate left and right of the stand, working outward
     signs+=`<button class="signSlot${on?"":" off"}" style="--k:${k>>1};--side:${k%2?1:-1}" onclick="tapSign(${k})" data-f="sign${k}" aria-pressed="${on}" aria-label="Sign ${k+1}">${iconHtml("supply","signs")}</button>`}
-  return `<div class="crowdMix">${M.loc?`${iconHtml("spot",M.loc.name)} ${M.loc.name}<br>${crowdMixLine()}`:"📍 Pick a spot"}</div>
-    <div class="standSign">${menu.length?`🍋 ${menu.length} ${plural(menu.length,"flavor")} · from ${fmt(Math.min(...menu.map(menuPrice)))}`:"🛒 Buy supplies to open"}</div>${signs}`;
+  return `<div class="crowdMix">${M.loc?`${iconHtml("spot",M.loc.name)} ${M.loc.name}<br>${crowdMixLine()}`:"Pick a spot"}</div>
+    <div class="standSign">${menu.length?`${menu.length} ${plural(menu.length,"flavor")} · from ${fmt(Math.min(...menu.map(menuPrice)))}`:"Buy supplies to open"}</div>${signs}`;
 }
 function mSpotHtml(){
   const top=M.loc?Object.entries(crowdMixFor(M.loc)).sort((a,b)=>b[1]-a[1]).slice(0,3):[];
-  return `<div class="mLbl">📍 Where today?</div>${learnHint(HOW_STEPS[0][2])}
+  return `<div class="mLbl">Where today?</div>${learnHint(HOW_STEPS[0][1])}
     <div class="posts">${M.locs.map((l,i)=>`<button class="post" onclick="chooseLoc(${i})" data-f="loc${i}" aria-pressed="${M.loc===l}" aria-label="${l.name}"><span class="postFace">${iconHtml("spot",l.name,true)}<span>${l.name}</span></span></button>`).join("")}</div>
     ${M.loc?`<div class="crowdRow">${top.map(([k,v])=>`<span class="crowd" tabindex="0"${tip(crowdTip(k))}>${CROWDS[k].icon} ${CROWDS[k].name} ${v}%</span>`).join("")}</div>`:`<div class="mHint">Tap a spot to see who comes.</div>`}`;
 }
@@ -1122,13 +1126,13 @@ function mShopHtml(){
   const basics=["cups","lemons","sugar","ice","signs"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
   const row=ids=>`<div class="shelfRow">${ids.map(id=>{const n=S.inv[id]||0,open=M.shopOpen===id;
     return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`}).join("")}</div>${ids.includes(M.shopOpen)?mDrawerHtml(M.shopOpen):""}`;
-  return `<div class="mLbl">🛒 Supplies<small>Tap one to buy. Bigger packs cost less each.</small></div>${learnHint(HOW_STEPS[1][2])}
-    ${M.treeLemons?`<div class="mHint" style="margin:0 0 6px">🌳 Your Lemon Tree dropped <b>${M.treeLemons}</b> free ${plural(M.treeLemons,"lemon")}.</div>`:""}
+  return `<div class="mLbl">Supplies<small>Tap one to buy. Bigger packs cost less each.</small></div>${learnHint(HOW_STEPS[1][1])}
+    ${M.treeLemons?`<div class="mHint" style="margin:0 0 6px">Your Lemon Tree dropped <b>${M.treeLemons}</b> free ${plural(M.treeLemons,"lemon")}.</div>`:""}
     ${row(basics)}${extras.length?`<div class="mHint" style="margin:0">For your flavors</div>${row(extras)}`:""}`;
 }
 function mDrawerHtml(id){
   const ing=INGREDIENTS[id],n=S.inv[id]||0;
-  const rule=[id==="ice"?"🫠 Half melts every night.":id==="signs"?"About 1 in 4 you put out breaks overnight.":SHELF[id]?`🕒 Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
+  const rule=[id==="ice"?"Half melts every night.":id==="signs"?"About 1 in 4 you put out breaks overnight.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
   return `<div class="drawer" id="mDrawer">
     <div class="mLbl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}.</small></div>
     ${rule?`<div class="rule">${rule}</div>`:""}
@@ -1145,12 +1149,12 @@ function mGearHtml(){
   for(let k=1;k<=4;k++)cubes+=`<button class="cube" onclick="setIce(${k})" data-f="ice${k}" aria-pressed="${k<=M.icePerCup}" aria-label="${k} ice ${plural(k,"cube")}">${iconHtml("supply","ice",true)}</button>`;
   return `<div><div class="mLbl"><span>${iconHtml("supply","ice")} Ice in each cup: ${M.icePerCup}</span><small>Hot days need more.</small></div>
       <div class="cubes" role="group" aria-label="Ice in each cup">${cubes}</div></div>
-    <div><div class="mLbl"><span>${iconHtml("supply","signs")} Signs out</span>${stepperHtml("signs",`${M.signs} of ${owned}`,"stepSigns(-1)","stepSigns(1)",`Fewer signs, ${M.signs} out`,`More signs, ${M.signs} out`,M.signs<=0,M.signs>=owned)}</div>${learnHint(HOW_STEPS[2][2])}
+    <div><div class="mLbl"><span>${iconHtml("supply","signs")} Signs out</span>${stepperHtml("signs",`${M.signs} of ${owned}`,"stepSigns(-1)","stepSigns(1)",`Fewer signs, ${M.signs} out`,`More signs, ${M.signs} out`,M.signs<=0,M.signs>=owned)}</div>${learnHint(HOW_STEPS[2][1])}
       <div class="mHint">${owned?"Or tap them on the grass.":"You have none. Buy some on the shelf."}${b.freeSigns?` Upgrades add ${b.freeSigns} free.`:""} ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}</div></div>`;
 }
 function mBoardHtml(){
-  return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][2])}<div class="prices">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
-    const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">⭐ Special +$0.50</span>':"";
+  return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][1])}<div class="prices">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
+    const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">Special +$0.50</span>':"";
     return `<div class="price${ok?"":" out"}">${iconHtml("flavor",rk,true)}
       <div><span class="pName" tabindex="0"${tip(`${r.desc} From: ${r.origin.replace(" · ",", ")}.`)}>${r.name}</span><div>${tagChips(r.tags)}${special}</div></div>
       ${stepperHtml("price-"+rk,fmt(p),`stepPrice('${rk}',-1)`,`stepPrice('${rk}',1)`,`Lower ${r.name} price, now ${fmt(p)}`,`Raise ${r.name} price, now ${fmt(p)}`,p<=0.5,p>=priceMax())}
@@ -1184,7 +1188,7 @@ function renderProj(){
   const wx=WEATHERS[M.shownWx];
   $("#btnOpen").disabled=!M.loc;
   const cap=cupsFromSupplies();
-  gt.innerHTML=`<span class="nums"><span>${wx.icon} <b>${wx.name}</b>, <b>${M.temp}°F</b></span><span>${iconHtml("supply","cups")} <i class="long">Supplies for </i><b>${cap}</b> ${plural(cap,"cup")}</span>${M.loc?"":"<span>📍 Pick a spot first</span>"}</span>`;
+  gt.innerHTML=`<span class="nums"><span>${wx.icon} <b>${wx.name}</b>, <b>${M.temp}°F</b></span><span>${iconHtml("supply","cups")} <i class="long">Supplies for </i><b>${cap}</b> ${plural(cap,"cup")}</span>${M.loc?"":"<span>Pick a spot first</span>"}</span>`;
 }
 
 /* ---------- Day resolution ---------- */
@@ -1201,10 +1205,10 @@ function brewPitcher(rk){
   if(!canBrew(rk,S.inv))return false;
   S.brewCount=(S.brewCount||0)+1;
   const freePitcher=S.gear.includes("pitcher")&&S.brewCount%4===0; // Grandma's Pitcher: every 4th is on her
-  if(freePitcher)logLine(`<span class="good">🏺 Grandma's Pitcher: this pitcher is free.</span>`);
+  if(freePitcher)logLine(`<span class="good">Grandma's Pitcher: this pitcher is free.</span>`);
   else Object.entries(pitcherNeeds(rk)).forEach(([k,v])=>{S.inv[k]-=v});
   let servings=pitcherServes();
-  if(S.gear.includes("brother")&&!D.brotherSpilled){D.brotherSpilled=true;servings-=2;logLine(`<span class="bad">👦 Little Brother spilled 2 cups.</span>`)}
+  if(S.gear.includes("brother")&&!D.brotherSpilled){D.brotherSpilled=true;servings-=2;logLine(`<span class="bad">Little Brother spilled 2 cups.</span>`)}
   D.open[rk]=servings;D.brewed[rk]=(D.brewed[rk]||0)+1;
   return true;
 }
@@ -1276,8 +1280,8 @@ function renderDayScene(){
     <div class="sky ${M.actualWx}" id="skyBox">
       <div class="crowdMix">${iconHtml("spot",M.loc.name)} ${M.loc.name}<br>${crowdMixLine()}</div>
       ${skyArt(M.actualWx)}
-      <div class="sceneBtns"><button class="btn sm ghost" onclick="D.skip=true">⏩ Skip</button> ${spdBtnHtml()}</div>
-      <div class="standSign">🍋 ${D.menu.length} ${plural(D.menu.length,"flavor")}, from ${fmt(Math.min(...D.menu.map(rk=>menuPrice(rk))))}</div>
+      <div class="sceneBtns"><button class="btn sm ghost" onclick="D.skip=true">Skip</button> ${spdBtnHtml()}</div>
+      <div class="standSign">${D.menu.length} ${plural(D.menu.length,"flavor")}, from ${fmt(Math.min(...D.menu.map(rk=>menuPrice(rk))))}</div>
       <img class="stand" src="${STAND_PNG}" alt="">
       <div id="fxLayer"></div>
     </div>
@@ -1320,7 +1324,7 @@ function tipRate(){
 async function runDayPhase(phase){
   const isMorning=phase==="morning";
   const target=isMorning?D.morningDemand:D.unmet+D.aftDemand;
-  if(isMorning&&D.crew)logLine(`<span class="good">🚧 ${D.crew} road workers buy your cheapest flavor.</span>`);
+  if(isMorning&&D.crew)logLine(`<span class="good">${D.crew} road workers buy your cheapest flavor.</span>`);
   const mix=crowdMixFor(M.loc);
   const mixArr=[];Object.entries(mix).forEach(([k,v])=>{for(let i=0;i<v;i++)mixArr.push(k)});
   let streak=0,processed=0,dry=false;
@@ -1469,21 +1473,21 @@ function finishDay(){
   let streakNote="";
   if(served>=0.75&&made>0){
     S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);
-    if(S.streak>=2){const pct=Math.min(25,3*S.streak);const bonus=Math.round(revenue*pct/100*100)/100;S.cash+=bonus;S.lifetimeProfit+=bonus;streakNote=`🔥 Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Bonus: <b>${fmt(bonus)}</b> (${pct}% of sales).`}
+    if(S.streak>=2){const pct=Math.min(25,3*S.streak);const bonus=Math.round(revenue*pct/100*100)/100;S.cash+=bonus;S.lifetimeProfit+=bonus;streakNote=`Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Bonus: <b>${fmt(bonus)}</b> (${pct}% of sales).`}
   } else if(S.gear.includes("clover")&&S.streak>=2&&S.cloverAct!==actIndex()){
-    S.cloverAct=actIndex();streakNote=`🍀 Your Four-Leaf Clover saved your streak of ${S.streak} ${plural(S.streak,"day")}.`;
+    S.cloverAct=actIndex();streakNote=`Your Four-Leaf Clover saved your streak of ${S.streak} ${plural(S.streak,"day")}.`;
   } else {
-    if(S.streak>=2)streakNote=`💨 Your streak of ${S.streak} ${plural(S.streak,"day")} ended (${served<0.75?"fewer than 3 out of 4 customers got lemonade":"no money made"}).`;
+    if(S.streak>=2)streakNote=`Your streak of ${S.streak} ${plural(S.streak,"day")} ended (${served<0.75?"fewer than 3 out of 4 customers got lemonade":"no money made"}).`;
     S.streak=0;
   }
   // Compound Piggy: interest on the bank, every evening
   let interestNote="";
-  if(S.gear.includes("piggy")){const interest=Math.min(200,Math.floor(Math.max(0,S.cash-150)*0.04));if(interest>0){S.cash+=interest;S.lifetimeProfit+=interest;interestNote=`🐷 Piggy bank interest: +<b>${fmt(interest)}</b>.`}}
+  if(S.gear.includes("piggy")){const interest=Math.min(200,Math.floor(Math.max(0,S.cash-150)*0.04));if(interest>0){S.cash+=interest;S.lifetimeProfit+=interest;interestNote=`Piggy bank interest: +<b>${fmt(interest)}</b>.`}}
   // Rainy-Day Jar: good days save into it, the next bad day pays it out
   let jarNote="";
   if(S.gear.includes("rainjar")){
-    if(["sunny","hot","perfect"].includes(M.actualWx)&&made>0){const add=Math.round(made*0.15*100)/100;S.jar=Math.round(((S.jar||0)+add)*100)/100;jarNote=`🌦️ Rainy-Day Jar: +${fmt(add)} saved (${fmt(S.jar)} in the jar).`}
-    else if(["cloudy","rainy"].includes(M.actualWx)&&S.jar>0){S.cash+=S.jar;S.lifetimeProfit+=S.jar;jarNote=`🌦️ Rainy-Day Jar pays out <b>${fmt(S.jar)}</b>.`;S.jar=0}
+    if(["sunny","hot","perfect"].includes(M.actualWx)&&made>0){const add=Math.round(made*0.15*100)/100;S.jar=Math.round(((S.jar||0)+add)*100)/100;jarNote=`Rainy-Day Jar: +${fmt(add)} saved (${fmt(S.jar)} in the jar).`}
+    else if(["cloudy","rainy"].includes(M.actualWx)&&S.jar>0){S.cash+=S.jar;S.lifetimeProfit+=S.jar;jarNote=`Rainy-Day Jar pays out <b>${fmt(S.jar)}</b>.`;S.jar=0}
   }
   S.cash=Math.round(S.cash*100)/100;
   // counterfactual — the near-miss engine
@@ -1503,44 +1507,44 @@ function finishDay(){
   const brewedTotal=Object.values(D.brewed).reduce((s,v)=>s+v,0);
   const invLine=Object.keys(INGREDIENTS).filter(id=>(S.inv[id]||0)>0).map(id=>`${S.inv[id]}${iconHtml("supply",id)}`).join(" ");
   const repExtra=repNotes.slice(D.demand>0?1:0); // the first note (people served) is the line above it
-  const repLine=repNotes.length?`⭐ Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b>${repExtra.length?` (${repExtra.join(", ")})`:""}`:`⭐ Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
+  const repLine=repNotes.length?`Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b>${repExtra.length?` (${repExtra.join(", ")})`:""}`:`Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
   const stamp=perfect?`<span class="rStamp">Perfect day</span>`:soldOut?`<span class="rStamp">Sold out</span>`:made<0?`<span class="rStamp bad">Rough day</span>`:"";
   const today=S.log.slice(M.logStart);
   $("#screen").innerHTML=`
   <div class="panel">
-    <h2>🌇 Day ${S.day} results</h2>
-    ${learnHint(HOW_STEPS[4][2])}
+    <h2>Day ${S.day} results</h2>
+    ${learnHint(HOW_STEPS[4][1])}
     <div class="report">
       <div class="receiptBox">
         <div class="receiptWrap"><div class="receipt">
           <div class="rHead">${iconHtml("spot",M.loc.name)} ${M.loc.name}</div>
           ${sellRows}
-          ${upgradeBonus>0.004?`<div class="rRow"><span>🎁 Upgrade bonuses</span><span class="amt">+${fmt(upgradeBonus)}</span></div>`:""}
-          ${bannerBonus?`<div class="rRow"><span>🚩 Sellout Banner pre-sales</span><span class="amt">+${fmt(bannerBonus)}</span></div>`:""}
-          <div class="rRow"><span>🫙 Tips</span><span class="amt">+${fmt(tips)}</span></div>
+          ${upgradeBonus>0.004?`<div class="rRow"><span>Upgrade bonuses</span><span class="amt">+${fmt(upgradeBonus)}</span></div>`:""}
+          ${bannerBonus?`<div class="rRow"><span>Sellout Banner pre-sales</span><span class="amt">+${fmt(bannerBonus)}</span></div>`:""}
+          <div class="rRow"><span>Tips</span><span class="amt">+${fmt(tips)}</span></div>
           <div class="rTotal"><span>Money made today</span><span class="coinSpot"><span class="amt ${made>=0?"pos":"negc"}" id="madeAmt">${fmt(made)}</span></span></div>
           ${stamp}
         </div></div>
       </div>
       <div class="dayNotes">
-        <p>👥 ${D.sold} of ${D.demand} ${plural(D.demand,"person","people")} got lemonade.${why.length?` ${why.join(", ")}.`:""}</p>
+        <p>${D.sold} of ${D.demand} ${plural(D.demand,"person","people")} got lemonade.${why.length?` ${why.join(", ")}.`:""}</p>
         <div class="note">${counter}</div>
         <p>${repLine}</p>
         ${[streakNote,interestNote,jarNote].filter(Boolean).map(n=>`<p>${n}</p>`).join("")}
-        ${tonight.length?`<p>🌙 Tonight: ${listWords(tonight)}.</p>`:""}
+        ${tonight.length?`<p>Tonight: ${listWords(tonight)}.</p>`:""}
       </div>
     </div>
     <details class="numbers"><summary>See every number</summary>
       <ul class="facts">
         ${byCups.map(([rk,n])=>`<li>${iconHtml("flavor",rk)} ${RECIPES[rk].name}: <b>${n} ${plural(n,"cup")}</b></li>`).join("")}
-        <li>🍶 Pitchers made: <b>${brewedTotal}</b></li>
-        ${wasted?`<li>🫗 Cups poured out: <b>${wasted}</b></li>`:""}
-        <li>🎒 Supplies left: <b>${invLine||"none"}</b></li>
+        <li>Pitchers made: <b>${brewedTotal}</b></li>
+        ${wasted?`<li>Cups poured out: <b>${wasted}</b></li>`:""}
+        <li>Supplies left: <b>${invLine||"none"}</b></li>
       </ul>
       <h4 class="todayHead">Today</h4>
       <ul class="facts">${today.length?today.map(l=>`<li>${l}</li>`).join(""):"<li>A quiet day at the stand.</li>"}</ul>
     </details>
-    <div class="center mt"><button class="btn gold" style="font-size:21px" onclick="afterReport()">${S.day%3===0?"📦 Open your bonus crate →":"🎁 Pick an upgrade →"}</button></div>
+    <div class="center mt"><button class="btn gold" style="font-size:21px" onclick="afterReport()">${S.day%3===0?"Open your bonus crate":"Pick an upgrade"}</button></div>
   </div>`;
   countUp($("#madeAmt"),made);
   updateHUD();
@@ -1577,13 +1581,13 @@ function draftCardHtml(p){
     return {icon:gearIconHtml(g.id,true),title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"Stand upgrade"}}
   if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(pitcherNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
     return {icon:iconHtml("flavor",p.id,true),title:r.name,badge:"",desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`,tags:tagChips(r.tags),type:"New flavor"}}
-  return {icon:"💵",title:"Cousin's Gift",badge:"",desc:`+${fmt(18+22*actIndex())} cash right now. It gets bigger later in the summer.`,tags:"",type:"Cash"};
+  return {icon:`<i class="hudIcon cashIcon" role="img" aria-label="Cash"></i>`,title:"Cousin's Gift",badge:"",desc:`+${fmt(18+22*actIndex())} cash right now. It gets bigger later in the summer.`,tags:"",type:"Cash"};
 }
 function renderDraftScreen(){
   $("#screen").innerHTML=`<div class="panel">
     <h2>${draftTitle}</h2>
     <p class="muted" style="margin-top:0">It starts working tomorrow. The other two go away.</p>
-    ${learnHint(HOW_STEPS[5][2])}
+    ${learnHint(HOW_STEPS[5][1])}
     ${shelfHtml()}
     <div class="choices">${draftChoices.map((p,i)=>{const c=draftCardHtml(p);return `<button class="choice" onclick="pickDraft(${i})"><div class="ttl"><span>${c.icon} ${c.title}</span>${c.badge}</div><div class="small typeLabel">${c.type}</div><div class="desc">${c.desc}</div>${c.tags}</button>`}).join("")}</div>
   </div>`;
@@ -1591,17 +1595,17 @@ function renderDraftScreen(){
 function offerDraft(){
   if(S.day%3===0){offerCrate();return}
   draftChoices=drawDraft(false);sfx.flip();
-  draftTitle="🎁 Pick an upgrade";
+  draftTitle="Pick an upgrade";
   renderDraftScreen();
 }
 function offerCrate(){
   $("#screen").innerHTML=`<div class="panel center">
-    <h2>📦 Bonus crate</h2>
+    <h2>Bonus crate</h2>
     <p class="big">Every 3rd day you get a free crate. Which one?</p>
     <div class="choices">
-      <button class="choice" onclick="openCrate('gear')"><div class="ttl"><span>🧰 Upgrade crate</span></div><div class="desc">3 rare (or better) stand upgrades.</div></button>
-      <button class="choice" onclick="openCrate('recipe')"><div class="ttl"><span>🍋 Flavor crate</span></div><div class="desc">3 new flavors.</div></button>
-      <button class="choice" onclick="openCrate('wild')"><div class="ttl"><span>🎲 Surprise crate</span></div><div class="desc">3 of anything: upgrades, flavors or cash.</div></button>
+      <button class="choice" onclick="openCrate('gear')"><div class="ttl"><span>Upgrade crate</span></div><div class="desc">3 rare (or better) stand upgrades.</div></button>
+      <button class="choice" onclick="openCrate('recipe')"><div class="ttl"><span>Flavor crate</span></div><div class="desc">3 new flavors.</div></button>
+      <button class="choice" onclick="openCrate('wild')"><div class="ttl"><span>Surprise crate</span></div><div class="desc">3 of anything: upgrades, flavors or cash.</div></button>
     </div></div>`;
 }
 function openCrate(kind,title){
@@ -1615,7 +1619,7 @@ function openCrate(kind,title){
   add(pool);
   if(draftChoices.length<3)add(buildDraftPool(true)); // crate ran thin — top it up with other rare loot
   if(!draftChoices.length){draftChoices=[{kind:"cash",id:"cash"}]}
-  draftTitle=title||"📦 Bonus crate: pick one";
+  draftTitle=title||"Bonus crate: pick one";
   renderDraftScreen();
 }
 function pickDraft(i){
@@ -1629,31 +1633,31 @@ function showSwap(p){
   const c=draftCardHtml(p);
   const owned=S.gear.map(id=>GEAR.find(x=>x.id===id));
   $("#screen").innerHTML=`<div class="panel">
-    <h2>🧰 Your stand is full</h2>
+    <h2>Your stand is full</h2>
     <p style="margin-top:0">Which upgrade should go? You'll get <b>${gearIconHtml(p.id)} ${c.title}</b>.</p>
     <div class="choices">${owned.map((o,i)=>`<button class="choice" onclick="swapFor(${i})"><div class="ttl"><span>${gearIconHtml(o.id,true)} ${o.name}</span>${rarBadge(o.rar)}</div><div class="small typeLabel">Remove</div><div class="desc">${o.desc}</div></button>`).join("")}</div>
-    <div class="flex mt" style="justify-content:center"><button class="btn sm ghost" onclick="pendingDraft=null;renderDraftScreen()">← Back</button><button class="btn sm ghost" onclick="pendingDraft=null;nextDay()">Keep my stand</button></div>
+    <div class="flex mt" style="justify-content:center"><button class="btn sm ghost" onclick="pendingDraft=null;renderDraftScreen()">Back</button><button class="btn sm ghost" onclick="pendingDraft=null;nextDay()">Keep my stand</button></div>
   </div>`;
 }
 function swapFor(i){
   const p=pendingDraft;if(!p)return;pendingDraft=null;
-  const g=GEAR.find(x=>x.id===S.gear[i]);S.gear.splice(i,1);S.log.push(`<span class="info">🔁 Swapped out ${gearIconHtml(g.id)} ${g.name}.</span>`);
+  const g=GEAR.find(x=>x.id===S.gear[i]);S.gear.splice(i,1);S.log.push(`<span class="info">Swapped out ${gearIconHtml(g.id)} ${g.name}.</span>`);
   grantDraft(p);
 }
 function grantDraft(p){
   sfx.good();
-  if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">🎁 New upgrade: ${gearIconHtml(g.id)} ${g.name}</span>`)}
-  if(p.kind==="recipe"){S.recipes.push(p.id);const r=RECIPES[p.id];S.log.push(`<span class="good">🎁 New flavor: ${iconHtml("flavor",p.id)} ${r.name}</span>`)}
-  if(p.kind==="cash"){const amt=18+22*actIndex();S.cash+=amt;S.log.push(`<span class="good">🎁 Your cousin gave you ${fmt(amt)}.</span>`)}
+  if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">New upgrade: ${gearIconHtml(g.id)} ${g.name}</span>`)}
+  if(p.kind==="recipe"){S.recipes.push(p.id);const r=RECIPES[p.id];S.log.push(`<span class="good">New flavor: ${iconHtml("flavor",p.id)} ${r.name}</span>`)}
+  if(p.kind==="cash"){const amt=18+22*actIndex();S.cash+=amt;S.log.push(`<span class="good">Your cousin gave you ${fmt(amt)}.</span>`)}
   // synergy discovery check
   const b=computeBuild();const newOnes=b.synergies.filter(s=>!S.discoveredSyn.includes(s.id));
   if(newOnes.length){
     newOnes.forEach(s=>{S.discoveredSyn.push(s.id);if(!meta.discoveredSyn.includes(s.id))meta.discoveredSyn.push(s.id)});
     confetti(60);sfx.fanfare();
-    $("#screen").innerHTML=`<div class="panel center"><div class="synBanner" style="font-size:23px">⚡ New combo ⚡</div>
+    $("#screen").innerHTML=`<div class="panel center"><div class="synBanner" style="font-size:23px">New combo</div>
       <h2 class="mt">${newOnes.map(s=>s.name).join(" + ")}</h2>
       <p class="big">${newOnes.map(s=>s.desc).join("<br>")}</p>
-      <button class="btn gold" style="font-size:20px" onclick="nextDay()">Start Day ${S.day+1} →</button></div>`;
+      <button class="btn gold" style="font-size:20px" onclick="nextDay()">Start Day ${S.day+1}</button></div>`;
     saveMeta();updateHUD();return;
   }
   nextDay();
@@ -1669,12 +1673,12 @@ function summerComplete(){
   S.completed=true;
   const best=Math.max(meta.stats.best,Math.round(S.cash));
   $("#screen").innerHTML=`<div class="panel center">
-    <h2>🏆 Summer complete!</h2>
+    <h2>Summer complete!</h2>
     ${scoreHtml(`Your best: ${fmt(best)}`)}
     ${highlightsHtml(clamp(S.day,0,14))}
     <div class="flex mt" style="justify-content:center;gap:10px;flex-wrap:wrap">
-      <button class="btn gold" style="font-size:20px" onclick="endRun('complete')">🏁 Finish and keep my score</button>
-      <button class="btn blue" style="font-size:20px" onclick="goEndless()">♾️ Keep playing (Endless)</button>
+      <button class="btn gold" style="font-size:20px" onclick="endRun('complete')">Finish and keep my score</button>
+      <button class="btn blue" style="font-size:20px" onclick="goEndless()">Keep playing (Endless)</button>
     </div>
     <p class="small muted">Endless: keep your stand and play on. Stop any morning, or play until you run out of money.</p>
   </div>`;
@@ -1686,13 +1690,13 @@ function scoreHtml(bestLine){
   return `<div class="scoreLabel">Your score</div><div class="coinSpot"><div class="scoreBig" id="scoreAmt">${fmt(S.cash)}</div></div><p class="muted" style="margin:2px 0 0">${bestLine}</p>`;
 }
 function highlightsHtml(days){
-  const hl=[["📅",S.endless?days:`${days} of 14`,"days played"],["🥤",S.lifetimeSold,"cups sold"],
-    ["🔥",`${S.bestStreak} ${plural(S.bestStreak,"day")}`,"best hot streak"],["⭐",S.perfectDays,`${plural(S.perfectDays,"perfect day")}`]];
-  return `<ul class="highlights">${hl.map(([i,v,l])=>`<li><span class="hlIcon">${i}</span><b>${v}</b><small>${l}</small></li>`).join("")}</ul>`;
+  const hl=[[S.endless?days:`${days} of 14`,"days played"],[S.lifetimeSold,"cups sold"],
+    [`${S.bestStreak} ${plural(S.bestStreak,"day")}`,"best hot streak"],[S.perfectDays,`${plural(S.perfectDays,"perfect day")}`]];
+  return `<ul class="highlights">${hl.map(([v,l])=>`<li><b>${v}</b><small>${l}</small></li>`).join("")}</ul>`;
 }
 function goEndless(){
   S.endless=true;S.totalDays=Infinity;S.actsCount=Infinity;
-  S.log.push(`<span class="info">♾️ Endless. Stop any morning to keep your score.</span>`);
+  S.log.push(`<span class="info">Endless. Stop any morning to keep your score.</span>`);
   sfx.fanfare();startMorning();
 }
 /* ---------- Run end / meta ---------- */
@@ -1705,17 +1709,17 @@ function endRun(mode,reason){
   const prevBest=st.best;st.best=Math.max(st.best,Math.round(S.cash));
   meta.hintsSeen=true;
   saveMeta();
-  const heading=mode==="complete"?"🏆 Summer complete!":mode==="retired"?"🏁 Score saved":"🌅 Out of business";
+  const heading=mode==="complete"?"Summer complete!":mode==="retired"?"Score saved":"Out of business";
   if(mode!=="bankrupt"){confetti(120);sfx.fanfare()}
   const newBest=prevBest>0&&Math.round(S.cash)>prevBest;
   $("#screen").innerHTML=`<div class="panel center">
     <h2>${heading}</h2>
     ${S.endless&&S.completed?`<p class="muted" style="margin:2px 0">Summer complete, then Endless to Day ${S.day}.</p>`:""}
     ${reason?`<p class="big">${reason}</p>`:""}
-    ${scoreHtml(newBest?"🏅 New best score!":`Your best: ${fmt(st.best)}`)}
+    ${scoreHtml(newBest?"New best score!":`Your best: ${fmt(st.best)}`)}
     ${highlightsHtml(daysSurvived)}
     <p class="muted">Your stand: ${buildSummary()}</p>
-    ${S.discoveredSyn.length?`<p class="muted">⚡ Combos found: ${S.discoveredSyn.map(id=>SYNERGIES.find(s=>s.id===id).name).join(", ")}</p>`:""}
+    ${S.discoveredSyn.length?`<p class="muted">Combos found: ${S.discoveredSyn.map(id=>SYNERGIES.find(s=>s.id===id).name).join(", ")}</p>`:""}
     <div class="flex mt" style="justify-content:center">
       <button class="btn gold" style="font-size:21px" onclick="showTitle()">Play again</button>
     </div>
@@ -1735,40 +1739,40 @@ function showBuild(){
   if(!S)return;
   const b=computeBuild(),empty=gearSlots()-S.gear.length;
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
-    <div class="flex spread"><h2>🧰 My Upgrades</h2><button class="btn sm ghost" onclick="closeModal()">✕ Close</button></div>
+    <div class="flex spread"><h2>My Upgrades</h2><button class="btn sm ghost" onclick="closeModal()">Close</button></div>
     <h3>My Stand (${S.gear.length}/${gearSlots()})</h3>
     <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${gearIconHtml(g.id)} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty ${plural(empty,"slot")}. You win upgrades after each day.</li>`:""}</ul>
     <h3>My flavors</h3>
     <ul class="list">${S.recipes.map(rk=>{const r=RECIPES[rk];return `<li><b>${iconHtml("flavor",rk)} ${r.name}</b> ${tagChips(r.tags)}<br><span class="small">Liked by ${flavorFans(r.tags)}</span></li>`}).join("")}</ul>
-    <h3>⚡ Combos</h3>
+    <h3>Combos</h3>
     <p class="small muted" style="margin:0">The right mix of flavors on your menu gives a bonus.</p>
-    <ul class="list">${SYNERGIES.map(s=>`<li>${b.activeSynergies.includes(s.id)?"✅":"🔒"} <b>${s.name}</b>: ${s.desc}</li>`).join("")}</ul>
+    <ul class="list">${SYNERGIES.map(s=>{const on=b.activeSynergies.includes(s.id);return `<li${on?"":' class="off"'}><span class="onOff${on?" on":""}">${on?"On":"Off"}</span> <b>${s.name}</b>: ${s.desc}</li>`}).join("")}</ul>
   </div></div>`;
 }
 function showHelp(){
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
-    <div class="flex spread"><h2>❓ How to play</h2><div class="flex"><button class="btn sm ghost" id="helpSound" onclick="toggleSound()">${soundOn?"🔊 Sound on":"🔇 Sound off"}</button><button class="btn sm ghost" onclick="closeModal()">✕ Close</button></div></div>
+    <div class="flex spread"><h2>How to play</h2><div class="flex"><button class="btn sm ghost soundBtn${soundOn?"":" off"}" onclick="toggleSound()"><i class="hudIcon"></i><span>${soundOn?"Sound on":"Sound off"}</span></button><button class="btn sm ghost" onclick="closeModal()">Close</button></div></div>
     <p style="margin:10px 0">Make as much money as you can in 14 days. The money you end with is your score.</p>
     <h3>Each day</h3>
-    <p style="margin:0 0 6px">🌤️ Check the forecast first. ${FORECAST_HINT}</p>
-    <ol class="list">${HOW_STEPS.map(([icon,name,hint])=>`<li><b>${icon} ${name}.</b> ${hint}</li>`).join("")}</ol>
+    <p style="margin:0 0 6px">Check the forecast first. ${FORECAST_HINT}</p>
+    <ol class="list">${HOW_STEPS.map(([name,hint])=>`<li><b>${name}.</b> ${hint}</li>`).join("")}</ol>
     <h3>Rules</h3>
     <ul class="list">
-      <li>💰 Money made is your sales and tips. Supplies and signs are paid for when you buy them. Starting a day never costs money.</li>
-      <li>💵 You start with $30. If you can't pay for one cup, the game ends.</li>
-      <li>🌤️ The forecast is always right. Hot days bring more people. Rain brings fewer.</li>
-      <li>🧊 Hot days need more ice. Under 70°F, no ice. In the 70s, 1 cube. In the 80s, 2. In the 90s, 3. At 100°F and up, 4.</li>
-      <li>🛒 Bigger packs cost less for each one.</li>
-      <li>🫠 Half of your leftover ice melts each night. Lemons last 7 days, cucumbers 5, mint 4 and strawberries 3.</li>
-      <li>🪧 Signs bring in more customers. About 1 in 4 signs you put out breaks overnight.</li>
-      <li>⭐ Stars go up when most people get lemonade. They go down when many people leave without any. More stars bring more people.</li>
-      <li>🏷️ Flavor tags are Sweet, Sour, Fancy, Chilled and Fizzy. Each crowd likes different ones.</li>
-      <li>👥 Kids like sweet drinks. Parents like fancy and sweet. Athletes like sour and chilled. Tourists like fancy. Foodies like fancy and sour. Artists like fancy and fizzy.</li>
-      <li>⚡ Combos give a bonus when the right mix of flavors is on your menu.</li>
-      <li>🔥 A hot streak gives a bonus each night. Serve 3 out of 4 customers and make money, day after day.</li>
-      <li>💎 Upgrades can be common, rare, epic or legendary. Rarer ones show up less often.</li>
-      <li>📦 Every 3rd day you get a bonus crate.</li>
-      <li>♾️ Endless starts after day 14. Play as long as you like.</li>
+      <li>Money made is your sales and tips. Supplies and signs are paid for when you buy them. Starting a day never costs money.</li>
+      <li>You start with $30. If you can't pay for one cup, the game ends.</li>
+      <li>The forecast is always right. Hot days bring more people. Rain brings fewer.</li>
+      <li>Hot days need more ice. Under 70°F, no ice. In the 70s, 1 cube. In the 80s, 2. In the 90s, 3. At 100°F and up, 4.</li>
+      <li>Bigger packs cost less for each one.</li>
+      <li>Half of your leftover ice melts each night. Lemons last 7 days, cucumbers 5, mint 4 and strawberries 3.</li>
+      <li>Signs bring in more customers. About 1 in 4 signs you put out breaks overnight.</li>
+      <li>Stars go up when most people get lemonade. They go down when many people leave without any. More stars bring more people.</li>
+      <li>Flavor tags are Sweet, Sour, Fancy, Chilled and Fizzy. Each crowd likes different ones.</li>
+      <li>Kids like sweet drinks. Parents like fancy and sweet. Athletes like sour and chilled. Tourists like fancy. Foodies like fancy and sour. Artists like fancy and fizzy.</li>
+      <li>Combos give a bonus when the right mix of flavors is on your menu.</li>
+      <li>A hot streak gives a bonus each night. Serve 3 out of 4 customers and make money, day after day.</li>
+      <li>Upgrades can be common, rare, epic or legendary. Rarer ones show up less often.</li>
+      <li>Every 3rd day you get a bonus crate.</li>
+      <li>Endless starts after day 14. Play as long as you like.</li>
     </ul>
     <p class="small muted">Point at or tap anything in the game to learn more.</p>
   </div></div>`;
@@ -1793,7 +1797,7 @@ document.addEventListener("click",e=>{if(!touchOnly())return;const el=e.target.c
   if(el&&!el.matches("button,input")){if(el===tipFor)hideTip();else showTip(el)}else hideTip()});
 addEventListener("scroll",()=>{if(tipFor&&performance.now()-tipAt>250)hideTip()},{passive:true,capture:true}); // a tap can nudge the page; don't close the tip it just opened
 $("#btnHelp").addEventListener("click",showHelp);
-function toggleSound(){soundOn=!soundOn;$("#btnSound").classList.toggle("off",!soundOn);const t=$("#titleSound");if(t)t.textContent=soundOn?"🔊":"🔇";const h=$("#helpSound");if(h)h.textContent=soundOn?"🔊 Sound on":"🔇 Sound off";if(soundOn)sfx.pop()}
+function toggleSound(){soundOn=!soundOn;document.querySelectorAll(".soundBtn").forEach(b=>{b.classList.toggle("off",!soundOn);const t=b.querySelector("span");if(t)t.textContent=soundOn?"Sound on":"Sound off"});if(soundOn)sfx.pop()}
 $("#btnSound").addEventListener("click",toggleSound);
 showTitle();
 </script>
