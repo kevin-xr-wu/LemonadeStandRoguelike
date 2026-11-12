@@ -73,11 +73,6 @@ h3{margin:14px 0 6px}
 .rar.common{background:#e9e2cf}.rar.rare{background:#bfe3ff}.rar.epic{background:#e3c8ff}.rar.legendary{background:var(--lemon)}
 .tag{display:inline-block;background:var(--paper2);border:2px solid var(--ink);border-radius:99px;font-size:11px;font-weight:800;padding:1px 7px;margin:2px 2px 0 0}
 .kidEmoji{font-size:34px}
-/* Sliders */
-.ctrl{margin:14px 0}
-.ctrl label{display:flex;justify-content:space-between;font-weight:900;font-size:16px}
-.ctrl input[type=range]{width:100%;height:28px;accent-color:var(--lemon2);cursor:pointer}
-.ctrl .hint{font-size:12.5px;opacity:.7;font-weight:600}
 .warn{color:var(--red);font-weight:800}
 /* Buttons */
 .btn{display:inline-block;background:var(--green);color:#fff;border:3px solid var(--ink);border-radius:14px;padding:13px 26px;font-size:19px;font-weight:900;box-shadow:0 5px 0 rgba(43,33,24,.9);transition:transform .1s,box-shadow .1s;text-shadow:1px 1px 0 rgba(0,0,0,.25)}
@@ -218,8 +213,6 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 .slot.empty{border-style:dashed;background:transparent;box-shadow:none;opacity:.5}
 .crowdRow{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .crowd{background:var(--paper2);border:2px solid var(--ink);border-radius:99px;padding:1px 8px;font-size:13px;font-weight:800}
-.pickTag{font-size:12px;font-weight:900;color:var(--green2)}
-.packs{display:grid;justify-items:start;gap:6px;margin-top:8px}
 .face{font-size:22px;vertical-align:-3px}
 .forecastBar{flex-direction:column;align-items:flex-start;gap:2px;padding:12px 16px}
 .forecastBar .fcLabel{font-size:12px;text-transform:uppercase;letter-spacing:.08em;opacity:.75}
@@ -229,11 +222,72 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 #guessText{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;flex:1 1 260px;font-weight:800;font-size:15px}
 #guessText .nums{display:flex;flex-wrap:wrap;gap:4px 16px}
 .guessBar i,.hud i{font-style:normal}
-.ctrl .hint{font-size:13.5px;opacity:.85}
 #guessText b{color:var(--lemon);font-size:18px}
 #guessText .pos{color:#9be15d} #guessText .negc{color:#ff8f6b}
 .guessBar #btnOpen{font-size:20px;padding:12px 22px;margin-left:auto}
 .typeLabel{font-weight:900;opacity:.55}
+/* Morning: set up the stand. Spots are signposts, supplies sit on a shelf, signs stand on the grass, prices go on a chalkboard. */
+.mLbl{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 10px;margin:12px 0 6px;font-weight:900;font-size:16px}
+.mLbl small{font-size:13px;font-weight:700;opacity:.8}
+.mHint{margin-top:6px;font-size:13px;font-weight:700;line-height:1.35;opacity:.8}
+.posts{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8px;max-width:760px}
+.post{display:grid;background:none;border:0;padding:0;color:var(--ink);filter:drop-shadow(2px 0 0 var(--ink)) drop-shadow(-2px 0 0 var(--ink)) drop-shadow(0 2px 0 var(--ink)) drop-shadow(0 -2px 0 var(--ink)) drop-shadow(0 3px 0 rgba(43,33,24,.85))}
+.postFace{display:grid;justify-items:center;align-content:start;gap:3px;padding:7px 18px 7px 8px;background:#d39a5c;font-size:13px;font-weight:900;line-height:1.15;text-align:center;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,0 100%)}
+.post:hover .postFace{background:#e0ab70}
+.post[aria-pressed="true"] .postFace{background:var(--lemon)}
+.post:active{transform:translateY(2px)}
+.post:focus-visible{outline:3px solid var(--blue);outline-offset:4px}
+.supShelf{margin-top:14px;background:#d39a5c;border:3px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px 14px 2px;overflow:hidden}
+.supShelf .mLbl{margin-top:0}
+.shelfRow{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:4px -14px 10px;padding:0 14px 6px;border-bottom:6px solid #7a4428}
+.item{position:relative;display:grid;justify-items:center;align-content:start;gap:2px;background:none;border:0;border-radius:10px;padding:5px 2px 3px;color:var(--ink)}
+.item:hover{background:rgba(255,247,224,.4)}
+.item[aria-expanded="true"]{background:var(--paper)}
+.item:focus-visible{outline:3px solid var(--blue)}
+.item .n{position:absolute;top:1px;right:4px;min-width:20px;background:var(--ink);color:#fff;border-radius:99px;padding:0 5px;font-size:11.5px;font-weight:900;font-variant-numeric:tabular-nums}
+.item .n.zero{background:var(--red)}
+.item .nm{font-size:11.5px;font-weight:800;line-height:1.1;text-align:center}
+.drawer{display:grid;gap:6px;max-width:460px;margin:-4px 0 12px;background:var(--card);border:3px solid var(--ink);border-radius:12px;padding:8px 10px 10px}
+.drawer .mLbl{margin:0}
+.rule{font-size:13px;font-weight:700;opacity:.8}
+.packs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px}
+.packs .btn{position:relative;padding:5px 4px 6px;border-radius:11px;font-size:17px;line-height:1.15;box-shadow:0 3px 0 rgba(43,33,24,.9)}
+.packs .btn small{display:block;font-size:12.5px}
+.packs .off{position:absolute;top:-9px;right:-5px;background:var(--lemon);color:var(--ink);border:2px solid var(--ink);border-radius:99px;padding:0 5px;font-size:11px;font-style:normal;text-shadow:none;transform:rotate(6deg)} /* the bulk discount, as a sale sticker */
+.packs .btn[aria-disabled="true"]{filter:grayscale(.7);opacity:.55;cursor:not-allowed;transform:none}
+.gear{display:grid;gap:0 28px}
+.gear .mLbl{margin-top:0}
+.gear>div+div{margin-top:14px}
+.cubes{display:flex;flex-wrap:wrap;gap:6px}
+.cube{background:var(--paper);border:3px solid var(--ink);border-radius:10px;padding:3px;line-height:0;box-shadow:0 3px 0 rgba(43,33,24,.85)}
+.cube[aria-pressed="true"]{background:#e3f5ff}
+.cube[aria-pressed="false"] .icon{filter:grayscale(1);opacity:.3}
+.cube:active,.stepper button:active{transform:translateY(2px);box-shadow:none}
+.stepper{display:inline-flex;align-items:center;gap:4px}
+.stepper button{width:36px;height:36px;padding:0;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:10px;font-size:20px;font-weight:900;line-height:1;box-shadow:0 2px 0 rgba(43,33,24,.85)}
+.stepper button[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+.stepper b{min-width:54px;padding:0 2px;white-space:nowrap;text-align:center;font-size:18px;font-variant-numeric:tabular-nums}
+.board{margin-top:14px;background:#2f3b33;color:#f4f1e6;border:3px solid var(--ink);border-radius:var(--radius);box-shadow:inset 0 0 0 7px #a86a3a,var(--shadow);padding:16px 18px 14px}
+.board .mLbl{margin-top:0;color:var(--lemon)}
+.prices{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px 32px}
+.price{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px 10px}
+.price.out>.icon,.price.out .pName{opacity:.55}
+.pName{font-weight:900;font-size:15px}
+.pOut{grid-column:1/-1;font-size:13px;font-weight:700;color:#ffc9b8}
+.board .stepper b{color:var(--lemon)}
+.board .tag{color:var(--ink)}
+/* Signs you own stand on the grass by the stand; tap one to put it out or take it in. --k is its place out from the stand, --side left or right. */
+.signSlot{--w:calc(16px*var(--px) + 16px);position:absolute;bottom:0;z-index:5;width:var(--w);height:var(--w);margin-left:calc(var(--w)/-2);left:calc(50% + var(--side)*(32px*var(--px) + var(--w)/2 + 2px + var(--k)*(var(--w) + 2px)));display:flex;align-items:flex-end;justify-content:center;background:none;border:2px dashed transparent;border-radius:8px;padding:0}
+.signSlot .icon{--sz:calc(16px*var(--px));filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+.signSlot.off{border-color:var(--paper);background:rgba(43,33,24,.2)}
+.signSlot.off .icon{opacity:.45;filter:grayscale(1)}
+.signSlot:focus-visible{outline:3px solid var(--blue)}
+@media (min-width:721px){
+  .postFace{display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px}
+  .shelfRow{grid-template-columns:repeat(auto-fill,84px)}
+  .gear{grid-template-columns:1fr 1fr}
+  .gear>div+div{margin-top:0}
+}
 @media (max-width:720px){ /* bottom bar: forecast and a short Open button, one row when they fit */
   .guessBar{padding:8px 10px;gap:8px}
   #guessText{flex:1 1 auto;font-size:14px;gap:6px 10px}
@@ -294,10 +348,10 @@ button,input,select{touch-action:manipulation}
   .bubble{font-size:11px;--rise:4px}
   .coin{--s:1;--rise:14px;bottom:32px}
   .dayStats{font-size:13.5px;padding:8px 10px;gap:6px}
-  /* Sliders get fat thumbs; labels can breathe */
-  .ctrl{margin:12px 0}
-  .ctrl label{font-size:15px;gap:8px}
-  .ctrl input[type=range]{height:38px}
+  .mLbl{font-size:15px}
+  .supShelf{margin-top:10px;padding:8px 10px 0}
+  .shelfRow{margin-inline:-10px;padding-inline:10px}
+  .board{margin-top:10px;padding:14px 14px 12px}
   /* Tap targets */
   .btn.sm{min-height:40px;padding:8px 12px}
   #btnOpen{font-size:19px!important;padding:14px 16px!important;max-width:100%}
@@ -315,7 +369,7 @@ button,input,select{touch-action:manipulation}
   .modal{padding:15px;max-height:92dvh}
 }
 @media (max-width:560px){
-  .choices{grid-template-columns:1fr} /* draft picks, spots, kids: one clean column */
+  .choices{grid-template-columns:1fr} /* draft picks and swaps: one clean column */
 }
 @media (max-width:380px){
   .hud{gap:8px}
@@ -448,6 +502,7 @@ const sfx={
   bad(){[330,262,196].forEach((f,i)=>beep(f,0.14,"sawtooth",0.045,i*0.09))},
   fanfare(){[523,523,523,659,784,1047,784,1047].forEach((f,i)=>beep(f,0.13,"square",0.05,i*0.09))},
   flip(){beep(880,0.05,"sine",0.05);beep(1174,0.06,"sine",0.05,0.05)},
+  tick(){beep(700,0.035,"sine",0.04)},
 };
 
 /* ---------- confetti ---------- */
@@ -997,20 +1052,12 @@ function renderMorning(){
   const synHtml=b.synergies.length?`<div class="synBanner">⚡ Combos: ${b.synergies.map(s=>`<span tabindex="0"${tip(s.desc)}>${s.name}</span>`).join(", ")}</div>`:"";
   const evTxt=M.event?eventText(M.event):"";
   const eventHtml=evTxt?`<div class="panel" style="background:#eaf6ff;margin-top:10px;padding:10px 14px">${evTxt}</div>`:"";
-  const basics=["cups","lemons","sugar","ice","signs"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
-  const signsOwned=S.inv.signs||0;
-  if(M.signs>signsOwned)M.signs=signsOwned; // you can only put out signs you own — last night's breakage may have shrunk the pile
-  const shopCard=id=>{const ing=INGREDIENTS[id];
-    return `<div class="choice shop" style="cursor:default"><div class="ttl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id,true)} ${ing.name}</span></div><div class="desc">You have <b>${S.inv[id]||0}</b>${S.gear.includes("wholesale")?" (20% off)":""}${id==="ice"?'<br><span class="small">🫠 Half melts every night</span>':id==="signs"?'<br><span class="small">'+iconHtml("supply","signs")+' Signs last a few days. About 1 in 4 you put out breaks overnight</span>':SHELF[id]?`<br><span class="small">🕒 Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}</span>`:""}</div>
-      <div class="packs">${BULK.map((t,i)=>{const price=packPrice(id,i),poor=S.cash<price;
-        return `<button class="btn sm ${poor?"ghost":""}" ${poor?"disabled":""} onclick="buyItem('${id}',${i})">+${ing.pack*t.mult} for ${fmt(price)}</button>`}).join("")}</div></div>`};
   $("#screen").innerHTML=`
   <div class="scene">
     <div class="sky ${M.shownWx}">
-      <div class="crowdMix">📍 Pick a spot below</div>
       ${skyArt(M.shownWx)}
-      <div class="standSign">${sellableNow().length?`🍋 ${sellableNow().length} ${plural(sellableNow().length,"flavor")} on the menu`:"🛒 Buy supplies to open"}</div>
       <img class="stand" src="${STAND_PNG}" alt="">
+      <div id="mScene" style="display:contents"></div>
     </div>
     <div class="ground"></div>
     <div class="dayStats forecastBar" tabindex="0"${tip("The forecast is always right. Use it to guess how many people will come and what they'll pay.")}><span class="fcLabel">Today's forecast</span><span class="fcMain">${wx.icon} <b>${wx.name}</b>, 🌡️ <b>${M.temp}°F</b></span><span class="fcDesc">${wx.desc}</span>${M.dice?`<span>🎲 Lucky Dice: <b>${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers</b> today</span>`:""}</div>
@@ -1019,46 +1066,96 @@ function renderMorning(){
   <div class="panel">
     <div class="flex spread"><h2 style="margin:0">🌅 Day ${S.day}</h2>${S.endless?`<button class="btn sm ghost" onclick="endRun('retired')">🏁 Stop and keep my score (${fmt(S.cash)})</button>`:""}</div>
     ${shelfHtml()}
-    <h3>1. Pick a spot</h3>
-    <div class="choices" id="locChoices">
-      ${M.locs.map((l,i)=>{const top=Object.entries(crowdMixFor(l)).sort((a,b2)=>b2[1]-a[1]).slice(0,3);
-        return `<button class="choice spot ${M.loc===l?"sel":""}" onclick="chooseLoc(${i})"><div class="ttl"><span>${iconHtml("spot",l.name,true)} ${l.name}</span>${M.loc===l?'<span class="pickTag">✓ Picked</span>':""}</div><div class="crowdRow">${top.map(([k,v])=>`<span class="crowd"${tip(crowdTip(k))}>${CROWDS[k].icon} ${CROWDS[k].name} ${v}%</span>`).join("")}</div></button>`}).join("")}
-    </div>
-    <h3>2. Buy supplies</h3>
-    ${M.treeLemons?`<p class="small" style="margin:2px 0">🌳 Your Lemon Tree dropped <b>${M.treeLemons}</b> free ${plural(M.treeLemons,"lemon")} this morning.</p>`:""}
-    <div class="choices">${basics.map(shopCard).join("")}</div>
-    ${extras.length?`<p class="small" style="margin:12px 0 0"><b>Extras for your flavors</b></p><div class="choices">${extras.map(shopCard).join("")}</div>`:""}
-    <h3>3. Ice and signs</h3>
-    <div class="ctrl"><label><span>${iconHtml("supply","ice")} Ice in each cup</span><span id="iceVal">${M.icePerCup}</span></label>
-      <input type="range" id="inIce" min="0" max="4" step="1" value="${M.icePerCup}" aria-label="Ice cubes in each cup">
-    </div>
-    <div class="ctrl"><label><span>${iconHtml("supply","signs")} Signs to put out</span><span id="signsVal">${M.signs}</span></label>
-      <input type="range" id="inSigns" min="0" max="${signsOwned}" step="1" value="${M.signs}" aria-label="Number of signs to put out">
-      <div class="hint">You own <b>${signsOwned}</b> ${plural(signsOwned,"sign")}. Buy more in the shop above. Putting them out costs nothing today${b.freeSigns?`; your upgrades add ${b.freeSigns} free on top`:""}. ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}</div></div>
-    <h3>4. Set your price</h3>
-    ${S.recipes.map(rk=>{const r=RECIPES[rk];const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">⭐ Special +$0.50</span>':"";return `<div class="ctrl">
-      <label><span><span tabindex="0"${tip(`${r.desc} From: ${r.origin.replace(" · ",", ")}.`)}>${iconHtml("flavor",rk,true)} ${r.name}</span> ${tagChips(r.tags)}${special}</span><span id="priceVal-${rk}">${fmt(M.prices[rk])}</span></label>
-      <input type="range" class="menuPrice" data-rk="${rk}" min="0.50" max="${priceMax()}" step="0.25" value="${M.prices[rk]}" aria-label="Price for ${r.name}">
-      ${canBrew(rk,S.inv)?"":`<div class="hint">Not selling today: you need ${missingFor(rk)}.</div>`}
-    </div>`}).join("")}
-    <div class="guessBar"><div id="guessText"></div><button class="btn gold" id="btnOpen" onclick="openStand()">☀️ Open<i class="long"> the stand</i></button></div>
-  </div>`;
-  document.querySelectorAll(".menuPrice").forEach(inp=>{
-    inp.addEventListener("input",e=>{
-      const rk=e.target.dataset.rk;M.prices[rk]=parseFloat(e.target.value);S.menuPrices[rk]=M.prices[rk];
-      $("#priceVal-"+rk).textContent=fmt(M.prices[rk]);renderProj();
-    });
-  });
-  document.getElementById("inSigns").addEventListener("input",e=>{M.signs=parseInt(e.target.value,10);$("#signsVal").textContent=M.signs;renderProj()});
-  document.getElementById("inIce").addEventListener("input",e=>{M.icePerCup=parseInt(e.target.value,10);$("#iceVal").textContent=M.icePerCup;renderProj()});
+    <div id="mSpot"></div>
+  </div>
+  <div class="supShelf" id="mShop" role="group" aria-label="Supplies"></div>
+  <div class="panel gear" id="mGear"></div>
+  <div class="board" id="mBoard" role="group" aria-label="Today's prices"></div>
+  <div class="guessBar"><div id="guessText"></div><button class="btn gold" id="btnOpen" onclick="openStand()">☀️ Open<i class="long"> the stand</i></button></div>`;
+  morningParts();
+}
+/* Redraw the morning's controls in place, so the sky keeps drifting, and keep focus on the control just used. */
+function morningParts(){
+  const ae=document.activeElement,f=ae&&ae.dataset?ae.dataset.f:null;
+  if(M.signs>(S.inv.signs||0))M.signs=S.inv.signs||0; // you can only put out signs you own — last night's breakage may have shrunk the pile
+  $("#mScene").innerHTML=mSceneHtml();
+  $("#mSpot").innerHTML=mSpotHtml();
+  $("#mShop").innerHTML=mShopHtml();
+  $("#mGear").innerHTML=mGearHtml();
+  $("#mBoard").innerHTML=mBoardHtml();
   renderProj();
+  if(f){const el=document.querySelector(`[data-f="${f}"]`);if(el)el.focus({preventScroll:true})}
+}
+const SIGN_SPOTS=8; // signs drawn on the grass; the stepper counts any beyond these
+function mSceneHtml(){
+  const menu=sellableNow(),owned=S.inv.signs||0;
+  let signs="";
+  for(let k=0;k<Math.min(owned,SIGN_SPOTS);k++){const on=k<M.signs; // alternate left and right of the stand, working outward
+    signs+=`<button class="signSlot${on?"":" off"}" style="--k:${k>>1};--side:${k%2?1:-1}" onclick="tapSign(${k})" data-f="sign${k}" aria-pressed="${on}" aria-label="Sign ${k+1}">${iconHtml("supply","signs")}</button>`}
+  return `<div class="crowdMix">${M.loc?`${iconHtml("spot",M.loc.name)} ${M.loc.name}<br>${crowdMixLine()}`:"📍 Pick a spot"}</div>
+    <div class="standSign">${menu.length?`🍋 ${menu.length} ${plural(menu.length,"flavor")} · from ${fmt(Math.min(...menu.map(menuPrice)))}`:"🛒 Buy supplies to open"}</div>${signs}`;
+}
+function mSpotHtml(){
+  const top=M.loc?Object.entries(crowdMixFor(M.loc)).sort((a,b)=>b[1]-a[1]).slice(0,3):[];
+  return `<div class="mLbl">📍 Where today?</div>
+    <div class="posts">${M.locs.map((l,i)=>`<button class="post" onclick="chooseLoc(${i})" data-f="loc${i}" aria-pressed="${M.loc===l}" aria-label="${l.name}"><span class="postFace">${iconHtml("spot",l.name,true)}<span>${l.name}</span></span></button>`).join("")}</div>
+    ${M.loc?`<div class="crowdRow">${top.map(([k,v])=>`<span class="crowd" tabindex="0"${tip(crowdTip(k))}>${CROWDS[k].icon} ${CROWDS[k].name} ${v}%</span>`).join("")}</div>`:`<div class="mHint">Tap a spot to see who comes.</div>`}`;
+}
+function mShopHtml(){
+  const basics=["cups","lemons","sugar","ice","signs"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
+  const row=ids=>`<div class="shelfRow">${ids.map(id=>{const n=S.inv[id]||0,open=M.shopOpen===id;
+    return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`}).join("")}</div>${ids.includes(M.shopOpen)?mDrawerHtml(M.shopOpen):""}`;
+  return `<div class="mLbl">🛒 Supplies<small>Tap one to buy. Bigger packs cost less each.</small></div>
+    ${M.treeLemons?`<div class="mHint" style="margin:0 0 6px">🌳 Your Lemon Tree dropped <b>${M.treeLemons}</b> free ${plural(M.treeLemons,"lemon")}.</div>`:""}
+    ${row(basics)}${extras.length?`<div class="mHint" style="margin:0">For your flavors</div>${row(extras)}`:""}`;
+}
+function mDrawerHtml(id){
+  const ing=INGREDIENTS[id],n=S.inv[id]||0;
+  const rule=[id==="ice"?"🫠 Half melts every night.":id==="signs"?"About 1 in 4 you put out breaks overnight.":SHELF[id]?`🕒 Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
+  return `<div class="drawer" id="mDrawer">
+    <div class="mLbl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}.</small></div>
+    ${rule?`<div class="rule">${rule}</div>`:""}
+    <div class="packs">${BULK.map((t,i)=>{const qty=ing.pack*t.mult,price=packPrice(id,i);
+      return `<button class="btn" onclick="buyItem('${id}',${i})" data-f="buy-${id}-${i}"${S.cash<price?' aria-disabled="true"':""} aria-label="Buy ${qty} ${ing.name.toLowerCase()} for ${fmt(price)}">+${qty}<small>${fmt(price)}</small>${t.off?`<i class="off">−${Math.round(t.off*100)}%</i>`:""}</button>`}).join("")}</div>
+  </div>`;
+}
+function stepperHtml(key,val,downCall,upCall,downLabel,upLabel,atMin,atMax){
+  return `<span class="stepper"><button onclick="${downCall}" data-f="${key}-" aria-label="${downLabel}"${atMin?' aria-disabled="true"':""}>−</button><b>${val}</b><button onclick="${upCall}" data-f="${key}+" aria-label="${upLabel}"${atMax?' aria-disabled="true"':""}>+</button></span>`;
+}
+function mGearHtml(){
+  const b=computeBuild(),owned=S.inv.signs||0;
+  let cubes="";
+  for(let k=1;k<=4;k++)cubes+=`<button class="cube" onclick="setIce(${k})" data-f="ice${k}" aria-pressed="${k<=M.icePerCup}" aria-label="${k} ice ${plural(k,"cube")}">${iconHtml("supply","ice",true)}</button>`;
+  return `<div><div class="mLbl"><span>${iconHtml("supply","ice")} Ice in each cup: ${M.icePerCup}</span><small>Hot days need more.</small></div>
+      <div class="cubes" role="group" aria-label="Ice in each cup">${cubes}</div></div>
+    <div><div class="mLbl"><span>${iconHtml("supply","signs")} Signs out</span>${stepperHtml("signs",`${M.signs} of ${owned}`,"stepSigns(-1)","stepSigns(1)",`Fewer signs, ${M.signs} out`,`More signs, ${M.signs} out`,M.signs<=0,M.signs>=owned)}</div>
+      <div class="mHint">${owned?"Or tap them on the grass.":"You have none. Buy some on the shelf."}${b.freeSigns?` Upgrades add ${b.freeSigns} free.`:""} ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}</div></div>`;
+}
+function mBoardHtml(){
+  return `<div class="mLbl">Today's prices</div><div class="prices">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
+    const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">⭐ Special +$0.50</span>':"";
+    return `<div class="price${ok?"":" out"}">${iconHtml("flavor",rk,true)}
+      <div><span class="pName" tabindex="0"${tip(`${r.desc} From: ${r.origin.replace(" · ",", ")}.`)}>${r.name}</span><div>${tagChips(r.tags)}${special}</div></div>
+      ${stepperHtml("price-"+rk,fmt(p),`stepPrice('${rk}',-1)`,`stepPrice('${rk}',1)`,`Lower ${r.name} price, now ${fmt(p)}`,`Raise ${r.name} price, now ${fmt(p)}`,p<=0.5,p>=priceMax())}
+      ${ok?"":`<div class="pOut">Not selling today: you need ${missingFor(rk)}.</div>`}
+    </div>`}).join("")}</div>`;
 }
 function buyItem(id,tier=0){
   const qty=INGREDIENTS[id].pack*BULK[tier].mult,price=packPrice(id,tier);
   if(S.cash<price){sfx.bad();return}
-  S.cash=Math.round((S.cash-price)*100)/100;addStock(id,qty,price);sfx.coin(3);updateHUD();renderMorning();
+  S.cash=Math.round((S.cash-price)*100)/100;addStock(id,qty,price);sfx.coin(3);updateHUD();morningParts();
 }
-function chooseLoc(i){M.loc=M.locs[i];sfx.flip();renderMorning()}
+function chooseLoc(i){M.loc=M.locs[i];sfx.flip();morningParts()}
+function openShelf(id){M.shopOpen=M.shopOpen===id?null:id;sfx.flip();morningParts()}
+function setIce(k){M.icePerCup=M.icePerCup===k?k-1:k;sfx.tick();morningParts()} // tap the top cube again to take it out
+function setSigns(n){const v=Math.max(0,Math.min(S.inv.signs||0,n));if(v===M.signs)return;M.signs=v;sfx.tick();morningParts()}
+function stepSigns(d){setSigns(M.signs+d)}
+function tapSign(k){setSigns(M.signs===k+1?k:k+1)} // like the ice cubes: tap the last sign out to take it in
+function stepPrice(rk,d){
+  const v=Math.round((M.prices[rk]+0.25*d)*100)/100;
+  if(v<0.5||v>priceMax())return;
+  M.prices[rk]=S.menuPrices[rk]=v;sfx.tick();morningParts();
+}
 /* Today's menu: flavors you have supplies for. A flavor missing an ingredient sits out until you buy it. */
 function sellableNow(){return S.recipes.filter(rk=>canBrew(rk,S.inv))}
 function missingFor(rk){return listWords(Object.entries(pitcherNeeds(rk)).filter(([k,v])=>(S.inv[k]||0)<v).map(([k])=>`${iconHtml("supply",k)} ${INGREDIENTS[k].name.toLowerCase()}`))}
