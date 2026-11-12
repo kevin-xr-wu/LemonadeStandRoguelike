@@ -34,7 +34,7 @@ The palette comes from the game's CSS colour tokens, so the art matches the UI. 
 | `awning` | #8e2a2e #c23b2e #e4572e #f28a5b | `--red` |
 | `paper` | #c9a77a #ead6a8 #fff7e0 | `--paper` |
 | `leaf` | #2e7d46 #58b368 #9be08a | `--green2`, `--green` |
-| `glass` | #3f7ea8 #7fc4e8 #d8f2ff | none |
+| `glass` | #3f7ea8 #7fc4e8 #d8f2ff | `--blue2` |
 
 - For a new material, add a ramp with `palette_update` (3 or 4 steps, dark to light). Start from a game token when one fits.
 - Don't change existing colours. Every asset drawn with them changes too.

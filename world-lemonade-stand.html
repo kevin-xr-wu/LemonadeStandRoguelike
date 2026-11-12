@@ -7,13 +7,13 @@
      phone browsers and webviews in dark mode from auto-darkening the page,
      which used to wash out or hide text on phones. -->
 <meta name="color-scheme" content="light">
-<meta name="theme-color" content="#ffe259">
+<meta name="theme-color" content="#f5b301">
 <title>World Lemonade Stand</title>
 <style>
 :root{
   color-scheme:light; /* fixed light palette: opt out of browser auto-darkening (see meta above) */
   --ink:#2b2118; --paper:#fff7e0; --paper2:#ffedb8; --lemon:#ffd83d; --lemon2:#f5b301;
-  --green:#58b368; --green2:#2e7d46; --red:#e4572e; --blue:#4aa3df; --purple:#8b5fbf;
+  --green:#58b368; --green2:#2e7d46; --red:#e4572e; --blue:#4aa3df; --blue2:#3f7ea8;
   --card:#fffdf4; --radius:16px;
 }
 /* Three surface levels, so the eye can tell what to press:
@@ -22,7 +22,7 @@
    3. Things you press (.btn, .iconBtn, .choice, .item, .cube, .stepper button, .post): the chunky ink border and offset shadow,
       which collapse when pressed. Nothing else gets that look. */
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:linear-gradient(180deg,#ffe259 0%,#ffa751 55%,#ff8c42 100%);color:var(--ink);min-height:100vh}
+body{margin:0;font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:var(--lemon2);color:var(--ink);min-height:100vh}
 button{font-family:inherit;cursor:pointer}
 #app{max-width:1060px;margin:0 auto;padding:12px 12px 40px}
 #screen{overflow-x:clip} /* pop-in animations start oversized; never let them scroll the page sideways */
@@ -70,7 +70,7 @@ h3{margin:14px 0 6px}
 .choice .ttl{font-size:18px;font-weight:900;display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
 .choice .desc{font-size:13.5px;margin-top:5px;line-height:1.38}
 .rar{font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;padding:3px 8px;border-radius:99px;white-space:nowrap;flex-shrink:0;align-self:flex-start}
-.rar.common{background:#e9e2cf}.rar.rare{background:#bfe3ff}.rar.epic{background:#e3c8ff}.rar.legendary{background:var(--lemon)}
+.rar.common{background:#ead6a8}.rar.rare{background:#d8f2ff}.rar.epic{background:#f28a5b}.rar.legendary{background:var(--lemon)}
 .tag{display:inline-block;background:var(--paper2);border-radius:99px;font-size:11px;font-weight:800;padding:2px 8px;margin:2px 2px 0 0}
 .warn{color:var(--red);font-weight:800}
 /* Buttons */
@@ -78,8 +78,8 @@ h3{margin:14px 0 6px}
 .btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 rgba(43,33,24,.9)}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(43,33,24,.9)}
 .btn:disabled{filter:grayscale(.7);opacity:.55;cursor:not-allowed;transform:none}
-.btn.gold{background:linear-gradient(180deg,var(--lemon),var(--lemon2));color:var(--ink);text-shadow:none}
-.btn.purple{background:var(--purple)} .btn.ghost{background:#fff;color:var(--ink);text-shadow:none}
+.btn.gold{background:var(--lemon);color:var(--ink);text-shadow:none}
+.btn.blue{background:var(--blue2)} .btn.ghost{background:#fff;color:var(--ink);text-shadow:none}
 .btn.sm{padding:8px 14px;font-size:14px;border-radius:11px}
 /* Scene */
 .scene{border-radius:var(--radius);overflow:hidden;margin-top:14px;position:relative}
@@ -175,7 +175,8 @@ h3{margin:14px 0 6px}
 .highlights small{font-size:13px;opacity:.75}
 @media (prefers-reduced-motion:reduce){.dropCoin{display:none}.rStamp{animation:none}}
 @keyframes stampIn{from{transform:scale(2.4) rotate(8deg);opacity:0}to{transform:scale(1) rotate(-5deg);opacity:1}}
-.synBanner{background:linear-gradient(90deg,var(--purple),#c86bfa);color:#fff;border-radius:12px;padding:10px 14px;font-weight:900;font-size:17px;margin-top:10px;animation:stampIn .4s cubic-bezier(.2,2,.4,1)}
+.synBanner{background:var(--green2);color:#fff;border-radius:12px;padding:10px 14px;font-weight:900;font-size:17px;margin-top:10px;animation:stampIn .4s cubic-bezier(.2,2,.4,1)}
+.synBanner.streak{background:#f28a5b;color:var(--ink)} /* a different colour from combos, so the two never get mixed up */
 .callout{background:#eaf6ff;border-radius:12px;padding:10px 14px;margin-top:10px}
 .log{background:var(--card);color:var(--ink);border-radius:12px;padding:10px 14px;font-size:14px;line-height:1.6;max-height:170px;overflow-y:auto;margin-top:10px}
 .log:empty{display:none} /* nothing has happened yet */
@@ -515,7 +516,7 @@ const sfx={
 
 /* ---------- confetti ---------- */
 function confetti(n=50){
-  const colors=["#ffd83d","#58b368","#e4572e","#4aa3df","#c86bfa","#ff8fab"];
+  const colors=["#ffd83d","#58b368","#e4572e","#4aa3df","#7fc4e8","#f28a5b"];
   for(let i=0;i<n;i++){
     const d=document.createElement("div");d.className="confetti";d.style.background=pick(colors);
     d.style.left=(45+Math.random()*10)+"vw";d.style.top="38vh";document.body.appendChild(d);
@@ -1059,7 +1060,7 @@ function renderMorning(){
   const wx=WEATHERS[M.shownWx];
   const newSyn=b.synergies.filter(s=>!S.discoveredSyn.includes(s.id));
   newSyn.forEach(s=>S.discoveredSyn.push(s.id));
-  const streakHtml=S.streak>=2?`<div class="synBanner" style="background:linear-gradient(90deg,#ff7b00,#ffb300)">🔥 Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Serve 3 out of 4 customers and make money today for a +${Math.min(25,3*(S.streak+1))}% bonus tonight.</div>`:"";
+  const streakHtml=S.streak>=2?`<div class="synBanner streak">🔥 Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Serve 3 out of 4 customers and make money today for a +${Math.min(25,3*(S.streak+1))}% bonus tonight.</div>`:"";
   const synHtml=b.synergies.length?`<div class="synBanner">⚡ Combos: ${b.synergies.map(s=>`<span tabindex="0"${tip(s.desc)}>${s.name}</span>`).join(", ")}</div>`:"";
   const evTxt=M.event?eventText(M.event):"";
   const eventHtml=evTxt?`<div class="callout">${evTxt}</div>`:"";
@@ -1663,7 +1664,7 @@ function summerComplete(){
     ${highlightsHtml(clamp(S.day,0,14))}
     <div class="flex mt" style="justify-content:center;gap:10px;flex-wrap:wrap">
       <button class="btn gold" style="font-size:20px" onclick="endRun('complete')">🏁 Finish and keep my score</button>
-      <button class="btn purple" style="font-size:20px" onclick="goEndless()">♾️ Keep playing (Endless)</button>
+      <button class="btn blue" style="font-size:20px" onclick="goEndless()">♾️ Keep playing (Endless)</button>
     </div>
     <p class="small muted">Endless: keep your stand and play on. Stop any morning, or play until you run out of money.</p>
   </div>`;
