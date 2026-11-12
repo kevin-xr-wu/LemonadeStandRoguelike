@@ -1280,7 +1280,7 @@ function openStand(){
   M.actualWx=M.trueWx;
   D={signs:putOut,build:b,
      roll:rnd(0.87,1.13),open:{},brewed:{},soldBy:{},sold:0,morningSold:0,unmet:0,
-     awayPrice:0,awayWarm:0,awayOut:0,revenue:0,revBy:{},tips:0,cogs:0,
+     awayPrice:0,awayWarm:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
      skip:false,done:false,brotherSpilled:false,crewLeft:0};
   const canSell=sellableNow();D.menu=canSell.length?canSell:S.recipes.slice(); // only flavors you have supplies for
   const minPrice=Math.min(...D.menu.map(rk=>menuPrice(rk)));
@@ -1352,7 +1352,7 @@ async function runDayPhase(phase){
   const chunk=Math.max(1,Math.ceil(target/Math.max(visual,1)));
   for(let i=0;i<visual&&processed<target;i++){
     const ck=pick(mixArr)||"parents";const c=CROWDS[ck];
-    let soldChunk=0,miss=null,flavor=null;
+    let soldChunk=0,miss=null,flavor=null;const takings=D.revenue+D.tips;
     for(let j=0;j<chunk&&processed<target;j++){
       const res=serveOne(ck);
       processed++;
@@ -1365,7 +1365,7 @@ async function runDayPhase(phase){
         processed=target;dry=true;break;
       }
     }
-    if(!D.skip)spawnCustomer(ck,soldChunk>0?{buys:true,flavor,streak,say:Math.random()<0.24?c.line:null}:{say:miss});
+    if(!D.skip)spawnCustomer(ck,soldChunk>0?{buys:true,paid:D.revenue+D.tips-takings,flavor,streak,say:Math.random()<0.24?c.line:null}:{say:miss});
     updateDayStats();
     if(dry)break;
     await sleep(rnd(450,750));
@@ -1380,14 +1380,15 @@ async function runDayPhase(phase){
 function updateDayStats(){
   const st=$("#stStock");if(!st)return;
   st.textContent=servingsReady();
-  $("#stTill").textContent=fmt(D.revenue+D.tips);
-  showCash(S.cash+D.revenue+D.tips); // the HUD counts up with each sale; the evening adds bonuses on top
+  const till=D.skip?D.revenue+D.tips:D.paid; // money lands when a buyer pays at the counter; Skip shows it all
+  $("#stTill").textContent=fmt(till);
+  showCash(S.cash+till); // the HUD counts up with each sale; the evening adds bonuses on top
   $("#stDem").textContent=Math.max(0,D.demand-D.sold-D.awayPrice-D.awayWarm-D.awayOut);
 }
 /* Customers walk across the scene. Buyers stop at the counter and face you while they pay,
    then walk on with a cup; everyone else walks past, saying why as they pass the stand. */
 const WALK_SPEED=75; // sprite pixels a second, so phones and desktops walk at the same pace
-function spawnCustomer(ck,{buys=false,flavor=null,say=null,streak=0}={}){
+function spawnCustomer(ck,{buys=false,paid=0,flavor=null,say=null,streak=0}={}){
   const sky=$("#skyBox");if(!sky)return;
   const day=D,d=document.createElement("div"),fw=ck==="parents"?32:24,fromLeft=Math.random()<0.5;
   const walkLook=carry=>{d.className=`cust ${carry?"carry":"walk"}${fromLeft?"":" left"}`;d.style.backgroundImage=`url(${CUSTOMER_WALK_PNG[ck]})`};
@@ -1411,6 +1412,7 @@ function spawnCustomer(ck,{buys=false,flavor=null,say=null,streak=0}={}){
     if(!d.isConnected){day.buying--;return}
     d.className="cust front";d.style.backgroundImage=`url(${CUSTOMER_PNG[ck]})`;
     sfx.coin(streak);spawnCoin(spot);if(flavor)spawnFlavor(spot,flavor);
+    day.paid+=paid;updateDayStats();
     if(say)after(1000,()=>spawnBubble(say,d)); // pay first, then talk, so the coin and flavor don't overlap the bubble
     after(800,()=>{day.buying--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())});
   });
