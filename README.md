@@ -1,6 +1,6 @@
 # World Lemonade Stand
 
-A roguelite lemonade stand game. Make as much money as you can in 14 days.
+A lemonade stand game. Make as much money as you can in 14 days.
 
 ## Play
 
@@ -21,8 +21,9 @@ After day 14, keep your score or keep playing in Endless.
 
 ## Core mechanics
 
-- **Money:** You start with $30. The money you end with is your score. If you can't pay for one cup, the game ends.
-- **Weather:** The forecast is always right. Hot days bring more people; rain brings fewer.
-- **Ice:** Hotter days need more ice: none under 70°F, up to 4 cubes at 100°F and up.
-- **Flavors:** Each recipe has tags (SWEET, SOUR, FANCY, CHILLED, FIZZY). Each type of customer likes different tags.
-- **Stars:** Serve most of the people who come and your stars go up. More stars bring more people.
+- You start with $30. The money you end with is your score. If you can't pay for one cup, the game ends.
+- The forecast is always right. Hot days bring more people; rain brings fewer.
+- Hotter days need more ice: none under 70°F, up to 4 cubes at 100°F and up.
+- Each flavor has tags: Sweet, Sour, Fancy, Chilled, Fizzy. Each kind of customer likes different tags.
+- Serve most of the people who come and your stars go up. More stars bring more people.
+- Pick an upgrade after each day. The right mix of flavors on your menu gives a combo bonus.
