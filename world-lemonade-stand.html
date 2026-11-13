@@ -485,18 +485,18 @@ body:has(.stage){overflow:hidden}
 /* Over the sky: what today is like (left), where you sell (middle), news (under the forecast) */
 .skyTop{position:relative;z-index:7;display:grid;grid-template-columns:minmax(230px,1fr) minmax(0,auto) minmax(0,1fr);align-items:start;gap:10px}
 .skyTop .side{display:grid;gap:8px;justify-items:start;align-content:start}
-.fcChip{display:grid;gap:1px;background:var(--ink);color:#fff;border-radius:12px;padding:8px 14px 9px;box-shadow:0 4px 0 rgba(0,0,0,.25);max-width:300px}
-.fcChip .fcLabel{font-size:var(--fs-xs);font-weight:800;text-transform:uppercase;letter-spacing:.08em;opacity:.7}
-.fcChip .fcMain{font-size:var(--fs-xl);line-height:1.05;color:var(--lemon)}
-.fcChip .fcDesc{font-size:var(--fs-sm);font-weight:700}
-.fcChip .learn{margin-top:4px}
-.spotCard{background:var(--card);border-radius:14px;padding:8px 10px 10px;box-shadow:0 5px 0 rgba(43,33,24,.3);width:min(640px,100%);justify-self:center}
+.fcChip{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 10px;background:var(--ink);color:#fff;border-radius:99px;padding:4px 14px 5px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.fcChip .fcMain{font-size:var(--fs-lg);line-height:1.2;color:var(--lemon)}
+.fcChip .fcDice{font-size:var(--fs-xs);font-weight:700}
+.spotCard{background:var(--card);border-radius:14px;padding:8px 10px;box-shadow:0 4px 0 rgba(43,33,24,.3);width:min(580px,100%);justify-self:center}
+.spotCard .postFace{font-size:var(--fs-sm);padding:4px 18px 4px 8px}
+.spotCard .crowd{font-size:var(--fs-xs)}
 .spotCard .mLbl{margin:0 0 6px;font-size:var(--fs-sm)}
 .spotCard .posts{max-width:none}
-.spotCard .crowdRow{justify-content:center;margin-top:8px}
+.spotCard .crowdRow{justify-content:center;margin-top:6px}
 .spotCard .mHint{text-align:center;margin-top:8px}
-.news{display:grid;gap:6px;max-width:300px}
-.news .synBanner,.news .callout{margin:0;font-size:var(--fs-sm);font-weight:700;line-height:1.35;padding:6px 10px;box-shadow:0 3px 0 rgba(43,33,24,.25)}
+.news{display:grid;gap:6px;max-width:280px}
+.news .synBanner,.news .callout{margin:0;border-radius:10px;font-size:var(--fs-xs);font-weight:700;line-height:1.35;padding:4px 10px;box-shadow:0 3px 0 rgba(43,33,24,.25)}
 .news .callout{background:var(--card)}
 .spotChip{background:rgba(255,253,244,.95);border-radius:12px;padding:6px 12px;font-size:var(--fs-sm);font-weight:800;line-height:1.45;box-shadow:0 4px 0 rgba(43,33,24,.25)}
 .toast{justify-self:center;background:var(--card);border-radius:12px;padding:6px 14px;font-size:var(--fs-sm);font-weight:800;box-shadow:0 4px 0 rgba(43,33,24,.3);max-width:min(460px,calc(100vw - 24px));text-align:center;animation:toastLife 4s ease-out forwards}
@@ -504,20 +504,22 @@ body:has(.stage){overflow:hidden}
 .toast .good{color:var(--green2)}.toast .bad{color:var(--red)}.toast .info{color:#1c5fa8}
 @keyframes toastLife{0%{opacity:0;transform:translateY(-8px)}8%,80%{opacity:1;transform:none}100%{opacity:0}}
 /* On the ground: the cards you set the day up with, then the day's numbers */
-.dockIn{position:relative;z-index:9;max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:12px}
-.dock .card{background:var(--card);border-radius:14px;padding:8px 12px 10px;box-shadow:0 5px 0 rgba(43,33,24,.35)}
+.dockIn{position:relative;z-index:9;max-width:1440px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:12px}
+.dock .card{background:var(--card);border-radius:14px;padding:8px 12px 10px;box-shadow:0 4px 0 rgba(43,33,24,.35)}
 .dock .mLbl{margin:0 0 6px;font-size:var(--fs-sm)}
 .dock .supShelf{position:relative;margin:0;padding:8px 12px 0;overflow:visible;box-shadow:0 5px 0 rgba(43,33,24,.35);max-width:100%}
 .dock .shelfRow{display:flex;gap:8px;margin:0 -12px;padding:10px 12px 8px;overflow-x:auto;scrollbar-width:none}
 .dock .shelfRow .sep{flex:none;width:3px;border-radius:2px;background:#7a4428;opacity:.5}
-.dock .item{flex:none;width:68px}
+.dock .item{flex:none;width:62px}
 .dock .drawer{position:absolute;left:0;bottom:calc(100% + 10px);z-index:10;width:min(340px,calc(100vw - 24px));margin:0;box-shadow:0 6px 0 rgba(43,33,24,.3),0 10px 24px rgba(0,0,0,.2)}
 .dock .gear{display:flex;gap:18px;align-items:flex-start}
 .dock .gear>div+div{margin-top:0}
-.dock .cube .icon{--sz:28px}
+.dock .cube{padding:2px}
 .dock .board{min-width:0;margin:0;padding:10px 14px;box-shadow:inset 0 0 0 5px #a86a3a,0 5px 0 rgba(43,33,24,.35)}
 .dock .prices{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-.dock .price{flex:none;width:138px;grid-template-columns:auto;grid-template-rows:auto 1fr auto;justify-items:center;gap:3px;text-align:center} /* steppers line up along the bottom */
+.dock .price{flex:none;width:158px;grid-template-columns:auto minmax(0,1fr);grid-template-rows:1fr auto;align-items:start;justify-items:start;gap:4px 8px;text-align:left} /* steppers line up along the bottom */
+.dock .price .stepper,.dock .price .pOut{grid-column:1/-1}
+.dock .price .stepper{justify-self:center}
 .dock .price .tag{margin:0}
 .dock .pName{font-size:var(--fs-sm);line-height:1.15}
 .dock .pOut{font-size:var(--fs-xs);line-height:1.25}
@@ -526,7 +528,7 @@ body:has(.stage){overflow:hidden}
 .openCard{display:flex;align-items:center;gap:14px;background:var(--ink);color:#fff;border-radius:14px;padding:10px 10px 10px 16px;box-shadow:0 5px 0 rgba(0,0,0,.25)}
 .openCard #guessText{flex:none;display:grid;gap:2px;font-size:var(--fs-sm)}
 .openCard #guessText b{font-size:var(--fs-lg)}
-.openCard #btnOpen{padding:14px 28px;font-size:var(--fs-xl);margin:0}
+.openCard #btnOpen{padding:12px 26px;font-size:var(--fs-xl);margin:0}
 .openCard .warnTxt{color:#ffc9b8;font-weight:800}
 .dayCard{display:grid;gap:6px;min-width:260px;background:var(--ink);color:#fff;border-radius:14px;padding:10px 14px 12px;box-shadow:0 5px 0 rgba(0,0,0,.25)}
 .dayCard #dayMsg{font-weight:800;color:var(--lemon)}
@@ -546,58 +548,69 @@ body:has(.stage){overflow:hidden}
 .tSlot .icon{--sz:32px;vertical-align:0}
 .dockTabs{display:none}
 .starNum{display:none}
-@media (min-width:721px){
-  .morning .openCard{align-self:end}
-  .morning #mGear{align-self:start}
-  .dock .gear .learn{display:block;width:max-content;margin-top:8px}
-  .morning .dockIn{display:grid;grid-template-columns:minmax(0,max-content) auto;grid-template-areas:"shop gear" "board open";justify-content:center;align-items:stretch}
-  .morning #mShop{grid-area:shop;min-width:0}.morning #mGear{grid-area:gear}.morning #mBoard{grid-area:board;min-width:0}.morning .openCard{grid-area:open;justify-content:space-between}
+@media (min-width:901px){ /* wide screens: every morning card in one row on the ground */
+  .morning .dockIn{flex-wrap:nowrap;align-items:stretch}
+  .morning #mShop{flex:0 1 auto;min-width:230px}
+  .morning #mGear{flex:none;flex-direction:column;gap:8px}
+  .morning #mBoard{flex:0 1 auto;min-width:190px}
+  .morning .openCard{flex:none;flex-direction:column;align-items:stretch;justify-content:center;gap:8px;padding:12px 14px}
+  .morning .openCard #btnOpen{padding:12px 26px}
+  .dock .gear .learn{display:block;width:max-content;margin-top:6px}
 }
 /* When the stand opens, the camera moves in: the selling day draws the scene at 3× on big screens */
 @media (min-width:900px) and (min-height:720px){.stage.day,.stage.day .sky{--px:3}.stage .ground{min-height:max(190px,26vh)}}
 @media (min-width:900px) and (min-height:940px){.stage,.stage .sky{--px:3}}
-@media (max-width:720px){
-  .stage{--hudH:48px}
+@media (max-width:900px){ /* narrower screens: the ground shows one group of morning controls at a time */
   .dockTabs{display:flex;flex:1 1 100%;gap:4px;background:var(--ink);border-radius:14px;padding:4px;box-shadow:0 4px 0 rgba(0,0,0,.25)}
   .dockTabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;min-height:40px;background:none;border:0;border-radius:10px;color:#fff;font-family:var(--font-display);font-size:var(--fs-md);padding:4px 6px}
   .dockTabs button[aria-selected="true"]{background:var(--lemon);color:var(--ink)}
   .dock[data-tab="shop"] :is(#mGear,#mBoard),.dock[data-tab="gear"] :is(#mShop,#mBoard),.dock[data-tab="board"] :is(#mShop,#mGear){display:none}
+  .dock .supShelf>.mLbl,.dock .board>.mLbl{display:none} /* the tab already names them */
+  .dock .supShelf{padding-top:2px}
+  .dockIn{gap:10px}
+  .dock .supShelf,.dock .gear,.dock .board,.openCard{flex:1 1 100%}
+  .dock .shelfRow{justify-content:space-between}
+  .dock .gear{justify-content:space-between}
+  .dock .price{width:150px}
+  .dock .stepper button{width:34px;height:34px}
+  .dock .stepper b{min-width:46px;font-size:var(--fs-md)}
+  .dockTabs{order:2}
+  .openCard{order:3} /* tabs sit just above Open, so a buy popover never covers them */
+  .openCard{padding:8px 8px 8px 14px}
+  .openCard #guessText{flex:1}
+  .openCard #btnOpen{padding:12px 22px!important;font-size:var(--fs-lg)}
+}
+@media (max-width:720px){
+  .stage{--hudH:48px}
   .skyTop{grid-template-columns:1fr;justify-items:stretch}
   .skyTop .side{justify-items:start}
-  .fcChip{grid-template-columns:auto 1fr;align-items:baseline;gap:0 10px;padding:6px 12px 7px;max-width:none;justify-self:start;margin-right:84px} /* the sun is to its right */
-  .fcChip .fcLabel{display:none}
-  .fcChip .fcMain{font-size:var(--fs-lg)}
-  .fcChip .learn{grid-column:1/-1}
-  .fcChip .fcDesc{display:none}
-  .news .synBanner,.news .callout{font-size:var(--fs-xs);padding:5px 9px}
+  .fcChip{justify-self:start;margin-right:84px} /* the sun is to its right */
   .spotCard{padding:6px 8px 8px}
   .spotCard .postFace{padding:5px 15px 5px 6px;font-size:var(--fs-xs)}
   .spotCard .crowdRow{gap:4px;flex-wrap:nowrap}
   .spotCard .crowd{font-size:var(--fs-xs);white-space:nowrap}
   .spotCard{justify-self:center}
   .spotChip{justify-self:start}
-  .dockIn{gap:10px}
-  .dock .supShelf,.dock .gear,.dock .board,.openCard,.dayCard{flex:1 1 100%}
-  .dock .shelfRow{justify-content:space-between}
   .dock .item{width:62px}
-  .dock .gear{justify-content:space-between}
-  .dock .price{width:126px}
-  .dock .stepper button{width:34px;height:34px}
-  .dock .stepper b{min-width:46px;font-size:var(--fs-md)}
   .stage .ground{min-height:max(250px,32vh)}
-  .dockTabs{order:2}
-  .openCard{order:3} /* tabs sit just above Open, so a buy popover never covers them */
-  .openCard{padding:8px 8px 8px 14px}
-  .openCard #guessText{flex:1}
-  .openCard #btnOpen{padding:12px 22px!important;font-size:var(--fs-lg)}
   .dayCard{grid-template-columns:1fr auto;align-items:center;min-width:0}
   .dayCard .dayBar{grid-column:1}
   .dayCard .dayBtns{grid-column:2;grid-row:1/3}
+  .dayCard,.statChip{flex:1 1 100%}
   .statChip{flex:1;min-width:0;padding:6px 8px 8px}
   .hudTray{gap:3px;padding:6px 4px}
   .tSlot{width:10px;height:10px;border-radius:3px;background:var(--lemon)}
   .tSlot.empty{background:none;border:2px solid rgba(255,247,224,.4)}
   .tSlot .icon{display:none}
+}
+@media (max-width:560px){ /* phones: the tabs and Open share the bottom row */
+  .dockTabs{flex:1 1 0;min-width:0}
+  .dockTabs button{flex-direction:column;gap:1px;min-height:48px;padding:4px 2px;font-size:var(--fs-sm);line-height:1.05}
+  .openCard{flex:none;gap:8px;padding:6px 6px 6px 10px}
+  .openCard #guessText{flex:none;font-size:var(--fs-xs);line-height:1.2}
+  .openCard #guessText>span:first-child{display:none}
+  .openCard #guessText b{font-size:var(--fs-md)}
+  .openCard #btnOpen{padding:10px 16px!important}
 }
 @media (max-width:560px){ /* phones: the star meter becomes one star and the number, to make room for the upgrade tray */
   .hud{gap:10px}
@@ -605,7 +618,21 @@ body:has(.stage){overflow:hidden}
   .starMeter{align-items:center;gap:4px}
   .starNum{display:block;font-family:var(--font-display);font-size:var(--fs-lg);color:var(--lemon);line-height:1}
 }
-@media (max-height:640px){.stage,.stage .sky{--px:1}}
+/* The stage never scrolls. When it is taller than the window, fitStage() adds these one at a time until it fits:
+   tighter spacing, no first-day hints, then smaller sprites, so the scene stays big as long as it can. */
+.stage.fit-tight .ground{min-height:0;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+.stage.fit-tight .sky{padding-top:calc(var(--hudH) + 10px)}
+.stage.fit-tight .skyTop{gap:6px}
+.stage.fit-tight .spotCard{padding:6px 8px}
+.stage.fit-tight .spotCard .mLbl{display:none}
+.stage.fit-tight .spotCard .crowdRow,.stage.fit-tight .spotCard .mHint{margin-top:6px}
+.stage.fit-tight .dockIn{gap:8px}
+.stage.fit-tight .dock .mLbl{margin-bottom:2px}
+.stage.fit-px2,.stage.fit-px2 .sky{--px:2}
+.stage.fit-min .learn,.stage.fit-min .spotCard .mHint{display:none}
+.stage.fit-min .dock .pName{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stage.fit-min .dock .board{padding:8px 12px}
+.stage.fit-px1,.stage.fit-px1 .sky{--px:1}
 </style>
 <style>
 /* Fonts, embedded so the game works offline. Both are subset to the characters the game uses.
@@ -1323,7 +1350,7 @@ function renderMorning(){
       <div id="mScene" style="display:contents"></div>
       <div class="skyTop">
         <div class="side">
-          <div class="fcChip" tabindex="0"${tip("The forecast is always right. Use it to guess how many people will come and what they'll pay.")}><span class="fcLabel">Today's forecast</span><span class="fcMain">${wx.icon} ${wx.name}, ${M.temp}°F</span><span class="fcDesc">${wx.desc}</span>${learnHint(FORECAST_HINT)}${M.dice?`<span class="fcDesc">Lucky Dice: ${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers today</span>`:""}</div>
+          <div class="fcChip" tabindex="0"${tip(`${wx.desc} The forecast is always right. Use it to guess how many people will come and what they'll pay.`)}><span class="fcMain">${wx.icon} ${wx.name}, ${M.temp}°F</span>${M.dice?`<span class="fcDice">Lucky Dice: ${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers today</span>`:""}</div>
           ${synHtml||streakHtml||eventHtml?`<div class="news">${synHtml}${streakHtml}${eventHtml}</div>`:""}
           ${S.endless?`<button class="btn sm ghost" onclick="endRun('retired')">Stop and keep my score (${fmt(S.cash)})</button>`:""}
         </div>
@@ -1342,9 +1369,17 @@ function renderMorning(){
   </div>`;
   morningParts();
 }
-/* On phones the ground shows one group of controls at a time, in the order the help teaches them. */
+/* The stage never scrolls: if it is taller than the window, step through denser layouts until it fits. */
+const FIT_STEPS=["fit-tight","fit-min","fit-px2","fit-px1"];
+function fitStage(){
+  const st=$(".stage");if(!st)return;
+  st.classList.remove(...FIT_STEPS);
+  for(const c of FIT_STEPS){if(st.scrollHeight<=st.clientHeight)break;st.classList.add(c)}
+}
+addEventListener("resize",fitStage);
+/* On narrower screens the ground shows one group of controls at a time, in the order the help teaches them. */
 const DOCK_TABS=[["shop","Supplies",()=>iconHtml("supply","lemons")],["gear","Ice & signs",()=>iconHtml("supply","ice")],["board","Prices",()=>iconHtml("flavor","classic")]];
-function setDockTab(k){M.tab=k;sfx.tick();$("#mDock").dataset.tab=k;document.querySelectorAll(".dockTabs [role=tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===k))}
+function setDockTab(k){M.tab=k;sfx.tick();$("#mDock").dataset.tab=k;document.querySelectorAll(".dockTabs [role=tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===k));fitStage()}
 /* Redraw the morning's controls in place, so the sky keeps drifting, and keep focus on the control just used. */
 function morningParts(){
   const ae=document.activeElement,f=ae&&ae.dataset?ae.dataset.f:null;
@@ -1355,6 +1390,7 @@ function morningParts(){
   $("#mGear").innerHTML=mGearHtml();
   $("#mBoard").innerHTML=mBoardHtml();
   renderProj();
+  fitStage();
   const dr=$("#mDrawer"),it=$(".item[aria-expanded=true]");
   if(dr&&it){const shelf=$("#mShop"),row=it.parentNode;dr.style.left=clamp(it.offsetLeft-row.scrollLeft+it.offsetWidth/2-dr.offsetWidth/2,0,Math.max(0,shelf.clientWidth-dr.offsetWidth))+"px"}
   if(f){const el=document.querySelector(`[data-f="${f}"]`);if(el)el.focus({preventScroll:true})}
@@ -1550,7 +1586,7 @@ function renderDayScene(){
       </div>
     </div>
   </div>`;
-  updateHUD();
+  updateHUD();fitStage();
 }
 function crowdMixLine(){const mix=crowdMixFor(M.loc);return Object.entries(mix).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${CROWDS[k].icon} ${v}%`).join(", ")}
 /* The newest line of the day pops up as a toast over the sky; the evening report keeps them all. */
