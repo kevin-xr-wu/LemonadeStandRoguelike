@@ -516,15 +516,20 @@ body:has(.stage){overflow:hidden}
 .dock .gear{display:flex;gap:18px;align-items:flex-start}
 .dock .gear>div+div{margin-top:0}
 .dock .cube{padding:2px}
-.dock .board{min-width:0;margin:0;padding:10px 14px;box-shadow:inset 0 0 0 5px #a86a3a,0 5px 0 rgba(43,33,24,.35)}
-.dock .prices{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-.dock .price{flex:none;width:158px;grid-template-columns:auto minmax(0,1fr);grid-template-rows:1fr auto;align-items:start;justify-items:start;gap:4px 8px;text-align:left} /* steppers line up along the bottom */
-.dock .price .stepper,.dock .price .pOut{grid-column:1/-1}
-.dock .price .stepper{justify-self:center}
-.dock .price .tag{margin:0}
-.dock .pName{font-size:var(--fs-sm);line-height:1.15}
-.dock .pOut{font-size:var(--fs-xs);line-height:1.25}
 .dock .stepper b{min-width:50px}
+/* Today's prices: a chalkboard slide with a price tag per flavor. The tags sit in one row that scrolls sideways,
+   so any number of flavors fits without the card growing. */
+.slide.board{margin:0;border-radius:0;box-shadow:inset 0 0 0 5px #a86a3a;padding:10px 14px 8px}
+.prices{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:#a86a3a transparent;padding-bottom:4px}
+.spotCard .price{flex:none;width:150px;scroll-snap-align:start;grid-template-columns:auto minmax(0,1fr);grid-template-rows:1fr auto;align-items:start;justify-items:start;gap:4px 8px;text-align:left} /* steppers line up along the bottom */
+.spotCard .price .stepper,.spotCard .price .pOut{grid-column:1/-1}
+.spotCard .price .stepper,.spotCard .price .pOut{justify-self:center;align-self:center} /* a flavor you cannot make today shows what it needs in place of its price */
+.spotCard .price .tag{margin:0}
+.spotCard .price>div{min-width:0;max-width:100%}
+.spotCard .pName{font-size:var(--fs-sm);line-height:1.15}
+.spotCard .pOut{font-size:var(--fs-xs);line-height:1.25}
+.spotCard .stepper button{width:34px;height:34px}
+.spotCard .stepper b{min-width:50px}
 .dock .cubes{flex-wrap:nowrap}
 /* The top card is a carousel: "Where today?", then "Ready to open?" with the cups your supplies make and Open */
 .slides{display:flex;transform:translateX(calc(var(--card,0)*-100%));transition:transform .3s ease}
@@ -568,7 +573,6 @@ body:has(.stage){overflow:hidden}
   .morning .dockIn{flex-wrap:nowrap;align-items:stretch}
   .morning #mShop{flex:0 1 auto;min-width:230px}
   .morning #mGear{flex:none;flex-direction:column;gap:8px}
-  .morning #mBoard{flex:0 1 auto;min-width:190px}
   .dock .gear .learn{display:block;width:max-content;margin-top:6px}
 }
 /* When the stand opens, the camera moves in: the selling day draws the scene at 3× on big screens */
@@ -578,14 +582,14 @@ body:has(.stage){overflow:hidden}
   .dockTabs{display:flex;flex:1 1 100%;gap:4px;background:var(--ink);border-radius:14px;padding:4px;box-shadow:0 4px 0 rgba(0,0,0,.25)}
   .dockTabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;min-height:40px;background:none;border:0;border-radius:10px;color:#fff;font-family:var(--font-display);font-size:var(--fs-md);padding:4px 6px}
   .dockTabs button[aria-selected="true"]{background:var(--lemon);color:var(--ink)}
-  .dock[data-tab="shop"] :is(#mGear,#mBoard),.dock[data-tab="gear"] :is(#mShop,#mBoard),.dock[data-tab="board"] :is(#mShop,#mGear){display:none}
-  .dock .supShelf>.mLbl,.dock .board>.mLbl{display:none} /* the tab already names them */
+  .dock[data-tab="shop"] #mGear,.dock[data-tab="gear"] #mShop{display:none}
+  .dock .supShelf>.mLbl{display:none} /* the tab already names it */
   .dock .supShelf{padding-top:2px}
   .dockIn{gap:10px}
-  .dock .supShelf,.dock .gear,.dock .board{flex:1 1 100%}
+  .dock .supShelf,.dock .gear{flex:1 1 100%}
   .dock .shelfRow{justify-content:space-between}
   .dock .gear{justify-content:space-between}
-  .dock .price{width:150px}
+  .spotCard .price{width:140px}
   .dock .stepper button{width:34px;height:34px}
   .dock .stepper b{min-width:46px;font-size:var(--fs-md)}
   .dockTabs{order:2} /* tabs sit under the cards, so a buy popover never covers them */
@@ -638,8 +642,10 @@ body:has(.stage){overflow:hidden}
 .stage.fit-tight .dock .mLbl{margin-bottom:2px}
 .stage.fit-px2,.stage.fit-px2 .sky{--px:2}
 .stage.fit-min .learn,.stage.fit-min .spotCard .mHint{display:none}
-.stage.fit-min .dock .pName{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stage.fit-min .dock .board{padding:8px 12px}
+.stage.fit-min .spotCard .pName{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stage.fit-min .slide.board{padding:6px 12px}
+.stage.fit-min .dockTabs button{min-height:34px}
+.stage.fit-min .news>*{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stage.fit-px1,.stage.fit-px1 .sky{--px:1}
 </style>
 <style>
@@ -1350,7 +1356,8 @@ function renderMorning(){
   const newSyn=b.synergies.filter(s=>!S.discoveredSyn.includes(s.id));
   newSyn.forEach(s=>S.discoveredSyn.push(s.id));
   const streakHtml=S.streak>=2?`<div class="synBanner streak">Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Serve 3 out of 4 customers and make money today for a +${Math.min(25,3*(S.streak+1))}% bonus tonight.</div>`:"";
-  const synHtml=b.synergies.length?`<div class="synBanner">Combos: ${b.synergies.map(s=>`<span tabindex="0"${tip(s.desc)}>${s.name}</span>`).join(", ")}</div>`:"";
+  const syn=b.synergies,more=syn.slice(2);
+  const synHtml=syn.length?`<div class="synBanner">Combos: ${syn.slice(0,2).map(s=>`<span tabindex="0"${tip(s.desc)}>${s.name}</span>`).join(", ")}${more.length?` <span tabindex="0"${tip(more.map(s=>s.name).join(", "))}>+${more.length} more</span>`:""}</div>`:"";
   const evTxt=M.event?eventText(M.event):"";
   const eventHtml=evTxt?`<div class="callout">${evTxt}</div>`:"";
   const diceHtml=M.dice?`<div class="callout">Lucky Dice: ${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers today.</div>`:"";
@@ -1372,7 +1379,6 @@ function renderMorning(){
         <div class="dockTabs" role="tablist" aria-label="Set up the stand">${DOCK_TABS.map(([k,name,icon])=>`<button role="tab" onclick="setDockTab('${k}')" data-tab="${k}" aria-selected="${M.tab===k}">${icon()} ${name}</button>`).join("")}</div>
         <div class="supShelf" id="mShop" role="group" aria-label="Supplies"></div>
         <div class="card gear" id="mGear"></div>
-        <div class="board" id="mBoard" role="group" aria-label="Today's prices"></div>
       </div>
     </div>
   </div>`;
@@ -1387,17 +1393,18 @@ function fitStage(){
 }
 addEventListener("resize",fitStage);
 /* On narrower screens the ground shows one group of controls at a time, in the order the help teaches them. */
-const DOCK_TABS=[["shop","Supplies",()=>iconHtml("supply","lemons")],["gear","Ice & signs",()=>iconHtml("supply","ice")],["board","Prices",()=>iconHtml("flavor","classic")]];
+const DOCK_TABS=[["shop","Supplies",()=>iconHtml("supply","lemons")],["gear","Ice & signs",()=>iconHtml("supply","ice")]];
 function setDockTab(k){M.tab=k;sfx.tick();$("#mDock").dataset.tab=k;document.querySelectorAll(".dockTabs [role=tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===k));fitStage()}
 /* Redraw the morning's controls in place, so the sky keeps drifting, and keep focus on the control just used. */
 function morningParts(){
   const ae=document.activeElement,f=ae&&ae.dataset?ae.dataset.f:null;
   if(M.signs>(S.inv.signs||0))M.signs=S.inv.signs||0; // you can only put out signs you own — last night's breakage may have shrunk the pile
+  const strips=[".shelfRow",".prices"].map(sel=>[sel,$(sel)?$(sel).scrollLeft:0]); // keep sideways strips where the player left them
   $("#mScene").innerHTML=mSceneHtml();
   $("#mSpot").innerHTML=mSpotHtml();
   $("#mShop").innerHTML=mShopHtml();
   $("#mGear").innerHTML=mGearHtml();
-  $("#mBoard").innerHTML=mBoardHtml();
+  strips.forEach(([sel,x])=>{const el=$(sel);if(el)el.scrollLeft=x});
   renderProj();
   fitStage();
   const dr=$("#mDrawer"),it=$(".item[aria-expanded=true]");
@@ -1421,28 +1428,33 @@ function mSpotHtml(){
     <div class="goBox"><div class="goInfo"><span class="goChip">${M.loc?`${iconHtml("spot",M.loc.name)} ${M.loc.name}`:`<span class="warnTxt">Pick a spot first</span>`}</span>
       <span class="goChip" id="guessText"></span></div>
       <button class="btn gold" id="btnOpen" onclick="openStand()" data-f="open">Open</button></div>`;
-  const slide=(k,html,name)=>`<div class="slide" role="group" aria-roledescription="slide" aria-label="${name}"${k===card?"":" inert"}>${html}</div>`;
-  const nav=(k,cls,label,txt)=>`<button${cls?` class="${cls}"`:""} onclick="setSpotCard(${k})" data-k="${k}" data-f="car-${cls||"arrow"}${k}" aria-label="${label}"${cls?` aria-current="${k===card}"`:k===card?' aria-disabled="true"':""}>${txt}</button>`;
-  return `<div class="slides" style="--card:${card}">${slide(0,where,"Where today?")}${slide(1,go,"Ready to open?")}</div>
-    <div class="carNav">${nav(0,"","Where today?","‹")}${nav(0,"dot","Where today?","")}${nav(1,"dot","Ready to open?","")}${nav(1,"","Ready to open?","›")}</div>`;
+  const last=SPOT_SLIDES.length-1;
+  const slide=(html,k)=>`<div class="slide${k===1?" board":""}" role="group" aria-roledescription="slide" aria-label="${SPOT_SLIDES[k]}"${k===card?"":" inert"}>${html}</div>`;
+  const arrow=(d,txt)=>`<button class="arrow" onclick="setSpotCard(M.card+${d})" data-d="${d}" data-f="car-arrow${d}" aria-label="${d<0?"Back":"Next"}"${(d<0?card===0:card===last)?' aria-disabled="true"':""}>${txt}</button>`;
+  const dot=k=>`<button class="dot" onclick="setSpotCard(${k})" data-k="${k}" data-f="car-dot${k}" aria-label="${SPOT_SLIDES[k]}" aria-current="${k===card}"></button>`;
+  return `<div class="slides" style="--card:${card}">${[where,mBoardHtml(),go].map(slide).join("")}</div>
+    <div class="carNav">${arrow(-1,"‹")}${SPOT_SLIDES.map((_,k)=>dot(k)).join("")}${arrow(1,"›")}</div>`;
 }
-/* The top card's two slides: pick a spot, then open. Picking a spot slides over to Open; the arrows and dots go back and forth. */
+/* The top card's slides, in the order the help teaches: where to sell, the prices, then open.
+   Picking a spot slides over to Open; the arrows and dots go back and forth. */
+const SPOT_SLIDES=["Where today?","Today's prices","Ready to open?"];
 function setSpotCard(i,quiet){
+  i=clamp(i,0,SPOT_SLIDES.length-1);
   if(M.card===i)return;
   M.card=i;if(!quiet)sfx.tick();
   const sl=$("#mSpot .slides");if(!sl)return;
   void sl.offsetWidth; // slide from where it is now
   sl.style.setProperty("--card",i);
   sl.querySelectorAll(".slide").forEach((el,k)=>el.inert=k!==i);
-  document.querySelectorAll("#mSpot .carNav button").forEach(b=>{const k=+b.dataset.k;
-    if(b.classList.contains("dot"))b.setAttribute("aria-current",k===i);else b.setAttribute("aria-disabled",k===i)});
+  document.querySelectorAll("#mSpot .carNav .dot").forEach(b=>b.setAttribute("aria-current",+b.dataset.k===i));
+  document.querySelectorAll("#mSpot .carNav .arrow").forEach(b=>b.setAttribute("aria-disabled",+b.dataset.d<0?i===0:i===SPOT_SLIDES.length-1));
 }
 function mShopHtml(){
   const basics=["cups","lemons","sugar","ice","signs"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
   const item=id=>{const n=S.inv[id]||0,open=M.shopOpen===id;
     return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`};
   return `<div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>${learnHint(HOW_STEPS[1][1])}
-    <div class="shelfRow">${basics.map(item).join("")}${extras.length?`<i class="sep" aria-hidden="true"></i>${extras.map(item).join("")}`:""}</div>${M.shopOpen?mDrawerHtml(M.shopOpen):""}`;
+    <div class="shelfRow" onwheel="wheelSideways(event,this)">${basics.map(item).join("")}${extras.length?`<i class="sep" aria-hidden="true"></i>${extras.map(item).join("")}`:""}</div>${M.shopOpen?mDrawerHtml(M.shopOpen):""}`;
 }
 function mDrawerHtml(id){
   const ing=INGREDIENTS[id],n=S.inv[id]||0;
@@ -1468,14 +1480,16 @@ function mGearHtml(){
       ${stepperHtml("signs",`${M.signs} of ${owned}`,"stepSigns(-1)","stepSigns(1)",`Fewer signs, ${M.signs} out`,`More signs, ${M.signs} out`,M.signs<=0,M.signs>=owned)}${learnHint(HOW_STEPS[2][1])}</div>`;
 }
 function mBoardHtml(){
-  return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][1])}<div class="prices">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
+  return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][1])}<div class="prices" onwheel="wheelSideways(event,this)">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
     const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">Special +$0.50</span>':"";
     return `<div class="price${ok?"":" out"}">${iconHtml("flavor",rk,true)}
       <div><span class="pName" tabindex="0"${tip(`${r.desc} From: ${r.origin.replace(" · ",", ")}.`)}>${r.name}</span><div>${tagChips(r.tags)}${special}</div></div>
-      ${stepperHtml("price-"+rk,fmt(p),`stepPrice('${rk}',-1)`,`stepPrice('${rk}',1)`,`Lower ${r.name} price, now ${fmt(p)}`,`Raise ${r.name} price, now ${fmt(p)}`,p<=0.5,p>=priceMax())}
-      ${ok?"":`<div class="pOut">Not selling today: you need ${missingFor(rk)}.</div>`}
+      ${ok?stepperHtml("price-"+rk,fmt(p),`stepPrice('${rk}',-1)`,`stepPrice('${rk}',1)`,`Lower ${r.name} price, now ${fmt(p)}`,`Raise ${r.name} price, now ${fmt(p)}`,p<=0.5,p>=priceMax())
+        :`<div class="pOut" tabindex="0"${tip(`Not selling today. You need ${missingNames(rk)}.`)}>Need ${missingIds(rk).map(k=>iconHtml("supply",k)).join(" ")}</div>`}
     </div>`}).join("")}</div>`;
 }
+/* A mouse wheel scrolls a sideways strip (the supplies shelf, the price tags) sideways. */
+function wheelSideways(e,el){if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&el.scrollWidth>el.clientWidth){el.scrollLeft+=e.deltaY;e.preventDefault()}}
 function buyItem(id,tier=0){
   const qty=INGREDIENTS[id].pack*BULK[tier].mult,price=packPrice(id,tier);
   if(S.cash<price){sfx.bad();return}
@@ -1483,7 +1497,7 @@ function buyItem(id,tier=0){
 }
 function chooseLoc(i){
   const kb=document.activeElement&&document.activeElement.matches(":focus-visible"); // picked with the keyboard: follow it to Open
-  M.loc=M.locs[i];sfx.flip();morningParts();setSpotCard(1,true);
+  M.loc=M.locs[i];sfx.flip();morningParts();setSpotCard(SPOT_SLIDES.length-1,true);
   if(kb)$("#btnOpen").focus({preventScroll:true});
 }
 function openShelf(id){M.shopOpen=M.shopOpen===id?null:id;sfx.flip();morningParts()}
@@ -1498,7 +1512,8 @@ function stepPrice(rk,d){
 }
 /* Today's menu: flavors you have supplies for. A flavor missing an ingredient sits out until you buy it. */
 function sellableNow(){return S.recipes.filter(rk=>canBrew(rk,S.inv))}
-function missingFor(rk){return listWords(Object.entries(pitcherNeeds(rk)).filter(([k,v])=>(S.inv[k]||0)<v).map(([k])=>`${iconHtml("supply",k)} ${INGREDIENTS[k].name.toLowerCase()}`))}
+function missingIds(rk){return Object.entries(pitcherNeeds(rk)).filter(([k,v])=>(S.inv[k]||0)<v).map(([k])=>k)}
+function missingNames(rk){return listWords(missingIds(rk).map(k=>INGREDIENTS[k].name.toLowerCase()))}
 /* Cups a stock of supplies can still pour: brew any flavor you can make until nothing brews. */
 function brewableServings(inv){let n=0,guard=0;while(guard++<300){const rk=S.recipes.find(r=>canBrew(r,inv));if(!rk)break;Object.entries(pitcherNeeds(rk)).forEach(([k,v])=>inv[k]-=v);n+=pitcherServes()}return n}
 function cupsFromSupplies(){return Math.min(brewableServings({...S.inv}),S.inv.cups||0,M.icePerCup>0?Math.floor((S.inv.ice||0)/M.icePerCup):Infinity)}
