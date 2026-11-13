@@ -24,7 +24,7 @@
 /* Three surface levels, so the eye can tell what to press:
    1. Page surfaces (.panel, .scene, .supShelf, .board, .modal): a fill and rounded corners. No ink border, no hard shadow.
    2. Grouped content (My Stand, slots, chips, pills, hints, banners, callouts, the log, the buy drawer): a flat fill, no border.
-   3. Things you press (.btn, .iconBtn, .choice, .item, .cube, .stepper button, .post): the chunky ink border and offset shadow,
+   3. Things you press (.btn, .iconBtn, .choice, .item, .stepper button, .post): the chunky ink border and offset shadow,
       which collapse when pressed. Nothing else gets that look. */
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
 body{margin:0;font-family:var(--font-body);font-size:var(--fs-md);background:var(--lemon2);color:var(--ink);min-height:100vh}
@@ -334,14 +334,7 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 .packs .btn small{display:block;font-size:var(--fs-xs)}
 .packs .off{position:absolute;top:-9px;right:-5px;background:var(--lemon);color:var(--ink);border-radius:99px;padding:1px 6px;font-size:var(--fs-xs);font-style:normal;text-shadow:none;transform:rotate(6deg)} /* the bulk discount, as a sale sticker */
 .packs .btn[aria-disabled="true"]{filter:grayscale(.7);opacity:.55;cursor:not-allowed;transform:none}
-.gear{display:grid;gap:0 28px}
-.gear .mLbl{margin-top:0}
-.gear>div+div{margin-top:14px}
-.cubes{display:flex;flex-wrap:wrap;gap:6px}
-.cube{background:var(--paper);border:3px solid var(--ink);border-radius:10px;padding:3px;line-height:0;box-shadow:0 3px 0 rgba(43,33,24,.85)}
-.cube[aria-pressed="true"]{background:#e3f5ff}
-.cube[aria-pressed="false"] .icon{filter:grayscale(1);opacity:.3}
-.cube:active,.stepper button:active{transform:translateY(2px);box-shadow:none}
+.stepper button:active{transform:translateY(2px);box-shadow:none}
 .stepper{display:inline-flex;align-items:center;gap:4px}
 .stepper button{width:36px;height:36px;padding:0;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:10px;font-size:var(--fs-lg);font-weight:900;line-height:1;box-shadow:0 2px 0 rgba(43,33,24,.85)}
 .stepper button[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
@@ -361,8 +354,6 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 @media (min-width:721px){
   .postFace{display:flex;align-items:center;justify-content:center;gap:8px;font-size:var(--fs-md)}
   .shelfRow{grid-template-columns:repeat(auto-fill,84px)}
-  .gear{grid-template-columns:1fr 1fr}
-  .gear>div+div{margin-top:0}
 }
 @media (max-width:720px){ /* bottom bar: forecast and a short Open button, one row when they fit */
   .guessBar{padding:8px 10px;gap:8px}
@@ -508,9 +499,6 @@ body:has(.stage){overflow:hidden}
 .dock .shelfRow .sep{flex:none;width:3px;border-radius:2px;background:#7a4428;opacity:.5}
 .dock .item{flex:none;width:62px}
 .dock .drawer{position:absolute;left:0;bottom:calc(100% + 10px);z-index:10;width:min(340px,calc(100vw - 24px));margin:0;box-shadow:0 6px 0 rgba(43,33,24,.3),0 10px 24px rgba(0,0,0,.2)}
-.dock .gear{display:flex;gap:18px;align-items:flex-start}
-.dock .gear>div+div{margin-top:0}
-.dock .cube{padding:2px}
 .dock .stepper b{min-width:50px}
 /* Today's prices: a chalkboard slide with a price tag per flavor. The tags sit in one row that scrolls sideways,
    so any number of flavors fits without the card growing. */
@@ -525,7 +513,6 @@ body:has(.stage){overflow:hidden}
 .spotCard .pOut{font-size:var(--fs-xs);line-height:1.25}
 .spotCard .stepper button{width:34px;height:34px}
 .spotCard .stepper b{min-width:50px}
-.dock .cubes{flex-wrap:nowrap}
 /* The top card is a carousel: "Where today?", "Signs today", "Today's prices", then "Ready to open?" with the cups your supplies make and Open */
 .signBuy{display:flex;align-items:center;justify-content:center;gap:12px}
 .signBuy .each{font-size:var(--fs-sm);font-weight:800}
@@ -565,32 +552,21 @@ body:has(.stage){overflow:hidden}
 .tSlot{width:38px;height:38px;border-radius:8px;background:rgba(255,247,224,.16);display:flex;align-items:center;justify-content:center}
 .tSlot.empty{background:none;border:2px dashed rgba(255,247,224,.3)}
 .tSlot .icon{--sz:32px;vertical-align:0}
-.dockTabs{display:none}
 .starNum{display:none}
-@media (min-width:901px){ /* wide screens: every morning card in one row on the ground */
+@media (min-width:901px){ /* wide screens: the supplies shelf sits on the ground at its own width */
   .morning .dockIn{flex-wrap:nowrap;align-items:stretch}
   .morning #mShop{flex:0 1 auto;min-width:230px}
-  .morning #mGear{flex:none;flex-direction:column;gap:8px}
-  .dock .gear .learn{display:block;width:max-content;margin-top:6px}
 }
 /* When the stand opens, the camera moves in: the selling day draws the scene at 3× on big screens */
 @media (min-width:900px) and (min-height:720px){.stage.day,.stage.day .sky{--px:3}.stage .ground{min-height:max(190px,26vh)}}
 @media (min-width:900px) and (min-height:940px){.stage,.stage .sky{--px:3}}
-@media (max-width:900px){ /* narrower screens: the ground shows one group of morning controls at a time */
-  .dockTabs{display:flex;flex:1 1 100%;gap:4px;background:var(--ink);border-radius:14px;padding:4px;box-shadow:0 4px 0 rgba(0,0,0,.25)}
-  .dockTabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;min-height:40px;background:none;border:0;border-radius:10px;color:#fff;font-family:var(--font-display);font-size:var(--fs-md);padding:4px 6px}
-  .dockTabs button[aria-selected="true"]{background:var(--lemon);color:var(--ink)}
-  .dock[data-tab="shop"] #mGear,.dock[data-tab="gear"] #mShop{display:none}
-  .dock .supShelf>.mLbl{display:none} /* the tab already names it */
-  .dock .supShelf{padding-top:2px}
+@media (max-width:900px){ /* narrower screens: the supplies shelf spans the ground */
   .dockIn{gap:10px}
-  .dock .supShelf,.dock .gear{flex:1 1 100%}
+  .dock .supShelf{flex:1 1 100%}
   .dock .shelfRow{justify-content:space-between}
-  .dock .gear{justify-content:space-between}
   .spotCard .price{width:140px}
   .dock .stepper button{width:34px;height:34px}
   .dock .stepper b{min-width:46px;font-size:var(--fs-md)}
-  .dockTabs{order:2} /* tabs sit under the cards, so a buy popover never covers them */
 }
 @media (max-width:1100px){
   .stage{--hudH:84px}
@@ -639,7 +615,6 @@ body:has(.stage){overflow:hidden}
 .stage.fit-min .learn{display:none}
 .stage.fit-min .spotCard .pName{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stage.fit-min .slide.board{padding:6px 12px}
-.stage.fit-min .dockTabs button{min-height:34px}
 .stage.fit-min .news>*{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stage.fit-px1,.stage.fit-px1 .sky{--px:1}
 </style>
@@ -911,9 +886,10 @@ const INGREDIENTS={
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
 const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name},gearB:{ids:["sunhat","awning","ponchos","icecrush","thermo","jug","shavedice","lemonzest","plaque","zester","tipjar","piggy","selloutbanner","rainjar","clover","wholesale","pitcher","squeezerpro","lemontree"],name:id=>GEAR.find(g=>g.id===id).name}};
 function iconHtml(kind,id,big){const k=ICONS[kind];const i=k.ids.indexOf(id);if(i<0)console.warn("iconHtml: unknown "+kind+" icon id",id);return `<span class="icon ${kind}${big?" big":""}" style="--i:${i}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
-/* Upgrade icons ship in two sheets (A = first 20 of GEAR, B = last 19); gearIconHtml picks the right one. */
+/* Upgrade icons ship in two sheets (A = first 20 of GEAR, B = the rest); gearIconHtml picks the right one.
+   Sheet B still holds the art of the removed Shaved Ice Machine ("shavedice"), so the frames after it keep their places. */
 function gearIconHtml(id,big){if(ICONS.gearA.ids.includes(id))return iconHtml("gearA",id,big);if(ICONS.gearB.ids.includes(id))return iconHtml("gearB",id,big);return ""}
-/* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice customers want. */
+/* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice in each cup. */
 const WX_TEMP={sunny:[72,86],hot:[88,103],perfect:[80,90],cloudy:[62,76],rainy:[54,68],windy:[66,79]};
 function iceForTemp(t){return t>=100?4:t>=90?3:t>=80?2:t>=70?1:0}
 function actCostMult(){if(typeof S==="undefined"||!S)return 1;return [1,1.3,1.64,2][Math.min(actIndex(),3)]}
@@ -944,11 +920,11 @@ function overnight(){ // tonight, after the stand closes: returns what melts and
 function pitcherNeeds(rk){return {...BASE_NEEDS,...(RECIPES[rk].needs||{})}}
 function pitcherServes(){return PITCHER_SERVES+(S&&S.gear.includes("squeezerpro")?2:0)}
 function pitcherCost(rk){return Object.entries(pitcherNeeds(rk)).reduce((s,[k,v])=>s+v*unitCost(k),0)}
-function servingCost(rk){return pitcherCost(rk)/pitcherServes()+unitCost("cups")+((M&&M.icePerCup)||0)*unitCost("ice")}
+function servingCost(rk){return pitcherCost(rk)/pitcherServes()+unitCost("cups")+icePerCup()*unitCost("ice")}
 function canBrew(rk,inv){return Object.entries(pitcherNeeds(rk)).every(([k,v])=>(inv[k]||0)>=v)}
 function pitchersPossible(rk,inv){if(!canBrew(rk,inv))return 0;return Math.min(...Object.entries(pitcherNeeds(rk)).map(([k,v])=>Math.floor((inv[k]||0)/v)))}
-function iceMinToday(){return M?Math.max(0,iceForTemp(M.temp)-(S&&S.gear.includes("jug")?1:0)):1}
-function iceAccept(){const m=iceMinToday();if(m<=0)return 1;const c=M?M.icePerCup:2;return c>=m?1:c/m}
+/* Ice goes in each cup by itself: as many cubes as today's temperature calls for. */
+function icePerCup(){return M?Math.max(0,iceForTemp(M.temp)-(S&&S.gear.includes("jug")?1:0)):0}
 function menuPrice(rk){return (M&&M.prices&&M.prices[rk]!=null)?M.prices[rk]:RECIPES[rk].price}
 /* Gear = stand upgrades. Each one does exactly what its text says; effects are applied by id. */
 const GEAR=[
@@ -980,8 +956,7 @@ const GEAR=[
  {id:"ponchos", name:"Rain Ponchos", rar:"rare",      desc:"Rainy days: +60% customers. You hand out free ponchos."},
  {id:"icecrush",name:"Hand-Crank Ice Crusher",rar:"rare",     desc:"Hot and perfect days: +25% customers."},
  {id:"thermo",  name:"Thermometer Sign", rar:"epic",      desc:"+2% customers for every °F above 75°F, −2% for every °F below (95°F: +40%)."},
- {id:"jug",     name:"Insulated Jug", rar:"common",    desc:"Customers want 1 fewer ice cube per cup."},
- {id:"shavedice",name:"Shaved Ice Machine", rar:"rare",      desc:"Each ice cube above what customers want makes them pay 5% more (up to +15%)."},
+ {id:"jug",     name:"Insulated Jug", rar:"common",    desc:"Each cup uses 1 fewer ice cube."},
  // money
  {id:"lemonzest",name:"Golden Lemons", rar:"epic",      desc:"Every crowd will pay 15% more."},
  {id:"plaque",  name:"Five-Star Plaque", rar:"epic",      desc:"At 4.5★ or higher, customers pay 20% more."},
@@ -1153,7 +1128,6 @@ function payWillingness(crowdKey,b,wxKey){
   let p=CROWDS[crowdKey].pay*(WX_PAY[wxKey]||1);
   if(S.gear.includes("lemonzest"))p*=1.15;
   if(S.gear.includes("plaque")&&S.rep>=4.5)p*=1.2;
-  if(S.gear.includes("shavedice")&&M)p*=1+0.05*Math.min(3,Math.max(0,M.icePerCup-iceMinToday()));
   if(b.activeSynergies.includes("palate")&&["parents","tourists","foodies"].includes(crowdKey))p*=1.3;
   if(b.activeSynergies.includes("goldenhour"))p*=1.2;
   return p;
@@ -1184,7 +1158,7 @@ function genMorning(){
   const ev=EVENTS.find(e=>e.id===evRoll);
   const prices={};S.recipes.forEach(rk=>{prices[rk]=S.menuPrices[rk]!=null?S.menuPrices[rk]:RECIPES[rk].price});
   const temp=ri(...WX_TEMP[trueWx]);
-  M={trueWx,shownWx,temp,locs,loc:null,tab:"shop",card:0,event:ev,signs:0,icePerCup:(S.last?S.last.ice:2),prices,logStart:S.log.length,
+  M={trueWx,shownWx,temp,locs,loc:null,card:0,event:ev,signs:0,prices,logStart:S.log.length,
      special:S.gear.includes("special")?pick(S.recipes):null,
      dice:S.gear.includes("dice")?Math.round(rnd(0.7,1.6)*100)/100:0};
   if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1;M.treeLemons=5+S.treeDays;addStock("lemons",M.treeLemons,0)}
@@ -1238,7 +1212,7 @@ function demandEstimate(loc,signs,opts={}){
     menu.forEach(rk=>{split[rk]=(split[rk]||0)+share*(sumT>0?tw[rk]/sumT:0)});
   });
   const priceAppeal=weighted/Math.max(baseShare,0.01);
-  let demand=trafficBase*repMult*wxMult*signBonus*priceAppeal*b.demandMult*iceAccept();
+  let demand=trafficBase*repMult*wxMult*signBonus*priceAppeal*b.demandMult;
   if(S.gear.includes("chalkmenu")&&menu.every(rk=>menuPrice(rk)>=3))demand*=1.2;
   if(S.gear.includes("thermo"))demand*=clamp(1+0.02*(M.temp-75),0.6,1.8);
   if(M.dice)demand*=M.dice;
@@ -1306,7 +1280,7 @@ function ingTip(id){
   if(id==="cups")return "Every customer needs 1 cup.";
   if(id==="lemons")return `Each pitcher needs ${BASE_NEEDS.lemons} lemons and makes ${pitcherServes()} ${plural(pitcherServes(),"cup")}. Lemons stay fresh for ${SHELF.lemons} ${plural(SHELF.lemons,"day")}.`;
   if(id==="sugar")return `Each pitcher needs ${BASE_NEEDS.sugar} sugar.`;
-  if(id==="ice")return "Ice goes in every cup. Hot days need more. Half of your leftover ice melts each night.";
+  if(id==="ice")return "Hotter days put more ice in each cup. Half of your leftover ice melts each night.";
   return `Needed for ${listWords(S.recipes.filter(rk=>(RECIPES[rk].needs||{})[id]).map(rk=>`${RECIPES[rk].name} (${RECIPES[rk].needs[id]} per pitcher)`))}.`;
 }
 /* Your upgrade slots, shown wherever you make choices so upgrades never hide. */
@@ -1318,7 +1292,7 @@ function shelfHtml(){
 }
 /* The day, step by step. The ? help lists them all; on a player's first day each hint shows where its step happens. */
 const FORECAST_HINT="Hot days are busy. Rain keeps people home.";
-const HOW_STEPS=[["Pick a spot","Each spot brings different people."],["Put up signs","Signs bring more people."],["Buy supplies","Each cup uses supplies."],["Add ice","Hot days need more ice."],["Set your price","Too high, and people walk away."],["See how you did","Sales and tips for the day."],["Pick an upgrade",`Upgrades make your stand better. You can keep ${GEAR_SLOTS}.`]];
+const HOW_STEPS=[["Pick a spot","Each spot brings different people."],["Put up signs","Signs bring more people."],["Buy supplies","Each cup uses supplies. Hot days use more ice."],["Set your price","Too high, and people walk away."],["See how you did","Sales and tips for the day."],["Pick an upgrade",`Upgrades make your stand better. You can keep ${GEAR_SLOTS}.`]];
 function firstDay(){return S&&S.day===1&&!meta.hintsSeen}
 function learnHint(t){return firstDay()?`<span class="learn">${t}</span>`:""}
 
@@ -1366,11 +1340,9 @@ function renderMorning(){
         <div class="spotCard" id="mSpot"></div>
       </div>
     </div>
-    <div class="ground dock" id="mDock" data-tab="${M.tab}">
+    <div class="ground dock" id="mDock">
       <div class="dockIn">
-        <div class="dockTabs" role="tablist" aria-label="Set up the stand">${DOCK_TABS.map(([k,name,icon])=>`<button role="tab" onclick="setDockTab('${k}')" data-tab="${k}" aria-selected="${M.tab===k}">${icon()} ${name}</button>`).join("")}</div>
         <div class="supShelf" id="mShop" role="group" aria-label="Supplies"></div>
-        <div class="card gear" id="mGear"></div>
       </div>
     </div>
   </div>`;
@@ -1384,9 +1356,6 @@ function fitStage(){
   for(const c of FIT_STEPS){if(st.scrollHeight<=st.clientHeight)break;st.classList.add(c)}
 }
 addEventListener("resize",fitStage);
-/* On narrower screens the ground shows one group of controls at a time, in the order the help teaches them. */
-const DOCK_TABS=[["shop","Supplies",()=>iconHtml("supply","lemons")],["gear","Ice",()=>iconHtml("supply","ice")]];
-function setDockTab(k){M.tab=k;sfx.tick();$("#mDock").dataset.tab=k;document.querySelectorAll(".dockTabs [role=tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===k));fitStage()}
 /* Redraw the morning's controls in place, so the sky keeps drifting, and keep focus on the control just used. */
 function morningParts(){
   const ae=document.activeElement,f=ae&&ae.dataset?ae.dataset.f:null;
@@ -1394,7 +1363,6 @@ function morningParts(){
   $("#mScene").innerHTML=mSceneHtml();
   $("#mSpot").innerHTML=mSpotHtml();
   $("#mShop").innerHTML=mShopHtml();
-  $("#mGear").innerHTML=mGearHtml();
   strips.forEach(([sel,x])=>{const el=$(sel);if(el)el.scrollLeft=x});
   renderProj();
   fitStage();
@@ -1416,7 +1384,7 @@ function mSpotHtml(){
     <div class="posts">${M.locs.map((l,i)=>`<button class="post" onclick="chooseLoc(${i})" data-f="loc${i}" aria-pressed="${M.loc===l}" aria-label="${l.name}"><span class="postFace">${iconHtml("spot",l.name,true)}<span>${l.name}</span></span></button>`).join("")}</div>`;
   const go=`<div class="mLbl">Ready to open?</div>
     <div class="goBox"><div class="goInfo"><span class="goChip">${M.loc?`${iconHtml("spot",M.loc.name)} ${M.loc.name}`:`<span class="warnTxt">Pick a spot first</span>`}</span>
-      <span class="goChip" id="guessText"></span></div>
+      <span class="goChip" id="guessText" tabindex="0"${tip(iceTip())}></span></div>
       <button class="btn gold" id="btnOpen" onclick="openStand()" data-f="open">Open</button></div>`;
   const last=SPOT_SLIDES.length-1;
   const slide=([html,cls],k)=>`<div class="slide${cls?" "+cls:""}" role="group" aria-roledescription="slide" aria-label="${SPOT_SLIDES[k]}"${k===card?"":" inert"}>${html}</div>`;
@@ -1459,12 +1427,6 @@ function mDrawerHtml(id){
 function stepperHtml(key,val,downCall,upCall,downLabel,upLabel,atMin,atMax){
   return `<span class="stepper"><button onclick="${downCall}" data-f="${key}-" aria-label="${downLabel}"${atMin?' aria-disabled="true"':""}>−</button><b>${val}</b><button onclick="${upCall}" data-f="${key}+" aria-label="${upLabel}"${atMax?' aria-disabled="true"':""}>+</button></span>`;
 }
-function mGearHtml(){
-  let cubes="";
-  for(let k=1;k<=4;k++)cubes+=`<button class="cube" onclick="setIce(${k})" data-f="ice${k}" aria-pressed="${k<=M.icePerCup}" aria-label="${k} ice ${plural(k,"cube")}">${iconHtml("supply","ice",true)}</button>`;
-  return `<div><div class="mLbl"><span tabindex="0"${tip("Hot days need more ice.")}>${iconHtml("supply","ice")} Ice in each cup</span></div>
-      <div class="cubes" role="group" aria-label="Ice in each cup">${cubes}</div>${learnHint(HOW_STEPS[3][1])}</div>`;
-}
 function mSignsHtml(){
   const b=computeBuild(),p=signPrice(),n=M.signs;
   const signTip=`Signs bring more people. ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}`;
@@ -1475,7 +1437,7 @@ function mSignsHtml(){
     <div class="mHint">Each sign lasts one day.${b.freeSigns?` Upgrades add ${b.freeSigns} free.`:""}</div>`;
 }
 function mBoardHtml(){
-  return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[4][1])}<div class="prices" onwheel="wheelSideways(event,this)">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
+  return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][1])}<div class="prices" onwheel="wheelSideways(event,this)">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
     const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">Special +$0.50</span>':"";
     return `<div class="price${ok?"":" out"}">${iconHtml("flavor",rk,true)}
       <div><span class="pName" tabindex="0"${tip(`${r.desc} From: ${r.origin.replace(" · ",", ")}.`)}>${r.name}</span><div>${tagChips(r.tags)}${special}</div></div>
@@ -1496,7 +1458,6 @@ function chooseLoc(i){
   if(kb){const next=$("#mSpot .slide:not([inert]) button");if(next)next.focus({preventScroll:true})}
 }
 function openShelf(id){M.shopOpen=M.shopOpen===id?null:id;sfx.flip();morningParts()}
-function setIce(k){M.icePerCup=M.icePerCup===k?k-1:k;sfx.tick();morningParts()} // tap the top cube again to take it out
 function stepSigns(d){ // + buys one sign, − gives one back for what it cost
   const p=signPrice();
   if(d<0){if(M.signs<=0)return;M.signs--;S.cash=Math.round((S.cash+p)*100)/100;sfx.tick()}
@@ -1515,7 +1476,9 @@ function missingIds(rk){return Object.entries(pitcherNeeds(rk)).filter(([k,v])=>
 function missingNames(rk){return listWords(missingIds(rk).map(k=>INGREDIENTS[k].name.toLowerCase()))}
 /* Cups a stock of supplies can still pour: brew any flavor you can make until nothing brews. */
 function brewableServings(inv){let n=0,guard=0;while(guard++<300){const rk=S.recipes.find(r=>canBrew(r,inv));if(!rk)break;Object.entries(pitcherNeeds(rk)).forEach(([k,v])=>inv[k]-=v);n+=pitcherServes()}return n}
-function cupsFromSupplies(){return Math.min(brewableServings({...S.inv}),S.inv.cups||0,M.icePerCup>0?Math.floor((S.inv.ice||0)/M.icePerCup):Infinity)}
+function cupsFromSupplies(){const ice=icePerCup();return Math.min(brewableServings({...S.inv}),S.inv.cups||0,ice>0?Math.floor((S.inv.ice||0)/ice):Infinity)}
+/* Pointing at "Supplies for N cups" tells you the ice in each cup today. */
+function iceTip(){const n=icePerCup(),jug=S.gear.includes("jug")&&iceForTemp(M.temp)>0?" Insulated Jug saves 1.":"";return (n?`Each cup gets ${n} ice ${plural(n,"cube")} at ${M.temp}°F.`:`No ice needed at ${M.temp}°F.`)+jug}
 function renderProj(){
   const gt=$("#guessText");if(!gt)return;
   $("#btnOpen").disabled=!M.loc;
@@ -1544,12 +1507,11 @@ function brewPitcher(rk){
   D.open[rk]=servings;D.brewed[rk]=(D.brewed[rk]||0)+1;
   return true;
 }
-/* One customer, one cup. Returns sold | price | warm | out. */
+/* One customer, one cup. Returns sold | price | out. */
 function serveOne(ck){
   const b=D.build;
   if(S.inv.cups<=0)return "out";
-  if(M.icePerCup>0&&S.inv.ice<M.icePerCup)return "out";
-  if(iceAccept()<1&&Math.random()>iceAccept())return "warm";
+  if(S.inv.ice<icePerCup())return "out";
   let rk;const isCrew=D.crewLeft>0;
   if(isCrew){rk=cheapestFlavor()}
   else{
@@ -1574,7 +1536,7 @@ function serveOne(ck){
       if((!D.open[rk]||D.open[rk]<=0)&&!brewPitcher(rk))return "out";
     }
   }
-  D.open[rk]--;S.inv.cups--;S.inv.ice=Math.max(0,S.inv.ice-M.icePerCup);
+  D.open[rk]--;S.inv.cups--;S.inv.ice-=icePerCup();
   const rev=saleRevenue(1,menuPrice(rk),rk);
   D.revenue+=rev;D.revBy[rk]=(D.revBy[rk]||0)+rev;D.tips+=rev*tipRate()*Math.random();
   D.cogs+=servingCost(rk);
@@ -1587,13 +1549,12 @@ function openStand(){
   if(!M.loc){alert("Pick a spot first.");return}
   const b=computeBuild();
   const putOut=M.signs; // every sign bought this morning goes out, and they're paid for already: starting the day never charges you
-  S.last={ice:M.icePerCup};
   S.recipes.forEach(rk=>{S.menuPrices[rk]=M.prices[rk]});
   sfx.pop();
   M.actualWx=M.trueWx;
   D={signs:putOut,build:b,
      roll:rnd(0.87,1.13),open:{},brewed:{},soldBy:{},soldByCrowd:{},sold:0,morningSold:0,unmet:0,
-     awayPrice:0,awayWarm:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
+     awayPrice:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
      skip:false,done:false,brotherSpilled:false,crewLeft:0};
   const canSell=sellableNow();D.menu=canSell.length?canSell:S.recipes.slice(); // only flavors you have supplies for
   const minPrice=Math.min(...D.menu.map(rk=>menuPrice(rk)));
@@ -1678,7 +1639,6 @@ async function runDayPhase(phase){
       processed++;
       if(res==="sold"){soldChunk++;streak++;flavor=flavor||D.lastFlavor}
       else if(res==="price"){D.awayPrice++;streak=0;miss="too pricey…"}
-      else if(res==="warm"){D.awayWarm++;streak=0;miss=`too warm… ${iconHtml("supply","ice")}`}
       else { // out of stock: the rest of this phase's line can't be served
         if(isMorning){D.unmet+=target-processed}
         else D.awayOut+=target-processed;
@@ -1703,7 +1663,7 @@ function updateDayStats(){
   const till=D.skip?D.revenue+D.tips:D.paid; // money lands when a buyer pays at the counter; Skip shows it all
   $("#stTill").textContent=fmt(till);
   showCash(S.cash+till); // the HUD counts up with each sale; the evening adds bonuses on top
-  const left=Math.max(0,D.demand-D.sold-D.awayPrice-D.awayWarm-D.awayOut);
+  const left=Math.max(0,D.demand-D.sold-D.awayPrice-D.awayOut);
   $("#stDem").textContent=left;
   $("#dayFill").style.width=(D.demand?100*(1-left/D.demand):100)+"%";
 }
@@ -1835,10 +1795,9 @@ function finishDay(){
   }
   S.cash=Math.round(S.cash*100)/100;
   // counterfactual — the near-miss engine
-  let counter="";const outCount=Math.max(0,unserved-D.awayPrice-D.awayWarm); // left because supplies ran out
+  let counter="";const outCount=Math.max(0,unserved-D.awayPrice); // left because supplies ran out
   if(unserved>0&&(D.awayOut>0||D.unmet>0))counter=`You ran out. ${outCount} more ${plural(outCount,"person","people")} wanted lemonade. That's about <b>${fmt(outCount*Math.max(avgPrice,1))}</b> you missed. Buy more supplies.`;
   else if(D.awayPrice>unserved*0.4&&D.awayPrice>0)counter=`${D.awayPrice} ${plural(D.awayPrice,"person","people")} walked away. The price was too high. Try a lower price.`;
-  else if(D.awayWarm>0)counter=`${D.awayWarm} ${plural(D.awayWarm,"person","people")} wanted colder lemonade. At ${M.temp}°F, use ${iceMinToday()} ${plural(iceMinToday(),"cube")} or more.`;
   else if(wasted>0)counter=`${wasted} ${plural(wasted,"cup")} ${wasted===1?"was":"were"} poured out at closing. That's <b>${fmt(wasted*pourCost)}</b> wasted.`;
   else if(unserved>0)counter=`${unserved} ${plural(unserved,"person","people")} didn't buy. Try a lower price or another sign.`;
   else counter=`Everyone got lemonade, and nothing went to waste.`;
@@ -1846,8 +1805,8 @@ function finishDay(){
   const byCups=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]);
   const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${iconHtml("flavor",rk)}</span> ${n} ${plural(n,"cup")} at ${fmt(menuPrice(rk))}</span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
   const upgradeBonus=Math.round((D.revenue-Object.entries(D.soldBy).reduce((s,[rk,n])=>s+n*menuPrice(rk),0))*100)/100;
-  const walked=D.awayPrice,warmAway=D.awayWarm,ranOut=Math.max(0,unserved-walked-warmAway),why=[];
-  if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);if(warmAway)why.push(`${warmAway} wanted more ice`);
+  const walked=D.awayPrice,ranOut=Math.max(0,unserved-walked),why=[];
+  if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);
   const brewedTotal=Object.values(D.brewed).reduce((s,v)=>s+v,0);
   const invLine=Object.keys(INGREDIENTS).filter(id=>(S.inv[id]||0)>0).map(id=>`${S.inv[id]}${iconHtml("supply",id)}`).join(" ");
   const repExtra=repNotes.slice(D.demand>0?1:0); // the first note (people served) is the line above it
@@ -1859,7 +1818,7 @@ function finishDay(){
   $("#screen").innerHTML=`
   <div class="panel">
     <h2>Day ${S.day} results</h2>
-    ${learnHint(HOW_STEPS[5][1])}
+    ${learnHint(HOW_STEPS[4][1])}
     <div class="report">
       <div class="receiptBox">
         <div class="receiptWrap"><div class="receipt">
@@ -1946,7 +1905,7 @@ function renderDraftScreen(){
   $("#screen").innerHTML=`<div class="panel">
     <h2>${draftTitle}</h2>
     <p class="muted" style="margin-top:0">It starts working tomorrow. The other two go away.</p>
-    ${learnHint(HOW_STEPS[6][1])}
+    ${learnHint(HOW_STEPS[5][1])}
     ${shelfHtml()}
     <div class="choices">${draftChoices.map((p,i)=>cardHtml(draftCardHtml(p),`onclick="pickDraft(${i})"${flip?` style="--k:${i}"`:""}`,flip?"flipIn":"")).join("")}</div>
   </div>`;
@@ -2140,7 +2099,7 @@ function showHelp(){
       <li>Money made is your sales and tips. Supplies and signs are paid for when you buy them. Starting a day never costs money.</li>
       <li>You start with $30. If you can't pay for one cup, the game ends.</li>
       <li>The forecast is always right. Hot days bring more people. Rain brings fewer.</li>
-      <li>Hot days need more ice. Under 70°F, no ice. In the 70s, 1 cube. In the 80s, 2. In the 90s, 3. At 100°F and up, 4.</li>
+      <li>Ice goes in each cup for you. Hotter days use more. Under 70°F, none. In the 70s, 1 cube. In the 80s, 2. In the 90s, 3. At 100°F and up, 4.</li>
       <li>Bigger packs cost less for each one.</li>
       <li>Half of your leftover ice melts each night. Lemons last 7 days, cucumbers 5, mint 4 and strawberries 3.</li>
       <li>Signs bring in more customers. Each sign lasts one day.</li>
