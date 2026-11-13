@@ -225,6 +225,11 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .note:before{content:"";position:absolute;top:-7px;left:50%;width:54px;height:14px;margin-left:-27px;background:rgba(201,167,122,.5);transform:rotate(-3deg)} /* tape */
 .facts{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:4px;line-height:1.4}
 .todayHead{margin:10px 0 0;font-size:var(--fs-md)}
+.crowdSales{margin-top:6px}
+.csRow{display:flex;gap:8px 14px;align-items:baseline;flex-wrap:wrap;padding:5px 0;border-top:1px dashed rgba(43,33,24,.18)}
+.csWho{font-weight:900;white-space:nowrap}
+.csWhat{display:flex;flex-wrap:wrap;gap:3px 14px;align-items:center}
+.csDrink{display:inline-flex;gap:5px;align-items:center}
 /* End screen: the score first, then a few highlights */
 .scoreLabel{font-size:var(--fs-sm);font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:.65;margin-top:4px}
 .scoreBig{font-size:var(--fs-3xl);font-weight:900;line-height:1.1;color:var(--lemon);-webkit-text-stroke:.07em var(--ink);paint-order:stroke fill;letter-spacing:.1em;text-shadow:3px 3px 0 var(--ink);font-variant-numeric:tabular-nums} /* the stroke sits behind the fill, so half of it shows as the outline; the spacing keeps outlined digits apart */
@@ -1568,6 +1573,7 @@ function serveOne(ck){
   D.revenue+=rev;D.revBy[rk]=(D.revBy[rk]||0)+rev;D.tips+=rev*tipRate()*Math.random();
   D.cogs+=servingCost(rk);
   D.sold++;D.soldBy[rk]=(D.soldBy[rk]||0)+1;D.lastFlavor=rk; // the day scene shows it over the buyer
+  const sc=D.soldByCrowd[ck]||(D.soldByCrowd[ck]={});sc[rk]=(sc[rk]||0)+1; // the evening report shows who bought what
   if(D.crewLeft>0)D.crewLeft--;
   return "sold";
 }
@@ -1580,7 +1586,7 @@ function openStand(){
   sfx.pop();
   M.actualWx=M.trueWx;
   D={signs:putOut,build:b,
-     roll:rnd(0.87,1.13),open:{},brewed:{},soldBy:{},sold:0,morningSold:0,unmet:0,
+     roll:rnd(0.87,1.13),open:{},brewed:{},soldBy:{},soldByCrowd:{},sold:0,morningSold:0,unmet:0,
      awayPrice:0,awayWarm:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
      skip:false,done:false,brotherSpilled:false,crewLeft:0};
   const canSell=sellableNow();D.menu=canSell.length?canSell:S.recipes.slice(); // only flavors you have supplies for
@@ -1840,6 +1846,8 @@ function finishDay(){
   const invLine=Object.keys(INGREDIENTS).filter(id=>(S.inv[id]||0)>0).map(id=>`${S.inv[id]}${iconHtml("supply",id)}`).join(" ");
   const repExtra=repNotes.slice(D.demand>0?1:0); // the first note (people served) is the line above it
   const repLine=repNotes.length?`Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b>${repExtra.length?` (${repExtra.join(", ")})`:""}`:`Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
+  const crowdRows=Object.entries(D.soldByCrowd||{}).map(([ck,byDrink])=>({ck,byDrink,total:Object.values(byDrink).reduce((t,v)=>t+v,0)})).sort((a,b)=>b.total-a.total)
+    .map(({ck,byDrink})=>`<div class="csRow"><span class="csWho">${CROWDS[ck].icon} ${CROWDS[ck].name}</span><span class="csWhat">${Object.entries(byDrink).sort((a,b)=>b[1]-a[1]).map(([rk,n])=>`<span class="csDrink">${iconHtml("flavor",rk)} ${RECIPES[rk].name}: ${n} ${plural(n,"cup")}</span>`).join("")}</span></div>`).join("");
   const stamp=perfect?`<span class="rStamp">Perfect day</span>`:soldOut?`<span class="rStamp">Sold out</span>`:made<0?`<span class="rStamp bad">Rough day</span>`:"";
   const today=S.log.slice(M.logStart);
   $("#screen").innerHTML=`
@@ -1866,6 +1874,7 @@ function finishDay(){
         ${tonight.length?`<p>Tonight: ${listWords(tonight)}.</p>`:""}
       </div>
     </div>
+    ${crowdRows?`<div class="crowdSales"><h4 class="todayHead">Who bought what</h4>${crowdRows}</div>`:""}
     <details class="numbers"><summary>See every number</summary>
       <ul class="facts">
         ${byCups.map(([rk,n])=>`<li>${iconHtml("flavor",rk)} ${RECIPES[rk].name}: <b>${n} ${plural(n,"cup")}</b></li>`).join("")}
