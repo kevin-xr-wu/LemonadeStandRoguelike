@@ -353,12 +353,9 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 .pOut{grid-column:1/-1;font-size:var(--fs-sm);font-weight:700;color:#ffc9b8}
 .board .stepper b{color:var(--lemon)}
 .board .tag{color:var(--ink)}
-/* Signs you own stand on the grass by the stand; tap one to put it out or take it in. --k is its place out from the stand, --side left or right. */
-.signSlot{--w:calc(16px*var(--px) + 16px);position:absolute;bottom:0;z-index:5;width:var(--w);height:var(--w);margin-left:calc(var(--w)/-2);left:calc(50% + var(--side)*(32px*var(--px) + var(--w)/2 + 2px + var(--k)*(var(--w) + 2px)));display:flex;align-items:flex-end;justify-content:center;background:none;border:2px dashed transparent;border-radius:8px;padding:0}
+/* Today's signs stand on the grass by the stand. --k is its place out from the stand, --side left or right. */
+.signSlot{--w:calc(16px*var(--px) + 16px);position:absolute;bottom:0;z-index:5;width:var(--w);height:var(--w);margin-left:calc(var(--w)/-2);left:calc(50% + var(--side)*(32px*var(--px) + var(--w)/2 + 2px + var(--k)*(var(--w) + 2px)));display:flex;align-items:flex-end;justify-content:center}
 .signSlot .icon{--sz:calc(16px*var(--px));filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
-.signSlot.off{border-color:var(--paper);background:rgba(43,33,24,.2)}
-.signSlot.off .icon{opacity:.45;filter:grayscale(1)}
-.signSlot:focus-visible{outline:3px solid var(--blue)}
 @media (min-width:721px){
   .postFace{display:flex;align-items:center;justify-content:center;gap:8px;font-size:var(--fs-md)}
   .shelfRow{grid-template-columns:repeat(auto-fill,84px)}
@@ -531,7 +528,10 @@ body:has(.stage){overflow:hidden}
 .spotCard .stepper button{width:34px;height:34px}
 .spotCard .stepper b{min-width:50px}
 .dock .cubes{flex-wrap:nowrap}
-/* The top card is a carousel: "Where today?", then "Ready to open?" with the cups your supplies make and Open */
+/* The top card is a carousel: "Where today?", "Signs today", "Today's prices", then "Ready to open?" with the cups your supplies make and Open */
+.signBuy{display:flex;align-items:center;justify-content:center;gap:12px}
+.signBuy .each{font-size:var(--fs-sm);font-weight:800}
+.signBuy .each b{font-family:var(--font-display);font-weight:400;font-size:var(--fs-lg)}
 .slides{display:flex;transform:translateX(calc(var(--card,0)*-100%));transition:transform .3s ease}
 .slide{flex:0 0 100%;min-width:0;padding:8px 10px 2px;display:flex;flex-direction:column;justify-content:center}
 .goBox{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:2px 0 4px}
@@ -900,7 +900,7 @@ const INGREDIENTS={
   lemons:{name:"Lemons",pack:12,price:3.00},
   sugar:{name:"Sugar",pack:10,price:2.00},
   ice:{name:"Ice Cubes",pack:40,price:1.20},
-  signs:{name:"Signs",pack:2,price:9.00},
+  signs:{name:"Signs",pack:1,price:1.00},
   strawberries:{name:"Strawberries",pack:6,price:2.40},
   mint:{name:"Fresh Mint",pack:6,price:1.80},
   condmilk:{name:"Condensed Milk",pack:4,price:2.00},
@@ -938,10 +938,8 @@ function syncBatches(id){
   while(tot>have&&lots.length){const take=Math.min(lots[0].qty,tot-have);lots[0].qty-=take;tot-=take;if(lots[0].qty<=0)lots.shift()}
   if(tot<have)lots.push({qty:have-tot,day:S.day});
 }
-function overnight(){ // tonight, after the stand closes: returns what melts, goes bad and breaks, for the report
+function overnight(){ // tonight, after the stand closes: returns what melts and goes bad, for the report
   const notes=[],tomorrow=S.day+1;
-  // signs wear out: about 1 in 4 of the signs you put out today breaks overnight (free signs from upgrades are gear, they don't break)
-  if(typeof D!=="undefined"&&D&&D.signs>0&&(S.inv.signs||0)>0){let broke=0;for(let i=0;i<D.signs;i++)if(Math.random()<0.25)broke++;broke=Math.min(broke,S.inv.signs||0);if(broke>0){S.inv.signs-=broke;notes.push(`${broke} ${iconHtml("supply","signs")} ${plural(broke,"sign")} ${broke===1?"breaks":"break"}`)}}
   const melt=Math.ceil((S.inv.ice||0)/2);if(melt>0){S.inv.ice-=melt;notes.push(`${melt} ${iconHtml("supply","ice")} ${plural(melt,"ice cube")} ${melt===1?"melts":"melt"}`)}
   Object.entries(SHELF).forEach(([id,days])=>{if(!(S.inv[id]>0))return;syncBatches(id);const lots=S.lots[id];let bad=0;
     while(lots.length&&tomorrow-lots[0].day>=days){bad+=lots[0].qty;lots.shift()}
@@ -1099,7 +1097,7 @@ function newRun(kidId){
     cash:kid.start,
     rep:3,
     recipes:["classic"], activeRecipe:"classic",
-    inv:{cups:25,lemons:12,sugar:8,ice:40,signs:3}, menuPrices:{},
+    inv:{cups:25,lemons:12,sugar:8,ice:40}, menuPrices:{},
     gear:[],
     log:[], lifetimeProfit:0, lifetimeSold:0,
     todayCostMult:1, tomorrowCostMult:1,
@@ -1114,8 +1112,9 @@ function newRun(kidId){
 function actIndex(){return clamp(Math.floor((S.day-1)/7),0,S.actsCount-1)}
 function gearSlots(){return GEAR_SLOTS}
 function cheapestServingCost(){return Math.min(...S.recipes.map(rk=>servingCost(rk)))}
-/* Signs are a supply, not a daily charge: you buy them in the shop (paid for up front, like
-   every other supply), put out up to what you own, and they wear out — see overnight(). */
+/* Signs last one day. Each morning you buy as many as you want for today, and every one you buy goes out.
+   + pays for a sign and − gives the money back, so the money moves as you choose; opening the stand uses them up. */
+function signPrice(){return packPrice("signs")}
 /* ---------- build aggregation ---------- */
 /* b.tags = flavor tags on your menu's recipes (feeds synergies). Gear carries no tags. */
 function computeBuild(){
@@ -1190,7 +1189,7 @@ function genMorning(){
   const ev=EVENTS.find(e=>e.id===evRoll);
   const prices={};S.recipes.forEach(rk=>{prices[rk]=S.menuPrices[rk]!=null?S.menuPrices[rk]:RECIPES[rk].price});
   const temp=ri(...WX_TEMP[trueWx]);
-  M={trueWx,shownWx,temp,locs,loc:null,tab:"shop",card:0,event:ev,signs:(S.last?S.last.signs:3),icePerCup:(S.last?S.last.ice:2),prices,logStart:S.log.length,
+  M={trueWx,shownWx,temp,locs,loc:null,tab:"shop",card:0,event:ev,signs:0,icePerCup:(S.last?S.last.ice:2),prices,logStart:S.log.length,
      special:S.gear.includes("special")?pick(S.recipes):null,
      dice:S.gear.includes("dice")?Math.round(rnd(0.7,1.6)*100)/100:0};
   if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1;M.treeLemons=5+S.treeDays;addStock("lemons",M.treeLemons,0)}
@@ -1314,7 +1313,6 @@ function ingTip(id){
   if(id==="lemons")return `Each pitcher needs ${BASE_NEEDS.lemons} lemons and makes ${pitcherServes()} ${plural(pitcherServes(),"cup")}. Lemons stay fresh for ${SHELF.lemons} ${plural(SHELF.lemons,"day")}.`;
   if(id==="sugar")return `Each pitcher needs ${BASE_NEEDS.sugar} sugar.`;
   if(id==="ice")return "Ice goes in every cup. Hot days need more. Half of your leftover ice melts each night.";
-  if(id==="signs")return "Signs bring in more customers. You own them until they break. About 1 in 4 you put out breaks overnight.";
   return `Needed for ${listWords(S.recipes.filter(rk=>(RECIPES[rk].needs||{})[id]).map(rk=>`${RECIPES[rk].name} (${RECIPES[rk].needs[id]} per pitcher)`))}.`;
 }
 /* Your upgrade slots, shown wherever you make choices so upgrades never hide. */
@@ -1326,7 +1324,7 @@ function shelfHtml(){
 }
 /* The day, step by step. The ? help lists them all; on a player's first day each hint shows where its step happens. */
 const FORECAST_HINT="Hot days are busy. Rain keeps people home.";
-const HOW_STEPS=[["Pick a spot","Each spot brings different people."],["Buy supplies","Each cup uses supplies."],["Ice and signs","Signs bring more people."],["Set your price","Too high, and people walk away."],["See how you did","Sales and tips for the day."],["Pick an upgrade",`Upgrades make your stand better. You can keep ${GEAR_SLOTS}.`]];
+const HOW_STEPS=[["Pick a spot","Each spot brings different people."],["Put up signs","Signs bring more people."],["Buy supplies","Each cup uses supplies."],["Add ice","Hot days need more ice."],["Set your price","Too high, and people walk away."],["See how you did","Sales and tips for the day."],["Pick an upgrade",`Upgrades make your stand better. You can keep ${GEAR_SLOTS}.`]];
 function firstDay(){return S&&S.day===1&&!meta.hintsSeen}
 function learnHint(t){return firstDay()?`<span class="learn">${t}</span>`:""}
 
@@ -1370,7 +1368,7 @@ function renderMorning(){
       <div id="mScene" style="display:contents"></div>
       <div class="skyTop">
         ${news?`<div class="news" role="status">${news}</div>`:""}
-        <div class="side">${S.endless?`<button class="btn sm ghost" onclick="endRun('retired')">Stop and keep my score (${fmt(S.cash)})</button>`:""}</div>
+        <div class="side">${S.endless?`<button class="btn sm ghost" onclick="retireMorning()">Stop and keep my score (${fmt(S.cash)})</button>`:""}</div>
         <div class="spotCard" id="mSpot"></div>
       </div>
     </div>
@@ -1393,12 +1391,11 @@ function fitStage(){
 }
 addEventListener("resize",fitStage);
 /* On narrower screens the ground shows one group of controls at a time, in the order the help teaches them. */
-const DOCK_TABS=[["shop","Supplies",()=>iconHtml("supply","lemons")],["gear","Ice & signs",()=>iconHtml("supply","ice")]];
+const DOCK_TABS=[["shop","Supplies",()=>iconHtml("supply","lemons")],["gear","Ice",()=>iconHtml("supply","ice")]];
 function setDockTab(k){M.tab=k;sfx.tick();$("#mDock").dataset.tab=k;document.querySelectorAll(".dockTabs [role=tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===k));fitStage()}
 /* Redraw the morning's controls in place, so the sky keeps drifting, and keep focus on the control just used. */
 function morningParts(){
   const ae=document.activeElement,f=ae&&ae.dataset?ae.dataset.f:null;
-  if(M.signs>(S.inv.signs||0))M.signs=S.inv.signs||0; // you can only put out signs you own — last night's breakage may have shrunk the pile
   const strips=[".shelfRow",".prices"].map(sel=>[sel,$(sel)?$(sel).scrollLeft:0]); // keep sideways strips where the player left them
   $("#mScene").innerHTML=mSceneHtml();
   $("#mSpot").innerHTML=mSpotHtml();
@@ -1411,12 +1408,12 @@ function morningParts(){
   if(dr&&it){const shelf=$("#mShop"),row=it.parentNode;dr.style.left=clamp(it.offsetLeft-row.scrollLeft+it.offsetWidth/2-dr.offsetWidth/2,0,Math.max(0,shelf.clientWidth-dr.offsetWidth))+"px"}
   if(f){const el=document.querySelector(`[data-f="${f}"]`);if(el)el.focus({preventScroll:true})}
 }
-const SIGN_SPOTS=8; // signs drawn on the grass; the stepper counts any beyond these
+const SIGN_SPOTS=8; // signs drawn on the grass; any you buy beyond these still count
 function mSceneHtml(){
-  const menu=sellableNow(),owned=S.inv.signs||0;
+  const menu=sellableNow();
   let signs="";
-  for(let k=0;k<Math.min(owned,SIGN_SPOTS);k++){const on=k<M.signs; // alternate left and right of the stand, working outward
-    signs+=`<button class="signSlot${on?"":" off"}" style="--k:${k>>1};--side:${k%2?1:-1}" onclick="tapSign(${k})" data-f="sign${k}" aria-pressed="${on}" aria-label="Sign ${k+1}">${iconHtml("supply","signs")}</button>`}
+  for(let k=0;k<Math.min(M.signs,SIGN_SPOTS);k++) // alternate left and right of the stand, working outward
+    signs+=`<span class="signSlot" style="--k:${k>>1};--side:${k%2?1:-1}" aria-hidden="true">${iconHtml("supply","signs")}</span>`;
   return `<div class="standSign">${menu.length?`${menu.length} ${plural(menu.length,"flavor")} · from ${fmt(Math.min(...menu.map(menuPrice)))}`:"Buy supplies to open"}</div>${signs}`;
 }
 function mSpotHtml(){
@@ -1429,15 +1426,15 @@ function mSpotHtml(){
       <span class="goChip" id="guessText"></span></div>
       <button class="btn gold" id="btnOpen" onclick="openStand()" data-f="open">Open</button></div>`;
   const last=SPOT_SLIDES.length-1;
-  const slide=(html,k)=>`<div class="slide${k===1?" board":""}" role="group" aria-roledescription="slide" aria-label="${SPOT_SLIDES[k]}"${k===card?"":" inert"}>${html}</div>`;
+  const slide=([html,cls],k)=>`<div class="slide${cls?" "+cls:""}" role="group" aria-roledescription="slide" aria-label="${SPOT_SLIDES[k]}"${k===card?"":" inert"}>${html}</div>`;
   const arrow=(d,txt)=>`<button class="arrow" onclick="setSpotCard(M.card+${d})" data-d="${d}" data-f="car-arrow${d}" aria-label="${d<0?"Back":"Next"}"${(d<0?card===0:card===last)?' aria-disabled="true"':""}>${txt}</button>`;
   const dot=k=>`<button class="dot" onclick="setSpotCard(${k})" data-k="${k}" data-f="car-dot${k}" aria-label="${SPOT_SLIDES[k]}" aria-current="${k===card}"></button>`;
-  return `<div class="slides" style="--card:${card}">${[where,mBoardHtml(),go].map(slide).join("")}</div>
+  return `<div class="slides" style="--card:${card}">${[[where],[mSignsHtml()],[mBoardHtml(),"board"],[go]].map(slide).join("")}</div>
     <div class="carNav">${arrow(-1,"‹")}${SPOT_SLIDES.map((_,k)=>dot(k)).join("")}${arrow(1,"›")}</div>`;
 }
-/* The top card's slides, in the order the help teaches: where to sell, the prices, then open.
+/* The top card's slides, in the order the help teaches: where to sell, signs, the prices, then open.
    Picking a spot slides on to the next slide; the arrows and dots go back and forth. */
-const SPOT_SLIDES=["Where today?","Today's prices","Ready to open?"];
+const SPOT_SLIDES=["Where today?","Signs today","Today's prices","Ready to open?"];
 function setSpotCard(i,quiet){
   i=clamp(i,0,SPOT_SLIDES.length-1);
   if(M.card===i)return;
@@ -1450,15 +1447,15 @@ function setSpotCard(i,quiet){
   document.querySelectorAll("#mSpot .carNav .arrow").forEach(b=>b.setAttribute("aria-disabled",+b.dataset.d<0?i===0:i===SPOT_SLIDES.length-1));
 }
 function mShopHtml(){
-  const basics=["cups","lemons","sugar","ice","signs"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
+  const basics=["cups","lemons","sugar","ice"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
   const item=id=>{const n=S.inv[id]||0,open=M.shopOpen===id;
     return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`};
-  return `<div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>${learnHint(HOW_STEPS[1][1])}
+  return `<div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>${learnHint(HOW_STEPS[2][1])}
     <div class="shelfRow" onwheel="wheelSideways(event,this)">${basics.map(item).join("")}${extras.length?`<i class="sep" aria-hidden="true"></i>${extras.map(item).join("")}`:""}</div>${M.shopOpen?mDrawerHtml(M.shopOpen):""}`;
 }
 function mDrawerHtml(id){
   const ing=INGREDIENTS[id],n=S.inv[id]||0;
-  const rule=[id==="ice"?"Half melts every night.":id==="signs"?"About 1 in 4 you put out breaks overnight.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
+  const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
   return `<div class="drawer" id="mDrawer">
     <div class="mLbl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}.</small></div>
     ${rule?`<div class="rule">${rule}</div>`:""}
@@ -1470,17 +1467,22 @@ function stepperHtml(key,val,downCall,upCall,downLabel,upLabel,atMin,atMax){
   return `<span class="stepper"><button onclick="${downCall}" data-f="${key}-" aria-label="${downLabel}"${atMin?' aria-disabled="true"':""}>−</button><b>${val}</b><button onclick="${upCall}" data-f="${key}+" aria-label="${upLabel}"${atMax?' aria-disabled="true"':""}>+</button></span>`;
 }
 function mGearHtml(){
-  const b=computeBuild(),owned=S.inv.signs||0;
   let cubes="";
   for(let k=1;k<=4;k++)cubes+=`<button class="cube" onclick="setIce(${k})" data-f="ice${k}" aria-pressed="${k<=M.icePerCup}" aria-label="${k} ice ${plural(k,"cube")}">${iconHtml("supply","ice",true)}</button>`;
-  const signTip=`${owned?"Or tap them on the grass.":"You have none. Buy some on the shelf."}${b.freeSigns?` Upgrades add ${b.freeSigns} free.`:""} ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}`;
   return `<div><div class="mLbl"><span tabindex="0"${tip("Hot days need more ice.")}>${iconHtml("supply","ice")} Ice in each cup</span></div>
-      <div class="cubes" role="group" aria-label="Ice in each cup">${cubes}</div></div>
-    <div><div class="mLbl"><span tabindex="0"${tip(signTip)}>${iconHtml("supply","signs")} Signs out</span></div>
-      ${stepperHtml("signs",`${M.signs} of ${owned}`,"stepSigns(-1)","stepSigns(1)",`Fewer signs, ${M.signs} out`,`More signs, ${M.signs} out`,M.signs<=0,M.signs>=owned)}${learnHint(HOW_STEPS[2][1])}</div>`;
+      <div class="cubes" role="group" aria-label="Ice in each cup">${cubes}</div>${learnHint(HOW_STEPS[3][1])}</div>`;
+}
+function mSignsHtml(){
+  const b=computeBuild(),p=signPrice(),n=M.signs;
+  const signTip=`Signs bring more people. ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}`;
+  return `<div class="mLbl"><span tabindex="0"${tip(signTip)}>Signs today</span></div>${learnHint(HOW_STEPS[1][1])}
+    <div class="signBuy">${iconHtml("supply","signs",true)}
+      ${stepperHtml("signs",n,"stepSigns(-1)","stepSigns(1)",`Give back a sign, ${n} bought`,`Buy a sign for ${fmt(p)}, ${n} bought`,n<=0,S.cash<p)}
+      <span class="each"><b>${fmt(p)}</b> each</span></div>
+    <div class="mHint">Each sign lasts one day.${b.freeSigns?` Upgrades add ${b.freeSigns} free.`:""}</div>`;
 }
 function mBoardHtml(){
-  return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][1])}<div class="prices" onwheel="wheelSideways(event,this)">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
+  return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[4][1])}<div class="prices" onwheel="wheelSideways(event,this)">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
     const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">Special +$0.50</span>':"";
     return `<div class="price${ok?"":" out"}">${iconHtml("flavor",rk,true)}
       <div><span class="pName" tabindex="0"${tip(`${r.desc} From: ${r.origin.replace(" · ",", ")}.`)}>${r.name}</span><div>${tagChips(r.tags)}${special}</div></div>
@@ -1502,9 +1504,13 @@ function chooseLoc(i){
 }
 function openShelf(id){M.shopOpen=M.shopOpen===id?null:id;sfx.flip();morningParts()}
 function setIce(k){M.icePerCup=M.icePerCup===k?k-1:k;sfx.tick();morningParts()} // tap the top cube again to take it out
-function setSigns(n){const v=Math.max(0,Math.min(S.inv.signs||0,n));if(v===M.signs)return;M.signs=v;sfx.tick();morningParts()}
-function stepSigns(d){setSigns(M.signs+d)}
-function tapSign(k){setSigns(M.signs===k+1?k:k+1)} // like the ice cubes: tap the last sign out to take it in
+function stepSigns(d){ // + buys one sign, − gives one back for what it cost
+  const p=signPrice();
+  if(d<0){if(M.signs<=0)return;M.signs--;S.cash=Math.round((S.cash+p)*100)/100;sfx.tick()}
+  else{if(S.cash<p){sfx.bad();return}M.signs++;S.cash=Math.round((S.cash-p)*100)/100;sfx.coin(3)}
+  updateHUD();morningParts();
+}
+function retireMorning(){S.cash=Math.round((S.cash+M.signs*signPrice())*100)/100;M.signs=0;endRun('retired')} // signs not put out yet go back for a refund
 function stepPrice(rk,d){
   const v=Math.round((M.prices[rk]+0.25*d)*100)/100;
   if(v<0.5||v>priceMax())return;
@@ -1586,8 +1592,8 @@ function serveOne(ck){
 function openStand(){
   if(!M.loc){alert("Pick a spot first.");return}
   const b=computeBuild();
-  const putOut=Math.min(M.signs,S.inv.signs||0); // signs come from stock you already paid for — starting the day never charges you
-  S.last={signs:putOut,ice:M.icePerCup};
+  const putOut=M.signs; // every sign bought this morning goes out, and they're paid for already: starting the day never charges you
+  S.last={ice:M.icePerCup};
   S.recipes.forEach(rk=>{S.menuPrices[rk]=M.prices[rk]});
   sfx.pop();
   M.actualWx=M.trueWx;
@@ -1857,7 +1863,7 @@ function finishDay(){
   $("#screen").innerHTML=`
   <div class="panel">
     <h2>Day ${S.day} results</h2>
-    ${learnHint(HOW_STEPS[4][1])}
+    ${learnHint(HOW_STEPS[5][1])}
     <div class="report">
       <div class="receiptBox">
         <div class="receiptWrap"><div class="receipt">
@@ -1943,7 +1949,7 @@ function renderDraftScreen(){
   $("#screen").innerHTML=`<div class="panel">
     <h2>${draftTitle}</h2>
     <p class="muted" style="margin-top:0">It starts working tomorrow. The other two go away.</p>
-    ${learnHint(HOW_STEPS[5][1])}
+    ${learnHint(HOW_STEPS[6][1])}
     ${shelfHtml()}
     <div class="choices">${draftChoices.map((p,i)=>cardHtml(draftCardHtml(p),`onclick="pickDraft(${i})"${flip?` style="--k:${i}"`:""}`,flip?"flipIn":"")).join("")}</div>
   </div>`;
@@ -2140,7 +2146,7 @@ function showHelp(){
       <li>Hot days need more ice. Under 70°F, no ice. In the 70s, 1 cube. In the 80s, 2. In the 90s, 3. At 100°F and up, 4.</li>
       <li>Bigger packs cost less for each one.</li>
       <li>Half of your leftover ice melts each night. Lemons last 7 days, cucumbers 5, mint 4 and strawberries 3.</li>
-      <li>Signs bring in more customers. About 1 in 4 signs you put out breaks overnight.</li>
+      <li>Signs bring in more customers. Each sign lasts one day.</li>
       <li>Stars go up when most people get lemonade. They go down when many people leave without any. More stars bring more people.</li>
       <li>Flavor tags are Sweet, Sour, Fancy, Chilled and Fizzy. Each crowd likes different ones.</li>
       <li>Kids like sweet drinks. Parents like fancy and sweet. Athletes like sour and chilled. Tourists like fancy. Foodies like fancy and sour. Artists like fancy and fizzy.</li>
