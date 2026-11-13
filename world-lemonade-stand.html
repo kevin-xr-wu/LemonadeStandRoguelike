@@ -1436,7 +1436,7 @@ function mSpotHtml(){
     <div class="carNav">${arrow(-1,"‹")}${SPOT_SLIDES.map((_,k)=>dot(k)).join("")}${arrow(1,"›")}</div>`;
 }
 /* The top card's slides, in the order the help teaches: where to sell, the prices, then open.
-   Picking a spot slides over to Open; the arrows and dots go back and forth. */
+   Picking a spot slides on to the next slide; the arrows and dots go back and forth. */
 const SPOT_SLIDES=["Where today?","Today's prices","Ready to open?"];
 function setSpotCard(i,quiet){
   i=clamp(i,0,SPOT_SLIDES.length-1);
@@ -1496,9 +1496,9 @@ function buyItem(id,tier=0){
   S.cash=Math.round((S.cash-price)*100)/100;addStock(id,qty,price);sfx.coin(3);updateHUD();morningParts();
 }
 function chooseLoc(i){
-  const kb=document.activeElement&&document.activeElement.matches(":focus-visible"); // picked with the keyboard: follow it to Open
-  M.loc=M.locs[i];sfx.flip();morningParts();setSpotCard(SPOT_SLIDES.length-1,true);
-  if(kb)$("#btnOpen").focus({preventScroll:true});
+  const kb=document.activeElement&&document.activeElement.matches(":focus-visible"); // picked with the keyboard: follow it to the next slide
+  M.loc=M.locs[i];sfx.flip();morningParts();setSpotCard(1,true);
+  if(kb){const next=$("#mSpot .slide:not([inert]) button");if(next)next.focus({preventScroll:true})}
 }
 function openShelf(id){M.shopOpen=M.shopOpen===id?null:id;sfx.flip();morningParts()}
 function setIce(k){M.icePerCup=M.icePerCup===k?k-1:k;sfx.tick();morningParts()} // tap the top cube again to take it out
