@@ -488,7 +488,7 @@ body:has(.stage){overflow:hidden}
 /* Over the sky: what today is like (left), where you sell (middle), news (under the forecast) */
 .skyTop{position:relative;z-index:7;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);align-items:start;gap:10px}
 .skyTop .side{display:grid;gap:8px;justify-items:start;align-content:start}
-.spotCard{background:var(--card);border-radius:14px;padding:8px 10px;box-shadow:0 4px 0 rgba(43,33,24,.3);width:min(580px,100%);justify-self:center}
+.spotCard{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 4px 0 rgba(43,33,24,.3);width:min(580px,100%);justify-self:center}
 .spotCard .postFace{font-size:var(--fs-sm);padding:4px 18px 4px 8px}
 .spotCard .crowd{font-size:var(--fs-xs)}
 .spotCard .mLbl{margin:0 0 6px;font-size:var(--fs-sm)}
@@ -526,11 +526,24 @@ body:has(.stage){overflow:hidden}
 .dock .pOut{font-size:var(--fs-xs);line-height:1.25}
 .dock .stepper b{min-width:50px}
 .dock .cubes{flex-wrap:nowrap}
-.openCard{display:flex;align-items:center;gap:14px;background:var(--ink);color:#fff;border-radius:14px;padding:10px 10px 10px 16px;box-shadow:0 5px 0 rgba(0,0,0,.25)}
-.openCard #guessText{flex:none;display:grid;gap:2px;font-size:var(--fs-sm)}
-.openCard #guessText b{font-size:var(--fs-lg)}
-.openCard #btnOpen{padding:12px 26px;font-size:var(--fs-xl);margin:0}
-.openCard .warnTxt{color:#ffc9b8;font-weight:800}
+/* The top card is a carousel: "Where today?", then "Ready to open?" with the cups your supplies make and Open */
+.slides{display:flex;transform:translateX(calc(var(--card,0)*-100%));transition:transform .3s ease}
+.slide{flex:0 0 100%;min-width:0;padding:8px 10px 2px;display:flex;flex-direction:column;justify-content:center}
+.goBox{flex:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 20px;padding:4px 0}
+.goSpot{display:flex;align-items:center;gap:6px;font-weight:800}
+.goSpot .warnTxt{color:var(--red)}
+.spotCard #guessText{display:block;flex:none;font-size:var(--fs-md);font-weight:800}
+.spotCard #guessText b{font-size:var(--fs-xl);color:var(--green2)}
+.spotCard #btnOpen{padding:10px 32px;font-size:var(--fs-xl);margin:0}
+.carNav{display:flex;align-items:center;justify-content:center;gap:2px;padding:0 0 4px}
+.carNav button{display:flex;align-items:center;justify-content:center;min-width:32px;height:28px;padding:0;background:none;border:0;border-radius:8px;color:var(--ink);font-family:var(--font-display);font-size:var(--fs-xl);line-height:1}
+.carNav button:hover{background:var(--paper2)}
+.carNav button:focus-visible{outline:3px solid var(--blue)}
+.carNav button[aria-disabled="true"]{opacity:.25;cursor:default;background:none}
+.carNav .dot{min-width:22px}
+.carNav .dot:before{content:"";width:10px;height:10px;border-radius:50%;background:rgba(43,33,24,.25)}
+.carNav .dot[aria-current="true"]:before{background:var(--ink)}
+@media (prefers-reduced-motion:reduce){.slides{transition:none}}
 .dayCard{display:grid;gap:6px;min-width:260px;background:var(--ink);color:#fff;border-radius:14px;padding:10px 14px 12px;box-shadow:0 5px 0 rgba(0,0,0,.25)}
 .dayCard #dayMsg{font-weight:800;color:var(--lemon)}
 .dayBar{position:relative;height:10px;border-radius:99px;background:rgba(255,247,224,.2);overflow:hidden}
@@ -554,8 +567,6 @@ body:has(.stage){overflow:hidden}
   .morning #mShop{flex:0 1 auto;min-width:230px}
   .morning #mGear{flex:none;flex-direction:column;gap:8px}
   .morning #mBoard{flex:0 1 auto;min-width:190px}
-  .morning .openCard{flex:none;flex-direction:column;align-items:stretch;justify-content:center;gap:8px;padding:12px 14px}
-  .morning .openCard #btnOpen{padding:12px 26px}
   .dock .gear .learn{display:block;width:max-content;margin-top:6px}
 }
 /* When the stand opens, the camera moves in: the selling day draws the scene at 3× on big screens */
@@ -569,17 +580,13 @@ body:has(.stage){overflow:hidden}
   .dock .supShelf>.mLbl,.dock .board>.mLbl{display:none} /* the tab already names them */
   .dock .supShelf{padding-top:2px}
   .dockIn{gap:10px}
-  .dock .supShelf,.dock .gear,.dock .board,.openCard{flex:1 1 100%}
+  .dock .supShelf,.dock .gear,.dock .board{flex:1 1 100%}
   .dock .shelfRow{justify-content:space-between}
   .dock .gear{justify-content:space-between}
   .dock .price{width:150px}
   .dock .stepper button{width:34px;height:34px}
   .dock .stepper b{min-width:46px;font-size:var(--fs-md)}
-  .dockTabs{order:2}
-  .openCard{order:3} /* tabs sit just above Open, so a buy popover never covers them */
-  .openCard{padding:8px 8px 8px 14px}
-  .openCard #guessText{flex:1}
-  .openCard #btnOpen{padding:12px 22px!important;font-size:var(--fs-lg)}
+  .dockTabs{order:2} /* tabs sit under the cards, so a buy popover never covers them */
 }
 @media (max-width:1100px){
   .stage{--hudH:84px}
@@ -591,7 +598,7 @@ body:has(.stage){overflow:hidden}
   .stage{--hudH:80px}
   .skyTop{grid-template-columns:1fr;justify-items:stretch}
   .skyTop .side{justify-items:start}
-  .spotCard{padding:6px 8px 8px}
+  .spotCard .slide{padding:6px 8px 2px}
   .spotCard .postFace{padding:5px 15px 5px 6px;font-size:var(--fs-xs)}
   .spotCard .crowdRow{gap:4px;flex-wrap:nowrap}
   .spotCard .crowd{font-size:var(--fs-xs);white-space:nowrap}
@@ -609,15 +616,6 @@ body:has(.stage){overflow:hidden}
   .tSlot.empty{background:none;border:2px solid rgba(255,247,224,.4)}
   .tSlot .icon{display:none}
 }
-@media (max-width:560px){ /* phones: the tabs and Open share the bottom row */
-  .dockTabs{flex:1 1 0;min-width:0}
-  .dockTabs button{flex-direction:column;gap:1px;min-height:48px;padding:4px 2px;font-size:var(--fs-sm);line-height:1.05}
-  .openCard{flex:none;gap:8px;padding:6px 6px 6px 10px}
-  .openCard #guessText{flex:none;font-size:var(--fs-xs);line-height:1.2}
-  .openCard #guessText>span:first-child{display:none}
-  .openCard #guessText b{font-size:var(--fs-md)}
-  .openCard #btnOpen{padding:10px 16px!important}
-}
 @media (max-width:560px){ /* phones: the star meter becomes one star and the number, to make room for the upgrade tray */
   .hud{gap:10px}
   .starMeter .star:nth-child(n+2){display:none}
@@ -629,7 +627,9 @@ body:has(.stage){overflow:hidden}
 .stage.fit-tight .ground{min-height:0;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
 .stage.fit-tight .sky{padding-top:calc(var(--hudH) + 10px)}
 .stage.fit-tight .skyTop{gap:6px}
-.stage.fit-tight .spotCard{padding:6px 8px}
+.stage.fit-tight .spotCard .slide{padding-top:6px}
+.stage.fit-tight .carNav{padding-bottom:2px}
+.stage.fit-tight .carNav button{height:22px}
 .stage.fit-tight .spotCard .mLbl{display:none}
 .stage.fit-tight .spotCard .crowdRow,.stage.fit-tight .spotCard .mHint{margin-top:6px}
 .stage.fit-tight .dockIn{gap:8px}
@@ -1182,7 +1182,7 @@ function genMorning(){
   const ev=EVENTS.find(e=>e.id===evRoll);
   const prices={};S.recipes.forEach(rk=>{prices[rk]=S.menuPrices[rk]!=null?S.menuPrices[rk]:RECIPES[rk].price});
   const temp=ri(...WX_TEMP[trueWx]);
-  M={trueWx,shownWx,temp,locs,loc:null,tab:"shop",event:ev,signs:(S.last?S.last.signs:3),icePerCup:(S.last?S.last.ice:2),prices,logStart:S.log.length,
+  M={trueWx,shownWx,temp,locs,loc:null,tab:"shop",card:0,event:ev,signs:(S.last?S.last.signs:3),icePerCup:(S.last?S.last.ice:2),prices,logStart:S.log.length,
      special:S.gear.includes("special")?pick(S.recipes):null,
      dice:S.gear.includes("dice")?Math.round(rnd(0.7,1.6)*100)/100:0};
   if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1;M.treeLemons=5+S.treeDays;addStock("lemons",M.treeLemons,0)}
@@ -1371,7 +1371,6 @@ function renderMorning(){
         <div class="supShelf" id="mShop" role="group" aria-label="Supplies"></div>
         <div class="card gear" id="mGear"></div>
         <div class="board" id="mBoard" role="group" aria-label="Today's prices"></div>
-        <div class="openCard"><div id="guessText"></div><button class="btn gold" id="btnOpen" onclick="openStand()">Open</button></div>
       </div>
     </div>
   </div>`;
@@ -1412,10 +1411,29 @@ function mSceneHtml(){
   return `<div class="standSign">${menu.length?`${menu.length} ${plural(menu.length,"flavor")} · from ${fmt(Math.min(...menu.map(menuPrice)))}`:"Buy supplies to open"}</div>${signs}`;
 }
 function mSpotHtml(){
-  const top=M.loc?Object.entries(crowdMixFor(M.loc)).sort((a,b)=>b[1]-a[1]).slice(0,3):[];
-  return `<div class="mLbl">Where today?</div>${learnHint(HOW_STEPS[0][1])}
+  const top=M.loc?Object.entries(crowdMixFor(M.loc)).sort((a,b)=>b[1]-a[1]).slice(0,3):[],card=M.card;
+  const where=`<div class="mLbl">Where today?</div>${learnHint(HOW_STEPS[0][1])}
     <div class="posts">${M.locs.map((l,i)=>`<button class="post" onclick="chooseLoc(${i})" data-f="loc${i}" aria-pressed="${M.loc===l}" aria-label="${l.name}"><span class="postFace">${iconHtml("spot",l.name,true)}<span>${l.name}</span></span></button>`).join("")}</div>
     ${M.loc?`<div class="crowdRow">${top.map(([k,v])=>`<span class="crowd" tabindex="0"${tip(crowdTip(k))}>${CROWDS[k].icon} ${CROWDS[k].name} ${v}%</span>`).join("")}</div>`:`<div class="mHint">Tap a spot to see who comes.</div>`}`;
+  const go=`<div class="mLbl">Ready to open?</div>
+    <div class="goBox"><span class="goSpot">${M.loc?`${iconHtml("spot",M.loc.name,true)} ${M.loc.name}`:`<span class="warnTxt">Pick a spot first</span>`}</span>
+      <span id="guessText"></span>
+      <button class="btn gold" id="btnOpen" onclick="openStand()" data-f="open">Open</button></div>`;
+  const slide=(k,html,name)=>`<div class="slide" role="group" aria-roledescription="slide" aria-label="${name}"${k===card?"":" inert"}>${html}</div>`;
+  const nav=(k,cls,label,txt)=>`<button${cls?` class="${cls}"`:""} onclick="setSpotCard(${k})" data-k="${k}" data-f="car-${cls||"arrow"}${k}" aria-label="${label}"${cls?` aria-current="${k===card}"`:k===card?' aria-disabled="true"':""}>${txt}</button>`;
+  return `<div class="slides" style="--card:${card}">${slide(0,where,"Where today?")}${slide(1,go,"Ready to open?")}</div>
+    <div class="carNav">${nav(0,"","Where today?","‹")}${nav(0,"dot","Where today?","")}${nav(1,"dot","Ready to open?","")}${nav(1,"","Ready to open?","›")}</div>`;
+}
+/* The top card's two slides: pick a spot, then open. Picking a spot slides over to Open; the arrows and dots go back and forth. */
+function setSpotCard(i,quiet){
+  if(M.card===i)return;
+  M.card=i;if(!quiet)sfx.tick();
+  const sl=$("#mSpot .slides");if(!sl)return;
+  void sl.offsetWidth; // slide from where it is now
+  sl.style.setProperty("--card",i);
+  sl.querySelectorAll(".slide").forEach((el,k)=>el.inert=k!==i);
+  document.querySelectorAll("#mSpot .carNav button").forEach(b=>{const k=+b.dataset.k;
+    if(b.classList.contains("dot"))b.setAttribute("aria-current",k===i);else b.setAttribute("aria-disabled",k===i)});
 }
 function mShopHtml(){
   const basics=["cups","lemons","sugar","ice","signs"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
@@ -1461,7 +1479,11 @@ function buyItem(id,tier=0){
   if(S.cash<price){sfx.bad();return}
   S.cash=Math.round((S.cash-price)*100)/100;addStock(id,qty,price);sfx.coin(3);updateHUD();morningParts();
 }
-function chooseLoc(i){M.loc=M.locs[i];sfx.flip();morningParts()}
+function chooseLoc(i){
+  const kb=document.activeElement&&document.activeElement.matches(":focus-visible"); // picked with the keyboard: follow it to Open
+  M.loc=M.locs[i];sfx.flip();morningParts();setSpotCard(1,true);
+  if(kb)$("#btnOpen").focus({preventScroll:true});
+}
 function openShelf(id){M.shopOpen=M.shopOpen===id?null:id;sfx.flip();morningParts()}
 function setIce(k){M.icePerCup=M.icePerCup===k?k-1:k;sfx.tick();morningParts()} // tap the top cube again to take it out
 function setSigns(n){const v=Math.max(0,Math.min(S.inv.signs||0,n));if(v===M.signs)return;M.signs=v;sfx.tick();morningParts()}
@@ -1482,7 +1504,7 @@ function renderProj(){
   const gt=$("#guessText");if(!gt)return;
   $("#btnOpen").disabled=!M.loc;
   const cap=cupsFromSupplies();
-  gt.innerHTML=`<span>Supplies for</span><span><b>${cap}</b> ${plural(cap,"cup")}</span>${M.loc?"":`<span class="warnTxt">Pick a spot first</span>`}`;
+  gt.innerHTML=`Supplies for <b>${cap}</b> ${plural(cap,"cup")}`;
 }
 
 /* ---------- Day resolution ---------- */
