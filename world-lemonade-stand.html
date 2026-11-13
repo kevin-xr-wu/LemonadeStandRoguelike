@@ -470,7 +470,10 @@ button,input,select{touch-action:manipulation}
    so nothing covers the street, the stand or the customers. The ground grows to fit its cards; the sky takes the rest.
    Sprites stay at 2× on phones too: the scene has the room now. */
 body:has(.stage){overflow:hidden}
-#app:has(.stage) .hud{position:fixed;top:8px;left:max(12px,calc(50% - 600px));right:max(12px,calc(50% - 600px))}
+#app:has(.stage) .hud{position:fixed;top:8px;left:12px;right:12px}
+.hudWx{display:flex;align-items:baseline;gap:6px;white-space:nowrap;font-size:var(--fs-lg);font-weight:800}
+.hudWx b{font-family:var(--font-display);font-weight:400;font-size:var(--fs-xl);line-height:1;color:var(--lemon)}
+.hudWx:empty,#app:not(:has(.stage)) .hudWx{display:none} /* only for the morning and the selling day */
 .stage{--px:2;--hudH:56px;position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden auto;background:#8a6b46}
 .stage .sky{--px:2;flex:1 0 auto;height:auto;display:flex;flex-direction:column;padding:calc(var(--hudH) + 18px) 12px calc(84px*var(--px))}
 .stage .ground{flex:none;height:auto;z-index:auto;background-size:calc(64px*var(--px)) calc(32px*var(--px));padding:calc(12px*var(--px)) 12px calc(14px + env(safe-area-inset-bottom,0px))}
@@ -483,11 +486,8 @@ body:has(.stage){overflow:hidden}
 .stage .sun{top:calc(var(--hudH) + 24px)}
 .stage .cloud{top:calc(var(--hudH) + var(--y)*var(--px)*1px)}
 /* Over the sky: what today is like (left), where you sell (middle), news (under the forecast) */
-.skyTop{position:relative;z-index:7;display:grid;grid-template-columns:minmax(230px,1fr) minmax(0,auto) minmax(0,1fr);align-items:start;gap:10px}
+.skyTop{position:relative;z-index:7;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);align-items:start;gap:10px}
 .skyTop .side{display:grid;gap:8px;justify-items:start;align-content:start}
-.fcChip{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 10px;background:var(--ink);color:#fff;border-radius:99px;padding:4px 14px 5px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
-.fcChip .fcMain{font-size:var(--fs-lg);line-height:1.2;color:var(--lemon)}
-.fcChip .fcDice{font-size:var(--fs-xs);font-weight:700}
 .spotCard{background:var(--card);border-radius:14px;padding:8px 10px;box-shadow:0 4px 0 rgba(43,33,24,.3);width:min(580px,100%);justify-self:center}
 .spotCard .postFace{font-size:var(--fs-sm);padding:4px 18px 4px 8px}
 .spotCard .crowd{font-size:var(--fs-xs)}
@@ -495,7 +495,8 @@ body:has(.stage){overflow:hidden}
 .spotCard .posts{max-width:none}
 .spotCard .crowdRow{justify-content:center;margin-top:6px}
 .spotCard .mHint{text-align:center;margin-top:8px}
-.news{display:grid;gap:6px;max-width:280px}
+/* Today's news (events, Lucky Dice, combos, hot streak): one strip of notes just under the HUD */
+.news{grid-column:1/-1;justify-self:center;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:min(820px,100%);margin-top:-6px}
 .news .synBanner,.news .callout{margin:0;border-radius:10px;font-size:var(--fs-xs);font-weight:700;line-height:1.35;padding:4px 10px;box-shadow:0 3px 0 rgba(43,33,24,.25)}
 .news .callout{background:var(--card)}
 .spotChip{background:rgba(255,253,244,.95);border-radius:12px;padding:6px 12px;font-size:var(--fs-sm);font-weight:800;line-height:1.45;box-shadow:0 4px 0 rgba(43,33,24,.25)}
@@ -580,11 +581,16 @@ body:has(.stage){overflow:hidden}
   .openCard #guessText{flex:1}
   .openCard #btnOpen{padding:12px 22px!important;font-size:var(--fs-lg)}
 }
+@media (max-width:1100px){
+  .stage{--hudH:84px}
+  #app:has(.stage) .hud{flex-wrap:wrap;row-gap:2px}
+  .hudWx{order:10;flex:1 1 100%;justify-content:center;border-top:1px solid rgba(255,247,224,.15);padding:4px 0 2px}
+  .hudWx b{font-size:var(--fs-lg)}
+}
 @media (max-width:720px){
-  .stage{--hudH:48px}
+  .stage{--hudH:80px}
   .skyTop{grid-template-columns:1fr;justify-items:stretch}
   .skyTop .side{justify-items:start}
-  .fcChip{justify-self:start;margin-right:84px} /* the sun is to its right */
   .spotCard{padding:6px 8px 8px}
   .spotCard .postFace{padding:5px 15px 5px 6px;font-size:var(--fs-xs)}
   .spotCard .crowdRow{gap:4px;flex-wrap:nowrap}
@@ -650,6 +656,7 @@ body:has(.stage){overflow:hidden}
   <div class="hud" id="hud" style="display:none">
     <div class="hudCoins" id="hudMoney" tabindex="0" data-tip="Your money. It's also your score."><i class="hudIcon"></i><span class="money" id="hudCash">$30</span></div>
     <div class="hudDay" id="hudDayBox" tabindex="0" data-tip=""><span class="hudIcon calPage" id="hudDay"></span><span class="dayOf" id="hudDayOf"></span></div>
+    <div class="hudWx" id="hudWx" tabindex="0" data-tip=""></div>
     <div class="starMeter" id="hudRepBox" tabindex="0" data-tip="" role="img"></div>
     <button class="hudTray" id="hudTray" onclick="showBuild()" data-tip=""></button>
     <button class="hudBtn soundBtn" id="btnSound" data-tip="Sound on or off" aria-label="Sound on or off"><i class="hudIcon"></i></button>
@@ -1253,6 +1260,9 @@ function updateHUD(){
   const area=actFor(actIndex()).name.split("·")[1].trim();
   $("#hudDay").textContent=S.day;
   $("#hudDayOf").innerHTML=S.endless?"Endless":`of ${S.totalDays}<i class="long"> days</i>`;
+  const wx=M&&WEATHERS[M.shownWx]; // shown while the morning or the selling day is on screen
+  $("#hudWx").innerHTML=wx?`${wx.icon} <b>${wx.name}, ${M.temp}°F</b>`:"";
+  $("#hudWx").dataset.tip=wx?`Today's forecast. ${wx.desc} The forecast is always right.`:"";
   $("#hudDayBox").dataset.tip=S.endless?`Day ${S.day}. Endless: play as long as you like. You're at ${area}.`:`Day ${S.day} of ${S.totalDays}. You're at ${area}.`;
   // each star fills from the left, one art pixel at a time: 3.4 stars is three full stars and a star 4 of 11 pixels full
   $("#hudRepBox").innerHTML=[0,1,2,3,4].map(i=>`<i class="star" style="--f:${Math.round(clamp(S.rep-i,0,1)*11)}"></i>`).join("")+`<b class="starNum">${S.rep.toFixed(1)}</b>`;
@@ -1335,13 +1345,14 @@ function startMorning(){
 }
 function renderMorning(){
   const b=computeBuild();
-  const wx=WEATHERS[M.shownWx];
   const newSyn=b.synergies.filter(s=>!S.discoveredSyn.includes(s.id));
   newSyn.forEach(s=>S.discoveredSyn.push(s.id));
   const streakHtml=S.streak>=2?`<div class="synBanner streak">Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Serve 3 out of 4 customers and make money today for a +${Math.min(25,3*(S.streak+1))}% bonus tonight.</div>`:"";
   const synHtml=b.synergies.length?`<div class="synBanner">Combos: ${b.synergies.map(s=>`<span tabindex="0"${tip(s.desc)}>${s.name}</span>`).join(", ")}</div>`:"";
   const evTxt=M.event?eventText(M.event):"";
   const eventHtml=evTxt?`<div class="callout">${evTxt}</div>`:"";
+  const diceHtml=M.dice?`<div class="callout">Lucky Dice: ${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers today.</div>`:"";
+  const news=eventHtml+diceHtml+synHtml+streakHtml;
   $("#screen").innerHTML=`
   <div class="stage morning">
     <div class="sky ${M.shownWx}" id="skyBox">
@@ -1349,11 +1360,8 @@ function renderMorning(){
       <img class="stand" src="${STAND_PNG}" alt="">
       <div id="mScene" style="display:contents"></div>
       <div class="skyTop">
-        <div class="side">
-          <div class="fcChip" tabindex="0"${tip(`${wx.desc} The forecast is always right. Use it to guess how many people will come and what they'll pay.`)}><span class="fcMain">${wx.icon} ${wx.name}, ${M.temp}°F</span>${M.dice?`<span class="fcDice">Lucky Dice: ${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers today</span>`:""}</div>
-          ${synHtml||streakHtml||eventHtml?`<div class="news">${synHtml}${streakHtml}${eventHtml}</div>`:""}
-          ${S.endless?`<button class="btn sm ghost" onclick="endRun('retired')">Stop and keep my score (${fmt(S.cash)})</button>`:""}
-        </div>
+        ${news?`<div class="news" role="status">${news}</div>`:""}
+        <div class="side">${S.endless?`<button class="btn sm ghost" onclick="endRun('retired')">Stop and keep my score (${fmt(S.cash)})</button>`:""}</div>
         <div class="spotCard" id="mSpot"></div>
       </div>
     </div>
