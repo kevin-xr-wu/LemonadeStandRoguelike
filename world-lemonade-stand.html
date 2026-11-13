@@ -464,6 +464,148 @@ button,input,select{touch-action:manipulation}
   .bubble{--rise:4px}
   .coin{--s:1;--rise:14px;bottom:32px}
 }
+
+/* ==================== Full-screen stage: the morning and the selling day ====================
+   The scene fills the window. The HUD floats over the sky, and every control is a card standing on the ground,
+   so nothing covers the street, the stand or the customers. The ground grows to fit its cards; the sky takes the rest.
+   Sprites stay at 2× on phones too: the scene has the room now. */
+body:has(.stage){overflow:hidden}
+#app:has(.stage) .hud{position:fixed;top:8px;left:max(12px,calc(50% - 600px));right:max(12px,calc(50% - 600px))}
+.stage{--px:2;--hudH:56px;position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden auto;background:#8a6b46}
+.stage .sky{--px:2;flex:1 0 auto;height:auto;display:flex;flex-direction:column;padding:calc(var(--hudH) + 18px) 12px calc(84px*var(--px))}
+.stage .ground{flex:none;height:auto;z-index:auto;background-size:calc(64px*var(--px)) calc(32px*var(--px));padding:calc(12px*var(--px)) 12px calc(14px + env(safe-area-inset-bottom,0px))}
+.stage .ground:before{z-index:3;top:calc(-9px*var(--px));height:calc(14px*var(--px));background-size:calc(64px*var(--px)) calc(14px*var(--px))}
+.stage .stand{width:calc(64px*var(--px))}
+.stage .standSign{bottom:calc(67px*var(--px));font-size:var(--fs-sm);padding:3px 12px}
+.stage .cust{--s:var(--px);bottom:calc(1px*var(--px))}
+.stage .coin{--s:var(--px);--rise:calc(14px*var(--px));bottom:calc(32px*var(--px))}
+.stage .bubble{--rise:calc(3px*var(--px))}
+.stage .sun{top:calc(var(--hudH) + 24px)}
+.stage .cloud{top:calc(var(--hudH) + var(--y)*var(--px)*1px)}
+/* Over the sky: what today is like (left), where you sell (middle), news (under the forecast) */
+.skyTop{position:relative;z-index:7;display:grid;grid-template-columns:minmax(230px,1fr) minmax(0,auto) minmax(0,1fr);align-items:start;gap:10px}
+.skyTop .side{display:grid;gap:8px;justify-items:start;align-content:start}
+.fcChip{display:grid;gap:1px;background:var(--ink);color:#fff;border-radius:12px;padding:8px 14px 9px;box-shadow:0 4px 0 rgba(0,0,0,.25);max-width:300px}
+.fcChip .fcLabel{font-size:var(--fs-xs);font-weight:800;text-transform:uppercase;letter-spacing:.08em;opacity:.7}
+.fcChip .fcMain{font-size:var(--fs-xl);line-height:1.05;color:var(--lemon)}
+.fcChip .fcDesc{font-size:var(--fs-sm);font-weight:700}
+.fcChip .learn{margin-top:4px}
+.spotCard{background:var(--card);border-radius:14px;padding:8px 10px 10px;box-shadow:0 5px 0 rgba(43,33,24,.3);width:min(640px,100%);justify-self:center}
+.spotCard .mLbl{margin:0 0 6px;font-size:var(--fs-sm)}
+.spotCard .posts{max-width:none}
+.spotCard .crowdRow{justify-content:center;margin-top:8px}
+.spotCard .mHint{text-align:center;margin-top:8px}
+.news{display:grid;gap:6px;max-width:300px}
+.news .synBanner,.news .callout{margin:0;font-size:var(--fs-sm);font-weight:700;line-height:1.35;padding:6px 10px;box-shadow:0 3px 0 rgba(43,33,24,.25)}
+.news .callout{background:var(--card)}
+.spotChip{background:rgba(255,253,244,.95);border-radius:12px;padding:6px 12px;font-size:var(--fs-sm);font-weight:800;line-height:1.45;box-shadow:0 4px 0 rgba(43,33,24,.25)}
+.toast{justify-self:center;background:var(--card);border-radius:12px;padding:6px 14px;font-size:var(--fs-sm);font-weight:800;box-shadow:0 4px 0 rgba(43,33,24,.3);max-width:min(460px,calc(100vw - 24px));text-align:center;animation:toastLife 4s ease-out forwards}
+.toast:empty{display:none}
+.toast .good{color:var(--green2)}.toast .bad{color:var(--red)}.toast .info{color:#1c5fa8}
+@keyframes toastLife{0%{opacity:0;transform:translateY(-8px)}8%,80%{opacity:1;transform:none}100%{opacity:0}}
+/* On the ground: the cards you set the day up with, then the day's numbers */
+.dockIn{position:relative;z-index:9;max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:12px}
+.dock .card{background:var(--card);border-radius:14px;padding:8px 12px 10px;box-shadow:0 5px 0 rgba(43,33,24,.35)}
+.dock .mLbl{margin:0 0 6px;font-size:var(--fs-sm)}
+.dock .supShelf{position:relative;margin:0;padding:8px 12px 0;overflow:visible;box-shadow:0 5px 0 rgba(43,33,24,.35);max-width:100%}
+.dock .shelfRow{display:flex;gap:8px;margin:0 -12px;padding:10px 12px 8px;overflow-x:auto;scrollbar-width:none}
+.dock .shelfRow .sep{flex:none;width:3px;border-radius:2px;background:#7a4428;opacity:.5}
+.dock .item{flex:none;width:68px}
+.dock .drawer{position:absolute;left:0;bottom:calc(100% + 10px);z-index:10;width:min(340px,calc(100vw - 24px));margin:0;box-shadow:0 6px 0 rgba(43,33,24,.3),0 10px 24px rgba(0,0,0,.2)}
+.dock .gear{display:flex;gap:18px;align-items:flex-start}
+.dock .gear>div+div{margin-top:0}
+.dock .cube .icon{--sz:28px}
+.dock .board{min-width:0;margin:0;padding:10px 14px;box-shadow:inset 0 0 0 5px #a86a3a,0 5px 0 rgba(43,33,24,.35)}
+.dock .prices{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.dock .price{flex:none;width:138px;grid-template-columns:auto;grid-template-rows:auto 1fr auto;justify-items:center;gap:3px;text-align:center} /* steppers line up along the bottom */
+.dock .price .tag{margin:0}
+.dock .pName{font-size:var(--fs-sm);line-height:1.15}
+.dock .pOut{font-size:var(--fs-xs);line-height:1.25}
+.dock .stepper b{min-width:50px}
+.dock .cubes{flex-wrap:nowrap}
+.openCard{display:flex;align-items:center;gap:14px;background:var(--ink);color:#fff;border-radius:14px;padding:10px 10px 10px 16px;box-shadow:0 5px 0 rgba(0,0,0,.25)}
+.openCard #guessText{flex:none;display:grid;gap:2px;font-size:var(--fs-sm)}
+.openCard #guessText b{font-size:var(--fs-lg)}
+.openCard #btnOpen{padding:14px 28px;font-size:var(--fs-xl);margin:0}
+.openCard .warnTxt{color:#ffc9b8;font-weight:800}
+.dayCard{display:grid;gap:6px;min-width:260px;background:var(--ink);color:#fff;border-radius:14px;padding:10px 14px 12px;box-shadow:0 5px 0 rgba(0,0,0,.25)}
+.dayCard #dayMsg{font-weight:800;color:var(--lemon)}
+.dayBar{position:relative;height:10px;border-radius:99px;background:rgba(255,247,224,.2);overflow:hidden}
+.dayBar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--lemon);transition:width .3s}
+.dayBar:after{content:"";position:absolute;left:55%;top:0;bottom:0;width:2px;background:var(--ink)} /* noon */
+.statChip{display:grid;justify-items:center;min-width:92px;background:var(--ink);color:#fff;border-radius:14px;padding:7px 14px 9px;box-shadow:0 5px 0 rgba(0,0,0,.25);font-size:var(--fs-sm);font-weight:800}
+.statChip b{font-family:var(--font-display);font-size:var(--fs-xl);line-height:1;color:var(--lemon);font-variant-numeric:tabular-nums}
+.dayBtns{display:flex;gap:8px}
+.dayBtns .btn{box-shadow:0 4px 0 rgba(43,33,24,.85)}
+/* The HUD's upgrade tray: your five slots, always in view. Tap it to see them all. On phones the slots shrink to pips. */
+.hudTray{display:flex;align-items:center;gap:4px;background:none;border:0;border-radius:10px;padding:4px;color:inherit}
+.hudTray:hover{background:rgba(255,247,224,.12)}
+.hudTray:focus-visible{outline:3px solid var(--blue)}
+.tSlot{width:38px;height:38px;border-radius:8px;background:rgba(255,247,224,.16);display:flex;align-items:center;justify-content:center}
+.tSlot.empty{background:none;border:2px dashed rgba(255,247,224,.3)}
+.tSlot .icon{--sz:32px;vertical-align:0}
+.dockTabs{display:none}
+.starNum{display:none}
+@media (min-width:721px){
+  .morning .openCard{align-self:end}
+  .morning #mGear{align-self:start}
+  .dock .gear .learn{display:block;width:max-content;margin-top:8px}
+  .morning .dockIn{display:grid;grid-template-columns:minmax(0,max-content) auto;grid-template-areas:"shop gear" "board open";justify-content:center;align-items:stretch}
+  .morning #mShop{grid-area:shop;min-width:0}.morning #mGear{grid-area:gear}.morning #mBoard{grid-area:board;min-width:0}.morning .openCard{grid-area:open;justify-content:space-between}
+}
+/* When the stand opens, the camera moves in: the selling day draws the scene at 3× on big screens */
+@media (min-width:900px) and (min-height:720px){.stage.day,.stage.day .sky{--px:3}.stage .ground{min-height:max(190px,26vh)}}
+@media (min-width:900px) and (min-height:940px){.stage,.stage .sky{--px:3}}
+@media (max-width:720px){
+  .stage{--hudH:48px}
+  .dockTabs{display:flex;flex:1 1 100%;gap:4px;background:var(--ink);border-radius:14px;padding:4px;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+  .dockTabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;min-height:40px;background:none;border:0;border-radius:10px;color:#fff;font-family:var(--font-display);font-size:var(--fs-md);padding:4px 6px}
+  .dockTabs button[aria-selected="true"]{background:var(--lemon);color:var(--ink)}
+  .dock[data-tab="shop"] :is(#mGear,#mBoard),.dock[data-tab="gear"] :is(#mShop,#mBoard),.dock[data-tab="board"] :is(#mShop,#mGear){display:none}
+  .skyTop{grid-template-columns:1fr;justify-items:stretch}
+  .skyTop .side{justify-items:start}
+  .fcChip{grid-template-columns:auto 1fr;align-items:baseline;gap:0 10px;padding:6px 12px 7px;max-width:none;justify-self:start;margin-right:84px} /* the sun is to its right */
+  .fcChip .fcLabel{display:none}
+  .fcChip .fcMain{font-size:var(--fs-lg)}
+  .fcChip .learn{grid-column:1/-1}
+  .fcChip .fcDesc{display:none}
+  .news .synBanner,.news .callout{font-size:var(--fs-xs);padding:5px 9px}
+  .spotCard{padding:6px 8px 8px}
+  .spotCard .postFace{padding:5px 15px 5px 6px;font-size:var(--fs-xs)}
+  .spotCard .crowdRow{gap:4px;flex-wrap:nowrap}
+  .spotCard .crowd{font-size:var(--fs-xs);white-space:nowrap}
+  .spotCard{justify-self:center}
+  .spotChip{justify-self:start}
+  .dockIn{gap:10px}
+  .dock .supShelf,.dock .gear,.dock .board,.openCard,.dayCard{flex:1 1 100%}
+  .dock .shelfRow{justify-content:space-between}
+  .dock .item{width:62px}
+  .dock .gear{justify-content:space-between}
+  .dock .price{width:126px}
+  .dock .stepper button{width:34px;height:34px}
+  .dock .stepper b{min-width:46px;font-size:var(--fs-md)}
+  .stage .ground{min-height:max(250px,32vh)}
+  .dockTabs{order:2}
+  .openCard{order:3} /* tabs sit just above Open, so a buy popover never covers them */
+  .openCard{padding:8px 8px 8px 14px}
+  .openCard #guessText{flex:1}
+  .openCard #btnOpen{padding:12px 22px!important;font-size:var(--fs-lg)}
+  .dayCard{grid-template-columns:1fr auto;align-items:center;min-width:0}
+  .dayCard .dayBar{grid-column:1}
+  .dayCard .dayBtns{grid-column:2;grid-row:1/3}
+  .statChip{flex:1;min-width:0;padding:6px 8px 8px}
+  .hudTray{gap:3px;padding:6px 4px}
+  .tSlot{width:10px;height:10px;border-radius:3px;background:var(--lemon)}
+  .tSlot.empty{background:none;border:2px solid rgba(255,247,224,.4)}
+  .tSlot .icon{display:none}
+}
+@media (max-width:560px){ /* phones: the star meter becomes one star and the number, to make room for the upgrade tray */
+  .hud{gap:10px}
+  .starMeter .star:nth-child(n+2){display:none}
+  .starMeter{align-items:center;gap:4px}
+  .starNum{display:block;font-family:var(--font-display);font-size:var(--fs-lg);color:var(--lemon);line-height:1}
+}
+@media (max-height:640px){.stage,.stage .sky{--px:1}}
 </style>
 <style>
 /* Fonts, embedded so the game works offline. Both are subset to the characters the game uses.
@@ -482,6 +624,7 @@ button,input,select{touch-action:manipulation}
     <div class="hudCoins" id="hudMoney" tabindex="0" data-tip="Your money. It's also your score."><i class="hudIcon"></i><span class="money" id="hudCash">$30</span></div>
     <div class="hudDay" id="hudDayBox" tabindex="0" data-tip=""><span class="hudIcon calPage" id="hudDay"></span><span class="dayOf" id="hudDayOf"></span></div>
     <div class="starMeter" id="hudRepBox" tabindex="0" data-tip="" role="img"></div>
+    <button class="hudTray" id="hudTray" onclick="showBuild()" data-tip=""></button>
     <button class="hudBtn soundBtn" id="btnSound" data-tip="Sound on or off" aria-label="Sound on or off"><i class="hudIcon"></i></button>
     <button class="hudBtn helpBtn" id="btnHelp" data-tip="How to play" aria-label="How to play">?</button>
   </div>
@@ -1005,7 +1148,7 @@ function genMorning(){
   const ev=EVENTS.find(e=>e.id===evRoll);
   const prices={};S.recipes.forEach(rk=>{prices[rk]=S.menuPrices[rk]!=null?S.menuPrices[rk]:RECIPES[rk].price});
   const temp=ri(...WX_TEMP[trueWx]);
-  M={trueWx,shownWx,temp,locs,loc:null,event:ev,signs:(S.last?S.last.signs:3),icePerCup:(S.last?S.last.ice:2),prices,logStart:S.log.length,
+  M={trueWx,shownWx,temp,locs,loc:null,tab:"shop",event:ev,signs:(S.last?S.last.signs:3),icePerCup:(S.last?S.last.ice:2),prices,logStart:S.log.length,
      special:S.gear.includes("special")?pick(S.recipes):null,
      dice:S.gear.includes("dice")?Math.round(rnd(0.7,1.6)*100)/100:0};
   if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1;M.treeLemons=5+S.treeDays;addStock("lemons",M.treeLemons,0)}
@@ -1085,9 +1228,13 @@ function updateHUD(){
   $("#hudDayOf").innerHTML=S.endless?"Endless":`of ${S.totalDays}<i class="long"> days</i>`;
   $("#hudDayBox").dataset.tip=S.endless?`Day ${S.day}. Endless: play as long as you like. You're at ${area}.`:`Day ${S.day} of ${S.totalDays}. You're at ${area}.`;
   // each star fills from the left, one art pixel at a time: 3.4 stars is three full stars and a star 4 of 11 pixels full
-  $("#hudRepBox").innerHTML=[0,1,2,3,4].map(i=>`<i class="star" style="--f:${Math.round(clamp(S.rep-i,0,1)*11)}"></i>`).join("");
+  $("#hudRepBox").innerHTML=[0,1,2,3,4].map(i=>`<i class="star" style="--f:${Math.round(clamp(S.rep-i,0,1)*11)}"></i>`).join("")+`<b class="starNum">${S.rep.toFixed(1)}</b>`;
   $("#hudRepBox").setAttribute("aria-label",`${S.rep.toFixed(1)} out of 5 stars`);
   $("#hudRepBox").dataset.tip=`${S.rep.toFixed(1)} stars. They go up when most people get lemonade. More stars bring more people.`;
+  const tray=$("#hudTray"),n=S.gear.length;
+  tray.innerHTML=Array.from({length:gearSlots()},(_,i)=>S.gear[i]?`<span class="tSlot">${gearIconHtml(S.gear[i])}</span>`:`<span class="tSlot empty"></span>`).join("");
+  tray.dataset.tip=`My stand: ${n} of ${gearSlots()} upgrades. Tap to see them all.`;
+  tray.setAttribute("aria-label",`My stand, ${n} of ${gearSlots()} upgrades`);
 }
 /* The HUD's money counts to each new amount, so buying and selling feel like coins changing hands. */
 const hudCash={shown:null,raf:0};
@@ -1169,27 +1316,35 @@ function renderMorning(){
   const evTxt=M.event?eventText(M.event):"";
   const eventHtml=evTxt?`<div class="callout">${evTxt}</div>`:"";
   $("#screen").innerHTML=`
-  <div class="scene">
-    <div class="sky ${M.shownWx}">
+  <div class="stage morning">
+    <div class="sky ${M.shownWx}" id="skyBox">
       ${skyArt(M.shownWx)}
       <img class="stand" src="${STAND_PNG}" alt="">
       <div id="mScene" style="display:contents"></div>
+      <div class="skyTop">
+        <div class="side">
+          <div class="fcChip" tabindex="0"${tip("The forecast is always right. Use it to guess how many people will come and what they'll pay.")}><span class="fcLabel">Today's forecast</span><span class="fcMain">${wx.icon} ${wx.name}, ${M.temp}°F</span><span class="fcDesc">${wx.desc}</span>${learnHint(FORECAST_HINT)}${M.dice?`<span class="fcDesc">Lucky Dice: ${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers today</span>`:""}</div>
+          ${synHtml||streakHtml||eventHtml?`<div class="news">${synHtml}${streakHtml}${eventHtml}</div>`:""}
+          ${S.endless?`<button class="btn sm ghost" onclick="endRun('retired')">Stop and keep my score (${fmt(S.cash)})</button>`:""}
+        </div>
+        <div class="spotCard" id="mSpot"></div>
+      </div>
     </div>
-    <div class="ground"></div>
-    <div class="dayStats forecastBar" tabindex="0"${tip("The forecast is always right. Use it to guess how many people will come and what they'll pay.")}><span class="fcLabel">Today's forecast</span><span class="fcMain">${wx.icon} <b>${wx.name}</b>, <b>${M.temp}°F</b></span><span class="fcDesc">${wx.desc}</span>${learnHint(FORECAST_HINT)}${M.dice?`<span>Lucky Dice: <b>${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers</b> today</span>`:""}</div>
-  </div>
-  ${synHtml}${streakHtml}${eventHtml}
-  <div class="panel">
-    <div class="flex spread"><h2 style="margin:0">Day ${S.day}</h2>${S.endless?`<button class="btn sm ghost" onclick="endRun('retired')">Stop and keep my score (${fmt(S.cash)})</button>`:""}</div>
-    ${shelfHtml()}
-    <div id="mSpot"></div>
-  </div>
-  <div class="supShelf" id="mShop" role="group" aria-label="Supplies"></div>
-  <div class="panel gear" id="mGear"></div>
-  <div class="board" id="mBoard" role="group" aria-label="Today's prices"></div>
-  <div class="guessBar"><div id="guessText"></div><button class="btn gold" id="btnOpen" onclick="openStand()">Open<i class="long"> the stand</i></button></div>`;
+    <div class="ground dock" id="mDock" data-tab="${M.tab}">
+      <div class="dockIn">
+        <div class="dockTabs" role="tablist" aria-label="Set up the stand">${DOCK_TABS.map(([k,name,icon])=>`<button role="tab" onclick="setDockTab('${k}')" data-tab="${k}" aria-selected="${M.tab===k}">${icon()} ${name}</button>`).join("")}</div>
+        <div class="supShelf" id="mShop" role="group" aria-label="Supplies"></div>
+        <div class="card gear" id="mGear"></div>
+        <div class="board" id="mBoard" role="group" aria-label="Today's prices"></div>
+        <div class="openCard"><div id="guessText"></div><button class="btn gold" id="btnOpen" onclick="openStand()">Open</button></div>
+      </div>
+    </div>
+  </div>`;
   morningParts();
 }
+/* On phones the ground shows one group of controls at a time, in the order the help teaches them. */
+const DOCK_TABS=[["shop","Supplies",()=>iconHtml("supply","lemons")],["gear","Ice & signs",()=>iconHtml("supply","ice")],["board","Prices",()=>iconHtml("flavor","classic")]];
+function setDockTab(k){M.tab=k;sfx.tick();$("#mDock").dataset.tab=k;document.querySelectorAll(".dockTabs [role=tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===k))}
 /* Redraw the morning's controls in place, so the sky keeps drifting, and keep focus on the control just used. */
 function morningParts(){
   const ae=document.activeElement,f=ae&&ae.dataset?ae.dataset.f:null;
@@ -1200,6 +1355,8 @@ function morningParts(){
   $("#mGear").innerHTML=mGearHtml();
   $("#mBoard").innerHTML=mBoardHtml();
   renderProj();
+  const dr=$("#mDrawer"),it=$(".item[aria-expanded=true]");
+  if(dr&&it){const shelf=$("#mShop"),row=it.parentNode;dr.style.left=clamp(it.offsetLeft-row.scrollLeft+it.offsetWidth/2-dr.offsetWidth/2,0,Math.max(0,shelf.clientWidth-dr.offsetWidth))+"px"}
   if(f){const el=document.querySelector(`[data-f="${f}"]`);if(el)el.focus({preventScroll:true})}
 }
 const SIGN_SPOTS=8; // signs drawn on the grass; the stepper counts any beyond these
@@ -1208,8 +1365,7 @@ function mSceneHtml(){
   let signs="";
   for(let k=0;k<Math.min(owned,SIGN_SPOTS);k++){const on=k<M.signs; // alternate left and right of the stand, working outward
     signs+=`<button class="signSlot${on?"":" off"}" style="--k:${k>>1};--side:${k%2?1:-1}" onclick="tapSign(${k})" data-f="sign${k}" aria-pressed="${on}" aria-label="Sign ${k+1}">${iconHtml("supply","signs")}</button>`}
-  return `<div class="crowdMix">${M.loc?`${iconHtml("spot",M.loc.name)} ${M.loc.name}<br>${crowdMixLine()}`:"Pick a spot"}</div>
-    <div class="standSign">${menu.length?`${menu.length} ${plural(menu.length,"flavor")} · from ${fmt(Math.min(...menu.map(menuPrice)))}`:"Buy supplies to open"}</div>${signs}`;
+  return `<div class="standSign">${menu.length?`${menu.length} ${plural(menu.length,"flavor")} · from ${fmt(Math.min(...menu.map(menuPrice)))}`:"Buy supplies to open"}</div>${signs}`;
 }
 function mSpotHtml(){
   const top=M.loc?Object.entries(crowdMixFor(M.loc)).sort((a,b)=>b[1]-a[1]).slice(0,3):[];
@@ -1219,11 +1375,10 @@ function mSpotHtml(){
 }
 function mShopHtml(){
   const basics=["cups","lemons","sugar","ice","signs"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
-  const row=ids=>`<div class="shelfRow">${ids.map(id=>{const n=S.inv[id]||0,open=M.shopOpen===id;
-    return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`}).join("")}</div>${ids.includes(M.shopOpen)?mDrawerHtml(M.shopOpen):""}`;
-  return `<div class="mLbl">Supplies<small>Tap one to buy. Bigger packs cost less each.</small></div>${learnHint(HOW_STEPS[1][1])}
-    ${M.treeLemons?`<div class="mHint" style="margin:0 0 6px">Your Lemon Tree dropped <b>${M.treeLemons}</b> free ${plural(M.treeLemons,"lemon")}.</div>`:""}
-    ${row(basics)}${extras.length?`<div class="mHint" style="margin:0">For your flavors</div>${row(extras)}`:""}`;
+  const item=id=>{const n=S.inv[id]||0,open=M.shopOpen===id;
+    return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`};
+  return `<div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>${learnHint(HOW_STEPS[1][1])}
+    <div class="shelfRow">${basics.map(item).join("")}${extras.length?`<i class="sep" aria-hidden="true"></i>${extras.map(item).join("")}`:""}</div>${M.shopOpen?mDrawerHtml(M.shopOpen):""}`;
 }
 function mDrawerHtml(id){
   const ing=INGREDIENTS[id],n=S.inv[id]||0;
@@ -1242,10 +1397,11 @@ function mGearHtml(){
   const b=computeBuild(),owned=S.inv.signs||0;
   let cubes="";
   for(let k=1;k<=4;k++)cubes+=`<button class="cube" onclick="setIce(${k})" data-f="ice${k}" aria-pressed="${k<=M.icePerCup}" aria-label="${k} ice ${plural(k,"cube")}">${iconHtml("supply","ice",true)}</button>`;
-  return `<div><div class="mLbl"><span>${iconHtml("supply","ice")} Ice in each cup: ${M.icePerCup}</span><small>Hot days need more.</small></div>
+  const signTip=`${owned?"Or tap them on the grass.":"You have none. Buy some on the shelf."}${b.freeSigns?` Upgrades add ${b.freeSigns} free.`:""} ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}`;
+  return `<div><div class="mLbl"><span tabindex="0"${tip("Hot days need more ice.")}>${iconHtml("supply","ice")} Ice in each cup</span></div>
       <div class="cubes" role="group" aria-label="Ice in each cup">${cubes}</div></div>
-    <div><div class="mLbl"><span>${iconHtml("supply","signs")} Signs out</span>${stepperHtml("signs",`${M.signs} of ${owned}`,"stepSigns(-1)","stepSigns(1)",`Fewer signs, ${M.signs} out`,`More signs, ${M.signs} out`,M.signs<=0,M.signs>=owned)}</div>${learnHint(HOW_STEPS[2][1])}
-      <div class="mHint">${owned?"Or tap them on the grass.":"You have none. Buy some on the shelf."}${b.freeSigns?` Upgrades add ${b.freeSigns} free.`:""} ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}</div></div>`;
+    <div><div class="mLbl"><span tabindex="0"${tip(signTip)}>${iconHtml("supply","signs")} Signs out</span></div>
+      ${stepperHtml("signs",`${M.signs} of ${owned}`,"stepSigns(-1)","stepSigns(1)",`Fewer signs, ${M.signs} out`,`More signs, ${M.signs} out`,M.signs<=0,M.signs>=owned)}${learnHint(HOW_STEPS[2][1])}</div>`;
 }
 function mBoardHtml(){
   return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][1])}<div class="prices">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
@@ -1280,10 +1436,9 @@ function brewableServings(inv){let n=0,guard=0;while(guard++<300){const rk=S.rec
 function cupsFromSupplies(){return Math.min(brewableServings({...S.inv}),S.inv.cups||0,M.icePerCup>0?Math.floor((S.inv.ice||0)/M.icePerCup):Infinity)}
 function renderProj(){
   const gt=$("#guessText");if(!gt)return;
-  const wx=WEATHERS[M.shownWx];
   $("#btnOpen").disabled=!M.loc;
   const cap=cupsFromSupplies();
-  gt.innerHTML=`<span class="nums"><span>${wx.icon} <b>${wx.name}</b>, <b>${M.temp}°F</b></span><span>${iconHtml("supply","cups")} <i class="long">Supplies for </i><b>${cap}</b> ${plural(cap,"cup")}</span>${M.loc?"":"<span>Pick a spot first</span>"}</span>`;
+  gt.innerHTML=`<span>Supplies for</span><span><b>${cap}</b> ${plural(cap,"cup")}</span>${M.loc?"":`<span class="warnTxt">Pick a spot first</span>`}`;
 }
 
 /* ---------- Day resolution ---------- */
@@ -1371,28 +1526,35 @@ function openStand(){
 }
 function renderDayScene(){
   $("#screen").innerHTML=`
-  <div class="scene">
+  <div class="stage day">
     <div class="sky ${M.actualWx}" id="skyBox">
-      <div class="crowdMix">${iconHtml("spot",M.loc.name)} ${M.loc.name}<br>${crowdMixLine()}</div>
       ${skyArt(M.actualWx)}
-      <div class="sceneBtns"><button class="btn sm ghost" onclick="D.skip=true">Skip</button> ${spdBtnHtml()}</div>
       <div class="standSign">${D.menu.length} ${plural(D.menu.length,"flavor")}, from ${fmt(Math.min(...D.menu.map(rk=>menuPrice(rk))))}</div>
       <img class="stand" src="${STAND_PNG}" alt="">
       <div id="fxLayer"></div>
+      <div class="skyTop">
+        <div class="side"><div class="spotChip">${iconHtml("spot",M.loc.name)} ${M.loc.name}<br>${crowdMixLine()}</div></div>
+        <div class="toast" id="dayToast" role="status"></div>
+      </div>
     </div>
-    <div class="ground"></div>
-    <div class="dayStats">
-      <span class="phaseTxt" id="dayMsg">Open for business…</span>
-      <span tabindex="0"${tip("Cups you can still make with your supplies.")}>Cups left: <b id="stStock">${servingsReady()}</b></span>
-      <span tabindex="0"${tip("Money from sales and tips today.")}>Money: <b id="stTill">$0</b></span>
-      <span tabindex="0"${tip("People still waiting to buy.")}>In line: <b id="stDem">${D.demand}</b></span>
+    <div class="ground dock">
+      <div class="dockIn">
+        <div class="dayCard">
+          <span id="dayMsg">Open for business…</span>
+          <div class="dayBar" tabindex="0"${tip("How much of today is done. The line marks noon.")}><i id="dayFill"></i></div>
+          <div class="dayBtns"><button class="btn sm ghost" onclick="D.skip=true">Skip</button>${spdBtnHtml()}</div>
+        </div>
+        <div class="statChip" tabindex="0"${tip("Cups you can still make with your supplies.")}><span>Cups left</span><b id="stStock">${servingsReady()}</b></div>
+        <div class="statChip" tabindex="0"${tip("Money from sales and tips today.")}><span>Money</span><b id="stTill">$0</b></div>
+        <div class="statChip" tabindex="0"${tip("People still waiting to buy.")}><span>In line</span><b id="stDem">${D.demand}</b></div>
+      </div>
     </div>
-  </div>
-  <div class="log" id="dayLog">${S.log.slice(M.logStart).map(l=>l+"<br>").join("")}</div>`;
+  </div>`;
   updateHUD();
 }
 function crowdMixLine(){const mix=crowdMixFor(M.loc);return Object.entries(mix).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${CROWDS[k].icon} ${v}%`).join(", ")}
-function logLine(html){const el=$("#dayLog");if(el){el.innerHTML+=html+"<br>";el.scrollTop=el.scrollHeight} S.log.push(html)}
+/* The newest line of the day pops up as a toast over the sky; the evening report keeps them all. */
+function logLine(html){const el=$("#dayToast");if(el){el.innerHTML=html;el.style.animation="none";void el.offsetWidth;el.style.animation=""} S.log.push(html)}
 function sleep(ms){ // simulation-time wait: scales with SPEED, live, and Skip ends it now
   return new Promise(res=>{
     if(D&&D.skip)return res();
@@ -1458,7 +1620,9 @@ function updateDayStats(){
   const till=D.skip?D.revenue+D.tips:D.paid; // money lands when a buyer pays at the counter; Skip shows it all
   $("#stTill").textContent=fmt(till);
   showCash(S.cash+till); // the HUD counts up with each sale; the evening adds bonuses on top
-  $("#stDem").textContent=Math.max(0,D.demand-D.sold-D.awayPrice-D.awayWarm-D.awayOut);
+  const left=Math.max(0,D.demand-D.sold-D.awayPrice-D.awayWarm-D.awayOut);
+  $("#stDem").textContent=left;
+  $("#dayFill").style.width=(D.demand?100*(1-left/D.demand):100)+"%";
 }
 /* Customers walk across the scene. Buyers stop at the counter and face you while they pay,
    then walk on with a cup; everyone else walks past, saying why as they pass the stand. */
