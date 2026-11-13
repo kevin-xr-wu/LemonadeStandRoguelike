@@ -30,7 +30,7 @@
 body{margin:0;font-family:var(--font-body);font-size:var(--fs-md);background:var(--lemon2);color:var(--ink);min-height:100vh}
 button{font-family:inherit;cursor:pointer}
 /* The display face: headings, buttons, signs and every number the player reads at a glance. Hints and descriptions stay in the body face. */
-h1,h2,h3,.btn,.helpBtn,.mLbl,.choice .ttl,.hud .money,.calPage,.dayOf,.fcMain,.dayStats b,.standSign,.postFace,.item .n,.stepper b,.pName,#guessText b,
+h1,h2,h3,.btn,.helpBtn,.mLbl,.choice .ttl,.artAmt,.hud .money,.calPage,.dayOf,.fcMain,.dayStats b,.standSign,.postFace,.item .n,.stepper b,.pName,#guessText b,
 .rHead,.amt,.rTotal,.rStamp,.scoreLabel,.scoreBig,.highlights b{font-family:var(--font-display)}
 .mLbl small{font-family:var(--font-body)}
 #app{max-width:1060px;margin:0 auto;padding:12px 12px 40px}
@@ -80,6 +80,52 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .choice .desc{font-size:var(--fs-sm);margin-top:5px;line-height:1.38}
 .rar{font-size:var(--fs-xs);font-weight:900;text-transform:uppercase;letter-spacing:.07em;padding:3px 8px;border-radius:99px;white-space:nowrap;flex-shrink:0;align-self:flex-start}
 .rar.common{background:#ead6a8}.rar.rare{background:#d8f2ff}.rar.epic{background:#f28a5b}.rar.legendary{background:var(--lemon)}
+/* Pick cards (cardHtml): the ink border, then a frame in the card's colour, an art window and a white body.
+   Upgrades: the frame is the rarity (tan, blue, red, gold); epic and legendary get Pixelwright corner caps, legendary a shine.
+   Flavors sit on a chalkboard in a wood frame; cash is a coin pile on green. Art pixels are --px screen pixels. */
+.choice.pick{--px:3;--frame:#c9a77a;--artBg:#fff7e0;display:flex;flex-direction:column;gap:6px;padding:7px;background:var(--frame)}
+.pick.rare{--frame:#3f7ea8;--artBg:#d8f2ff}
+.pick.epic{--frame:#c23b2e;--artBg:#fbd5b0}
+.pick.legendary{--frame:#f5b301;--artBg:#fff3a0}
+.pick.flavor{--frame:#a86a3a;--artBg:#2f3b33}
+.pick.cash{--frame:#2e7d46;--artBg:#9be08a}
+.pick.crate{--artBg:#7fc4e8}
+.cardArt{position:relative;display:flex;align-items:center;justify-content:center;gap:4px 10px;min-height:calc(24px*var(--px) + 12px);padding:6px;background:var(--artBg);border-radius:8px;overflow:hidden}
+.cardArt .icon{--sz:calc(16px*var(--px));vertical-align:0;filter:drop-shadow(0 calc(var(--px)*1px) 0 rgba(43,33,24,.25))}
+.cardBody{flex:1;display:block;background:#fff;border-radius:8px;padding:8px 10px 12px}
+.pick .ttl{display:block;line-height:1.2}
+.pick .desc{display:block}
+.pick:disabled{cursor:default;color:var(--ink)} /* the crate being opened keeps its ink text */
+.pick.flavor .cardArt{flex-direction:column}
+.artTags{display:flex;flex-wrap:wrap;justify-content:center}
+.coinPile,.crateArt{display:block;flex:none;image-rendering:pixelated;filter:drop-shadow(0 calc(var(--px)*1px) 0 rgba(43,33,24,.25))}
+.coinPile{width:calc(28px*var(--px));height:calc(18px*var(--px));background:var(--coinPilePng) 0 0/100% 100%}
+.artAmt{font-size:var(--fs-xl);font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+.crateArt{width:calc(32px*var(--px));height:calc(30px*var(--px));background:var(--cratesPng) calc(var(--i)*-32px*var(--px)) 0/calc(96px*var(--px)) 100% no-repeat}
+.orn{position:absolute;width:calc(11px*var(--px));height:calc(11px*var(--px));background:var(--ornamentsPng) 0 0/calc(99px*var(--px)) 100% no-repeat;image-rendering:pixelated;pointer-events:none}
+.orn.tl{top:-3px;left:-3px}.orn.tr{top:-3px;right:-3px}.orn.bl{bottom:-3px;left:-3px}.orn.br{bottom:-3px;right:-3px}
+.orn.tr{background-position-x:calc(-11px*var(--px))}.orn.bl{background-position-x:calc(-22px*var(--px))}.orn.br{background-position-x:calc(-33px*var(--px))}
+.legendary .orn.tl{background-position-x:calc(-44px*var(--px))}.legendary .orn.tr{background-position-x:calc(-55px*var(--px))}
+.legendary .orn.bl{background-position-x:calc(-66px*var(--px))}.legendary .orn.br{background-position-x:calc(-77px*var(--px))}
+.pick.legendary .cardArt:after{content:"";position:absolute;top:-10px;bottom:-10px;left:-30%;width:16%;background:rgba(255,255,255,.65);transform:skewX(-20deg);animation:shine 3.2s ease-in-out infinite}
+@keyframes shine{0%,55%{left:-30%}100%{left:120%}}
+/* Swap screen: the upgrade marked to go turns grey under a red X and stays pressed in */
+.outMark{display:none;position:absolute;left:50%;top:50%;z-index:1;width:calc(11px*var(--px));height:calc(11px*var(--px));margin:calc(-5.5px*var(--px));background:var(--ornamentsPng) calc(-88px*var(--px)) 0/calc(99px*var(--px)) 100% no-repeat;image-rendering:pixelated}
+.choice.pick.out{--frame:#938e99;--artBg:#cbc7cf;transform:translateY(3px);box-shadow:0 1px 0 rgba(43,33,24,.85)}
+.pick.out .outMark{display:block}
+.pick.out .cardArt>:not(.outMark),.pick.out .cardBody,.pick.out .orn{opacity:.5;filter:grayscale(1)}
+/* Crates: the one you pick shakes, the others step back; then the cards flip in, one after another */
+.pick.crate.opening .crateArt{animation:crateShake .56s ease-out}
+.pick.crate.passed{opacity:.45;transition:opacity .2s}
+@keyframes crateShake{20%{transform:rotate(-6deg)}40%{transform:rotate(6deg)}60%{transform:rotate(-4deg) translateY(-4px)}80%{transform:translateY(-10px) scale(1.06)}}
+.pick.flipIn{animation:flipIn .45s ease-out calc(var(--k)*.13s) backwards}
+@keyframes flipIn{from{transform:perspective(700px) rotateY(-90deg);opacity:.4}}
+@media (prefers-reduced-motion:reduce){.pick.flipIn,.pick.crate.opening .crateArt{animation:none}.pick.legendary .cardArt:after{display:none}}
+/* New combo: the flavors that make it, on small chalkboards */
+.comboCups{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:2px 0 10px}
+.comboCup{display:inline-flex;flex-direction:column;align-items:center;gap:4px;background:#2f3b33;box-shadow:inset 0 0 0 4px #a86a3a;border-radius:10px;padding:10px 12px 8px}
+.comboCup .icon{--sz:32px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap} /* read aloud, not shown */
 .tag{display:inline-block;background:var(--paper2);border-radius:99px;font-size:var(--fs-xs);font-weight:800;padding:2px 8px;margin:2px 2px 0 0}
 .warn{color:var(--red);font-weight:800}
 /* Buttons */
@@ -140,7 +186,6 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .icon.spot{--n:13;background-image:var(--spotIcons)}
 .icon.gearA{--n:20;background-image:var(--gearIconsA)}
 .icon.gearB{--n:19;background-image:var(--gearIconsB)}
-.cashIcon{--px:2;display:inline-block;vertical-align:-9px} /* the HUD coin, as Cousin's Gift's icon */
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
@@ -256,7 +301,6 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 #guessText b{color:var(--lemon);font-size:var(--fs-lg)}
 #guessText .pos{color:#9be15d} #guessText .negc{color:#ff8f6b}
 .guessBar #btnOpen{padding:12px 22px;margin-left:auto}
-.typeLabel{font-weight:900;opacity:.55}
 /* Morning: set up the stand. Spots are signposts, supplies sit on a shelf, signs stand on the grass, prices go on a chalkboard. */
 .mLbl{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 10px;margin:12px 0 6px;font-weight:900;font-size:var(--fs-md)}
 .mLbl small{font-size:var(--fs-sm);font-weight:700;opacity:.8}
@@ -386,6 +430,8 @@ button,input,select{touch-action:manipulation}
   #btnOpen{padding:14px 16px!important;max-width:100%}
   .choice{padding:11px}
   .choice .ttl{font-size:var(--fs-md)}
+  .choice.pick{--px:2}
+  .artAmt{font-size:var(--fs-lg)}
   .synBanner{padding:9px 11px}
   .report{grid-template-columns:1fr;gap:14px}
   .receipt{padding:16px 16px 20px}
@@ -397,6 +443,8 @@ button,input,select{touch-action:manipulation}
 }
 @media (max-width:560px){
   .choices{grid-template-columns:1fr} /* draft picks and swaps: one clean column */
+  .choice.pick{flex-direction:row}
+  .pick .cardArt{flex:none;flex-direction:column;width:calc(32px*var(--px) + 12px)}
 }
 @media (max-width:380px){
   .hud{gap:8px}
@@ -511,7 +559,16 @@ const CUSTOMER_WALK_PNG={
   foodies:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAgCAMAAABzRoe3AAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAbVJREFUeNrNmFFvhCAQhA9J6l1qcj71/bbXpP3/f7CA1pzsDrAWFZ4usx8zCyrmvGSHCSPPnc6DgvkJQyi0xsuFWYaF1nhWmPRP+hb1dvikERH1pAg+g08ZPZz80ZcHn8KnjLxuYqfW+ISR2weit9b5RMH5ELGnqTo/KPuJeBjsC24QO5G38kJw4If4Eih5GHwx4zgOHN/Ks8rE327sblfyKNhYa8d34dW9jWfBM3+9sgVoeTnYyfe7HcfSRnN8HPzHs4Y28GLwrHdAV/Ogoa60UcRngnvUkJqXG+opfpi0PAo2xsvWljaa46VGrT9u/s3LwYYoyKWNQj7VaA0eBRt6hAmljSI+3WgFHga7nZYXoONzjVbQYeErjGdxozKPgyvxuYKCf/pxuD808hOQLho5H6Tv6+9UHCD3gwOO9/c+xtU0AcbPUSxgd/9pllCQb1HPcytfkB6Bnf1hANo4FIA27hh/nhB0ad9mKfYKurRvO/ujANN17iAuD/CHt2YB1fynK7lcotXnPaatsGXiK7/WjvAPWxFeeuEFKPzVibRFWiZKZsf5vwRoG2qDnz4Fr39IxRb5XzHNjf0O8OGBAAAAAElFTkSuQmCC",
   artists:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAgCAMAAABzRoe3AAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAcpJREFUeNrNl1FygzAMRKOvJpBOOQH+CT+0cP/jVQLCANISiwCxZzrTrJ53ZTuJw2UyaPpiFIlq/jNLSfGgQL/90IXUeLtAf4NeLwup8bBQD2Oup8bjAlXDiDT6FI+NRAuBQmzwh/h1I9EXhdT4F0bfoUycf2UUclPfkb+/x+PgB4+yBAvewC8bffJ38y0UzcNguVBY1fJWXgX3/O32NSt4eRh8oUKGoW/jVfDAX69L3cmjYGqatm2ahy5s45fBT14vwMuDYPZp26L4UfpGXjU08LGNIn5LozLBvTDQKH9b2v3E8lwQ3QwOpb0wmeHhUaMFf9noi9XJc0FyzeBQghPgKS4eNCrjbf5CEus8AW7Vx6ON2IGXBSCjEKCRcaOv8gcuTFLNQlVd+U7UeocbR7zKe/3j+dWC8et7hZcr9Hx/aCQTkG4asQ/Sj/VnFQfY/eCA8/3Fh7jmCSCZ41jA4f79LKNgv0WF11ZSsD4CB/vDALRxKABt3Dn+OqHTrX0bpKVXp1v7drA/CqAsyzwBlOf8hBa/gN38+5Mcj2j2VKG0GTZOnPJz7Qz/bit4L/o1qsdcrY3SONEyO89/EuBtKA2+O5teGv+xiiny/7oCweTsCUmlAAAAAElFTkSuQmCC",
 };
+/* Pick-card art, drawn in Pixelwright. Card Ornaments: 11×11 corner caps (epic TL, TR, BL, BR, then legendary TL, TR, BL, BR) and the swap-out X. */
+const CARD_ORNAMENTS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAAALCAMAAABcQsOQAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAARlJREFUeNqlU9ESgyAMkxcKZ7nb/3/tkrQbMuVpuVNLrQ0k9ShbHAv2dc+1uGWMayS8LKH/fsdsa70RxpDoCu23ltnooEcZ3cz9PM9ScHfHEuE4bxzINsNbq7WWgjvCbghbvXEg667ujkZlWDMECXcstxy9v3rH9wHTcsNxiEQU5LA6G+YSLyHNzDKR55gNc4kHpLnWNhWBJCh4Gkg0KxxyBcfFEjilLJpCp2/WanLQlsncciN5igyWXQSHbJkc4RI3uNTi0JvTRWd6Ejo/KC+XKJcw0qVnd2UL5RJauBSbl/F7DquQKycakyCXnjli2j4T/Zm2mKiYrtTs8h214jALS3iR5GsJs3CJ0EQDNC376vH/H72pm//5G7PuD+2Vf61rAAAAAElFTkSuQmCC";
+/* 32×30 crates: upgrade, flavor, surprise (offerCrate). */
+const CRATES_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAAeCAMAAADkbuu7AAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAhpJREFUeNq1VdFygzAMqweDMspDuXb//6mT4jiJIYHuevVdobaChB3HXNp2rcRE5L6uvN5FNkDhe89zTSk2bRT41BWG2ypQWUvGZVluyfdejauWAThXmYLCuiKNMgVZbrQY8F6zGrXSkB4C4XlSGEekVM7ozL5IJ/RaGuMHw+Q4KPnzQ0VacDJ2YlxynUJpRlXAGwb6ac4vGZNi8Rf9nwW+Dw3LwK+vPqqCEkCjEIDCTIGgQvpCGyRNdgrEwqgEHdEEQFKWGZWBHwQIFNL9oTkBpDDiR5ppkwGZ4IOblzJ+tgfv2kV+YY9KHhE4y9Dh7NDZRyDwfD4f0u0sAtJXsLTmy+Mq4HAKSEuAgPRt/q6jQPnMRgC4ZdD3sXFSS6UMug6e4c5MIOEq4PCLPGgWFHSiLVYgEpSWxAqB+HjcAycQLO3Jdcj/I9R1rR02gdYmqwBvySiQPSPIEW87XAUcHgSs/Bhn4SDZRuxKUNuD03NgBDLyrE5juGkdDwQyzvlmphm4SJnBOOD9YcNQz2DXSQG3j4NOUwq4SCGAGrFC45Ba9aUSvSKQe0gFml1S6yLONzMVcBHXRRAYBgj8q4tONzmYnTKUh32UukrPwWGJ9gdtc5J1aHILscv8xIQrR0WcppGgMiycAPG6QBg5xSDCNSx2s6g6LJoZFLhN09r3IE3T90bFx78HOjT3LWLTtNVCcZXDN7OIkY9/k/8AuucyC0pTVucAAAAASUVORK5CYII=";
+/* 28×18 coin pile, the Cousin's Gift card's art. */
+const COIN_PILE_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAASCAMAAAB/2U7WAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAH1JREFUeNqNkTsOwCAMQ8nSwP0vXOcLoRlqMSCeDI4ZY5AL249orjUhbiiYoJ4SB+vgw4tVTwdTP5xn+NtZwl9O8ezw1UliU6rhi5P8xn2RmkwLBhyznUU8SyEQC/AYOyrEY+jLnTF1VCjQnjs+KUM5rVXlPJrzrjE7K7/+AmcJBr6H6hLzAAAAAElFTkSuQmCC";
 document.documentElement.style.setProperty("--grassPng",`url(${GRASS_PNG})`);
+document.documentElement.style.setProperty("--ornamentsPng",`url(${CARD_ORNAMENTS_PNG})`);
+document.documentElement.style.setProperty("--cratesPng",`url(${CRATES_PNG})`);
+document.documentElement.style.setProperty("--coinPilePng",`url(${COIN_PILE_PNG})`);
 document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
 document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
 document.documentElement.style.setProperty("--supplyIcons",`url(${SUPPLY_ICONS_PNG})`);
@@ -1058,7 +1115,8 @@ function tagTip(t){
 function crowdTip(ck){const c=CROWDS[ck];return `${c.name} like ${listWords(c.loves.map(x=>x.toLowerCase()))} drinks.${c.hates?` They don't like ${c.hates.toLowerCase()}.`:""} They pay up to about ${fmt(c.pay)}.`}
 function flavorFans(tags){return Object.values(CROWDS).filter(c=>c.loves.some(t=>tags.includes(t))).map(c=>`${c.icon} ${c.name}`).join(", ")}
 function tagChips(tags){return tags.map(t=>`<span class="tag"${tip(tagTip(t))}>${t.charAt(0)+t.slice(1).toLowerCase()}</span>`).join("")}
-function rarBadge(r){return `<span class="rar ${r}"${tip("Rarer upgrades show up less often: common, rare, epic, then legendary.")}>${r}</span>`}
+const RARITY={common:"Common",rare:"Rare",epic:"Epic",legendary:"Legendary"},RARITY_TIP="Rarer upgrades show up less often: common, rare, epic, then legendary.";
+function rarBadge(r){return `<span class="rar ${r}"${tip(RARITY_TIP)}>${r}</span>`}
 function ingTip(id){
   if(id==="cups")return "Every customer needs 1 cup.";
   if(id==="lemons")return `Each pitcher needs ${BASE_NEEDS.lemons} lemons and makes ${pitcherServes()} ${plural(pitcherServes(),"cup")}. Lemons stay fresh for ${SHELF.lemons} ${plural(SHELF.lemons,"day")}.`;
@@ -1616,20 +1674,31 @@ function drawDraft(rareOnly){
   }
   return out;
 }
+/* Pick cards. The frame shows the rarity: tan common, blue rare, red epic, gold legendary, with corner caps on epic
+   and legendary. The art shows the type: an upgrade's item, a flavor's cup and tags on a chalkboard, a coin pile for cash.
+   The rarity word is in the tip and in hidden text, so colour is never the only clue. */
+function gearCard(g,full){
+  return {cls:g.rar,rar:g.rar,art:gearIconHtml(g.id),title:g.name,desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:"")}}
 function draftCardHtml(p){
-  if(p.kind==="gear"){const g=GEAR.find(x=>x.id===p.id);const full=S.gear.length>=gearSlots();
-    return {icon:gearIconHtml(g.id,true),title:g.name,badge:rarBadge(g.rar),desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:""),tags:"",type:"Stand upgrade"}}
+  if(p.kind==="gear")return gearCard(GEAR.find(x=>x.id===p.id),S.gear.length>=gearSlots());
   if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(pitcherNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
-    return {icon:iconHtml("flavor",p.id,true),title:r.name,badge:"",desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`,tags:tagChips(r.tags),type:"New flavor"}}
-  return {icon:`<i class="hudIcon cashIcon" role="img" aria-label="Cash"></i>`,title:"Cousin's Gift",badge:"",desc:`+${fmt(18+22*actIndex())} cash right now. It gets bigger later in the summer.`,tags:"",type:"Cash"};
+    return {cls:"flavor",art:`${iconHtml("flavor",p.id)}<span class="artTags">${tagChips(r.tags)}</span>`,title:r.name,desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`}}
+  const amt=fmt(18+22*actIndex());
+  return {cls:"cash",art:`<i class="coinPile" role="img" aria-label="Coins"></i><b class="artAmt">+${amt}</b>`,title:"Cousin's Gift",desc:`+${amt} cash right now. It gets bigger later in the summer.`};
 }
+function cardHtml(c,attrs,extra=""){
+  const caps=c.rar==="epic"||c.rar==="legendary"?["tl","tr","bl","br"].map(k=>`<i class="orn ${k}" aria-hidden="true"></i>`).join(""):"";
+  return `<button class="choice pick ${c.cls} ${extra}"${c.rar?tip(`${RARITY[c.rar]}. ${RARITY_TIP}`):""} ${attrs}>${c.rar?`<span class="sr">${RARITY[c.rar]} upgrade.</span>`:""}<span class="cardArt">${c.art}<i class="outMark" aria-hidden="true"></i></span><span class="cardBody"><span class="ttl">${c.title}</span><span class="desc">${c.desc}</span></span>${caps}</button>`;
+}
+let draftFlip=false; // the next draft screen deals its cards in with a flip (a crate just opened)
 function renderDraftScreen(){
+  const flip=draftFlip;draftFlip=false;
   $("#screen").innerHTML=`<div class="panel">
     <h2>${draftTitle}</h2>
     <p class="muted" style="margin-top:0">It starts working tomorrow. The other two go away.</p>
     ${learnHint(HOW_STEPS[5][1])}
     ${shelfHtml()}
-    <div class="choices">${draftChoices.map((p,i)=>{const c=draftCardHtml(p);return `<button class="choice" onclick="pickDraft(${i})"><div class="ttl"><span>${c.icon} ${c.title}</span>${c.badge}</div><div class="small typeLabel">${c.type}</div><div class="desc">${c.desc}</div>${c.tags}</button>`}).join("")}</div>
+    <div class="choices">${draftChoices.map((p,i)=>cardHtml(draftCardHtml(p),`onclick="pickDraft(${i})"${flip?` style="--k:${i}"`:""}`,flip?"flipIn":"")).join("")}</div>
   </div>`;
 }
 function offerDraft(){
@@ -1638,15 +1707,18 @@ function offerDraft(){
   draftTitle="Pick an upgrade";
   renderDraftScreen();
 }
+const CRATES=[["gear","Upgrade crate","3 rare (or better) stand upgrades."],["recipe","Flavor crate","3 new flavors."],["wild","Surprise crate","3 of anything: upgrades, flavors or cash."]];
 function offerCrate(){
   $("#screen").innerHTML=`<div class="panel center">
     <h2>Bonus crate</h2>
     <p class="big">Every 3rd day you get a free crate. Which one?</p>
-    <div class="choices">
-      <button class="choice" onclick="openCrate('gear')"><div class="ttl"><span>Upgrade crate</span></div><div class="desc">3 rare (or better) stand upgrades.</div></button>
-      <button class="choice" onclick="openCrate('recipe')"><div class="ttl"><span>Flavor crate</span></div><div class="desc">3 new flavors.</div></button>
-      <button class="choice" onclick="openCrate('wild')"><div class="ttl"><span>Surprise crate</span></div><div class="desc">3 of anything: upgrades, flavors or cash.</div></button>
-    </div></div>`;
+    <div class="choices">${CRATES.map(([k,name,desc],i)=>`<button class="choice pick crate" onclick="pickCrate(this,'${k}')"><span class="cardArt"><i class="crateArt" style="--i:${i}" aria-hidden="true"></i></span><span class="cardBody"><span class="ttl">${name}</span><span class="desc">${desc}</span></span></button>`).join("")}</div></div>`;
+}
+/* The crate you pick shakes open while the others step back, then its three cards flip in. */
+function pickCrate(btn,kind){
+  document.querySelectorAll(".pick.crate").forEach(b=>{b.disabled=true;b.classList.add(b===btn?"opening":"passed")});
+  sfx.tick();
+  setTimeout(()=>openCrate(kind),stillMotion()?0:560);
 }
 function openCrate(kind,title){
   sfx.good(); // a small celebration: sound only
@@ -1660,29 +1732,40 @@ function openCrate(kind,title){
   if(draftChoices.length<3)add(buildDraftPool(true)); // crate ran thin — top it up with other rare loot
   if(!draftChoices.length){draftChoices=[{kind:"cash",id:"cash"}]}
   draftTitle=title||"Bonus crate: pick one";
-  renderDraftScreen();
+  draftFlip=true;renderDraftScreen();
 }
 function pickDraft(i){
   const p=draftChoices[i];if(!p)return;
   if(p.kind==="gear"&&S.gear.length>=gearSlots()){showSwap(p);return}
   grantDraft(p);
 }
-/* Gear slots are full: the new piece only comes in if an old one goes out. */
+/* Gear slots are full: the new piece only comes in if an old one goes out. Tap one to mark it (dimmed, with an X), then Swap. */
+let swapOut=-1;
 function showSwap(p){
-  pendingDraft=p;sfx.flip();
-  const c=draftCardHtml(p);
+  pendingDraft=p;swapOut=-1;sfx.flip();
   const owned=S.gear.map(id=>GEAR.find(x=>x.id===id));
   $("#screen").innerHTML=`<div class="panel">
     <h2>Your stand is full</h2>
-    <p style="margin-top:0">Which upgrade should go? You'll get <b>${gearIconHtml(p.id)} ${c.title}</b>.</p>
-    <div class="choices">${owned.map((o,i)=>`<button class="choice" onclick="swapFor(${i})"><div class="ttl"><span>${gearIconHtml(o.id,true)} ${o.name}</span>${rarBadge(o.rar)}</div><div class="small typeLabel">Remove</div><div class="desc">${o.desc}</div></button>`).join("")}</div>
-    <div class="flex mt" style="justify-content:center"><button class="btn sm ghost" onclick="pendingDraft=null;renderDraftScreen()">Back</button><button class="btn sm ghost" onclick="pendingDraft=null;nextDay()">Keep my stand</button></div>
+    <p style="margin-top:0">Which upgrade should go? You'll get <b>${gearIconHtml(p.id)} ${draftCardHtml(p).title}</b>.</p>
+    <div class="choices" id="swapCards">${owned.map((o,i)=>cardHtml(gearCard(o,false),`onclick="markSwap(${i})" aria-pressed="false"`)).join("")}</div>
+    <div class="flex mt" style="justify-content:center"><button class="btn sm ghost" onclick="pendingDraft=null;renderDraftScreen()">Back</button><button class="btn sm ghost" onclick="pendingDraft=null;nextDay()">Keep my stand</button><button class="btn sm" id="swapGo" disabled onclick="swapFor(swapOut)">Swap</button></div>
   </div>`;
 }
+function markSwap(i){
+  swapOut=swapOut===i?-1:i;sfx.tick();
+  document.querySelectorAll("#swapCards .pick").forEach((b,k)=>{b.classList.toggle("out",k===swapOut);b.setAttribute("aria-pressed",k===swapOut)});
+  $("#swapGo").disabled=swapOut<0;
+}
 function swapFor(i){
-  const p=pendingDraft;if(!p)return;pendingDraft=null;
+  const p=pendingDraft;if(!p||!S.gear[i])return;pendingDraft=null;
   const g=GEAR.find(x=>x.id===S.gear[i]);S.gear.splice(i,1);S.log.push(`<span class="info">Swapped out ${gearIconHtml(g.id)} ${g.name}.</span>`);
   grantDraft(p);
+}
+/* The flavors on your menu that make a combo, as small chalkboards with the tags that count. */
+function comboCupsHtml(s){
+  const need=Object.keys(s.need);
+  return S.recipes.filter(rk=>!need.length||RECIPES[rk].tags.some(t=>need.includes(t)))
+    .map(rk=>`<span class="comboCup"${tip(RECIPES[rk].name)} tabindex="0">${iconHtml("flavor",rk)}<span>${tagChips(RECIPES[rk].tags.filter(t=>!need.length||need.includes(t)))}</span></span>`).join("");
 }
 function grantDraft(p){
   if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">New upgrade: ${gearIconHtml(g.id)} ${g.name}</span>`)}
@@ -1693,8 +1776,9 @@ function grantDraft(p){
   if(newOnes.length){
     newOnes.forEach(s=>{S.discoveredSyn.push(s.id);if(!meta.discoveredSyn.includes(s.id))meta.discoveredSyn.push(s.id)});
     $("#screen").innerHTML=`<div class="panel center"><div class="synBanner newCombo">New combo</div>
-      <h2 class="mt">${newOnes.map(s=>s.name).join(" + ")}</h2>
-      <p class="big">${newOnes.map(s=>s.desc).join("<br>")}</p>
+      ${newOnes.map(s=>`<h2 class="mt">${s.name}</h2>
+      <div class="comboCups">${comboCupsHtml(s)}</div>
+      <p class="big">${s.desc}</p>`).join("")}
       <button class="btn gold" onclick="nextDay()">Start Day ${S.day+1}</button></div>`;
     celebrate("medium",$(".synBanner"));
     saveMeta();updateHUD();return;
