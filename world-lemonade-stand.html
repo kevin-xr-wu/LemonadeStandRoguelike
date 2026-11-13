@@ -189,9 +189,11 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
-/* What they bought pops up beside the coin: the flavor's chalkboard icon at the scene's pixel size, on a badge like the speech bubbles
-   so it reads in front of the stand. left is the coin's centre; the badge's right edge sits just left of the coin. */
-.flavorPop{position:absolute;bottom:calc(var(--px)*32px);margin-left:calc(var(--px)*-27px - 4px);background:#fff;border:2px solid var(--ink);border-radius:8px;padding:calc(var(--px)*2px);z-index:9;pointer-events:none;animation:flavorPop 1s ease-out forwards}
+/* What they bought pops up beside the coin: the cup count when it's more than 1, then the flavors' chalkboard icons at the scene's
+   pixel size, on a badge like the speech bubbles so it reads in front of the stand. left is the coin's centre; spawnFlavor sets
+   margin-left so the badge's right edge sits just left of the coin. */
+.flavorPop{position:absolute;bottom:calc(var(--px)*32px);display:flex;align-items:center;gap:calc(var(--px)*1px);background:#fff;border:2px solid var(--ink);border-radius:8px;padding:calc(var(--px)*2px);z-index:9;pointer-events:none;animation:flavorPop 1s ease-out forwards}
+.flavorPop b{padding:0 calc(var(--px)*1px);font-size:calc(var(--px)*9px);font-weight:900;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
 .flavorPop .icon{--sz:calc(16px*var(--px));display:block;filter:drop-shadow(0 2px 1px rgba(0,0,0,.3))}
 @keyframes flavorPop{0%{opacity:0;transform:scale(.5)}15%{opacity:1;transform:scale(1.15)}25%{transform:scale(1)}70%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--px)*-8px))}}
 @keyframes coinSpin{to{background-position-x:calc(var(--s)*-40px)}}
@@ -1622,6 +1624,16 @@ function tipRate(){
   if(M.actualWx==="perfect")r*=1.6;
   return r;
 }
+/* How a half-day's line walks past: one walker per person up to 12, then walkers grow with the
+   square root of the line (up to WALKERS_MAX, so the street never jams) and some buy for friends too.
+   Returns each walker's party size; the sizes add up to the line. */
+const WALKERS_MAX=24;
+function partySizes(people){
+  const n=Math.min(people,WALKERS_MAX,Math.round(Math.sqrt(12*people)));
+  const sizes=Array(n).fill(1),w=sizes.map(()=>Math.random()+0.3),sum=w.reduce((a,b)=>a+b,0);
+  for(let i=n;i<people;i++){let r=Math.random()*sum,k=0;while((r-=w[k])>0&&k<n-1)k++;sizes[k]++}
+  return sizes;
+}
 async function runDayPhase(phase){
   const isMorning=phase==="morning";
   const target=isMorning?D.morningDemand:D.unmet+D.aftDemand;
@@ -1629,15 +1641,15 @@ async function runDayPhase(phase){
   const mix=crowdMixFor(M.loc);
   const mixArr=[];Object.entries(mix).forEach(([k,v])=>{for(let i=0;i<v;i++)mixArr.push(k)});
   let streak=0,processed=0,dry=false;
-  const visual=Math.min(Math.max(target,1),12);
-  const chunk=Math.max(1,Math.ceil(target/Math.max(visual,1)));
-  for(let i=0;i<visual&&processed<target;i++){
+  const parties=partySizes(target),gap=600*Math.sqrt(12/Math.max(12,parties.length)); // more walkers come closer together, so busy days run only a little longer
+  for(const size of parties){
+    if(processed>=target)break;
     const ck=pick(mixArr)||"parents";const c=CROWDS[ck];
-    let soldChunk=0,miss=null,flavor=null;const takings=D.revenue+D.tips;
-    for(let j=0;j<chunk&&processed<target;j++){
+    let miss=null;const got={},takings=D.revenue+D.tips; // got: cups of each flavor this walker buys
+    for(let j=0;j<size&&processed<target;j++){
       const res=serveOne(ck);
       processed++;
-      if(res==="sold"){soldChunk++;streak++;flavor=flavor||D.lastFlavor}
+      if(res==="sold"){streak++;got[D.lastFlavor]=(got[D.lastFlavor]||0)+1}
       else if(res==="price"){D.awayPrice++;streak=0;miss="too pricey…"}
       else { // out of stock: the rest of this phase's line can't be served
         if(isMorning){D.unmet+=target-processed}
@@ -1645,10 +1657,10 @@ async function runDayPhase(phase){
         processed=target;dry=true;break;
       }
     }
-    if(!D.skip)spawnCustomer(ck,soldChunk>0?{buys:true,paid:D.revenue+D.tips-takings,flavor,streak,say:Math.random()<0.24?c.line:null}:{say:miss});
+    if(!D.skip)spawnCustomer(ck,Object.keys(got).length?{buys:true,paid:D.revenue+D.tips-takings,got,streak,say:Math.random()<0.24?c.line:null}:{say:miss});
     updateDayStats();
     if(dry)break;
-    await sleep(rnd(450,750));
+    await sleep(rnd(gap*0.75,gap*1.25));
   }
   if(dry&&(isMorning?D.unmet>0:D.awayOut>0))logLine(`<span class="bad">${iconHtml("supply","cups")} You ran out of supplies.${isMorning?" People in line will wait until noon.":""}</span>`);
   if(!isMorning){await buyersServed();finishDay();return}
@@ -1670,7 +1682,7 @@ function updateDayStats(){
 /* Customers walk across the scene. Buyers stop at the counter and face you while they pay,
    then walk on with a cup; everyone else walks past, saying why as they pass the stand. */
 const WALK_SPEED=75; // sprite pixels a second, so phones and desktops walk at the same pace
-function spawnCustomer(ck,{buys=false,paid=0,flavor=null,say=null,streak=0}={}){
+function spawnCustomer(ck,{buys=false,paid=0,got={},say=null,streak=0}={}){
   const sky=$("#skyBox");if(!sky)return;
   const day=D,d=document.createElement("div"),fw=ck==="parents"?32:24,fromLeft=Math.random()<0.5;
   const walkLook=carry=>{d.className=`cust ${carry?"carry":"walk"}${fromLeft?"":" left"}`;d.style.backgroundImage=`url(${CUSTOMER_WALK_PNG[ck]})`};
@@ -1693,7 +1705,10 @@ function spawnCustomer(ck,{buys=false,paid=0,flavor=null,say=null,streak=0}={}){
   walk(from,spot).then(()=>{
     if(!d.isConnected){day.buying--;return}
     d.className="cust front";d.style.backgroundImage=`url(${CUSTOMER_PNG[ck]})`;
-    sfx.coin(streak);spawnCoin(spot);if(flavor)spawnFlavor(spot,flavor);
+    const coins=Math.min(3,Object.values(got).reduce((a,b)=>a+b,0)); // a coin per cup, up to 3, so bigger orders sound bigger
+    const payCoin=k=>{sfx.coin(Math.max(0,streak-coins+1+k));spawnCoin(spot)};
+    payCoin(0);for(let k=1;k<coins;k++)after(k*140,()=>payCoin(k));
+    spawnFlavor(spot,got);
     day.paid+=paid;updateDayStats();
     if(say)after(1000,()=>spawnBubble(say,d)); // pay first, then talk, so the coin and flavor don't overlap the bubble
     after(800,()=>{day.buying--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())});
@@ -1730,10 +1745,14 @@ function spawnCoin(x){
   const d=document.createElement("div");d.className="coin";
   d.style.left=x+"px";layer.appendChild(d);after(800,()=>d.remove());
 }
-function spawnFlavor(x,rk){ // the flavor they bought, as on the chalkboard
+function spawnFlavor(x,got){ // what they bought, as on the chalkboard: the cup count when it's more than 1, then up to 3 flavors, most-bought first
   const layer=$("#fxLayer");if(!layer)return;
-  const d=document.createElement("div");d.className="flavorPop";d.setAttribute("aria-hidden","true");d.innerHTML=iconHtml("flavor",rk);
-  d.style.left=x+"px";d.style.animationDuration=1/SPEED+"s";layer.appendChild(d);after(1000,()=>d.remove());
+  const byCups=Object.entries(got).sort((a,b)=>b[1]-a[1]),cups=byCups.reduce((t,[,n])=>t+n,0);
+  const d=document.createElement("div");d.className="flavorPop";d.setAttribute("aria-hidden","true");
+  d.innerHTML=(cups>1?`<b>${cups}</b>`:"")+byCups.slice(0,3).map(([rk])=>iconHtml("flavor",rk)).join("");
+  d.style.left=x+"px";d.style.animationDuration=1/SPEED+"s";layer.appendChild(d);
+  d.style.marginLeft=`calc(var(--px)*-7px - ${d.offsetWidth}px)`; // right edge just left of the coin, however wide the badge
+  after(1000,()=>d.remove());
 }
 function resumeAfternoon(){if(!D||D.done)return;const msg=$("#dayMsg");if(msg)msg.textContent="Afternoon rush…";runDayPhase("afternoon")}
 
