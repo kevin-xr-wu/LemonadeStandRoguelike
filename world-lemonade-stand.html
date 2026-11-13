@@ -491,7 +491,7 @@ body:has(.stage){overflow:hidden}
 .spotCard{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 4px 0 rgba(43,33,24,.3);width:min(580px,100%);justify-self:center}
 .spotCard .postFace{font-size:var(--fs-sm);padding:4px 18px 4px 8px}
 .spotCard .crowd{font-size:var(--fs-xs)}
-.spotCard .mLbl{margin:0 0 6px;font-size:var(--fs-sm)}
+.spotCard .mLbl{justify-content:center;margin:0 0 6px;font-size:var(--fs-sm)}
 .spotCard .posts{max-width:none}
 .spotCard .crowdRow{justify-content:center;margin-top:6px}
 .spotCard .mHint{text-align:center;margin-top:8px}
@@ -529,12 +529,14 @@ body:has(.stage){overflow:hidden}
 /* The top card is a carousel: "Where today?", then "Ready to open?" with the cups your supplies make and Open */
 .slides{display:flex;transform:translateX(calc(var(--card,0)*-100%));transition:transform .3s ease}
 .slide{flex:0 0 100%;min-width:0;padding:8px 10px 2px;display:flex;flex-direction:column;justify-content:center}
-.goBox{flex:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 20px;padding:4px 0}
-.goSpot{display:flex;align-items:center;gap:6px;font-weight:800}
-.goSpot .warnTxt{color:var(--red)}
-.spotCard #guessText{display:block;flex:none;font-size:var(--fs-md);font-weight:800}
-.spotCard #guessText b{font-size:var(--fs-xl);color:var(--green2)}
-.spotCard #btnOpen{padding:10px 32px;font-size:var(--fs-xl);margin:0}
+.goBox{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:2px 0 4px}
+.goInfo{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.goChip{display:inline-flex;align-items:center;gap:6px;background:var(--paper2);border-radius:99px;padding:4px 12px;font-size:var(--fs-sm);font-weight:800;line-height:1.2;white-space:nowrap}
+.goChip b{font-family:var(--font-display);font-size:var(--fs-lg);line-height:1;color:var(--green2)}
+.goChip .warnTxt{color:var(--red)}
+.spotCard #guessText{flex:none;flex-wrap:nowrap;gap:6px;font-size:var(--fs-sm)} /* beats the old guess bar's #guessText rules */
+.spotCard #guessText b{color:var(--green2)}
+.spotCard #btnOpen{width:min(260px,100%);padding:10px 24px;font-size:var(--fs-xl);margin:0}
 .carNav{display:flex;align-items:center;justify-content:center;gap:2px;padding:0 0 4px}
 .carNav button{display:flex;align-items:center;justify-content:center;min-width:32px;height:28px;padding:0;background:none;border:0;border-radius:8px;color:var(--ink);font-family:var(--font-display);font-size:var(--fs-xl);line-height:1}
 .carNav button:hover{background:var(--paper2)}
@@ -1416,8 +1418,8 @@ function mSpotHtml(){
     <div class="posts">${M.locs.map((l,i)=>`<button class="post" onclick="chooseLoc(${i})" data-f="loc${i}" aria-pressed="${M.loc===l}" aria-label="${l.name}"><span class="postFace">${iconHtml("spot",l.name,true)}<span>${l.name}</span></span></button>`).join("")}</div>
     ${M.loc?`<div class="crowdRow">${top.map(([k,v])=>`<span class="crowd" tabindex="0"${tip(crowdTip(k))}>${CROWDS[k].icon} ${CROWDS[k].name} ${v}%</span>`).join("")}</div>`:`<div class="mHint">Tap a spot to see who comes.</div>`}`;
   const go=`<div class="mLbl">Ready to open?</div>
-    <div class="goBox"><span class="goSpot">${M.loc?`${iconHtml("spot",M.loc.name,true)} ${M.loc.name}`:`<span class="warnTxt">Pick a spot first</span>`}</span>
-      <span id="guessText"></span>
+    <div class="goBox"><div class="goInfo"><span class="goChip">${M.loc?`${iconHtml("spot",M.loc.name)} ${M.loc.name}`:`<span class="warnTxt">Pick a spot first</span>`}</span>
+      <span class="goChip" id="guessText"></span></div>
       <button class="btn gold" id="btnOpen" onclick="openStand()" data-f="open">Open</button></div>`;
   const slide=(k,html,name)=>`<div class="slide" role="group" aria-roledescription="slide" aria-label="${name}"${k===card?"":" inert"}>${html}</div>`;
   const nav=(k,cls,label,txt)=>`<button${cls?` class="${cls}"`:""} onclick="setSpotCard(${k})" data-k="${k}" data-f="car-${cls||"arrow"}${k}" aria-label="${label}"${cls?` aria-current="${k===card}"`:k===card?' aria-disabled="true"':""}>${txt}</button>`;
@@ -1504,7 +1506,7 @@ function renderProj(){
   const gt=$("#guessText");if(!gt)return;
   $("#btnOpen").disabled=!M.loc;
   const cap=cupsFromSupplies();
-  gt.innerHTML=`Supplies for <b>${cap}</b> ${plural(cap,"cup")}`;
+  gt.innerHTML=`${iconHtml("supply","cups")} Supplies for <b>${cap}</b> ${plural(cap,"cup")}`;
 }
 
 /* ---------- Day resolution ---------- */
