@@ -263,7 +263,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .playBtn{font-size:var(--fs-xl);padding:16px 64px}
 /* Title: the stand scene filling the screen. Its sprites share one pixel size, --px. */
 .scene.title,.title .sky{--px:2}
-.scene.title{margin-top:0;display:flex;flex-direction:column;height:calc(100vh - 52px);height:calc(100dvh - 52px)}
+.scene.title{position:fixed;inset:0;margin:0;border-radius:0;display:flex;flex-direction:column}
 .title .sky{flex:1;height:auto;display:flex;flex-direction:column;align-items:center;padding:56px 12px calc(var(--px)*64px)}
 .logo{margin:auto 0;line-height:0;position:relative;z-index:7}
 .logo img{width:calc(var(--px)*166px);image-rendering:pixelated;filter:drop-shadow(0 4px 3px rgba(0,0,0,.25))}
@@ -396,7 +396,6 @@ button,input,select{touch-action:manipulation}
 }
 @media (max-width:720px){
   #app{padding:8px 8px 34px}
-  .scene.title{height:calc(100vh - 42px);height:calc(100dvh - 42px)}
   h2{font-size:var(--fs-lg)}
   .big{font-size:var(--fs-md)}
   .panel{padding:13px;margin-top:10px}
