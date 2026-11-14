@@ -522,7 +522,7 @@ body:has(.stage){overflow:hidden}
 .spotCard .pOut{font-size:var(--fs-xs);line-height:1.25}
 .spotCard .stepper button{width:34px;height:34px}
 .spotCard .stepper b{min-width:50px}
-/* The top card is a carousel: "Where today?", "Signs today", "Today's prices", then "Ready to open?" with the cups your supplies make and Open */
+/* The top card is a carousel: "Choose a spot to open your stand", "Signs today", "Today's prices", then "Ready to open?" with the cups your supplies make and Open */
 .signBuy{display:flex;align-items:center;justify-content:center;gap:12px}
 .signBuy .each{font-size:var(--fs-sm);font-weight:800}
 .signBuy .each b{font-family:var(--font-display);font-weight:400;font-size:var(--fs-lg)}
@@ -1420,7 +1420,7 @@ function mSceneHtml(){
 }
 function mSpotHtml(){
   const card=M.card;
-  const where=`<div class="mLbl">Where today?</div>${learnHint(HOW_STEPS[0][1])}
+  const where=`<div class="mLbl">Choose a spot to open your stand</div>${learnHint(HOW_STEPS[0][1])}
     <div class="posts">${M.locs.map((l,i)=>`<button class="post" onclick="chooseLoc(${i})" data-f="loc${i}" aria-pressed="${M.loc===l}" aria-label="${l.name}"><span class="postFace">${iconHtml("spot",l.name,true)}<span>${l.name}</span></span></button>`).join("")}</div>`;
   const go=`<div class="mLbl">Ready to open?</div>
     <div class="goBox"><div class="goInfo"><span class="goChip">${M.loc?`${iconHtml("spot",M.loc.name)} ${M.loc.name}`:`<span class="warnTxt">Pick a spot first</span>`}</span>
@@ -1435,7 +1435,7 @@ function mSpotHtml(){
 }
 /* The top card's slides, in the order the help teaches: where to sell, signs, the prices, then open.
    Picking a spot slides on to the next slide; the arrows and dots go back and forth. */
-const SPOT_SLIDES=["Where today?","Signs today","Today's prices","Ready to open?"];
+const SPOT_SLIDES=["Choose a spot to open your stand","Signs today","Today's prices","Ready to open?"];
 function setSpotCard(i,quiet){
   i=clamp(i,0,SPOT_SLIDES.length-1);
   if(M.card===i)return;
