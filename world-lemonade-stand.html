@@ -1394,6 +1394,13 @@ function fitStage(){
   for(const c of FIT_STEPS){if(st.scrollHeight<=st.clientHeight)break;st.classList.add(c)}
 }
 addEventListener("resize",fitStage);
+/* The supplies shelf and its wholesale drawer are one component: a click anywhere else
+   in the morning (a spot, a slide arrow, a stepper, the sky) puts the drawer away. */
+document.addEventListener("click",e=>{
+  if(!M||!M.shopOpen||!$(".stage.morning"))return;
+  if(e.composedPath().some(n=>n.id==="mShop"))return; // the path, not the target: opening the drawer re-renders the shelf, which detaches the button that was tapped
+  M.shopOpen=null;morningParts();
+});
 /* Redraw the morning's controls in place, so the sky keeps drifting, and keep focus on the control just used. */
 function morningParts(){
   const ae=document.activeElement,f=ae&&ae.dataset?ae.dataset.f:null;
