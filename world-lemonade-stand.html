@@ -517,7 +517,7 @@ body:has(.stage){overflow:hidden}
 .signBuy{display:flex;align-items:center;justify-content:center;gap:12px}
 .signBuy .each{font-size:var(--fs-sm);font-weight:800}
 .signBuy .each b{font-family:var(--font-display);font-weight:400;font-size:var(--fs-lg)}
-.signInfo{list-style:none;margin:8px 0 0;padding:0;text-align:center;font-size:var(--fs-sm);line-height:1.35} /* what signs do, under the stepper */
+.signInfo{margin-top:8px;text-align:center;font-size:var(--fs-sm);line-height:1.35} /* what signs do, under the stepper */
 .signInfo span{display:inline-block}
 .slides{display:flex;transform:translateX(calc(var(--card,0)*-100%));transition:transform .3s ease}
 .slide{flex:0 0 100%;min-width:0;padding:8px 10px 2px;display:flex;flex-direction:column;justify-content:center}
@@ -1325,7 +1325,7 @@ function shelfHtml(){
 }
 /* The day, step by step. The ? help lists them all; on a player's first day each hint shows where its step happens. */
 const FORECAST_HINT="Hot days are busy. Rain keeps people home.";
-const HOW_STEPS=[["Pick a spot","Each spot brings different people."],["Put up signs","Signs advertise your stand. More signs, more customers."],["Buy supplies","Each cup uses supplies. Hot days use more ice."],["Set your price","Too high, and people walk away."],["See how you did","Sales and tips for the day."],["Pick an upgrade",`Upgrades make your stand better. You can keep ${GEAR_SLOTS}.`]];
+const HOW_STEPS=[["Pick a spot","Each spot brings different people."],["Put up signs","Signs bring more customers."],["Buy supplies","Each cup uses supplies. Hot days use more ice."],["Set your price","Too high, and people walk away."],["See how you did","Sales and tips for the day."],["Pick an upgrade",`Upgrades make your stand better. You can keep ${GEAR_SLOTS}.`]];
 function firstDay(){return S&&S.day===1&&!meta.hintsSeen}
 function learnHint(t){return firstDay()?`<span class="learn">${t}</span>`:""}
 
@@ -1467,17 +1467,15 @@ function mDrawerHtml(id){
 function stepperHtml(key,val,downCall,upCall,downLabel,upLabel,atMin,atMax){
   return `<span class="stepper"><button onclick="${downCall}" data-f="${key}-" aria-label="${downLabel}"${atMin?' aria-disabled="true"':""}>−</button><b>${val}</b><button onclick="${upCall}" data-f="${key}+" aria-label="${upLabel}"${atMax?' aria-disabled="true"':""}>+</button></span>`;
 }
-/* The signs slide always says what signs do, so it has no first-day hint: they bring customers, each extra one helps less (Roof sign aside), and they last a day. */
+/* The signs slide always says what signs do, so it has no first-day hint. */
 function mSignsHtml(){
   const b=computeBuild(),p=signPrice(),n=M.signs;
-  const line=t=>`<li>${t.split(/(?<=\.) /).map(s=>`<span>${s}</span>`).join(" ")}</li>`; // a narrow card wraps between sentences, never inside one
+  const info=[HOW_STEPS[1][1],"Each lasts one day.",b.freeSigns?`Upgrades add ${b.freeSigns} free.`:""].filter(Boolean);
   return `<div class="mLbl">Signs today</div>
     <div class="signBuy">${iconHtml("supply","signs",true)}
       ${stepperHtml("signs",n,"stepSigns(-1)","stepSigns(1)",`Give back a sign, ${n} bought`,`Buy a sign for ${fmt(p)}, ${n} bought`,n<=0,S.cash<p||n>=SIGN_MAX)}
       <span class="each"><b>${fmt(p)}</b> each</span></div>
-    <ul class="signInfo">${[HOW_STEPS[1][1],
-      S.gear.includes("bigsign")?"Roof sign: every sign helps the same.":"Each extra sign helps a little less.",
-      `Signs last one day.${b.freeSigns?` Upgrades add ${b.freeSigns} free.`:""}`].map(line).join("")}</ul>`;
+    <div class="signInfo">${info.map(s=>`<span>${s}</span>`).join(" ")}</div>`; // a narrow card wraps between sentences, never inside one
 }
 function mPricesHtml(){
   return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][1])}<div class="prices" onwheel="wheelSideways(event,this)">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
@@ -2168,7 +2166,7 @@ function showHelp(){
       <li>Ice goes in each cup for you. Hotter days use more. Under 70°F, none. In the 70s, 1 cube. In the 80s, 2. In the 90s, 3. At 100°F and up, 4.</li>
       <li>Bigger packs cost less for each one.</li>
       <li>Half of your leftover ice melts each night. Lemons last 7 days, cucumbers 5, mint 4 and strawberries 3.</li>
-      <li>Signs bring in more customers. Each extra sign helps a little less. Each sign lasts one day.</li>
+      <li>Signs bring in more customers. Each sign lasts one day.</li>
       <li>Stars go up when most people get lemonade. They go down when many people leave without any. More stars bring more people.</li>
       <li>Flavor tags are Sweet, Sour, Fancy, Chilled and Fizzy. Each crowd likes different ones.</li>
       <li>Kids like sweet drinks. Parents like fancy and sweet. Athletes like sour and chilled. Tourists like fancy. Foodies like fancy and sour. Artists like fancy and fizzy.</li>
