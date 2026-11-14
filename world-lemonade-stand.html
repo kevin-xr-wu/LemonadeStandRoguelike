@@ -168,7 +168,6 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 @media (prefers-reduced-motion:reduce){.cloud,.rain,.gust,.leaf,.shimmer,.bubble,.coin,.cust.walk,.cust.carry,.flavorPop,.street.fresh{animation:none}}
 .stand{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:128px;image-rendering:pixelated;z-index:5;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
 .standSign{position:absolute;left:50%;bottom:134px;transform:translateX(-50%) rotate(-2deg);background:#fff;border-radius:8px;padding:3px 12px;font-weight:900;font-size:var(--fs-sm);z-index:6;white-space:nowrap}
-.crowdMix{position:absolute;top:10px;left:12px;background:rgba(255,253,244,.92);border-radius:10px;padding:5px 10px;font-size:var(--fs-xs);font-weight:700;z-index:6;max-width:46%;line-height:1.5}
 /* Customers: --fw is the frame width in sprite pixels, --s the scale. left is the centre of the feet. */
 .cust{--s:2;position:absolute;bottom:2px;width:calc(var(--fw)*var(--s)*1px);height:calc(var(--s)*32px);margin-left:calc(var(--fw)*var(--s)*-.5px);background:no-repeat 0 0/calc(var(--fw)*var(--s)*8px) 100%;image-rendering:pixelated;z-index:6;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
 .cust.left{transform:scaleX(-1)} /* the walk sheets face right */
@@ -266,7 +265,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .flex{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .spread{justify-content:space-between}
 .mt{margin-top:14px}
-@media(max-width:640px){.sky{height:200px}.crowdMix{max-width:58%}}
+@media(max-width:640px){.sky{height:200px}}
 
 /* ==================== Kid-friendly layer: tips, upgrade shelf, guess bar, the math ==================== */
 #tipBox{position:fixed;left:0;top:0;z-index:400;max-width:min(260px,calc(100vw - 16px));background:var(--ink);color:#fff;font-size:var(--fs-sm);font-weight:700;line-height:1.35;padding:8px 11px;border-radius:10px;box-shadow:0 4px 0 rgba(0,0,0,.25);pointer-events:none;opacity:0;transition:opacity .1s}
@@ -413,7 +412,6 @@ button,input,select{touch-action:manipulation}
   .ground:before{top:-9px;height:14px;background-size:64px 14px}
   .stand{width:64px;bottom:0}
   .standSign{bottom:68px;font-size:var(--fs-xs);padding:2px 8px;max-width:92%}
-  .crowdMix{max-width:54%;padding:4px 8px;line-height:1.4}
   .sceneBtns{flex-direction:column;align-items:flex-end;gap:5px}
   .cust{--s:1;bottom:1px}
   .bubble{--rise:4px}
@@ -494,7 +492,6 @@ body:has(.stage){overflow:hidden}
 .news{grid-column:1/-1;justify-self:center;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:min(820px,100%);margin-top:-6px}
 .news .synBanner,.news .callout{margin:0;border-radius:10px;font-size:var(--fs-xs);font-weight:700;line-height:1.35;padding:4px 10px;box-shadow:0 3px 0 rgba(43,33,24,.25)}
 .news .callout{background:var(--card)}
-.spotChip{background:rgba(255,253,244,.95);border-radius:12px;padding:6px 12px;font-size:var(--fs-sm);font-weight:800;line-height:1.45;box-shadow:0 4px 0 rgba(43,33,24,.25)}
 .toast{justify-self:center;background:var(--card);border-radius:12px;padding:6px 14px;font-size:var(--fs-sm);font-weight:800;box-shadow:0 4px 0 rgba(43,33,24,.3);max-width:min(460px,calc(100vw - 24px));text-align:center;animation:toastLife 4s ease-out forwards}
 .toast:empty{display:none}
 .toast .good{color:var(--green2)}.toast .bad{color:var(--red)}.toast .info{color:#1c5fa8}
@@ -590,7 +587,6 @@ body:has(.stage){overflow:hidden}
   .spotCard .slide{padding:6px 8px 2px}
   .spotCard .postFace{padding:5px 15px 5px 6px;font-size:var(--fs-xs)}
   .spotCard{justify-self:center}
-  .spotChip{justify-self:start}
   .dock .item{width:62px}
   .stage .ground{min-height:max(250px,32vh)}
   .dayCard{grid-template-columns:1fr auto;align-items:center;min-width:0}
@@ -1617,7 +1613,7 @@ function renderDayScene(){
       <img class="stand" src="${STAND_PNG}" alt="">
       <div id="fxLayer"></div>
       <div class="skyTop">
-        <div class="side"><div class="spotChip">${iconHtml("spot",M.loc.name)} ${M.loc.name}<br>${crowdMixLine()}</div></div>
+        <div class="side"></div>
         <div class="toast" id="dayToast" role="status"></div>
       </div>
     </div>
@@ -1636,7 +1632,6 @@ function renderDayScene(){
   </div>`;
   updateHUD();fitStage();
 }
-function crowdMixLine(){const mix=crowdMixFor(M.loc);return Object.entries(mix).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${iconHtml("crowd",k)} ${v}%`).join(", ")}
 /* The newest line of the day pops up as a toast over the sky; the evening report keeps them all. */
 function logLine(html){const el=$("#dayToast");if(el){el.innerHTML=html;el.style.animation="none";void el.offsetWidth;el.style.animation=""} S.log.push(html)}
 function sleep(ms){ // simulation-time wait: scales with SPEED, live, and Skip ends it now
