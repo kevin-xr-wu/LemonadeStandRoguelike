@@ -1534,10 +1534,12 @@ function renderProj(){
 /* ---------- Day resolution ---------- */
 let D=null; // day state
 const MORNING_SHARE=0.55;
-/* How much more can still be poured: open pitchers + what stock can still brew (cups cap it). */
+/* How much more can still be poured: open pitchers + what stock can still brew,
+   capped by the cups on hand and by the ice (every cup sold takes its cubes). */
 function servingsReady(){
   let open=0;Object.values(D.open).forEach(v=>open+=v);
-  return Math.min(S.inv.cups,open+brewableServings({...S.inv}));
+  const ice=icePerCup();
+  return Math.min(S.inv.cups,open+brewableServings({...S.inv}),ice>0?Math.floor((S.inv.ice||0)/ice):Infinity);
 }
 function standDry(){return servingsReady()<=0}
 function cheapestFlavor(){return D.menu.reduce((a,bk)=>menuPrice(bk)<menuPrice(a)?bk:a,D.menu[0])}
@@ -1600,7 +1602,7 @@ function openStand(){
   D={signs:putOut,build:b,
      roll:rnd(0.87,1.13),open:{},brewed:{},soldBy:{},soldByCrowd:{},sold:0,morningSold:0,unmet:0,
      awayPrice:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
-     skip:false,done:false,brotherSpilled:false,crewLeft:0};
+     skip:false,done:false,brotherSpilled:false,crewLeft:0,paidCups:0};
   const canSell=sellableNow();D.menu=canSell.length?canSell:S.recipes.slice(); // only flavors you have supplies for
   const minPrice=Math.min(...D.menu.map(rk=>menuPrice(rk)));
   D.crew=M.event&&M.event.id==="crewbuy"&&minPrice<=CREW_MAX_PRICE+1e-9?crewSize():0;
@@ -1713,7 +1715,7 @@ async function runDayPhase(phase){
 }
 function updateDayStats(){
   const st=$("#stStock");if(!st||D.done)return; // once closed, the evening has counted the till into your money
-  st.textContent=servingsReady();
+  st.textContent=D.skip?servingsReady():servingsReady()+(D.sold-D.paidCups); // a cup counts down when its buyer pays at the counter, like the money
   const till=D.skip?D.revenue+D.tips:D.paid; // money lands when a buyer pays at the counter; Skip shows it all
   $("#stTill").textContent=fmt(till);
   showCash(S.cash+till); // the HUD counts up with each sale; the evening adds bonuses on top
@@ -1747,11 +1749,12 @@ function spawnCustomer(ck,{buys=false,paid=0,got={},say=null,streak=0}={}){
   walk(from,spot).then(()=>{
     if(!d.isConnected){day.buying--;return}
     d.className="cust front";d.style.backgroundImage=`url(${CUSTOMER_PNG[ck]})`;
-    const coins=Math.min(3,Object.values(got).reduce((a,b)=>a+b,0)); // a coin per cup, up to 3, so bigger orders sound bigger
+    const cupsBought=Object.values(got).reduce((a,b)=>a+b,0);
+    const coins=Math.min(3,cupsBought); // a coin per cup, up to 3, so bigger orders sound bigger
     const payCoin=k=>{sfx.coin(Math.max(0,streak-coins+1+k));spawnCoin(spot)};
     payCoin(0);for(let k=1;k<coins;k++)after(k*140,()=>payCoin(k));
     spawnFlavor(spot,got);
-    day.paid+=paid;updateDayStats();
+    day.paid+=paid;day.paidCups+=cupsBought;updateDayStats();
     if(say)after(1000,()=>spawnBubble(say,d)); // pay first, then talk, so the coin and flavor don't overlap the bubble
     after(800,()=>{day.buying--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())});
   });
