@@ -186,6 +186,8 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .icon.spot{--n:13;background-image:var(--spotIcons)}
 .icon.gearA{--n:20;background-image:var(--gearIconsA)}
 .icon.gearB{--n:19;background-image:var(--gearIconsB)}
+.icon.crowd{--n:6;background-image:var(--crowdIcons)}
+.icon.weather{--n:6;background-image:var(--weatherIcons)}
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,calc(var(--rise)*-1))}}
 @keyframes coinFly{0%{transform:translateY(0)}60%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--rise)*-1))}}
@@ -464,6 +466,7 @@ body:has(.stage){overflow:hidden}
 #app:has(.stage) .hud{position:fixed;top:8px;left:12px;right:12px}
 .hudWx{display:flex;align-items:baseline;gap:6px;white-space:nowrap;font-size:var(--fs-lg);font-weight:800}
 .hudWx b{font-family:var(--font-display);font-weight:400;font-size:var(--fs-xl);line-height:1;color:var(--lemon)}
+.hudWx .icon{--sz:calc(16px*var(--px));align-self:center}
 .hudWx:empty,#app:not(:has(.stage)) .hudWx{display:none} /* only for the morning and the selling day */
 .stage{--px:2;--hudH:56px;position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden auto;background:#8a6b46}
 .stage .sky{--px:2;flex:1 0 auto;height:auto;display:flex;flex-direction:column;padding:calc(var(--hudH) + 18px) 12px calc(84px*var(--px))}
@@ -573,7 +576,7 @@ body:has(.stage){overflow:hidden}
 @media (max-width:1100px){
   .stage{--hudH:84px}
   #app:has(.stage) .hud{flex-wrap:wrap;row-gap:2px}
-  .hudWx{order:10;flex:1 1 100%;justify-content:center;border-top:1px solid rgba(255,247,224,.15);padding:4px 0 2px}
+  .hudWx{order:10;flex:1 1 100%;justify-content:center;border-top:1px solid rgba(255,247,224,.15);padding:2px 0 1px} /* the 32px forecast icon fills the row */
   .hudWx b{font-size:var(--fs-lg)}
 }
 @media (max-width:720px){
@@ -698,6 +701,10 @@ const SPOT_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANAAAAAQCAMA
 const GEAR_ICONS_A_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAAQCAMAAABQt1bbAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA8dJREFUeNrtmN1a4yAQhp0kNXSJJk0bT2wOV611N97/1e0wwDBAsHV99tkTP9s0fwzh5Rsg3nzrq4JI/6L8hdhP19dVf6WRn29SelYe7XZ8fsOqqkItP0mF2pSRpq3i8kqNfEf15lSInhAs90cdAO73fw0wj58eeh5R9TAMA52AvfnZ4Z+70HWbzYR/41glRXxEy69A0ADUutOE0JffKtXSRQJ4Pp/VFjfXebAI8La9ZX7jGBxwZQL46/CMejCbZ09s+U3yh/U7qZbhkB8QQMC68XfHFoSm65ppmsamahpRBPq+WwOYpiy0Rpq2bXCg5Vd5gEZpf4cGP8lDAPv87+8BSKtoQ0FdComm7cf7vu/vda9lc0MP+9ps/8Izeon0EcBtAGgLUwkiOAJWLuongJupGU8SIPITAGf62Aun0+lFvVh5gNoRtE/IIn431SvJx4Y7Fp/CR0PTMsAtKQAERbHZgBF9GMaBAPaaq++GoWPHtfDwMME04Y4DeDgcBtyUAdJ45AA6dJ4fjYXS66C1bpalaZAfAzT4AkCY5/l4PLp4JwfPA8wmkXQMqeL0sg/EHUoGxF0eAHIHVk4cwQL2T4eBpANBI0AU4E4BINJLAKK7Iwfi03gHYubSs3KGvJ3BfIMDddMszdL3FiA1lviVAWJ4BijmRrcDGIjk25+MSSsAUdKB/nKS9IGfnLIcwAN+LaAcoFMMcJAA1VbFDsRP4kCwI/oNnF/BfLk9ta7rZak1/pgiVNU9KQCE+QgeIOavAUgI7STB0+21AP0nIJFAMgdCuxHhyKv0cWMaATxgCluAprUEEHdsaVYZYOJAhbVLgDwFixROuxf7TXRyAvBxPj4ywNSBGUDsCdIFB7bhmSJHOQeWAd7hrVjkTgA8mDHQArQMHT3rQIfvA4DJGEjVRw5kgD6DZRbTMMMzGHmIEEoHAqewQ2e0DtDt5KdjB2Kni5kyEFxxoEodaMSOQhR2EmGA1oHsmIEI4k9YxlgVAMaLBDsCMkGfwTKLc4DGoRKg4ScBqhecS4cSQLu8YTunAO0AaxQA4kyG8gCx/6MxcCMBOoK8aAK004cA0XqGFjswX0gvpODAKIOcA0NwHAzTmdgAzN9aREbjLDL78JcdeAGgHWCNCgCzBsYAiWBYdK6sKykcH0SLBnnohiAHkB3o38fcKgyGpLcpi5PVulwkZK99tkN9l4oMcDnwSYCX3j5XADpHJLeXw/0gld5EVhwYpXA2pqe1Jdl7RfMigNm6rzTYpW+E/+/fJau2EDf8cpLGE1YsRvzW1/UHNoFraSLKZ18AAAAASUVORK5CYII=";
 /* 19 upgrade icons (second half of GEAR), 16×16 each, drawn in Pixelwright. Shown with gearIconHtml(id). */
 const GEAR_ICONS_B_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATAAAAAQCAMAAACm/tNDAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA31JREFUeNrtmNty2jAQhtGYErs2NTZgphe9Lzdkhrz/u3XPqxMh0OkMF12SgLGklT79u1pn9d/+jYUQfUR7Zoyz9ZIRuqdn88AEoCm2lrdn3aUuk0u9Ld8tOaSwLLslc10ZrpycAwvzPE9h1XXPEQtd27ZfXnzY7+cZPe73D1G2j3PbQW80mz/MHIwvwzDsdvqrjN7R4ALpAbBlOaSMd+MYAzujlbM757tGvLINSr+q7/BjCgNeBGz+OjAg4oubW+qcAIMd0z0zYH1PwIBReOcJIzK4OoIdEqERsFKi7n+7hT6JBmGDWm4R1mY2ISJu0MNvsgjnIyFErOgPL7iyQcUAm67bxOFA5qoOxEuB8UveRGDhFxjzWoUDGNwioZUKg2nIYp3gMAysUDSQFUlaXYZ1I+bAmJAwyvUGo0X5KFm0tPhBFq14CvOkAgk7MxlePbi+EJhpTIhNkERqwOCy4YH4zYBdFBiSWhYUmvCCOQymMFisEtP59wzsQpeYuACYuyRgbZsC45cAY4fgsioQl1IWwVGEo8KsGbu2Ffvw1iIFhsQwKqOI+RwYZzCTSC3nILAshRmwvD0qjB1uSPZVYInCUmBbM27e9z0PDmuKd1Ta0zcTmE82VZi1V9nCdhKwiFh+SIJPdFsFBqnLjDpZgoH1WA5zhdlwMB4PkO5olwMMa73twNIGsp4MWNjKbXCEvUEIAmAUixWGPwYM98JDko885CP9C2CrVdOUKdI1ngJzXhcKKqgOYPYMjIfJ9Ua4vhsw2UBJ+5TvOYGJuzXoC80UBsdAnJl4AHSaKoxyGScu2BT8K+3H8eN6/TBgGI5TiHMY41Jgvp2iEPvCRRABM8BWWWQh6cQc2FGAaZJKFaohmQjEgGn+2nBEUkgSLwUWvkUHpvSoAZOQzOsmAHYFM4VhqAIwPyVVgNIgAxb8fi74GFiSBe8C45PQDnqRVAEsFsinwJCWK6wGrAVkETAQl+qrUhSM4xFeBmyPvKhyreZUBfam1+OIl1FlGU6npjmdyoRRDckKMM9h9aSYFa5MzAoxmSBVOli5IjCqKjSHITA7obWDJ/H7VVSa9KHSZ2C3Kn2Z0FsBxBr8JLvpT0lH78mO6BHmwOqF461nMRuNH42ClmGNHcspjKKMKKOwWrd6+zvPknc2QIg98Gxhr+qE/sJuPRq93r8eXnhyL25/AKemWJWfGwnnAAAAAElFTkSuQmCC";
+/* 6 crowd icons, 16×16 each, in CROWDS order: head-and-shoulders crops of the customer sprites, drawn in Pixelwright. Shown with iconHtml("crowd",id). */
+const CROWD_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAAQCAMAAADeZIrLAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAh9JREFUeNqFlOtuozAUhHNCukGyUdiu2D+w9eKCIOmF93+7zrnYEFq1ozgxGOY740sOLCKSloS+KN/Y64dheWTb995T0zTpHi2i9/d8YwekB9F6vR+HXr6oeOtfliuBRpM9Yf4Pp3R9Ndnj9KK6bUNuaI0GyBmy/zjgkitBYpbTqrL/PMvjr+YPwi2VcBeBxicTG+K6Nl0ubGflryHo+hyh67UXwIFuWcmxLEvvy/Ks4yEEbUBogmGAwTD0luDUmgpNEOOZCbHv7wPjPXWEvwCUsAfg/aitFwfqqIExt7Y1/78g5PFxTO8rIM0oT6qTG/8xzLIAnwAdvKVlAP36DlAU/zpVcdSMITjn4G8JZYrzFIBQdfIRfyHAfztFoQKgWgEoie1RkQB0FtdV5/KxxFagROhQAOpPANtEKwAV8gR8CdD99ISJczh+wmDCGkAJkPnvx7k8neHBAJKXJZllycuaTqK0gVF9n/os3kOby5rH680N3uRp62s9iKw1KYBOvFAUsBFj9H5hg8V7LCVVEPm29drDKSkK3h/eF0UNiBwZBkjHImwy05kRJOsUKpTBgLhEfBTQUsVndp7nyfNmEoCra+cU8HYnO/sc2RIpAATspMAxe6qwgxfUj/8GALq2gn8DwuQ7vHXBNoQzc44EwCWf/BpdGP55hFA9/zz+5vXVScI8EoX018NHUQAceJomQpvgf1AACPg68tPDmgFd+gD3dVeBARe+/wAAAABJRU5ErkJggg==";
+/* 6 forecast icons, 16×16 each, in WEATHERS order, drawn in Pixelwright. Shown with iconHtml("weather",id). */
+const WEATHER_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAAQCAMAAADeZIrLAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAUpJREFUeNq1lF1uhDAMhDcvJahBClTdY1RA7n+32h4nsUMrrYR2HlCG7M5nnJ+HKsY6glLy/oYmCyCDZAW8jAkk/yZnT+hDE/p6/nmehyNQfCOAbysYPKwr0ViZOo/j2Mdv6L+e5znG2OYHH5LKIHPOBZaLl3wQaKLK5lNcjJMGVL9oQkpioxKk4lxKOdlqNsSEZ5X5XOQZADwAgeI3ESHoDRcv+SAEk3/tEraPAXCZ1S8EoKIT1fsjogEZZENEuAJMk7hLDND8BtB8qpcAVHHBGmNg8pngALt8QWvSU9cZgRMDuqd8aXnrtg5GwCPsRmOHOoDip48OWDj/E4vIYgAGDoAJo+Hw1Z0aJL7mk5d4ydf/mwFAquua4hBL/8P65c7K/wfteiu4imVD9oeuQlg3zb99VXz7R61j3Wz+jcvu73xZAn8c3nNd/wIHNzNcWZz6hAAAAABJRU5ErkJggg==";
 /* One 24×32 pixel-art customer per crowd (Parents is 32×32), drawn in Pixelwright. CSS shows them at 2×, or 1× on small screens (.cust). */
 const CUSTOMER_PNG={
   kids:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAgCAMAAAA/gEgKAAAAkFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo99dOdH9AAAAAXRSTlMAQObYZgAAAMtJREFUeNrNktEOgzAIRcd8WJNirC4+tfuE7f8/bxdKLMxkz97EWu+RgsLtEiIivWw7fGamfd9h6TZEiMQvpXgCy2ILlzyARSARTnKAUkrMKT1ACkdfgZIl+gZAllCsKeMYB6bp1bqmewStkdjU6h9ADrQ295PmWvEwqlIzZywCqvtuSy2+B/ozqpiiAei5QXhbbtsaAKkHl7YVkUeGSmiCaLGuDHBEhA4dYD2DT9c7AClXvDPoQX358dEIbbebgg5QqXRb1vMghhn8AsI7E86Z4NrYAAAAAElFTkSuQmCC",
@@ -733,6 +740,8 @@ document.documentElement.style.setProperty("--flavorIcons",`url(${FLAVOR_ICONS_P
 document.documentElement.style.setProperty("--spotIcons",`url(${SPOT_ICONS_PNG})`);
 document.documentElement.style.setProperty("--gearIconsA",`url(${GEAR_ICONS_A_PNG})`);
 document.documentElement.style.setProperty("--gearIconsB",`url(${GEAR_ICONS_B_PNG})`);
+document.documentElement.style.setProperty("--crowdIcons",`url(${CROWD_ICONS_PNG})`);
+document.documentElement.style.setProperty("--weatherIcons",`url(${WEATHER_ICONS_PNG})`);
 document.documentElement.style.setProperty("--hudPng",`url(${HUD_PNG})`);
 document.documentElement.style.setProperty("--streetPng",`url(${STREET_PNG})`);
 Object.entries(WEATHER_PNG).forEach(([k,v])=>document.documentElement.style.setProperty(`--${k}Png`,`url(${v})`));
@@ -802,12 +811,12 @@ function countUp(el,to){
 
 /* ============================================================ DATA ============================================================ */
 const WEATHERS={
-  sunny:  {name:"Sunny",       icon:"☀️", mult:1.0,  w:34, desc:"A normal day."},
-  hot:    {name:"Hot & Dry",   icon:"🔥", mult:1.9,  w:16, desc:"Lots of thirsty people. They pay more."},
-  perfect:{name:"Perfect day", icon:"🌈", mult:2.3,  w:5,  desc:"Big crowds and good tips. It doesn't happen often."},
-  cloudy: {name:"Cloudy",      icon:"☁️", mult:0.68, w:22, desc:"Fewer people today."},
-  rainy:  {name:"Rainy",       icon:"🌧️", mult:0.42, w:11, desc:"Most people stay home."},
-  windy:  {name:"Windy",       icon:"🌬️", mult:0.85, w:12, desc:"A little less busy."},
+  sunny:  {name:"Sunny",       mult:1.0,  w:34, desc:"A normal day."},
+  hot:    {name:"Hot & Dry",   mult:1.9,  w:16, desc:"Lots of thirsty people. They pay more."},
+  perfect:{name:"Perfect day", mult:2.3,  w:5,  desc:"Big crowds and good tips. It doesn't happen often."},
+  cloudy: {name:"Cloudy",      mult:0.68, w:22, desc:"Fewer people today."},
+  rainy:  {name:"Rainy",       mult:0.42, w:11, desc:"Most people stay home."},
+  windy:  {name:"Windy",       mult:0.85, w:12, desc:"A little less busy."},
 };
 /* The weather you can see in the scene, then the street in front of it. Moving things start where
    `left` puts them (the negative delay picks up the animation there), so with reduced motion they just sit there. */
@@ -827,12 +836,12 @@ function skyArt(wx){
   return (art[wx]||"")+`<i class="wx street"></i>`;
 }
 const CROWDS={
-  kids:      {name:"Kids",         icon:"🧒", pay:1.30, loves:["SWEET"],         hates:"SOUR",  line:"So sweet."},
-  parents:   {name:"Parents",      icon:"👨‍👧", pay:2.40, loves:["FANCY","SWEET"], hates:null,    line:"worth it."},
-  athletes:  {name:"Athletes",     icon:"🏅", pay:1.70, loves:["SOUR","CHILLED"],hates:"SWEET", line:"That hit the spot."},
-  tourists:  {name:"Tourists",     icon:"📸", pay:3.10, loves:["FANCY"],         hates:null,    line:"What a treat."},
-  foodies:   {name:"Foodies",      icon:"🧐", pay:4.20, loves:["FANCY","SOUR"],  hates:null,    line:"Really tasty."},
-  artists:   {name:"Artists",      icon:"🎨", pay:2.60, loves:["FANCY","FIZZY"], hates:null,    line:"Beautiful."}
+  kids:      {name:"Kids",         pay:1.30, loves:["SWEET"],         hates:"SOUR",  line:"So sweet."},
+  parents:   {name:"Parents",      pay:2.40, loves:["FANCY","SWEET"], hates:null,    line:"worth it."},
+  athletes:  {name:"Athletes",     pay:1.70, loves:["SOUR","CHILLED"],hates:"SWEET", line:"That hit the spot."},
+  tourists:  {name:"Tourists",     pay:3.10, loves:["FANCY"],         hates:null,    line:"What a treat."},
+  foodies:   {name:"Foodies",      pay:4.20, loves:["FANCY","SOUR"],  hates:null,    line:"Really tasty."},
+  artists:   {name:"Artists",      pay:2.60, loves:["FANCY","FIZZY"], hates:null,    line:"Beautiful."}
 };
 const LOCATIONS=[
   {name:"Maple St. Spot", traffic:17, bias:{kids:3,parents:3,artists:1}, wx:null,        desc:"Your home street. Lots of families."},
@@ -886,7 +895,7 @@ const INGREDIENTS={
   cucumbering:{name:"Cucumbers",pack:4,price:1.60}
 };
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
-const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name},gearB:{ids:["sunhat","awning","ponchos","icecrush","thermo","jug","shavedice","lemonzest","plaque","zester","tipjar","piggy","selloutbanner","rainjar","clover","wholesale","pitcher","squeezerpro","lemontree"],name:id=>GEAR.find(g=>g.id===id).name}};
+const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name},gearB:{ids:["sunhat","awning","ponchos","icecrush","thermo","jug","shavedice","lemonzest","plaque","zester","tipjar","piggy","selloutbanner","rainjar","clover","wholesale","pitcher","squeezerpro","lemontree"],name:id=>GEAR.find(g=>g.id===id).name},crowd:{ids:["kids","parents","athletes","tourists","foodies","artists"],name:id=>CROWDS[id].name},weather:{ids:["sunny","hot","perfect","cloudy","rainy","windy"],name:id=>WEATHERS[id].name}};
 function iconHtml(kind,id,big){const k=ICONS[kind];const i=k.ids.indexOf(id);if(i<0)console.warn("iconHtml: unknown "+kind+" icon id",id);return `<span class="icon ${kind}${big?" big":""}" style="--i:${i}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
 /* Upgrade icons ship in two sheets (A = first 20 of GEAR, B = the rest); gearIconHtml picks the right one.
    Sheet B still holds the art of the removed Shaved Ice Machine ("shavedice"), so the frames after it keep their places. */
@@ -982,7 +991,7 @@ const SYNERGIES=[
  {id:"goldenhour",name:"Golden hour",    need:{SWEET:1,SOUR:1,FANCY:1},   desc:"1 sweet, 1 sour and 1 fancy flavor: everyone pays 20% more.", check:s=>s.tags.SWEET>=1&&s.tags.SOUR>=1&&s.tags.FANCY>=1},
 ];
 const KIDS=[
- {id:"classic", name:"The Classic",    icon:"🧢", start:30, desc:"The 1979 experience, plus drafts. No bias, no excuses.", gear:null},
+ {id:"classic", name:"The Classic",    start:30, desc:"The 1979 experience, plus drafts. No bias, no excuses.", gear:null},
 ];
 /* Two acts, seven days each; Endless keeps cycling the four areas. */
 const ACTS=[
@@ -1239,7 +1248,7 @@ function updateHUD(){
   $("#hudDay").textContent=S.day;
   $("#hudDayOf").innerHTML=S.endless?"Endless":`of ${S.totalDays}<i class="long"> days</i>`;
   const wx=M&&WEATHERS[M.shownWx]; // shown while the morning or the selling day is on screen
-  $("#hudWx").innerHTML=wx?`${wx.icon} <b>${wx.name}, ${M.temp}°F</b>`:"";
+  $("#hudWx").innerHTML=wx?`${iconHtml("weather",M.shownWx)} <b>${wx.name}, ${M.temp}°F</b>`:"";
   $("#hudWx").dataset.tip=wx?`Today's forecast. ${wx.desc} The forecast is always right.`:"";
   $("#hudDayBox").dataset.tip=S.endless?`Day ${S.day}. Endless: play as long as you like. You're at ${area}.`:`Day ${S.day} of ${S.totalDays}. You're at ${area}.`;
   // each star fills from the left, one art pixel at a time: 3.4 stars is three full stars and a star 4 of 11 pixels full
@@ -1274,7 +1283,7 @@ function tagTip(t){
   const fans=Object.values(CROWDS).filter(c=>c.loves.includes(t)).map(c=>c.name),foes=Object.values(CROWDS).filter(c=>c.hates===t).map(c=>c.name);
   return `${TAG_INFO[t]||""}${fans.length?` ${listWords(fans)} love them.`:""}${foes.length?` ${listWords(foes)} don't.`:""}`;
 }
-function flavorFans(tags){return Object.values(CROWDS).filter(c=>c.loves.some(t=>tags.includes(t))).map(c=>`${c.icon} ${c.name}`).join(", ")}
+function flavorFans(tags){return Object.entries(CROWDS).filter(([,c])=>c.loves.some(t=>tags.includes(t))).map(([k,c])=>`${iconHtml("crowd",k)} ${c.name}`).join(", ")}
 function tagChips(tags){return tags.map(t=>`<span class="tag"${tip(tagTip(t))}>${t.charAt(0)+t.slice(1).toLowerCase()}</span>`).join("")}
 const RARITY={common:"Common",rare:"Rare",epic:"Epic",legendary:"Legendary"},RARITY_TIP="Rarer upgrades show up less often: common, rare, epic, then legendary.";
 function rarBadge(r){return `<span class="rar ${r}"${tip(RARITY_TIP)}>${r}</span>`}
@@ -1598,7 +1607,7 @@ function renderDayScene(){
   </div>`;
   updateHUD();fitStage();
 }
-function crowdMixLine(){const mix=crowdMixFor(M.loc);return Object.entries(mix).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${CROWDS[k].icon} ${v}%`).join(", ")}
+function crowdMixLine(){const mix=crowdMixFor(M.loc);return Object.entries(mix).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${iconHtml("crowd",k)} ${v}%`).join(", ")}
 /* The newest line of the day pops up as a toast over the sky; the evening report keeps them all. */
 function logLine(html){const el=$("#dayToast");if(el){el.innerHTML=html;el.style.animation="none";void el.offsetWidth;el.style.animation=""} S.log.push(html)}
 function sleep(ms){ // simulation-time wait: scales with SPEED, live, and Skip ends it now
@@ -1831,7 +1840,7 @@ function finishDay(){
   const repExtra=repNotes.slice(D.demand>0?1:0); // the first note (people served) is the line above it
   const repLine=repNotes.length?`Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b>${repExtra.length?` (${repExtra.join(", ")})`:""}`:`Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
   const crowdRows=Object.entries(D.soldByCrowd||{}).map(([ck,byDrink])=>({ck,byDrink,total:Object.values(byDrink).reduce((t,v)=>t+v,0)})).sort((a,b)=>b.total-a.total)
-    .map(({ck,byDrink})=>`<div class="csRow"><span class="csWho">${CROWDS[ck].icon} ${CROWDS[ck].name}</span><span class="csWhat">${Object.entries(byDrink).sort((a,b)=>b[1]-a[1]).map(([rk,n])=>`<span class="csDrink">${iconHtml("flavor",rk)} ${RECIPES[rk].name}: ${n} ${plural(n,"cup")}</span>`).join("")}</span></div>`).join("");
+    .map(({ck,byDrink})=>`<div class="csRow"><span class="csWho">${iconHtml("crowd",ck)} ${CROWDS[ck].name}</span><span class="csWhat">${Object.entries(byDrink).sort((a,b)=>b[1]-a[1]).map(([rk,n])=>`<span class="csDrink">${iconHtml("flavor",rk)} ${RECIPES[rk].name}: ${n} ${plural(n,"cup")}</span>`).join("")}</span></div>`).join("");
   const stamp=perfect?`<span class="rStamp">Perfect day</span>`:soldOut?`<span class="rStamp">Sold out</span>`:made<0?`<span class="rStamp bad">Rough day</span>`:"";
   const today=S.log.slice(M.logStart);
   $("#screen").innerHTML=`
