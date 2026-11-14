@@ -1472,7 +1472,7 @@ function mSignsHtml(){
     <div class="signBuy">${iconHtml("supply","signs",true)}
       ${stepperHtml("signs",n,"stepSigns(-1)","stepSigns(1)",`Give back a sign, ${n} bought`,`Buy a sign for ${fmt(p)}, ${n} bought`,n<=0,S.cash<p||n>=SIGN_MAX)}
       <span class="each"><b>${fmt(p)}</b> each</span></div>
-    <div class="mHint">Each sign lasts one day.${n>=SIGN_MAX?` ${SIGN_MAX} is the most you can buy.`:""}${b.freeSigns?` Upgrades add ${b.freeSigns} free.`:""}</div>`;
+    <div class="mHint">Each sign lasts one day.${b.freeSigns?` Upgrades add ${b.freeSigns} free.`:""}</div>`;
 }
 function mBoardHtml(){
   return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][1])}<div class="prices" onwheel="wheelSideways(event,this)">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
