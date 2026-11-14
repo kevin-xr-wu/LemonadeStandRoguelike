@@ -259,6 +259,9 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 @keyframes fadeIn{from{opacity:0}}
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}}
 @media (prefers-reduced-motion:reduce){.modalWrap,.modal{animation:none}}
+/* The evening pops up over the closed stand: the day's report, then the upgrade pick. It sits under the HUD, so money, stars and upgrades stay in view. */
+.modalWrap.eve{--hudH:56px;z-index:40;padding-top:calc(var(--hudH) + 16px)}
+.eve .modal{max-width:760px;max-height:100%}
 .flex{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .spread{justify-content:space-between}
 .mt{margin-top:14px}
@@ -574,13 +577,13 @@ body:has(.stage){overflow:hidden}
   .dock .stepper b{min-width:46px;font-size:var(--fs-md)}
 }
 @media (max-width:1100px){
-  .stage{--hudH:84px}
+  .stage,.modalWrap.eve{--hudH:84px}
   #app:has(.stage) .hud{flex-wrap:wrap;row-gap:2px}
   .hudWx{order:10;flex:1 1 100%;justify-content:center;border-top:1px solid rgba(255,247,224,.15);padding:2px 0 1px} /* the 32px forecast icon fills the row */
   .hudWx b{font-size:var(--fs-lg)}
 }
 @media (max-width:720px){
-  .stage{--hudH:80px}
+  .stage,.modalWrap.eve{--hudH:80px}
   .skyTop{grid-template-columns:1fr;justify-items:stretch}
   .skyTop .side{justify-items:start}
   .spotCard .slide{padding:6px 8px 2px}
@@ -1679,7 +1682,7 @@ async function runDayPhase(phase){
   if(D.skip)resumeAfternoon();else after(900,resumeAfternoon);
 }
 function updateDayStats(){
-  const st=$("#stStock");if(!st)return;
+  const st=$("#stStock");if(!st||D.done)return; // once closed, the evening has counted the till into your money
   st.textContent=servingsReady();
   const till=D.skip?D.revenue+D.tips:D.paid; // money lands when a buyer pays at the counter; Skip shows it all
   $("#stTill").textContent=fmt(till);
@@ -1843,8 +1846,9 @@ function finishDay(){
     .map(({ck,byDrink})=>`<div class="csRow"><span class="csWho">${iconHtml("crowd",ck)} ${CROWDS[ck].name}</span><span class="csWhat">${Object.entries(byDrink).sort((a,b)=>b[1]-a[1]).map(([rk,n])=>`<span class="csDrink">${iconHtml("flavor",rk)} ${RECIPES[rk].name}: ${n} ${plural(n,"cup")}</span>`).join("")}</span></div>`).join("");
   const stamp=perfect?`<span class="rStamp">Perfect day</span>`:soldOut?`<span class="rStamp">Sold out</span>`:made<0?`<span class="rStamp bad">Rough day</span>`:"";
   const today=S.log.slice(M.logStart);
-  $("#screen").innerHTML=`
-  <div class="panel">
+  $("#dayMsg").textContent="Closed for today.";$(".dayBtns").remove();
+  document.querySelectorAll("#skyBox .cust,#skyBox .bubble").forEach(el=>el.remove()); // the street empties: anyone still walking up doesn't pay
+  eveSheet(`
     <h2>Day ${S.day} results</h2>
     ${learnHint(HOW_STEPS[4][1])}
     <div class="report">
@@ -1878,12 +1882,17 @@ function finishDay(){
       <h4 class="todayHead">Today</h4>
       <ul class="facts">${today.length?today.map(l=>`<li>${l}</li>`).join(""):"<li>A quiet day at the stand.</li>"}</ul>
     </details>
-    <div class="center mt"><button class="btn gold" onclick="afterReport()">${S.day%3===0?"Open your bonus crate":"Pick an upgrade"}</button></div>
-  </div>`;
+    <div class="center mt"><button class="btn gold" onclick="afterReport()">${S.day%3===0?"Open your bonus crate":"Pick an upgrade"}</button></div>`);
   countUp($("#madeAmt"),made);
   if(perfect)celebrate("medium",$(".rStamp"),1400); // .rStamp presses down 1.2s in and takes .2s
   updateHUD();
   D.report={profit:made,perfect};
+}
+/* The evening pops up over the closed stand, one sheet at a time: the report, then the crate, the pick, a swap or a new combo.
+   The stand behind it can't be pressed. The next morning replaces the stage, and the sheet goes with it. */
+function eveSheet(html,cls=""){
+  if(!$("#eve")){$(".stage").inert=true;$("#screen").insertAdjacentHTML("beforeend",`<div class="modalWrap eve" id="eve"></div>`)}
+  $("#eve").innerHTML=`<div class="modal${cls?" "+cls:""}">${html}</div>`;
 }
 function afterReport(){
   if(S.cash<cheapestServingCost()&&S.cash<1){endRun("bankrupt","You don't have enough money to make a cup.");return}
@@ -1930,13 +1939,12 @@ function cardHtml(c,attrs,extra=""){
 let draftFlip=false; // the next draft screen deals its cards in with a flip (a crate just opened)
 function renderDraftScreen(){
   const flip=draftFlip;draftFlip=false;
-  $("#screen").innerHTML=`<div class="panel">
+  eveSheet(`
     <h2>${draftTitle}</h2>
     <p class="muted" style="margin-top:0">It starts working tomorrow. The other two go away.</p>
     ${learnHint(HOW_STEPS[5][1])}
     ${shelfHtml()}
-    <div class="choices">${draftChoices.map((p,i)=>cardHtml(draftCardHtml(p),`onclick="pickDraft(${i})"${flip?` style="--k:${i}"`:""}`,flip?"flipIn":"")).join("")}</div>
-  </div>`;
+    <div class="choices">${draftChoices.map((p,i)=>cardHtml(draftCardHtml(p),`onclick="pickDraft(${i})"${flip?` style="--k:${i}"`:""}`,flip?"flipIn":"")).join("")}</div>`);
 }
 function offerDraft(){
   if(S.day%3===0){offerCrate();return}
@@ -1946,10 +1954,10 @@ function offerDraft(){
 }
 const CRATES=[["gear","Upgrade crate","3 rare (or better) stand upgrades."],["recipe","Flavor crate","3 new flavors."],["wild","Surprise crate","3 of anything: upgrades, flavors or cash."]];
 function offerCrate(){
-  $("#screen").innerHTML=`<div class="panel center">
+  eveSheet(`
     <h2>Bonus crate</h2>
     <p class="big">Every 3rd day you get a free crate. Which one?</p>
-    <div class="choices">${CRATES.map(([k,name,desc],i)=>`<button class="choice pick crate" onclick="pickCrate(this,'${k}')"><span class="cardArt"><i class="crateArt" style="--i:${i}" aria-hidden="true"></i></span><span class="cardBody"><span class="ttl">${name}</span><span class="desc">${desc}</span></span></button>`).join("")}</div></div>`;
+    <div class="choices">${CRATES.map(([k,name,desc],i)=>`<button class="choice pick crate" onclick="pickCrate(this,'${k}')"><span class="cardArt"><i class="crateArt" style="--i:${i}" aria-hidden="true"></i></span><span class="cardBody"><span class="ttl">${name}</span><span class="desc">${desc}</span></span></button>`).join("")}</div>`,"center");
 }
 /* The crate you pick shakes open while the others step back, then its three cards flip in. */
 function pickCrate(btn,kind){
@@ -1981,12 +1989,11 @@ let swapOut=-1;
 function showSwap(p){
   pendingDraft=p;swapOut=-1;sfx.flip();
   const owned=S.gear.map(id=>GEAR.find(x=>x.id===id));
-  $("#screen").innerHTML=`<div class="panel">
+  eveSheet(`
     <h2>Your stand is full</h2>
     <p style="margin-top:0">Which upgrade should go? You'll get <b>${gearIconHtml(p.id)} ${draftCardHtml(p).title}</b>.</p>
     <div class="choices" id="swapCards">${owned.map((o,i)=>cardHtml(gearCard(o,false),`onclick="markSwap(${i})" aria-pressed="false"`)).join("")}</div>
-    <div class="flex mt" style="justify-content:center"><button class="btn sm ghost" onclick="pendingDraft=null;renderDraftScreen()">Back</button><button class="btn sm ghost" onclick="pendingDraft=null;nextDay()">Keep my stand</button><button class="btn sm" id="swapGo" disabled onclick="swapFor(swapOut)">Swap</button></div>
-  </div>`;
+    <div class="flex mt" style="justify-content:center"><button class="btn sm ghost" onclick="pendingDraft=null;renderDraftScreen()">Back</button><button class="btn sm ghost" onclick="pendingDraft=null;nextDay()">Keep my stand</button><button class="btn sm" id="swapGo" disabled onclick="swapFor(swapOut)">Swap</button></div>`);
 }
 function markSwap(i){
   swapOut=swapOut===i?-1:i;sfx.tick();
@@ -2012,11 +2019,11 @@ function grantDraft(p){
   const b=computeBuild();const newOnes=b.synergies.filter(s=>!S.discoveredSyn.includes(s.id));
   if(newOnes.length){
     newOnes.forEach(s=>{S.discoveredSyn.push(s.id);if(!meta.discoveredSyn.includes(s.id))meta.discoveredSyn.push(s.id)});
-    $("#screen").innerHTML=`<div class="panel center"><div class="synBanner newCombo">New combo</div>
+    eveSheet(`<div class="synBanner newCombo">New combo</div>
       ${newOnes.map(s=>`<h2 class="mt">${s.name}</h2>
       <div class="comboCups">${comboCupsHtml(s)}</div>
       <p class="big">${s.desc}</p>`).join("")}
-      <button class="btn gold" onclick="nextDay()">Start Day ${S.day+1}</button></div>`;
+      <button class="btn gold" onclick="nextDay()">Start Day ${S.day+1}</button>`,"center");
     celebrate("medium",$(".synBanner"));
     saveMeta();updateHUD();return;
   }
