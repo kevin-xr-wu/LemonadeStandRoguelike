@@ -906,7 +906,7 @@ const INGREDIENTS={
   lemons:{name:"Lemons",pack:12,price:3.00},
   sugar:{name:"Sugar",pack:10,price:2.00},
   ice:{name:"Ice Cubes",pack:40,price:1.20},
-  signs:{name:"Signs",pack:1,price:1.00},
+  signs:{name:"Signs",pack:1,price:5.00},
   strawberries:{name:"Strawberries",pack:6,price:2.40},
   mint:{name:"Fresh Mint",pack:6,price:1.80},
   condmilk:{name:"Condensed Milk",pack:4,price:2.00},
@@ -1118,8 +1118,10 @@ function newRun(kidId){
 function actIndex(){return clamp(Math.floor((S.day-1)/7),0,S.actsCount-1)}
 function gearSlots(){return GEAR_SLOTS}
 function cheapestServingCost(){return Math.min(...S.recipes.map(rk=>servingCost(rk)))}
-/* Signs last one day. Each morning you buy as many as you want for today, and every one you buy goes out.
-   + pays for a sign and − gives the money back, so the money moves as you choose; opening the stand uses them up. */
+/* Signs last one day. Each morning you buy the signs you want for today (at most SIGN_MAX), and every one
+   you buy goes out. + pays for a sign and − gives the money back, so the money moves as you choose;
+   opening the stand uses them up. Free signs from upgrades are on top of the cap. */
+const SIGN_MAX=8;
 function signPrice(){return packPrice("signs")}
 /* ---------- build aggregation ---------- */
 /* b.tags = flavor tags on your menu's recipes (feeds synergies). Gear carries no tags. */
@@ -1406,7 +1408,7 @@ function morningParts(){
   if(dr&&it){const shelf=$("#mShop"),row=it.parentNode;dr.style.left=clamp(it.offsetLeft-row.scrollLeft+it.offsetWidth/2-dr.offsetWidth/2,0,Math.max(0,shelf.clientWidth-dr.offsetWidth))+"px"}
   if(f){const el=document.querySelector(`[data-f="${f}"]`);if(el)el.focus({preventScroll:true})}
 }
-const SIGN_SPOTS=8; // signs drawn on the grass; any you buy beyond these still count
+const SIGN_SPOTS=8; // signs drawn on the grass; free signs past these still count, they just are not drawn
 function mSceneHtml(){
   const menu=sellableNow();
   let signs="";
@@ -1468,7 +1470,7 @@ function mSignsHtml(){
   const signTip=`Signs bring more people. ${S.gear.includes("bigsign")?"Every sign helps the same.":"Each extra sign helps a little less."}`;
   return `<div class="mLbl"><span tabindex="0"${tip(signTip)}>Signs today</span></div>${learnHint(HOW_STEPS[1][1])}
     <div class="signBuy">${iconHtml("supply","signs",true)}
-      ${stepperHtml("signs",n,"stepSigns(-1)","stepSigns(1)",`Give back a sign, ${n} bought`,`Buy a sign for ${fmt(p)}, ${n} bought`,n<=0,S.cash<p)}
+      ${stepperHtml("signs",n,"stepSigns(-1)","stepSigns(1)",`Give back a sign, ${n} bought`,`Buy a sign for ${fmt(p)}, ${n} bought`,n<=0,S.cash<p||n>=SIGN_MAX)}
       <span class="each"><b>${fmt(p)}</b> each</span></div>
     <div class="mHint">Each sign lasts one day.${b.freeSigns?` Upgrades add ${b.freeSigns} free.`:""}</div>`;
 }
@@ -1497,7 +1499,7 @@ function openShelf(id){M.shopOpen=M.shopOpen===id?null:id;sfx.flip();morningPart
 function stepSigns(d){ // + buys one sign, − gives one back for what it cost
   const p=signPrice();
   if(d<0){if(M.signs<=0)return;M.signs--;S.cash=Math.round((S.cash+p)*100)/100;sfx.tick()}
-  else{if(S.cash<p){sfx.bad();return}M.signs++;S.cash=Math.round((S.cash-p)*100)/100;sfx.coin(3)}
+  else{if(S.cash<p||M.signs>=SIGN_MAX){sfx.bad();return}M.signs++;S.cash=Math.round((S.cash-p)*100)/100;sfx.coin(3)}
   updateHUD();morningParts();
 }
 function retireMorning(){S.cash=Math.round((S.cash+M.signs*signPrice())*100)/100;M.signs=0;endRun('retired')} // signs not put out yet go back for a refund
