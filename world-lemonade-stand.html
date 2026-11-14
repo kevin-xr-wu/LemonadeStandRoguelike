@@ -22,7 +22,7 @@
   --fs-xs:12px; --fs-sm:14px; --fs-md:16px; --fs-lg:20px; --fs-xl:28px; --fs-2xl:40px; --fs-3xl:64px;
 }
 /* Three surface levels, so the eye can tell what to press:
-   1. Page surfaces (.panel, .scene, .supShelf, .board, .modal): a fill and rounded corners. No ink border, no hard shadow.
+   1. Page surfaces (.panel, .scene, .supShelf, .modal): a fill and rounded corners. No ink border, no hard shadow.
    2. Grouped content (My Stand, slots, chips, pills, hints, banners, callouts, the log, the buy drawer): a flat fill, no border.
    3. Things you press (.btn, .iconBtn, .choice, .item, .stepper button, .post): the chunky ink border and offset shadow,
       which collapse when pressed. Nothing else gets that look. */
@@ -311,7 +311,7 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 #guessText b{color:var(--lemon);font-size:var(--fs-lg)}
 #guessText .pos{color:#9be15d} #guessText .negc{color:#ff8f6b}
 .guessBar #btnOpen{padding:12px 22px;margin-left:auto}
-/* Morning: set up the stand. Spots are signposts, supplies sit on a shelf, signs stand on the grass, prices go on a chalkboard. */
+/* Morning: set up the stand. Spots are signposts, supplies sit on a shelf, signs stand on the grass. */
 .mLbl{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 10px;margin:12px 0 6px;font-weight:900;font-size:var(--fs-md)}
 .mLbl small{font-size:var(--fs-sm);font-weight:700;opacity:.8}
 .posts{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8px;max-width:760px}
@@ -346,15 +346,11 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 .stepper button{width:36px;height:36px;padding:0;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:10px;font-size:var(--fs-lg);font-weight:900;line-height:1;box-shadow:0 2px 0 rgba(43,33,24,.85)}
 .stepper button[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
 .stepper b{min-width:54px;padding:0 2px;white-space:nowrap;text-align:center;font-size:var(--fs-lg);font-variant-numeric:tabular-nums}
-.board{margin-top:14px;background:#2f3b33;color:#f4f1e6;border-radius:var(--radius);box-shadow:inset 0 0 0 7px #a86a3a;padding:16px 18px 14px}
-.board .mLbl{margin-top:0;color:var(--lemon)}
 .prices{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px 32px}
 .price{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px 10px}
 .price.out>.icon,.price.out .pName{opacity:.55}
 .pName{font-weight:900;font-size:var(--fs-md)}
-.pOut{grid-column:1/-1;font-size:var(--fs-sm);font-weight:700;color:#ffc9b8}
-.board .stepper b{color:var(--lemon)}
-.board .tag{color:var(--ink)}
+.pOut{grid-column:1/-1;font-size:var(--fs-sm);font-weight:700;color:var(--red)}
 /* Today's signs stand on the grass by the stand. --k is its place out from the stand, --side left or right. */
 .signSlot{--w:calc(16px*var(--px) + 16px);position:absolute;bottom:0;z-index:5;width:var(--w);height:var(--w);margin-left:calc(var(--w)/-2);left:calc(50% + var(--side)*(32px*var(--px) + var(--w)/2 + 2px + var(--k)*(var(--w) + 2px)));display:flex;align-items:flex-end;justify-content:center}
 .signSlot .icon{--sz:calc(16px*var(--px));filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
@@ -419,7 +415,6 @@ button,input,select{touch-action:manipulation}
   .dayStats{font-size:var(--fs-sm);padding:8px 10px;gap:6px}
   .supShelf{margin-top:10px;padding:8px 10px 0}
   .shelfRow{margin-inline:-10px;padding-inline:10px}
-  .board{margin-top:10px;padding:14px 14px 12px}
   /* Tap targets */
   .btn.sm{min-height:40px;padding:8px 12px}
   #btnOpen{padding:14px 16px!important;max-width:100%}
@@ -506,10 +501,9 @@ body:has(.stage){overflow:hidden}
 .dock .item{flex:none;width:62px}
 .dock .drawer{position:absolute;left:0;bottom:calc(100% + 10px);z-index:10;width:min(340px,calc(100vw - 24px));margin:0;box-shadow:0 6px 0 rgba(43,33,24,.3),0 10px 24px rgba(0,0,0,.2)}
 .dock .stepper b{min-width:50px}
-/* Today's prices: a chalkboard slide with a price tag per flavor. The tags sit in one row that scrolls sideways,
+/* Today's prices: a price tag per flavor. The tags sit in one row that scrolls sideways,
    so any number of flavors fits without the card growing. */
-.slide.board{margin:0;border-radius:0;box-shadow:inset 0 0 0 5px #a86a3a;padding:10px 14px 8px}
-.prices{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:#a86a3a transparent;padding-bottom:4px}
+.prices{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:rgba(43,33,24,.25) transparent;padding-bottom:4px}
 .spotCard .price{flex:none;width:150px;scroll-snap-align:start;grid-template-columns:auto minmax(0,1fr);grid-template-rows:1fr auto;align-items:start;justify-items:start;gap:4px 8px;text-align:left} /* steppers line up along the bottom */
 .spotCard .price .stepper,.spotCard .price .pOut{grid-column:1/-1}
 .spotCard .price .stepper,.spotCard .price .pOut{justify-self:center;align-self:center} /* a flavor you cannot make today shows what it needs in place of its price */
@@ -619,7 +613,6 @@ body:has(.stage){overflow:hidden}
 .stage.fit-px2,.stage.fit-px2 .sky{--px:2}
 .stage.fit-min .learn{display:none}
 .stage.fit-min .spotCard .pName{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stage.fit-min .slide.board{padding:6px 12px}
 .stage.fit-min .news>*{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stage.fit-px1,.stage.fit-px1 .sky{--px:1}
 </style>
@@ -1432,10 +1425,10 @@ function mSpotHtml(){
       <span class="goChip" id="guessText" tabindex="0"${tip(iceTip())}></span></div>
       <button class="btn gold" id="btnOpen" onclick="openStand()" data-f="open">Open</button></div>`;
   const last=SPOT_SLIDES.length-1;
-  const slide=([html,cls],k)=>`<div class="slide${cls?" "+cls:""}" role="group" aria-roledescription="slide" aria-label="${SPOT_SLIDES[k]}"${k===card?"":" inert"}>${html}</div>`;
+  const slide=(html,k)=>`<div class="slide" role="group" aria-roledescription="slide" aria-label="${SPOT_SLIDES[k]}"${k===card?"":" inert"}>${html}</div>`;
   const arrow=(d,txt)=>`<button class="arrow" onclick="setSpotCard(M.card+${d})" data-d="${d}" data-f="car-arrow${d}" aria-label="${d<0?"Back":"Next"}"${(d<0?card===0:card===last)?' aria-disabled="true"':""}>${txt}</button>`;
   const dot=k=>`<button class="dot" onclick="setSpotCard(${k})" data-k="${k}" data-f="car-dot${k}" aria-label="${SPOT_SLIDES[k]}" aria-current="${k===card}"></button>`;
-  return `<div class="slides" style="--card:${card}">${[[where],[mSignsHtml()],[mBoardHtml(),"board"],[go]].map(slide).join("")}</div>
+  return `<div class="slides" style="--card:${card}">${[where,mSignsHtml(),mPricesHtml(),go].map(slide).join("")}</div>
     <div class="carNav">${arrow(-1,"‹")}${SPOT_SLIDES.map((_,k)=>dot(k)).join("")}${arrow(1,"›")}</div>`;
 }
 /* The top card's slides, in the order the help teaches: where to sell, signs, the prices, then open.
@@ -1481,7 +1474,7 @@ function mSignsHtml(){
       <span class="each"><b>${fmt(p)}</b> each</span></div>
     <div class="mHint">Each sign lasts one day.${b.freeSigns?` Upgrades add ${b.freeSigns} free.`:""}</div>`;
 }
-function mBoardHtml(){
+function mPricesHtml(){
   return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][1])}<div class="prices" onwheel="wheelSideways(event,this)">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
     const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">Special +$0.50</span>':"";
     return `<div class="price${ok?"":" out"}">${iconHtml("flavor",rk,true)}
