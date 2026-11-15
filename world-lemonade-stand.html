@@ -148,8 +148,9 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .ground:before{content:"";position:absolute;top:-18px;left:0;right:0;height:28px;background:var(--grassPng) 0 0/128px 28px repeat-x;image-rendering:pixelated}
 /* Backdrop and weather art, drawn in Pixelwright. Sizes are art pixels times --px. The grass edge covers the backdrop's bottom rows. */
 .wx{position:absolute;display:block;image-rendering:pixelated;pointer-events:none;background:no-repeat 0 0/100% 100%}
-.street{left:0;right:0;bottom:0;height:calc(56px*var(--px));background:var(--backdrop0) 50% 100%/calc(256px*var(--px)) 100% repeat-x;z-index:2}
-.street.fresh{animation:fadeIn .5s ease-out} /* a newly picked spot's backdrop fades in over the last one */
+.street{left:0;right:0;bottom:0;height:calc(56px*var(--px));background:var(--backdrop0) 50% 100%/calc(256px*var(--px)) 100% repeat-x;z-index:2;transition:opacity .6s ease-out}
+.street.fresh,.street.gone{opacity:0} /* picking a spot crossfades the backdrops: the new one fades in as the last one fades out */
+.street.gone{transition-timing-function:ease-in} /* the last one lingers, so the scene never thins out midway */
 .sun{top:calc(4px*var(--px));right:calc(6px*var(--px));width:calc(29px*var(--px));height:calc(29px*var(--px));background-image:var(--sunPng);z-index:1}
 .sun.hot{top:calc(2px*var(--px));right:calc(4px*var(--px));width:calc(33px*var(--px));height:calc(33px*var(--px));background-image:var(--hotSunPng)}
 .rainbow{left:calc(4px*var(--px));bottom:calc(14px*var(--px));width:calc(120px*var(--px));height:calc(60px*var(--px));background-image:var(--rainbowPng);z-index:1}
@@ -166,7 +167,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 @keyframes leafSpin{to{rotate:360deg}}
 @keyframes leafBob{to{translate:0 calc(-10px*var(--px))}}
 @keyframes shimmer{0%{translate:0 0;opacity:0}30%{opacity:.8}100%{translate:0 calc(-28px*var(--px));opacity:0}}
-@media (prefers-reduced-motion:reduce){.cloud,.rain,.gust,.leaf,.shimmer,.bubble,.coin,.cust.walk,.cust.carry,.flavorPop,.street.fresh{animation:none}}
+@media (prefers-reduced-motion:reduce){.cloud,.rain,.gust,.leaf,.shimmer,.bubble,.coin,.cust.walk,.cust.carry,.flavorPop{animation:none}.street{transition:none}}
 .stand{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:128px;image-rendering:pixelated;z-index:5;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
 .standSign{position:absolute;left:50%;bottom:134px;transform:translateX(-50%) rotate(-2deg);background:#fff;border-radius:8px;padding:3px 12px;font-weight:900;font-size:var(--fs-sm);z-index:6;white-space:nowrap}
 /* Customers: --fw is the frame width in sprite pixels, --s the scale. left is the centre of the feet. */
@@ -880,11 +881,12 @@ function skyArt(wx,loc){
 /* The backdrop behind the stand: the spot's own, or the home street before a spot is picked. */
 const backdropIndex=loc=>Math.max(0,Object.keys(BACKDROP_PNG).indexOf(loc?loc.name:""));
 const backdropHtml=(loc,cls="")=>{const i=backdropIndex(loc);return `<i class="wx street${cls}" data-bd="${i}" style="background-image:var(--backdrop${i})"></i>`};
-function showBackdrop(loc){ // picking a spot fades its backdrop in over the last one
-  const all=document.querySelectorAll("#skyBox .street"),old=all[all.length-1];
+function showBackdrop(loc){ // picking a spot crossfades its backdrop with the last one
+  const all=[...document.querySelectorAll("#skyBox .street")],old=all[all.length-1];
   if(!old||+old.dataset.bd===backdropIndex(loc))return;
   old.insertAdjacentHTML("afterend",backdropHtml(loc," fresh"));
-  setTimeout(()=>old.remove(),stillMotion()?0:500);
+  const el=old.nextElementSibling;void el.offsetWidth;el.classList.remove("fresh"); // fade in from clear
+  all.forEach(s=>{s.classList.add("gone");setTimeout(()=>s.remove(),stillMotion()?0:600)}); // a backdrop still fading in fades back out from where it is
 }
 const CROWDS={
   kids:      {name:"Kids",         pay:1.30, loves:["SWEET"],         hates:"SOUR",  line:"So sweet."},
