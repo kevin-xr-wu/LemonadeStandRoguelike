@@ -295,7 +295,7 @@ details.numbers{margin-top:12px;border-top:2px dotted #cdbf9d;padding-top:6px}
 details summary{cursor:pointer;font-weight:900;padding:6px 0}
 .list{margin:6px 0 0;padding-left:20px;display:grid;gap:6px;line-height:1.45}
 .list li.off{color:rgba(43,33,24,.6)}
-/* How to play: the day's steps as picture tiles, a few lines worth knowing, then every rule folded away */
+/* How to play: the day's steps as picture tiles */
 .howSteps{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .howSteps li{--px:2;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--paper2);border-radius:12px;padding:10px 6px 8px;text-align:center;line-height:1.25}
 .howSteps .icon{--sz:32px;vertical-align:0}
@@ -303,11 +303,6 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 .howSteps b{font-size:var(--fs-sm)}
 .howSteps b i{font-style:normal;display:inline-block;min-width:20px;margin-right:4px;background:var(--ink);color:var(--lemon);border-radius:99px;font-family:var(--font-display);font-size:var(--fs-md);line-height:20px}
 .howSteps span{font-size:var(--fs-xs);opacity:.8}
-.howKnow{--px:1;list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
-.howKnow li{display:flex;align-items:center;gap:8px;line-height:1.3}
-.howKnow .icon,.howKnow .hudIcon{flex:none}
-.howKnow .star{flex:none;margin:0 2.5px} /* the 11px HUD star, centred in a 16px column */
-details.moreRules{margin-top:12px;border-top:2px dotted #cdbf9d;padding-top:4px}
 @media (max-width:420px){.howSteps{gap:6px}.howSteps li{padding:8px 4px 6px}}
 .onOff{display:inline-block;min-width:38px;text-align:center;background:var(--paper2);border-radius:99px;font-size:var(--fs-xs);font-weight:900;text-transform:uppercase;padding:2px 8px}
 .onOff.on{background:var(--green2);color:#fff}
@@ -1376,7 +1371,7 @@ function shelfHtml(){
 }
 /* The day, step by step. The ? help lists them all; on a player's first day each hint shows where its step happens. */
 const FORECAST_HINT="Hot days are busy. Rain keeps people home.";
-const HOW_STEPS=[["Pick a spot","Each spot brings different people."],["Put up signs","Signs bring more customers."],["Buy supplies","Each cup uses supplies. Hot days use more ice."],["Set your price","Too high, and people walk away."],["See how you did","Sales and tips for the day."],["Pick an upgrade",`Upgrades make your stand better. You can keep ${GEAR_SLOTS}.`]];
+const HOW_STEPS=[["Pick a spot","Each spot has its own crowd."],["Put up signs","Signs bring more customers."],["Buy supplies","Each cup uses some. Hot days need more ice."],["Set your price","Charge too much and people walk away."],["See how you did","Count up your sales and tips."],["Pick an upgrade","Make your stand even better."]];
 function firstDay(){return S&&S.day===1&&!meta.hintsSeen}
 function learnHint(t){return firstDay()?`<span class="learn">${t}</span>`:""}
 
@@ -2203,36 +2198,15 @@ function showBuild(){
     <ul class="list">${SYNERGIES.map(s=>{const on=b.activeSynergies.includes(s.id);return `<li${on?"":' class="off"'}><span class="onOff${on?" on":""}">${on?"On":"Off"}</span> <b>${s.name}</b>: ${s.desc}</li>`}).join("")}</ul>
   </div></div>`;
 }
-/* The ? help: the day's steps as picture tiles, a few lines worth knowing, then every rule folded under More rules. */
+/* The ? help: the day's steps as picture tiles. */
 function showHelp(){
   const art=[iconHtml("spot","Maple St. Spot",true),iconHtml("supply","signs",true),iconHtml("supply","lemons",true),gearIconHtml("pricetag",true),
     `<i class="hudIcon" role="img" aria-label="Coin"></i>`,`<i class="crateArt" style="--i:0" role="img" aria-label="Crate"></i>`];
-  const know=[[iconHtml("weather","sunny"),FORECAST_HINT],[`<i class="star" style="--f:11" role="img" aria-label="Star"></i>`,"Serve most people to earn stars. Stars bring more people."],
-    [iconHtml("supply","ice"),"Half your ice melts each night. Fruit spoils too."],[`<i class="hudIcon" role="img" aria-label="Coin"></i>`,"Start with $30. Can't buy a cup? Game over."]];
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
     <div class="flex spread"><h2>How to play</h2><div class="flex"><button class="btn sm ghost soundBtn${soundOn?"":" off"}" onclick="toggleSound()"><i class="hudIcon"></i><span>${soundOn?"Sound on":"Sound off"}</span></button><button class="btn sm ghost" onclick="closeModal()">Close</button></div></div>
-    <p style="margin:6px 0 0">Make as much money as you can in 14 days. That's your score.</p>
+    <p style="margin:6px 0 0">You have 14 days to make as much money as you can.</p>
     <ol class="howSteps">${HOW_STEPS.map(([name,hint],k)=>`<li>${art[k]}<b><i>${k+1}</i>${name}</b><span>${hint}</span></li>`).join("")}</ol>
-    <h3>Good to know</h3>
-    <ul class="howKnow">${know.map(([icon,line])=>`<li>${icon}<span>${line}</span></li>`).join("")}</ul>
-    <details class="moreRules"><summary>More rules</summary>
-    <ul class="list">
-      <li>Money made is your sales and tips. Supplies and signs are paid for when you buy them. Starting a day never costs money.</li>
-      <li>The forecast is always right.</li>
-      <li>Ice goes in each cup for you. Under 70°F, none. In the 70s, 1 cube. In the 80s, 2. In the 90s, 3. At 100°F and up, 4.</li>
-      <li>Bigger packs cost less for each one.</li>
-      <li>Lemons last 7 days, cucumbers 5, mint 4 and strawberries 3.</li>
-      <li>Each sign lasts one day.</li>
-      <li>Stars go down when many people leave without lemonade.</li>
-      <li>Flavor tags are Sweet, Sour, Fancy, Chilled and Fizzy. Each crowd likes different ones.</li>
-      <li>Kids like sweet drinks. Parents like fancy and sweet. Athletes like sour and chilled. Tourists like fancy. Foodies like fancy and sour. Artists like fancy and fizzy.</li>
-      <li>Combos give a bonus when the right mix of flavors is on your menu.</li>
-      <li>A hot streak gives a bonus each night. Serve 3 out of 4 customers and make money, day after day.</li>
-      <li>Upgrades can be common, rare, epic or legendary. Rarer ones show up less often.</li>
-      <li>Every 3rd day you get a bonus crate.</li>
-      <li>Endless starts after day 14. Play as long as you like.</li>
-    </ul></details>
-    <p class="small muted" style="margin:10px 0 0">Point at or tap anything in the game to learn more.</p>
+    <p class="small muted" style="margin:10px 0 0">Not sure what something does? Tap it to find out.</p>
   </div></div>`;
 }
 function closeModal(){$("#modalRoot").innerHTML=""}
