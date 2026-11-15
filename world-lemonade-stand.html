@@ -867,12 +867,13 @@ function burst(el,n){
   }
 }
 
-/* ---------- money count-up: a total counts up from $0 as coins drop in; reduced motion shows it at once ---------- */
+/* ---------- money count-up: a total counts up from $0 as coins drop in; reduced motion shows it at once ----------
+   Progress is clamped at 0: a frame's timestamp can come a little before t0, which would count the wrong way. */
 function countUp(el,to){
   if(!el)return;
   if(to<=0||stillMotion()){el.textContent=fmt(to);return}
   const t0=performance.now(),dur=1100;el.textContent=fmt(0);
-  const step=t=>{if(!el.isConnected)return;const p=Math.min(1,(t-t0)/dur);
+  const step=t=>{if(!el.isConnected)return;const p=clamp((t-t0)/dur,0,1);
     el.textContent=fmt(p<1?Math.floor(to*(1-Math.pow(1-p,3))*100)/100:to);if(p<1)requestAnimationFrame(step)};
   requestAnimationFrame(step);
   [-22,12,-6,20,2].forEach((x,i)=>{ // fixed spots: Math.random stays the game's alone
@@ -1375,7 +1376,7 @@ function showCash(to){
   if(from===null||matchMedia("(prefers-reduced-motion:reduce)").matches){hudCash.shown=to;el.textContent=fmt(to);return}
   box.classList.remove("up","down");void box.offsetWidth;box.classList.add(to>from?"up":"down"); // restart the flash
   const whole=from%1===0&&to%1===0,t0=performance.now(),dur=300; // whole dollars count in whole dollars
-  const step=t=>{const p=Math.min(1,(t-t0)/dur),v=p<1?from+(to-from)*(1-Math.pow(1-p,3)):to;
+  const step=t=>{const p=clamp((t-t0)/dur,0,1),v=p<1?from+(to-from)*(1-Math.pow(1-p,3)):to; // clamped as in countUp
     hudCash.shown=v;el.textContent=fmt(whole?Math.round(v):v);if(p<1)hudCash.raf=requestAnimationFrame(step)};
   hudCash.raf=requestAnimationFrame(step);
 }
