@@ -501,6 +501,35 @@ body:has(.stage){overflow:hidden}
 .dock .item{flex:none;width:62px}
 .dock .drawer{position:absolute;left:0;bottom:calc(100% + 10px);z-index:10;width:min(340px,calc(100vw - 24px));margin:0;box-shadow:0 6px 0 rgba(43,33,24,.3),0 10px 24px rgba(0,0,0,.2)}
 .dock .stepper b{min-width:50px}
+/* The supplies panel: the shelf of what you have, then the cups each flavor can make and what its pitcher needs.
+   Wide screens stand it on the right, beside the scene; narrower screens put it on the ground. */
+.invPanel{position:relative;display:flex;flex-direction:column;min-width:0;max-width:100%;background:var(--card);border-radius:14px;box-shadow:0 5px 0 rgba(43,33,24,.35)}
+.dock .invPanel .supShelf{border-radius:14px 14px 0 0;box-shadow:none}
+.dock .invPanel .drawer{position:static;width:auto;margin:10px 12px 0;background:var(--paper2);box-shadow:none} /* buying happens in the panel, so you see the cups change */
+.canMake{display:flex;flex-direction:column;gap:4px;min-height:0;padding:8px 12px 10px}
+.dock .canMake .mLbl{margin:0}
+.perCup{font-size:var(--fs-xs);font-weight:700;line-height:1.35}
+.perCup span{display:block}
+.perCup .icon,.recipe .icon{vertical-align:-3px}
+.fList{display:grid;min-height:0;overflow-y:auto;scrollbar-width:thin}
+.fRow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;column-gap:8px;align-items:center;padding:6px 0;border-top:2px dashed rgba(43,33,24,.12)}
+.fRow>.icon{grid-row:1/3}
+.fName{font-weight:900;font-size:var(--fs-sm);line-height:1.15}
+.fCups{grid-row:1/3;grid-column:3;display:grid;justify-items:center;font-size:var(--fs-xs);font-weight:800;line-height:1}
+.fCups b{font-family:var(--font-display);font-weight:400;font-size:var(--fs-xl);color:var(--green2);font-variant-numeric:tabular-nums}
+.fRow.none .fCups b{color:var(--red)}
+.recipe{display:flex;flex-wrap:wrap;gap:0 8px;font-size:var(--fs-sm);font-weight:900}
+.need{display:inline-flex;align-items:center;gap:2px;white-space:nowrap}
+.need.short{color:var(--red)}
+.canMake .rule{font-size:var(--fs-xs)}
+@media (min-width:901px){
+  .stage.morning{--sideW:296px}
+  .stage.morning .spotCard{width:min(580px,100vw - 2*(var(--sideW) + 36px))} /* the stand and the top card stay centered, as on the selling day, and clear of the panel */
+  .morning .invPanel{position:fixed;z-index:10;right:12px;top:calc(var(--hudH) + 18px);width:var(--sideW);max-height:calc(100dvh - var(--hudH) - 30px)}
+  .morning.fit-tight .invPanel{top:calc(var(--hudH) + 10px)}
+  .dock .invPanel .shelfRow{display:grid;grid-template-columns:repeat(4,62px);justify-content:space-between;gap:12px 0;overflow:visible}
+  .dock .invPanel .shelfRow .sep{grid-column:1/-1;width:auto;height:6px;margin:-2px -12px 0;border-radius:0;opacity:1} /* a second shelf board under the basics */
+}
 /* Today's prices: a price tag per flavor. The tags sit in one row that scrolls sideways,
    so any number of flavors fits without the card growing. */
 .prices{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:rgba(43,33,24,.25) transparent;padding-bottom:4px}
@@ -559,13 +588,15 @@ body:has(.stage){overflow:hidden}
   .morning .dockIn{flex-wrap:nowrap;align-items:stretch}
   .morning #mShop{flex:0 1 auto;min-width:230px}
 }
-/* When the stand opens, the camera moves in: the selling day draws the scene at 3× on big screens */
-@media (min-width:900px) and (min-height:720px){.stage.day,.stage.day .sky{--px:3}.stage .ground{min-height:max(190px,26vh)}}
-@media (min-width:900px) and (min-height:940px){.stage,.stage .sky{--px:3}}
+/* The morning and the selling day share one camera: the scene at 3× on big screens */
+@media (min-width:900px) and (min-height:720px){.stage,.stage .sky{--px:3}.stage .ground{min-height:max(190px,26vh)}}
 @media (max-width:900px){ /* narrower screens: the supplies shelf spans the ground */
   .dockIn{gap:10px}
-  .dock .supShelf{flex:1 1 100%}
+  .dock .supShelf,.dock .invPanel{flex:1 1 100%}
   .dock .shelfRow{justify-content:space-between}
+  .dock .invPanel .supShelf{max-width:none}
+  .fList{display:flex;gap:16px;overflow:auto hidden} /* the flavors sit side by side and scroll sideways */
+  .fRow{flex:none;min-width:200px;border-top:0;padding:2px 0}
   .spotCard .price{width:140px}
   .dock .stepper button{width:34px;height:34px}
   .dock .stepper b{min-width:46px;font-size:var(--fs-md)}
@@ -1375,7 +1406,7 @@ function renderMorning(){
     </div>
     <div class="ground dock" id="mDock">
       <div class="dockIn">
-        <div class="supShelf" id="mShop" role="group" aria-label="Supplies"></div>
+        <aside class="invPanel" id="mShop" aria-label="Supplies"></aside>
       </div>
     </div>
   </div>`;
@@ -1399,15 +1430,13 @@ document.addEventListener("click",e=>{
 /* Redraw the morning's controls in place, so the sky keeps drifting, and keep focus on the control just used. */
 function morningParts(){
   const ae=document.activeElement,f=ae&&ae.dataset?ae.dataset.f:null;
-  const strips=[".shelfRow",".prices"].map(sel=>[sel,$(sel)?$(sel).scrollLeft:0]); // keep sideways strips where the player left them
+  const strips=[".shelfRow",".prices",".fList"].map(sel=>[sel,$(sel)?[$(sel).scrollLeft,$(sel).scrollTop]:[0,0]]); // keep scrolling strips where the player left them
   $("#mScene").innerHTML=mSceneHtml();
   $("#mSpot").innerHTML=mSpotHtml();
   $("#mShop").innerHTML=mShopHtml();
-  strips.forEach(([sel,x])=>{const el=$(sel);if(el)el.scrollLeft=x});
+  strips.forEach(([sel,[x,y]])=>{const el=$(sel);if(el){el.scrollLeft=x;el.scrollTop=y}});
   renderProj();
   fitStage();
-  const dr=$("#mDrawer"),it=$(".item[aria-expanded=true]");
-  if(dr&&it){const shelf=$("#mShop"),row=it.parentNode;dr.style.left=clamp(it.offsetLeft-row.scrollLeft+it.offsetWidth/2-dr.offsetWidth/2,0,Math.max(0,shelf.clientWidth-dr.offsetWidth))+"px"}
   if(f){const el=document.querySelector(`[data-f="${f}"]`);if(el)el.focus({preventScroll:true})}
 }
 const SIGN_SPOTS=8; // signs drawn on the grass; free signs past these still count, they just are not drawn
@@ -1451,9 +1480,27 @@ function mShopHtml(){
   const basics=["cups","lemons","sugar","ice"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
   const item=id=>{const n=S.inv[id]||0,open=M.shopOpen===id;
     return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`};
-  return `<div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>${learnHint(HOW_STEPS[2][1])}
-    <div class="shelfRow" onwheel="wheelSideways(event,this)">${basics.map(item).join("")}${extras.length?`<i class="sep" aria-hidden="true"></i>${extras.map(item).join("")}`:""}</div>${M.shopOpen?mDrawerHtml(M.shopOpen):""}`;
+  return `<div class="supShelf"><div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>${learnHint(HOW_STEPS[2][1])}
+    <div class="shelfRow" onwheel="wheelSideways(event,this)">${basics.map(item).join("")}${extras.length?`<i class="sep" aria-hidden="true"></i>${extras.map(item).join("")}`:""}</div></div>${M.shopOpen?mDrawerHtml(M.shopOpen):""}
+    ${canMakeHtml()}`;
 }
+/* Under the shelf: the cups each flavor can make from what you have, and what one pitcher of it needs. */
+function canMakeHtml(){
+  const ice=icePerCup(),serves=pitcherServes(),most=Math.max(0,...S.recipes.map(rk=>pitchersPossible(rk,S.inv)*serves));
+  const each=(id,n,left)=>`<b class="need${left<most?" short":""}"${left<most?tip(`${INGREDIENTS[id].name} run out first.`):""}>${n}${iconHtml("supply",id)}</b>`; // red when it stops a flavor before its pitchers do
+  const row=rk=>{const n=flavorCups(rk);
+    return `<div class="fRow${n?"":" none"}">${iconHtml("flavor",rk,true)}<span class="fName">${RECIPES[rk].name}</span>
+      <span class="fCups" tabindex="0"${tip(n?`You can make ${n} ${plural(n,"cup")} of ${RECIPES[rk].name}.`:`Not enough for ${RECIPES[rk].name}. Red shows what's short.`)}><b>${n}</b>${plural(n,"cup")}</span>
+      <span class="recipe" aria-label="One pitcher needs ${listWords(Object.entries(pitcherNeeds(rk)).map(([k,v])=>`${v} ${INGREDIENTS[k].name.toLowerCase()}`))}">${recipeHtml(rk)}</span></div>`};
+  return `<div class="canMake"><div class="mLbl">Cups you can make</div>
+    <div class="perCup"><span>A pitcher makes ${serves} cups.</span><span>Each cup also takes ${each("cups",1,S.inv.cups||0)}${ice?` ${each("ice",ice,Math.floor((S.inv.ice||0)/ice))}`:""}</span></div>
+    <div class="fList" onwheel="wheelSideways(event,this)">${S.recipes.map(row).join("")}</div>
+    ${S.recipes.length>1?`<div class="rule">Flavors share lemons and sugar.</div>`:""}</div>`;
+}
+/* Cups of one flavor your supplies make, if it were the only one: its pitchers, capped by the cups and the ice. */
+function flavorCups(rk){const ice=icePerCup();return Math.min(pitchersPossible(rk,S.inv)*pitcherServes(),S.inv.cups||0,ice>0?Math.floor((S.inv.ice||0)/ice):Infinity)}
+/* One pitcher's recipe as icons, "6 [lemon] 4 [sugar]"; a supply you have too little of shows red. */
+function recipeHtml(rk){return Object.entries(pitcherNeeds(rk)).map(([k,v])=>`<span class="need${(S.inv[k]||0)<v?" short":""}">${v}${iconHtml("supply",k)}</span>`).join("")}
 function mDrawerHtml(id){
   const ing=INGREDIENTS[id],n=S.inv[id]||0;
   const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
