@@ -1185,7 +1185,7 @@ function cheapestServingCost(){return Math.min(...S.recipes.map(rk=>servingCost(
    you buy goes out. + pays for a sign and − gives the money back, so the money moves as you choose;
    opening the stand uses them up. Free signs from upgrades are on top of the cap. */
 const SIGN_MAX=8;
-function signPrice(){return packPrice("signs")}
+function signPrice(){return INGREDIENTS.signs.price} // $5 all game: the act, supply sales and ants, and the Wholesale Card don't change it
 /* ---------- build aggregation ---------- */
 /* b.tags = flavor tags on your menu's recipes (feeds synergies). Gear carries no tags. */
 function computeBuild(){
