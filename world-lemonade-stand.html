@@ -31,7 +31,7 @@
 body{margin:0;font-family:var(--font-body);font-size:var(--fs-md);background:var(--lemon2);color:var(--ink);min-height:100vh}
 button{font-family:inherit;cursor:pointer}
 /* The display face: headings, buttons, signs and every number the player reads at a glance. Hints and descriptions stay in the body face. */
-h1,h2,h3,.btn,.helpBtn,.mLbl,.choice .ttl,.artAmt,.hud .money,.calPage,.dayOf,.fcMain,.dayStats b,.standSign,.postFace,.item .n,.stepper b,.pName,#guessText b,
+h1,h2,h3,.btn,.helpBtn,.mLbl,.choice .ttl,.artAmt,.hud .money,.calPage,.dayOf,.fcMain,.dayStats b,.postFace,.item .n,.stepper b,.pName,#guessText b,
 .rHead,.amt,.rTotal,.rStamp,.scoreLabel,.scoreBig,.highlights b{font-family:var(--font-display)}
 .mLbl small{font-family:var(--font-body)}
 #app{max-width:1060px;margin:0 auto;padding:12px 12px 40px}
@@ -162,7 +162,6 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 @keyframes shimmer{0%{translate:0 0;opacity:0}30%{opacity:.8}100%{translate:0 calc(-28px*var(--px));opacity:0}}
 @media (prefers-reduced-motion:reduce){.cloud,.rain,.gust,.leaf,.shimmer,.bubble,.coin,.cust.walk,.cust.carry,.flavorPop{animation:none}.street{transition:none}}
 .stand{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:128px;image-rendering:pixelated;z-index:5;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
-.standSign{position:absolute;left:50%;bottom:134px;transform:translateX(-50%) rotate(-2deg);background:#fff;border-radius:8px;padding:3px 12px;font-weight:900;font-size:var(--fs-sm);z-index:6;white-space:nowrap}
 /* Customers: --fw is the frame width in sprite pixels, --s the scale. left is the centre of the feet. */
 .cust{--s:2;position:absolute;bottom:2px;width:calc(var(--fw)*var(--s)*1px);height:calc(var(--s)*32px);margin-left:calc(var(--fw)*var(--s)*-.5px);background:no-repeat 0 0/calc(var(--fw)*var(--s)*8px) 100%;image-rendering:pixelated;z-index:6;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
 .cust.left{transform:scaleX(-1)} /* the walk sheets face right */
@@ -418,12 +417,11 @@ button,input,select{touch-action:manipulation}
   .dayOf{font-size:var(--fs-sm)}
   .helpBtn{width:30px;height:30px}
   .iconBtn{padding:6px 9px;border-radius:10px}
-  /* Scene scales down, nothing overlaps the stand sign */
+  /* Scene scales down */
   .sky{height:188px;--px:1}
   .ground{height:54px;background-size:64px 32px}
   .ground:before{top:-9px;height:14px;background-size:64px 14px}
   .stand{width:64px;bottom:0}
-  .standSign{bottom:68px;font-size:var(--fs-xs);padding:2px 8px;max-width:92%}
   .sceneBtns{flex-direction:column;align-items:flex-end;gap:5px}
   .cust{--s:1;bottom:1px}
   .bubble{--rise:4px}
@@ -465,7 +463,6 @@ button,input,select{touch-action:manipulation}
   .ground{background-size:64px 32px}
   .ground:before{top:-9px;height:14px;background-size:64px 14px}
   .stand{width:64px;bottom:0}
-  .standSign{bottom:68px}
   .cust{--s:1;bottom:1px}
   .bubble{--rise:4px}
   .coin{--s:1;--rise:14px;bottom:32px}
@@ -482,11 +479,10 @@ body:has(.stage){overflow:hidden}
 .hudWx .icon{--sz:calc(16px*var(--px));align-self:center}
 .hudWx:empty,#app:not(:has(.stage)) .hudWx{display:none} /* only for the morning and the selling day */
 .stage{--px:2;position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden auto;background:#8a6b46}
-.stage .sky{--px:2;flex:1 0 auto;height:auto;display:flex;flex-direction:column;padding:calc(var(--hudH) + 18px) 12px max(calc(84px*var(--px)),calc(67px*var(--px) + 30px))} /* room at the bottom for the stand and its menu sign (67 art pixels up, about 27px tall), so the cards above never cover the sign at 1× */
+.stage .sky{--px:2;flex:1 0 auto;height:auto;display:flex;flex-direction:column;padding:calc(var(--hudH) + 18px) 12px calc(84px*var(--px))}
 .stage .ground{flex:none;height:auto;z-index:auto;background-size:calc(64px*var(--px)) calc(32px*var(--px));padding:calc(12px*var(--px)) 12px calc(14px + env(safe-area-inset-bottom,0px))}
 .stage .ground:before{z-index:3;top:calc(-9px*var(--px));height:calc(14px*var(--px));background-size:calc(64px*var(--px)) calc(14px*var(--px))}
 .stage .stand{width:calc(64px*var(--px))}
-.stage .standSign{bottom:calc(67px*var(--px));font-size:var(--fs-sm);padding:3px 12px}
 .stage .cust{--s:var(--px);bottom:calc(1px*var(--px))}
 .stage .coin{--s:var(--px);--rise:calc(14px*var(--px));bottom:calc(32px*var(--px))}
 .stage .bubble{--rise:calc(3px*var(--px))}
@@ -1485,11 +1481,10 @@ function morningParts(){
 }
 const SIGN_SPOTS=8; // signs drawn on the grass; free signs past these still count, they just are not drawn
 function mSceneHtml(){
-  const menu=sellableNow();
   let signs="";
   for(let k=0;k<Math.min(M.signs,SIGN_SPOTS);k++) // alternate left and right of the stand, working outward
     signs+=`<span class="signSlot" style="--k:${k>>1};--side:${k%2?1:-1}" aria-hidden="true">${iconHtml("supply","signs")}</span>`;
-  return `<div class="standSign">${menu.length?`${menu.length} ${plural(menu.length,"flavor")} · from ${fmt(Math.min(...menu.map(menuPrice)))}`:"Buy supplies to open"}</div>${signs}`;
+  return signs;
 }
 function mSpotHtml(){
   const card=M.card;
@@ -1696,7 +1691,6 @@ function renderDayScene(){
   <div class="stage day">
     <div class="sky ${M.actualWx}" id="skyBox">
       ${skyArt(M.actualWx,M.loc)}
-      <div class="standSign">${D.menu.length} ${plural(D.menu.length,"flavor")}, from ${fmt(Math.min(...D.menu.map(rk=>menuPrice(rk))))}</div>
       <img class="stand" src="${STAND_PNG}" alt="">
       <div id="fxLayer"></div>
       <div class="skyTop">
@@ -1840,8 +1834,7 @@ async function buyersServed(){
 }
 /* One speech bubble at a time, sitting above the customer who is talking
    and following them as they walk. If someone else is mid-sentence, the
-   new line is dropped instead of stacking. Anchoring above the head also
-   keeps bubbles clear of the stand sign, which hangs higher. */
+   new line is dropped instead of stacking. */
 let bubbleNow=null;
 function spawnBubble(txt,anchor){
   const sky=$("#skyBox");if(!sky||!anchor||!anchor.isConnected)return;
