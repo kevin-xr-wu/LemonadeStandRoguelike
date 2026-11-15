@@ -292,10 +292,10 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .logo{margin:auto 0;line-height:0;position:relative;z-index:7}
 .logo img{width:calc(var(--px)*166px);image-rendering:pixelated;filter:drop-shadow(0 4px 3px rgba(0,0,0,.25))}
 .title .stand{width:calc(var(--px)*64px)}
-.title .ground{height:calc(var(--px)*48px);min-height:84px;background-size:calc(var(--px)*64px) calc(var(--px)*32px);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding-inline:8px} /* PLAY sits in the middle column, under the stand; High scores goes to its right */
+.title .ground{height:auto;min-height:max(84px,calc(var(--px)*48px));background-size:calc(var(--px)*64px) calc(var(--px)*32px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding-block:16px} /* PLAY, then High scores under it; the ground grows to hold both and the sky gives up the room */
 .title .ground:before{top:calc(var(--px)*-9px);height:calc(var(--px)*14px);background-size:calc(var(--px)*64px) calc(var(--px)*14px)}
-.title .playBtn{position:relative;z-index:6;grid-column:2}
-.title .scoresBtn{position:relative;z-index:6;grid-column:3;justify-self:start;white-space:nowrap}
+.title .playBtn,.title .scoresBtn{position:relative;z-index:6}
+.title .scoresBtn{padding:9px 26px;white-space:nowrap}
 .titleBtns{--px:2;position:absolute;top:10px;right:10px;display:flex;align-items:center;gap:4px;z-index:8;background:var(--ink);border-radius:14px;padding:4px 6px} /* the HUD's sound and help buttons */
 @media (min-width:900px) and (min-height:720px){.scene.title,.title .sky{--px:3}}
 @media (max-width:359px),(max-height:500px){.scene.title,.title .sky{--px:1}}
@@ -390,7 +390,7 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 }
 @media (max-width:560px){ /* phones: one-row top bar (sound moves into the ? help), stacked shelf */
   .playBtn{padding:14px 40px}
-  .title .scoresBtn{padding:10px 14px;font-size:var(--fs-md)}
+  .title .scoresBtn{padding:8px 20px;font-size:var(--fs-md)}
   .hud .dayOf,#btnSound{display:none} /* the calendar page shows the day; its tip says "of 14" */
   .hud{gap:12px}
   .helpBtn{margin-left:auto}
