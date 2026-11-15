@@ -1655,9 +1655,9 @@ function serveOne(ck){
   pourCup(rk);
   const rev=saleRevenue(1,menuPrice(rk),rk);
   D.revenue+=rev;D.revBy[rk]=(D.revBy[rk]||0)+rev;D.tips+=rev*tipRate()*Math.random();
+  D.revByCrowd[ck]=(D.revByCrowd[ck]||0)+rev; // the money each crowd paid: the evening report shows the top customers
   D.cogs+=servingCost(rk);
   D.sold++;D.soldBy[rk]=(D.soldBy[rk]||0)+1;D.lastFlavor=rk; // the day scene shows it over the buyer
-  D.soldByCrowd[ck]=(D.soldByCrowd[ck]||0)+1; // cups each crowd bought: the evening report shows the top customers
   if(D.crewLeft>0)D.crewLeft--;
   return "sold";
 }
@@ -1669,7 +1669,7 @@ function openStand(){
   sfx.pop();
   M.actualWx=M.trueWx;
   D={signs:putOut,build:b,
-     roll:rnd(0.87,1.13),soldBy:{},soldByCrowd:{},sold:0,morningSold:0,unmet:0,
+     roll:rnd(0.87,1.13),soldBy:{},revByCrowd:{},sold:0,morningSold:0,unmet:0,
      awayPrice:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
      skip:false,done:false,brotherSpilled:false,crewLeft:0,paidCups:0};
   const canSell=sellableNow();D.menu=canSell.length?canSell:S.recipes.slice(); // only flavors you have supplies for
@@ -1936,9 +1936,9 @@ function finishDay(){
   if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);
   const repExtra=repNotes.slice(D.demand>0?1:0); // the first note (people served) is the line above it
   const repLine=repNotes.length?`Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b>${repExtra.length?` (${repExtra.join(", ")})`:""}`:`Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
-  // Top customers: the three crowds that bought the most cups, and their share of the cups sold today
-  const topCust=Object.entries(D.soldByCrowd).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([ck,n])=>{const pct=Math.max(1,Math.round(100*n/D.sold));
-    return `<li tabindex="0"${tip(`${CROWDS[ck].name} bought ${pct}% of the cups you sold today.`)}>${iconHtml("crowd",ck,true)}<b>${pct}%</b><small>${CROWDS[ck].name}</small></li>`}).join("");
+  // Top customers: the three crowds that paid the most, and their share of today's sales money (tips left out)
+  const topCust=Object.entries(D.revByCrowd).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([ck,m])=>{const pct=Math.max(1,Math.round(100*m/D.revenue));
+    return `<li tabindex="0"${tip(`${pct}% of the money from today's sales came from ${CROWDS[ck].name}.`)}>${iconHtml("crowd",ck,true)}<b>${pct}%</b><small>${CROWDS[ck].name}</small></li>`}).join("");
   const stamp=perfect?`<span class="rStamp">Perfect day</span>`:soldOut?`<span class="rStamp">Sold out</span>`:made<0?`<span class="rStamp bad">Rough day</span>`:"";
   $("#dayMsg").textContent="Closed for today.";$(".dayBtns").remove();
   document.querySelectorAll("#skyBox .cust,#skyBox .bubble").forEach(el=>el.remove()); // the street empties: anyone still walking up doesn't pay
