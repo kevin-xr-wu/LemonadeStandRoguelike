@@ -62,8 +62,8 @@ The palette comes from the game's CSS colour tokens, so the art matches the UI. 
 - The game is one file with nothing to install. Embed the PNG as a base64 data URI in a constant next to `STAND_PNG`, with a one-line comment, and use it as `<img class="…" src="${CONST}" alt="">`.
 - In CSS, give it `image-rendering:pixelated` and a width of 2× its pixel size. Set 1× in the `max-width:720px` and short-landscape (`max-height:500px`) blocks.
 - Anything that stands in the scene stands on the grass, the bottom 14px of `.sky`. Never leave it floating. Count the sprite's empty bottom rows when you set `bottom`.
-- When a sprite changes size or place, move what's anchored to it too: the menu sign, customers, coins and speech bubbles.
-- Before pushing, look at the scene at desktop, phone (390px) and short landscape sizes. Nothing should cover the menu sign, the location box or the weather icon.
+- When a sprite changes size or place, move what's anchored to it too: customers, coins and speech bubbles.
+- Before pushing, look at the scene at desktop, phone (390px) and short landscape sizes. Nothing should cover the location box or the weather icon.
 - Link the studio project in the PR as the editable source: https://studio.pixelwright.app/?cloud=prj_af777136694500f7
 
 ## Changing art
