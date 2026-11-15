@@ -1934,12 +1934,11 @@ function finishDay(){
   S.cash=Math.round(S.cash*100)/100;
   S.daysPlayed=S.day;
   if(D.ending){endRun("retired");return} // End run was pressed while selling: today's sales count, then the run ends
-  // counterfactual — the near-miss engine
+  // the sticky note: what running out cost you, or that everyone got lemonade. It gives no price advice;
+  // the line above it says how many said it cost too much, and the player decides what to change.
   let counter="";const outCount=Math.max(0,unserved-D.awayPrice); // left because supplies ran out
   if(unserved>0&&(D.awayOut>0||D.unmet>0))counter=`You ran out. ${outCount} more ${plural(outCount,"person","people")} wanted lemonade. That's about <b>${fmt(outCount*Math.max(avgPrice,1))}</b> you missed. Buy more supplies.`;
-  else if(D.awayPrice>unserved*0.4&&D.awayPrice>0)counter=`${D.awayPrice} ${plural(D.awayPrice,"person","people")} walked away. The price was too high. Try a lower price.`;
-  else if(unserved>0)counter=`${unserved} ${plural(unserved,"person","people")} didn't buy. Try a lower price or another sign.`;
-  else counter=`Everyone got lemonade.`;
+  else if(!unserved)counter=`Everyone got lemonade.`;
   const tonight=overnight(); // ice melts and old produce goes bad once you close
   const byCups=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]);
   const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${iconHtml("flavor",rk)}</span> ${n} ${plural(n,"cup")} at ${fmt(menuPrice(rk))}</span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
@@ -1972,7 +1971,7 @@ function finishDay(){
       </div>
       <div class="dayNotes">
         <p>${D.sold} of ${D.demand} ${plural(D.demand,"person","people")} got lemonade.${why.length?` ${why.join(", ")}.`:""}</p>
-        <div class="note">${counter}</div>
+        ${counter?`<div class="note">${counter}</div>`:""}
         <p>${repLine}</p>
         ${[streakNote,interestNote,jarNote].filter(Boolean).map(n=>`<p>${n}</p>`).join("")}
         ${tonight.length?`<p>Tonight: ${listWords(tonight)}.</p>`:""}
