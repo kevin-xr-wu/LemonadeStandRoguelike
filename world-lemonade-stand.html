@@ -222,13 +222,13 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .dayNotes p{margin:0 0 10px;line-height:1.45}
 .note{position:relative;max-width:420px;background:#fff3a0;padding:12px 14px 10px;margin:14px 0 12px;line-height:1.4;transform:rotate(.6deg);box-shadow:0 5px 6px -3px rgba(43,33,24,.35)}
 .note:before{content:"";position:absolute;top:-7px;left:50%;width:54px;height:14px;margin-left:-27px;background:rgba(201,167,122,.5);transform:rotate(-3deg)} /* tape */
-.facts{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:4px;line-height:1.4}
-.todayHead{margin:10px 0 0;font-size:var(--fs-md)}
-.crowdSales{margin-top:6px}
-.csRow{display:flex;gap:8px 14px;align-items:baseline;flex-wrap:wrap;padding:5px 0;border-top:1px dashed rgba(43,33,24,.18)}
-.csWho{font-weight:900;white-space:nowrap}
-.csWhat{display:flex;flex-wrap:wrap;gap:3px 14px;align-items:center}
-.csDrink{display:inline-flex;gap:5px;align-items:center}
+/* Top customers: the three groups that bought the most today, best first */
+.topCust{margin-top:12px;border-top:2px dotted #cdbf9d;padding-top:8px}
+.topCust h4{margin:0;font-size:var(--fs-md)}
+.tcList{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:480px}
+.tcList li{display:flex;flex-direction:column;align-items:center;gap:2px;background:#fff;border-radius:12px;padding:8px 6px;text-align:center;line-height:1.2}
+.tcList b{font-family:var(--font-display);font-size:var(--fs-xl);line-height:1}
+.tcList small{font-size:var(--fs-sm);font-weight:800}
 /* End screen: the score first, then a few highlights */
 .scoreLabel{font-size:var(--fs-sm);font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:.65;margin-top:4px}
 .scoreBig{font-size:var(--fs-3xl);font-weight:900;line-height:1.1;color:var(--lemon);-webkit-text-stroke:.07em var(--ink);paint-order:stroke fill;letter-spacing:.1em;text-shadow:3px 3px 0 var(--ink);font-variant-numeric:tabular-nums} /* the stroke sits behind the fill, so half of it shows as the outline; the spacing keeps outlined digits apart */
@@ -296,8 +296,6 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 /* First-day hints: one line under the step it explains */
 .learn{display:inline-block;background:var(--lemon);color:var(--ink);border-radius:10px;padding:3px 10px;font-size:var(--fs-sm);font-weight:800;line-height:1.35}
 .mLbl+.learn,h2+.learn{margin:0 0 8px}
-details.numbers{margin-top:12px;border-top:2px dotted #cdbf9d;padding-top:6px}
-details summary{cursor:pointer;font-weight:900;padding:6px 0}
 .list{margin:6px 0 0;padding-left:20px;display:grid;gap:6px;line-height:1.45}
 .list li.off{color:rgba(43,33,24,.6)}
 /* How to play: the day's steps as picture tiles */
@@ -1259,7 +1257,7 @@ function genMorning(){
   const ev=EVENTS.find(e=>e.id===evRoll);
   const prices={};S.recipes.forEach(rk=>{prices[rk]=S.menuPrices[rk]!=null?S.menuPrices[rk]:RECIPES[rk].price});
   const temp=ri(...WX_TEMP[trueWx]);
-  M={trueWx,shownWx,temp,locs,loc:null,card:0,event:ev,signs:0,prices,logStart:S.log.length,
+  M={trueWx,shownWx,temp,locs,loc:null,card:0,event:ev,signs:0,prices,
      special:S.gear.includes("special")?pick(S.recipes):null,
      dice:S.gear.includes("dice")?Math.round(rnd(0.7,1.6)*100)/100:0};
   if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1;M.treeLemons=13+3*S.treeDays;addStock("lemons",M.treeLemons,0)}
@@ -1658,9 +1656,9 @@ function serveOne(ck){
   pourCup(rk);
   const rev=saleRevenue(1,menuPrice(rk),rk);
   D.revenue+=rev;D.revBy[rk]=(D.revBy[rk]||0)+rev;D.tips+=rev*tipRate()*Math.random();
+  D.revByCrowd[ck]=(D.revByCrowd[ck]||0)+rev; // the money each crowd paid: the evening report shows the top customers
   D.cogs+=servingCost(rk);
   D.sold++;D.soldBy[rk]=(D.soldBy[rk]||0)+1;D.lastFlavor=rk; // the day scene shows it over the buyer
-  const sc=D.soldByCrowd[ck]||(D.soldByCrowd[ck]={});sc[rk]=(sc[rk]||0)+1; // the evening report shows who bought what
   if(D.crewLeft>0)D.crewLeft--;
   return "sold";
 }
@@ -1672,7 +1670,7 @@ function openStand(){
   sfx.pop();
   M.actualWx=M.trueWx;
   D={signs:putOut,build:b,
-     roll:rnd(0.87,1.13),soldBy:{},soldByCrowd:{},sold:0,morningSold:0,unmet:0,
+     roll:rnd(0.87,1.13),soldBy:{},revByCrowd:{},sold:0,morningSold:0,unmet:0,
      awayPrice:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
      skip:false,done:false,brotherSpilled:false,crewLeft:0,paidCups:0};
   const canSell=sellableNow();D.menu=canSell.length?canSell:S.recipes.slice(); // only flavors you have supplies for
@@ -1937,13 +1935,12 @@ function finishDay(){
   const upgradeBonus=Math.round((D.revenue-Object.entries(D.soldBy).reduce((s,[rk,n])=>s+n*menuPrice(rk),0))*100)/100;
   const walked=D.awayPrice,ranOut=Math.max(0,unserved-walked),why=[];
   if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);
-  const invLine=Object.keys(INGREDIENTS).filter(id=>(S.inv[id]||0)>0).map(id=>`${S.inv[id]}${iconHtml("supply",id)}`).join(" ");
   const repExtra=repNotes.slice(D.demand>0?1:0); // the first note (people served) is the line above it
   const repLine=repNotes.length?`Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b>${repExtra.length?` (${repExtra.join(", ")})`:""}`:`Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
-  const crowdRows=Object.entries(D.soldByCrowd||{}).map(([ck,byDrink])=>({ck,byDrink,total:Object.values(byDrink).reduce((t,v)=>t+v,0)})).sort((a,b)=>b.total-a.total)
-    .map(({ck,byDrink})=>`<div class="csRow"><span class="csWho">${iconHtml("crowd",ck)} ${CROWDS[ck].name}</span><span class="csWhat">${Object.entries(byDrink).sort((a,b)=>b[1]-a[1]).map(([rk,n])=>`<span class="csDrink">${iconHtml("flavor",rk)} ${RECIPES[rk].name}: ${n} ${plural(n,"cup")}</span>`).join("")}</span></div>`).join("");
+  // Top customers: the three crowds that paid the most, and their share of today's sales money (tips left out)
+  const topCust=Object.entries(D.revByCrowd).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([ck,m])=>{const pct=Math.max(1,Math.round(100*m/D.revenue));
+    return `<li tabindex="0"${tip(`${pct}% of the money from today's sales came from ${CROWDS[ck].name}.`)}>${iconHtml("crowd",ck,true)}<b>${pct}%</b><small>${CROWDS[ck].name}</small></li>`}).join("");
   const stamp=perfect?`<span class="rStamp">Perfect day</span>`:soldOut?`<span class="rStamp">Sold out</span>`:made<0?`<span class="rStamp bad">Rough day</span>`:"";
-  const today=S.log.slice(M.logStart);
   $("#dayMsg").textContent="Closed for today.";$(".dayBtns").remove();
   document.querySelectorAll("#skyBox .cust,#skyBox .bubble").forEach(el=>el.remove()); // the street empties: anyone still walking up doesn't pay
   eveSheet(`
@@ -1969,15 +1966,7 @@ function finishDay(){
         ${tonight.length?`<p>Tonight: ${listWords(tonight)}.</p>`:""}
       </div>
     </div>
-    ${crowdRows?`<div class="crowdSales"><h4 class="todayHead">Who bought what</h4>${crowdRows}</div>`:""}
-    <details class="numbers"><summary>See every number</summary>
-      <ul class="facts">
-        ${byCups.map(([rk,n])=>`<li>${iconHtml("flavor",rk)} ${RECIPES[rk].name}: <b>${n} ${plural(n,"cup")}</b></li>`).join("")}
-        <li>Supplies left: <b>${invLine||"none"}</b></li>
-      </ul>
-      <h4 class="todayHead">Today</h4>
-      <ul class="facts">${today.length?today.map(l=>`<li>${l}</li>`).join(""):"<li>A quiet day at the stand.</li>"}</ul>
-    </details>
+    ${topCust?`<div class="topCust"><h4>Top customers</h4><ol class="tcList">${topCust}</ol></div>`:""}
     <div class="center mt"><button class="btn gold" onclick="afterReport()">${S.day>=MAX_DAYS?"See your final score":"Pick an upgrade"}</button></div>`);
   countUp($("#madeAmt"),made);
   if(perfect)celebrate("medium",$(".rStamp"),1400); // .rStamp presses down 1.2s in and takes .2s
