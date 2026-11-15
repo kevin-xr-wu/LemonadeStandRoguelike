@@ -264,7 +264,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 @keyframes fadeIn{from{opacity:0}}
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}}
 @media (prefers-reduced-motion:reduce){.modalWrap,.modal{animation:none}}
-/* The evening pops up over the closed stand: the day's report, then the upgrade pick. It sits under the HUD, so money, stars and upgrades stay in view. */
+/* The evening pops up over the closed stand: the day's report, then the upgrade pick every 3 days. It sits under the HUD, so money, stars and upgrades stay in view. */
 .modalWrap.eve{z-index:40;padding-top:calc(var(--hudH) + 16px)}
 .eve .modal{max-width:760px;max-height:100%}
 .endAsk{max-width:440px}
@@ -1067,6 +1067,9 @@ const ACTS=[
  {name:"Act 4 · County Fair"}
 ];
 const GEAR_SLOTS=5, GLASS_MAX=500, PRICE_MAX=10, MAX_DAYS=100;
+/* You pick an upgrade every 3 days, starting after day 1: days 1, 4, 7, 10, 13… */
+const UPGRADE_EVERY=3;
+function upgradeDay(day){return (day-1)%UPGRADE_EVERY===0}
 /* Demand events are applied by id in demandEstimate(); fn only for side effects outside the demand formula. */
 const CREW_MAX_PRICE=3.00;
 function crewSize(){return 30+15*actIndex()}
@@ -1388,12 +1391,12 @@ function perCupTip(id,one,many){const n=cupNeeds("classic")[id];
 function shelfHtml(){
   let slots="";
   for(let i=0;i<gearSlots();i++){const g=GEAR.find(x=>x.id===S.gear[i]);
-    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${gearIconHtml(g.id,true)}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You win upgrades after each day.")}></span>`}
+    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${gearIconHtml(g.id,true)}</span>`:`<span class="slot empty" tabindex="0"${tip(`Empty slot. You get to pick an upgrade every ${UPGRADE_EVERY} days.`)}></span>`}
   return `<div class="shelf"><b>My Stand</b><div class="slots">${slots}</div><button class="btn sm ghost" onclick="showBuild()">See all</button></div>`;
 }
 /* The day, step by step. The ? help lists them all; on a player's first day each hint shows where its step happens. */
 const FORECAST_HINT="Hot days are busy. Rain keeps people home.";
-const HOW_STEPS=[["Pick a spot","Each spot has its own crowd."],["Put up signs","Signs bring more customers."],["Buy supplies","Each cup uses some. Hot days need more ice."],["Set your price","Charge too much and people walk away."],["See how you did","Count up your sales and tips."],["Pick an upgrade","Make your stand even better."]];
+const HOW_STEPS=[["Pick a spot","Each spot has its own crowd."],["Put up signs","Signs bring more customers."],["Buy supplies","Each cup uses some. Hot days need more ice."],["Set your price","Charge too much and people walk away."],["See how you did","Count up your sales and tips."],["Pick an upgrade",`Every ${UPGRADE_EVERY} days, make your stand even better.`]];
 function firstDay(){return S&&S.day===1&&!meta.hintsSeen}
 function learnHint(t){return firstDay()?`<span class="learn">${t}</span>`:""}
 
@@ -1967,7 +1970,7 @@ function finishDay(){
       </div>
     </div>
     ${topCust?`<div class="topCust"><h4>Top customers</h4><ol class="tcList">${topCust}</ol></div>`:""}
-    <div class="center mt"><button class="btn gold" onclick="afterReport()">${S.day>=MAX_DAYS?"See your final score":"Pick an upgrade"}</button></div>`);
+    <div class="center mt"><button class="btn gold" onclick="afterReport()">${S.day>=MAX_DAYS?"See your final score":upgradeDay(S.day)?"Pick an upgrade":`Start Day ${S.day+1}`}</button></div>`);
   countUp($("#madeAmt"),made);
   if(perfect)celebrate("medium",$(".rStamp"),1400); // .rStamp presses down 1.2s in and takes .2s
   updateHUD();
@@ -1982,7 +1985,7 @@ function eveSheet(html,cls=""){
 function afterReport(){
   if(S.day>=MAX_DAYS){S.completed=true;endRun("complete");return}
   if(S.cash<cheapestServingCost()&&S.cash<1){endRun("bankrupt","You don't have enough money to make a cup.");return}
-  offerDraft();
+  if(upgradeDay(S.day))offerDraft();else nextDay();
 }
 /* ---------- Drafts ---------- */
 let draftChoices=[],pendingDraft=null;
@@ -2167,7 +2170,7 @@ function showBuild(){
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
     <div class="flex spread"><h2>My Upgrades</h2><button class="btn sm ghost" onclick="closeModal()">Close</button></div>
     <h3>My Stand (${S.gear.length}/${gearSlots()})</h3>
-    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${gearIconHtml(g.id)} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty ${plural(empty,"slot")}. You win upgrades after each day.</li>`:""}</ul>
+    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${gearIconHtml(g.id)} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty ${plural(empty,"slot")}. You get to pick an upgrade every ${UPGRADE_EVERY} days.</li>`:""}</ul>
     <h3>My flavors</h3>
     <ul class="list">${S.recipes.map(rk=>{const r=RECIPES[rk];return `<li><b>${iconHtml("flavor",rk)} ${r.name}</b> ${tagChips(r.tags)}<br><span class="small">Liked by ${flavorFans(r.tags)}</span></li>`}).join("")}</ul>
     <h3>Combos</h3>
