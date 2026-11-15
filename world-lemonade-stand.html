@@ -15,6 +15,7 @@
   --ink:#2b2118; --paper:#fff7e0; --paper2:#ffedb8; --lemon:#ffd83d; --lemon2:#f5b301;
   --green:#58b368; --green2:#2e7d46; --red:#e4572e; --blue:#4aa3df; --blue2:#3f7ea8;
   --card:#fffdf4; --radius:16px;
+  --hudH:58px; /* the HUD's height; fitStage() sets the real one. Things under it sit at --hudH + 16px or more: the HUD is 8px down and casts a 6px shadow */
   /* Type: Jersey 15, a pixel face, for headings, buttons and numbers; Nunito for reading. Both are embedded (see the @font-face block). */
   --font-display:"Jersey 15","Nunito","Trebuchet MS",system-ui,sans-serif;
   --font-body:"Nunito","Trebuchet MS",system-ui,sans-serif;
@@ -260,7 +261,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}}
 @media (prefers-reduced-motion:reduce){.modalWrap,.modal{animation:none}}
 /* The evening pops up over the closed stand: the day's report, then the upgrade pick. It sits under the HUD, so money, stars and upgrades stay in view. */
-.modalWrap.eve{--hudH:56px;z-index:40;padding-top:calc(var(--hudH) + 16px)}
+.modalWrap.eve{z-index:40;padding-top:calc(var(--hudH) + 16px)}
 .eve .modal{max-width:760px;max-height:100%}
 .flex{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .spread{justify-content:space-between}
@@ -325,14 +326,14 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 .supShelf .mLbl{margin-top:0}
 .shelfRow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px -14px 10px;padding:0 14px 8px;border-bottom:6px solid #7a4428}
 /* Supplies are buttons, so they look like it: the open one is lemon, like the chosen spot */
-.item{position:relative;display:grid;justify-items:center;align-content:start;gap:2px;background:var(--paper);border:3px solid var(--ink);border-radius:10px;padding:4px 2px 3px;color:var(--ink);box-shadow:0 3px 0 rgba(43,33,24,.85)}
+.item{position:relative;display:grid;justify-items:center;align-content:start;gap:2px;background:var(--paper);border:3px solid var(--ink);border-radius:10px;padding:4px 0 3px;color:var(--ink);box-shadow:0 3px 0 rgba(43,33,24,.85)}
 .item:hover{background:#fff}
 .item[aria-expanded="true"]{background:var(--lemon)}
 .item:active{transform:translateY(2px);box-shadow:none}
 .item:focus-visible{outline:3px solid var(--blue)}
 .item .n{position:absolute;top:-9px;right:-7px;min-width:20px;background:var(--ink);color:#fff;border-radius:99px;padding:0 5px;font-size:var(--fs-xs);font-weight:900;font-variant-numeric:tabular-nums}
 .item .n.zero{background:var(--red)}
-.item .nm{font-size:var(--fs-xs);font-weight:800;line-height:1.1;text-align:center}
+.item .nm{max-width:100%;font-size:var(--fs-xs);font-weight:800;line-height:1.1;text-align:center;overflow-wrap:break-word} /* a word too long for the tile wraps inside it */
 .drawer{display:grid;gap:6px;max-width:460px;margin:-4px 0 12px;background:var(--card);border-radius:12px;padding:8px 10px 10px}
 .drawer .mLbl{margin:0}
 .rule{font-size:var(--fs-sm);font-weight:700;opacity:.8}
@@ -465,7 +466,7 @@ body:has(.stage){overflow:hidden}
 .hudWx b{font-family:var(--font-display);font-weight:400;font-size:var(--fs-xl);line-height:1;color:var(--lemon)}
 .hudWx .icon{--sz:calc(16px*var(--px));align-self:center}
 .hudWx:empty,#app:not(:has(.stage)) .hudWx{display:none} /* only for the morning and the selling day */
-.stage{--px:2;--hudH:56px;position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden auto;background:#8a6b46}
+.stage{--px:2;position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden auto;background:#8a6b46}
 .stage .sky{--px:2;flex:1 0 auto;height:auto;display:flex;flex-direction:column;padding:calc(var(--hudH) + 18px) 12px calc(84px*var(--px))}
 .stage .ground{flex:none;height:auto;z-index:auto;background-size:calc(64px*var(--px)) calc(32px*var(--px));padding:calc(12px*var(--px)) 12px calc(14px + env(safe-area-inset-bottom,0px))}
 .stage .ground:before{z-index:3;top:calc(-9px*var(--px));height:calc(14px*var(--px));background-size:calc(64px*var(--px)) calc(14px*var(--px))}
@@ -484,7 +485,7 @@ body:has(.stage){overflow:hidden}
 .spotCard .mLbl{justify-content:center;margin:0 0 6px;font-size:var(--fs-sm)}
 .spotCard .posts{max-width:none}
 /* Today's news (events, Lucky Dice, combos, hot streak): one strip of notes just under the HUD */
-.news{grid-column:1/-1;justify-self:center;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:min(820px,100%);margin-top:-6px}
+.news{grid-column:1/-1;justify-self:center;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:min(820px,100%)}
 .news .synBanner,.news .callout{margin:0;border-radius:10px;font-size:var(--fs-xs);font-weight:700;line-height:1.35;padding:4px 10px;box-shadow:0 3px 0 rgba(43,33,24,.25)}
 .news .callout{background:var(--card)}
 .toast{justify-self:center;background:var(--card);border-radius:12px;padding:6px 14px;font-size:var(--fs-sm);font-weight:800;box-shadow:0 4px 0 rgba(43,33,24,.3);max-width:min(460px,calc(100vw - 24px));text-align:center;animation:toastLife 4s ease-out forwards}
@@ -498,10 +499,10 @@ body:has(.stage){overflow:hidden}
 .dock .supShelf{position:relative;margin:0;padding:8px 12px 0;overflow:visible;box-shadow:0 5px 0 rgba(43,33,24,.35);max-width:100%}
 .dock .shelfRow{display:flex;gap:8px;margin:0 -12px;padding:10px 12px 8px;overflow-x:auto;scrollbar-width:none}
 .dock .shelfRow .sep{flex:none;width:3px;border-radius:2px;background:#7a4428;opacity:.5}
-.dock .item{flex:none;width:62px}
+.dock .item{flex:none;width:70px} /* 64px inside: room for the longest one-word names (Cucumbers, Condensed) */
 .dock .drawer{position:absolute;left:0;bottom:calc(100% + 10px);z-index:10;width:min(340px,calc(100vw - 24px));margin:0;box-shadow:0 6px 0 rgba(43,33,24,.3),0 10px 24px rgba(0,0,0,.2)}
 .dock .stepper b{min-width:50px}
-/* The supplies panel: the shelf of what you have, then the cups each flavor can make and what its pitcher needs.
+/* The supplies panel: the shelf of what you have, then the cups each flavor can make and what each cup of it takes.
    Wide screens stand it on the right, beside the scene; narrower screens put it on the ground. */
 .invPanel{position:relative;display:flex;flex-direction:column;min-width:0;max-width:100%;background:var(--card);border-radius:14px;box-shadow:0 5px 0 rgba(43,33,24,.35)}
 .dock .invPanel .supShelf{border-radius:14px 14px 0 0;box-shadow:none}
@@ -522,12 +523,12 @@ body:has(.stage){overflow:hidden}
 .need{display:inline-flex;align-items:center;gap:2px;white-space:nowrap}
 .need.short{color:var(--red)}
 .canMake .rule{font-size:var(--fs-xs)}
-@media (min-width:901px){
-  .stage.morning{--sideW:296px}
+@media (min-width:1200px){ /* narrower, the top card would get too thin beside the panel */
+  .stage.morning{--sideW:322px}
   .stage.morning .spotCard{width:min(580px,100vw - 2*(var(--sideW) + 36px))} /* the stand and the top card stay centered, as on the selling day, and clear of the panel */
   .morning .invPanel{position:fixed;z-index:10;right:12px;top:calc(var(--hudH) + 18px);width:var(--sideW);max-height:calc(100dvh - var(--hudH) - 30px)}
-  .morning.fit-tight .invPanel{top:calc(var(--hudH) + 10px)}
-  .dock .invPanel .shelfRow{display:grid;grid-template-columns:repeat(4,62px);justify-content:space-between;gap:12px 0;overflow:visible}
+  .morning.fit-tight .invPanel{top:calc(var(--hudH) + 16px)}
+  .dock .invPanel .shelfRow{display:grid;grid-template-columns:repeat(4,70px);justify-content:space-between;gap:12px 0;overflow:visible}
   .dock .invPanel .shelfRow .sep{grid-column:1/-1;width:auto;height:6px;margin:-2px -12px 0;border-radius:0;opacity:1} /* a second shelf board under the basics */
 }
 /* Today's prices: a price tag per flavor. The tags sit in one row that scrolls sideways,
@@ -584,37 +585,36 @@ body:has(.stage){overflow:hidden}
 .tSlot.empty{background:none;border:2px dashed rgba(255,247,224,.3)}
 .tSlot .icon{--sz:32px;vertical-align:0}
 .starNum{display:none}
-@media (min-width:901px){ /* wide screens: the supplies shelf sits on the ground at its own width */
-  .morning .dockIn{flex-wrap:nowrap;align-items:stretch}
-  .morning #mShop{flex:0 1 auto;min-width:230px}
+@media (max-width:1199px){ /* below the side panel's width: the supplies panel spans the ground */
+  .dock .invPanel{flex:1 1 100%}
+  .dock .invPanel .supShelf{max-width:none}
+  .fList{display:flex;gap:16px;overflow:auto hidden} /* the flavors sit side by side and scroll sideways */
+  .fRow{flex:none;min-width:200px;border-top:0;padding:2px 0}
 }
 /* The morning and the selling day share one camera: the scene at 3× on big screens */
 @media (min-width:900px) and (min-height:720px){.stage,.stage .sky{--px:3}.stage .ground{min-height:max(190px,26vh)}}
 @media (max-width:900px){ /* narrower screens: the supplies shelf spans the ground */
   .dockIn{gap:10px}
-  .dock .supShelf,.dock .invPanel{flex:1 1 100%}
+  .dock .supShelf{flex:1 1 100%}
   .dock .shelfRow{justify-content:space-between}
-  .dock .invPanel .supShelf{max-width:none}
-  .fList{display:flex;gap:16px;overflow:auto hidden} /* the flavors sit side by side and scroll sideways */
-  .fRow{flex:none;min-width:200px;border-top:0;padding:2px 0}
   .spotCard .price{width:140px}
   .dock .stepper button{width:34px;height:34px}
   .dock .stepper b{min-width:46px;font-size:var(--fs-md)}
 }
 @media (max-width:1100px){
-  .stage,.modalWrap.eve{--hudH:84px}
+  :root{--hudH:96px}
   #app:has(.stage) .hud{flex-wrap:wrap;row-gap:2px}
   .hudWx{order:10;flex:1 1 100%;justify-content:center;border-top:1px solid rgba(255,247,224,.15);padding:2px 0 1px} /* the 32px forecast icon fills the row */
   .hudWx b{font-size:var(--fs-lg)}
 }
 @media (max-width:720px){
-  .stage,.modalWrap.eve{--hudH:80px}
+  :root{--hudH:78px}
   .skyTop{grid-template-columns:1fr;justify-items:stretch}
   .skyTop .side{justify-items:start}
   .spotCard .slide{padding:6px 8px 2px}
   .spotCard .postFace{padding:5px 15px 5px 6px;font-size:var(--fs-xs)}
   .spotCard{justify-self:center}
-  .dock .item{width:62px}
+  .dock .item{width:70px}
   .stage .ground{min-height:max(250px,32vh)}
   .dayCard{grid-template-columns:1fr auto;align-items:center;min-width:0}
   .dayCard .dayBar{grid-column:1}
@@ -635,7 +635,7 @@ body:has(.stage){overflow:hidden}
 /* The stage never scrolls. When it is taller than the window, fitStage() adds these one at a time until it fits:
    tighter spacing, no first-day hints, then smaller sprites, so the scene stays big as long as it can. */
 .stage.fit-tight .ground{min-height:0;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
-.stage.fit-tight .sky{padding-top:calc(var(--hudH) + 10px)}
+.stage.fit-tight .sky{padding-top:calc(var(--hudH) + 16px)}
 .stage.fit-tight .skyTop{gap:6px}
 .stage.fit-tight .spotCard .slide{padding-top:6px}
 .stage.fit-tight .carNav{padding-bottom:2px}
@@ -911,39 +911,41 @@ const LOCATIONS=[
 ];
 const RECIPES={
   classic:{name:"Classic Sweet", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.25, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
-  strawberry:{name:"Strawberry Lemonade", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:2.75, needs:{strawberries:3},    desc:"Lemonade with fresh strawberries."},
-  limonana:{name:"Limonana", origin:"Levant",             tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{mint:2},            desc:"Mint blended with crushed ice."},
-  brazilian:{name:"Brazilian Lemonade", origin:"Brazil",         tags:["SWEET","FANCY"], appeal:1.08,price:3.25, needs:{condmilk:2},        desc:"Creamy with condensed milk."},
-  shikanji:{name:"Shikanji", origin:"India",              tags:["SOUR"],          appeal:1.04,price:2.50, needs:{ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
+  strawberry:{name:"Strawberry Lemonade", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:2.75, needs:{strawberries:1},    desc:"Lemonade with fresh strawberries."},
+  limonana:{name:"Limonana", origin:"Levant",             tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{mint:1},            desc:"Mint blended with crushed ice."},
+  brazilian:{name:"Brazilian Lemonade", origin:"Brazil",         tags:["SWEET","FANCY"], appeal:1.08,price:3.25, needs:{condmilk:1},        desc:"Creamy with condensed milk."},
+  shikanji:{name:"Shikanji", origin:"India",              tags:["SOUR"],          appeal:1.04,price:2.50, needs:{sugar:2,ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
   chia:{name:"Agua de Limón con Chía", origin:"Mexico",          tags:["CHILLED"],       appeal:1.03,price:2.75, needs:{chia:1},            desc:"Lemonade with chia seeds."},
-  citron:{name:"Citron Pressé", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.04,price:2.75, needs:{sparkling:1},       desc:"Paris cafe style. Tart and sparkling."},
-  rosewater:{name:"Sharbat-e-Limoo", origin:"Iran",               tags:["FANCY","SWEET"], appeal:1.07,price:3.25, needs:{rosewater:1},       desc:"Lemon with rosewater."},
+  citron:{name:"Citron Pressé", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.04,price:2.75, needs:{lemons:3,sparkling:1},desc:"Paris cafe style. Tart and sparkling."},
+  rosewater:{name:"Sharbat-e-Limoo", origin:"Iran",               tags:["FANCY","SWEET"], appeal:1.07,price:3.25, needs:{sugar:2,rosewater:1},desc:"Lemon with rosewater."},
   salted:{name:"Salted Lemonade", origin:"Vietnam",            tags:["SOUR"],          appeal:1.02,price:2.25, needs:{seasalt:1},         desc:"Salty lemon drink."},
-  palmer:{name:"Arnold Palmer", origin:"USA",                tags:["SWEET","SOUR"],  appeal:1.08,price:2.75, needs:{blacktea:2},        desc:"Half iced tea, half lemonade."},
-  cucumber:{name:"Cucumber Lemonade", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{cucumbering:2},     desc:"Cool cucumber lemonade."},
+  palmer:{name:"Arnold Palmer", origin:"USA",                tags:["SWEET","SOUR"],  appeal:1.08,price:2.75, needs:{blacktea:1},        desc:"Half iced tea, half lemonade."},
+  cucumber:{name:"Cucumber Lemonade", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{cucumbering:1},     desc:"Cool cucumber lemonade."},
   ramune:{name:"Ramune Lemonade", origin:"Japan",              tags:["FIZZY","SWEET"], appeal:1.06,price:2.75, needs:{sparkling:2},       desc:"Japanese soda-shop fizz."}
 };
-/* ---------- Inventory: pitchers, ingredients, the shop ----------
-   1 pitcher = 8 cups, from 6 lemons + 4 sugar + the recipe's specials.
+/* ---------- Inventory: ingredients, the shop ----------
+   Every cup takes 2 lemons and 1 sugar, plus its flavor's own supplies (RECIPES needs, per cup). A few real recipes
+   take more: Citron Pressé is a glass of pressed lemon juice (3 lemons), Shikanji and Sharbat-e-Limoo are sweeter (2 sugar).
+   Each pack for a flavor makes 16 cups: 32 lemons, 16 of everything else.
    Stock persists between days — buying well IS the production decision now. */
-const PITCHER_SERVES=8, BASE_NEEDS={lemons:6,sugar:4};
+const BASE_NEEDS={lemons:2,sugar:1};
 const INGREDIENTS={
   cups:{name:"Cups",pack:25,price:2.50},
-  lemons:{name:"Lemons",pack:12,price:3.00},
-  sugar:{name:"Sugar",pack:10,price:2.00},
+  lemons:{name:"Lemons",pack:32,price:3.00},
+  sugar:{name:"Sugar",pack:16,price:1.60},
   ice:{name:"Ice Cubes",pack:40,price:1.20},
   signs:{name:"Signs",pack:1,price:5.00},
-  strawberries:{name:"Strawberries",pack:6,price:2.40},
-  mint:{name:"Fresh Mint",pack:6,price:1.80},
-  condmilk:{name:"Condensed Milk",pack:4,price:2.00},
-  ginger:{name:"Ginger",pack:4,price:1.60},
-  blacksalt:{name:"Black Salt",pack:4,price:1.20},
-  chia:{name:"Chia Seeds",pack:4,price:1.60},
-  sparkling:{name:"Sparkling Water",pack:6,price:1.80},
-  rosewater:{name:"Rosewater",pack:4,price:2.00},
-  seasalt:{name:"Sea Salt",pack:4,price:1.00},
-  blacktea:{name:"Black Tea",pack:6,price:1.80},
-  cucumbering:{name:"Cucumbers",pack:4,price:1.60}
+  strawberries:{name:"Straw\u00adberries",pack:16,price:2.40}, // the soft hyphen lets a supply tile break it as "Straw-berries"
+  mint:{name:"Fresh Mint",pack:16,price:1.20},
+  condmilk:{name:"Condensed Milk",pack:16,price:2.00},
+  ginger:{name:"Ginger",pack:16,price:0.80},
+  blacksalt:{name:"Black Salt",pack:16,price:0.60},
+  chia:{name:"Chia Seeds",pack:16,price:0.80},
+  sparkling:{name:"Sparkling Water",pack:16,price:0.60},
+  rosewater:{name:"Rosewater",pack:16,price:1.00},
+  seasalt:{name:"Sea Salt",pack:16,price:0.50},
+  blacktea:{name:"Black Tea",pack:16,price:1.20},
+  cucumbering:{name:"Cucumbers",pack:16,price:1.60}
 };
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
 const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name},gearB:{ids:["sunhat","awning","ponchos","icecrush","thermo","jug","shavedice","lemonzest","plaque","zester","tipjar","piggy","selloutbanner","rainjar","clover","wholesale","pitcher","squeezerpro","lemontree"],name:id=>GEAR.find(g=>g.id===id).name},crowd:{ids:["kids","parents","athletes","tourists","foodies","artists"],name:id=>CROWDS[id].name},weather:{ids:["sunny","hot","perfect","cloudy","rainy","windy"],name:id=>WEATHERS[id].name}};
@@ -965,7 +967,7 @@ function addStock(id,qty,paid){const have=S.inv[id]||0;S.avgCost[id]=(have*unitC
 /* Fresh produce keeps for a few days (about room-temperature shelf life); dry, bottled and canned supplies keep.
    Ice sits in a cooler, so half of what's left melts each night. */
 const SHELF={lemons:7,strawberries:3,mint:4,cucumbering:5};
-/* Each perishable remembers its batches (day bought). Pitchers use the oldest first, so batches are trimmed oldest-first to match what's on hand. */
+/* Each perishable remembers its batches (day bought). Cups use the oldest first, so batches are trimmed oldest-first to match what's on hand. */
 function syncBatches(id){
   const lots=S.lots[id]||(S.lots[id]=[]),have=S.inv[id]||0;let tot=lots.reduce((s,l)=>s+l.qty,0);
   while(tot>have&&lots.length){const take=Math.min(lots[0].qty,tot-have);lots[0].qty-=take;tot-=take;if(lots[0].qty<=0)lots.shift()}
@@ -979,12 +981,11 @@ function overnight(){ // tonight, after the stand closes: returns what melts and
     if(bad){S.inv[id]-=bad;const names={lemons:["lemon","lemons"],strawberries:["strawberry","strawberries"],mint:["mint sprig","mint sprigs"],cucumbering:["cucumber","cucumbers"]};const nm=names[id]||[INGREDIENTS[id].name.toLowerCase(),INGREDIENTS[id].name.toLowerCase()];notes.push(`${bad} ${iconHtml("supply",id)} ${plural(bad,nm[0],nm[1])} ${bad===1?"goes":"go"} bad`)}});
   return notes;
 }
-function pitcherNeeds(rk){return {...BASE_NEEDS,...(RECIPES[rk].needs||{})}}
-function pitcherServes(){return PITCHER_SERVES+(S&&S.gear.includes("squeezerpro")?2:0)}
-function pitcherCost(rk){return Object.entries(pitcherNeeds(rk)).reduce((s,[k,v])=>s+v*unitCost(k),0)}
-function servingCost(rk){return pitcherCost(rk)/pitcherServes()+unitCost("cups")+icePerCup()*unitCost("ice")}
-function canBrew(rk,inv){return Object.entries(pitcherNeeds(rk)).every(([k,v])=>(inv[k]||0)>=v)}
-function pitchersPossible(rk,inv){if(!canBrew(rk,inv))return 0;return Math.min(...Object.entries(pitcherNeeds(rk)).map(([k,v])=>Math.floor((inv[k]||0)/v)))}
+/* What one cup of a flavor takes, besides the cup and its ice. Lemon Squeezer Pro saves a lemon on every cup. */
+function cupNeeds(rk){const n={...BASE_NEEDS,...(RECIPES[rk].needs||{})};if(S&&S.gear.includes("squeezerpro"))n.lemons--;return n}
+function servingCost(rk){return Object.entries(cupNeeds(rk)).reduce((s,[k,v])=>s+v*unitCost(k),0)+unitCost("cups")+icePerCup()*unitCost("ice")}
+function canPour(rk,inv){return Object.entries(cupNeeds(rk)).every(([k,v])=>(inv[k]||0)>=v)}
+function cupsPossible(rk,inv){return Math.min(...Object.entries(cupNeeds(rk)).map(([k,v])=>Math.floor((inv[k]||0)/v)))}
 /* Ice goes in each cup by itself: as many cubes as today's temperature calls for. */
 function icePerCup(){return M?Math.max(0,iceForTemp(M.temp)-(S&&S.gear.includes("jug")?1:0)):0}
 function menuPrice(rk){return (M&&M.prices&&M.prices[rk]!=null)?M.prices[rk]:RECIPES[rk].price}
@@ -993,7 +994,7 @@ const GEAR=[
  // signs
  {id:"painted", name:"Hand-Painted Sign", rar:"common",    desc:"3 free signs every day."},
  {id:"mega",    name:"Cardboard Megaphone", rar:"common",    desc:"Signs bring 40% more customers."},
- {id:"brother", name:"Little Brother", rar:"rare",      desc:"2 free signs every day, but he spills 2 cups from your first pitcher."},
+ {id:"brother", name:"Little Brother", rar:"rare",      desc:"2 free signs every day, but he spills 2 cups of lemonade each day."},
  {id:"chalk",   name:"Sidewalk Chalk Art", rar:"rare",      desc:"+0.2★ reputation on days you put out 4 or more signs."},
  {id:"bigsign", name:"Roof sign", rar:"legendary", desc:"Every sign pulls as many customers as your first one."},
  // customers
@@ -1030,9 +1031,9 @@ const GEAR=[
  {id:"clover",  name:"Four-Leaf Clover", rar:"rare",      desc:"Once every 7 days, it saves a hot streak that would end."},
  // stock & costs
  {id:"wholesale",name:"Wholesale Card", rar:"common",    desc:"All ingredient packs cost 20% less."},
- {id:"pitcher", name:"Grandma's Pitcher", rar:"common",    desc:"Every 4th pitcher you brew is free."},
- {id:"squeezerpro",name:"Lemon Squeezer Pro",rar:"epic",      desc:"Every pitcher pours 10 cups instead of 8."},
- {id:"lemontree",name:"Lemon Tree", rar:"legendary", desc:"6 free lemons every morning, plus 1 more for each day you've had it."},
+ {id:"pitcher", name:"Grandma's Pitcher", rar:"common",    desc:"Every 4th cup uses only a cup and ice."},
+ {id:"squeezerpro",name:"Lemon Squeezer Pro",rar:"epic",      desc:"Every cup takes 1 less lemon."},
+ {id:"lemontree",name:"Lemon Tree", rar:"legendary", desc:"16 free lemons every morning, plus 3 more for each day you've had it."},
 ];
 const SYNERGIES=[
  {id:"coldsnap", name:"Cold snap",       need:{FIZZY:1,CHILLED:2},        desc:"1 fizzy and 2 chilled flavors: +45% customers on hot and perfect days.", check:s=>s.tags.FIZZY>=1&&s.tags.CHILLED>=2},
@@ -1129,7 +1130,7 @@ function newRun(kidId){
     cash:kid.start,
     rep:3,
     recipes:["classic"], activeRecipe:"classic",
-    inv:{cups:25,lemons:12,sugar:8,ice:40}, menuPrices:{},
+    inv:{cups:25,lemons:32,sugar:16,ice:40}, menuPrices:{},
     gear:[],
     log:[], lifetimeProfit:0, lifetimeSold:0,
     todayCostMult:1, tomorrowCostMult:1,
@@ -1225,7 +1226,7 @@ function genMorning(){
   M={trueWx,shownWx,temp,locs,loc:null,card:0,event:ev,signs:0,prices,logStart:S.log.length,
      special:S.gear.includes("special")?pick(S.recipes):null,
      dice:S.gear.includes("dice")?Math.round(rnd(0.7,1.6)*100)/100:0};
-  if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1;M.treeLemons=5+S.treeDays;addStock("lemons",M.treeLemons,0)}
+  if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1;M.treeLemons=13+3*S.treeDays;addStock("lemons",M.treeLemons,0)}
   S.todayCostMult=S.tomorrowCostMult||1;S.tomorrowCostMult=1;
   if(ev.fn)ev.fn(S);
 }
@@ -1342,11 +1343,14 @@ const RARITY={common:"Common",rare:"Rare",epic:"Epic",legendary:"Legendary"},RAR
 function rarBadge(r){return `<span class="rar ${r}"${tip(RARITY_TIP)}>${r}</span>`}
 function ingTip(id){
   if(id==="cups")return "Every customer needs 1 cup.";
-  if(id==="lemons")return `Each pitcher needs ${BASE_NEEDS.lemons} lemons and makes ${pitcherServes()} ${plural(pitcherServes(),"cup")}. Lemons stay fresh for ${SHELF.lemons} ${plural(SHELF.lemons,"day")}.`;
-  if(id==="sugar")return `Each pitcher needs ${BASE_NEEDS.sugar} sugar.`;
+  if(id==="lemons")return `${perCupTip("lemons","lemon","lemons")} Lemons stay fresh for ${SHELF.lemons} ${plural(SHELF.lemons,"day")}.`;
+  if(id==="sugar")return perCupTip("sugar","sugar","sugar");
   if(id==="ice")return "Hotter days put more ice in each cup. Half of your leftover ice melts each night.";
-  return `Needed for ${listWords(S.recipes.filter(rk=>(RECIPES[rk].needs||{})[id]).map(rk=>`${RECIPES[rk].name} (${RECIPES[rk].needs[id]} per pitcher)`))}.`;
+  return `Needed for ${listWords(S.recipes.filter(rk=>(RECIPES[rk].needs||{})[id]).map(rk=>`${RECIPES[rk].name} (${RECIPES[rk].needs[id]} per cup)`))}.`;
 }
+/* "Each cup takes 2 lemons. Citron Pressé takes 3.": the usual amount, then your flavors that take a different one. */
+function perCupTip(id,one,many){const n=cupNeeds("classic")[id];
+  return `Each cup takes ${n} ${plural(n,one,many)}.`+S.recipes.filter(rk=>cupNeeds(rk)[id]!==n).map(rk=>` ${RECIPES[rk].name} takes ${cupNeeds(rk)[id]}.`).join("")}
 /* Your upgrade slots, shown wherever you make choices so upgrades never hide. */
 function shelfHtml(){
   let slots="";
@@ -1415,11 +1419,13 @@ function renderMorning(){
 /* The stage never scrolls: if it is taller than the window, step through denser layouts until it fits. */
 const FIT_STEPS=["fit-tight","fit-min","fit-px2","fit-px1"];
 function fitStage(){
+  const hud=$("#hud").offsetHeight;if(hud)document.documentElement.style.setProperty("--hudH",hud+"px"); // the HUD's real height: it wraps to two rows on narrow screens
   const st=$(".stage");if(!st)return;
   st.classList.remove(...FIT_STEPS);
   for(const c of FIT_STEPS){if(st.scrollHeight<=st.clientHeight)break;st.classList.add(c)}
 }
 addEventListener("resize",fitStage);
+if(window.ResizeObserver)new ResizeObserver(fitStage).observe($("#hud")); // the HUD changes height when it fills in or wraps
 /* The supplies shelf and its wholesale drawer are one component: a click anywhere else
    in the morning (a spot, a slide arrow, a stepper, the sky) puts the drawer away. */
 document.addEventListener("click",e=>{
@@ -1484,23 +1490,23 @@ function mShopHtml(){
     <div class="shelfRow" onwheel="wheelSideways(event,this)">${basics.map(item).join("")}${extras.length?`<i class="sep" aria-hidden="true"></i>${extras.map(item).join("")}`:""}</div></div>${M.shopOpen?mDrawerHtml(M.shopOpen):""}
     ${canMakeHtml()}`;
 }
-/* Under the shelf: the cups each flavor can make from what you have, and what one pitcher of it needs. */
+/* Under the shelf: the cups each flavor can make from what you have, and what each cup of it takes. */
 function canMakeHtml(){
-  const ice=icePerCup(),serves=pitcherServes(),most=Math.max(0,...S.recipes.map(rk=>pitchersPossible(rk,S.inv)*serves));
-  const each=(id,n,left)=>`<b class="need${left<most?" short":""}"${left<most?tip(`${INGREDIENTS[id].name} run out first.`):""}>${n}${iconHtml("supply",id)}</b>`; // red when it stops a flavor before its pitchers do
+  const ice=icePerCup(),most=Math.max(0,...S.recipes.map(rk=>cupsPossible(rk,S.inv)));
+  const each=(id,n,left)=>`<b class="need${left<most?" short":""}"${left<most?tip(`${INGREDIENTS[id].name} run out first.`):""}>${n}${iconHtml("supply",id)}</b>`; // red when it stops a flavor before its lemons and sugar do
   const row=rk=>{const n=flavorCups(rk);
     return `<div class="fRow${n?"":" none"}">${iconHtml("flavor",rk,true)}<span class="fName">${RECIPES[rk].name}</span>
       <span class="fCups" tabindex="0"${tip(n?`You can make ${n} ${plural(n,"cup")} of ${RECIPES[rk].name}.`:`Not enough for ${RECIPES[rk].name}. Red shows what's short.`)}><b>${n}</b>${plural(n,"cup")}</span>
-      <span class="recipe" aria-label="One pitcher needs ${listWords(Object.entries(pitcherNeeds(rk)).map(([k,v])=>`${v} ${INGREDIENTS[k].name.toLowerCase()}`))}">${recipeHtml(rk)}</span></div>`};
+      <span class="recipe" aria-label="Each cup takes ${listWords(Object.entries(cupNeeds(rk)).map(([k,v])=>`${v} ${INGREDIENTS[k].name.toLowerCase()}`))}">${recipeHtml(rk)}</span></div>`};
   return `<div class="canMake"><div class="mLbl">Cups you can make</div>
-    <div class="perCup"><span>A pitcher makes ${serves} cups.</span><span>Each cup also takes ${each("cups",1,S.inv.cups||0)}${ice?` ${each("ice",ice,Math.floor((S.inv.ice||0)/ice))}`:""}</span></div>
+    <div class="perCup"><span>Each cup also takes ${each("cups",1,S.inv.cups||0)}${ice?` ${each("ice",ice,Math.floor((S.inv.ice||0)/ice))}`:""}</span></div>
     <div class="fList" onwheel="wheelSideways(event,this)">${S.recipes.map(row).join("")}</div>
     ${S.recipes.length>1?`<div class="rule">Flavors share lemons and sugar.</div>`:""}</div>`;
 }
-/* Cups of one flavor your supplies make, if it were the only one: its pitchers, capped by the cups and the ice. */
-function flavorCups(rk){const ice=icePerCup();return Math.min(pitchersPossible(rk,S.inv)*pitcherServes(),S.inv.cups||0,ice>0?Math.floor((S.inv.ice||0)/ice):Infinity)}
-/* One pitcher's recipe as icons, "6 [lemon] 4 [sugar]"; a supply you have too little of shows red. */
-function recipeHtml(rk){return Object.entries(pitcherNeeds(rk)).map(([k,v])=>`<span class="need${(S.inv[k]||0)<v?" short":""}">${v}${iconHtml("supply",k)}</span>`).join("")}
+/* Cups of one flavor your supplies make, if it were the only one, capped by the cups and the ice. */
+function flavorCups(rk){const ice=icePerCup();return Math.min(cupsPossible(rk,S.inv),S.inv.cups||0,ice>0?Math.floor((S.inv.ice||0)/ice):Infinity)}
+/* One cup's recipe as icons, "2 [lemon] 1 [sugar]"; a supply you have too little of shows red. */
+function recipeHtml(rk){return Object.entries(cupNeeds(rk)).map(([k,v])=>`<span class="need${(S.inv[k]||0)<v?" short":""}">${v}${iconHtml("supply",k)}</span>`).join("")}
 function mDrawerHtml(id){
   const ing=INGREDIENTS[id],n=S.inv[id]||0;
   const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
@@ -1525,7 +1531,7 @@ function mSignsHtml(){
     <div class="signInfo">${info.map(s=>`<span>${s}</span>`).join(" ")}</div>`; // a narrow card wraps between sentences, never inside one
 }
 function mPricesHtml(){
-  return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][1])}<div class="prices" onwheel="wheelSideways(event,this)">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canBrew(rk,S.inv);
+  return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][1])}<div class="prices" onwheel="wheelSideways(event,this)">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canPour(rk,S.inv);
     const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">Special +$0.50</span>':"";
     return `<div class="price${ok?"":" out"}">${iconHtml("flavor",rk,true)}
       <div><span class="pName" tabindex="0"${tip(`${r.desc} From: ${r.origin.replace(" · ",", ")}.`)}>${r.name}</span><div>${tagChips(r.tags)}${special}</div></div>
@@ -1559,12 +1565,12 @@ function stepPrice(rk,d){
   M.prices[rk]=S.menuPrices[rk]=v;sfx.tick();morningParts();
 }
 /* Today's menu: flavors you have supplies for. A flavor missing an ingredient sits out until you buy it. */
-function sellableNow(){return S.recipes.filter(rk=>canBrew(rk,S.inv))}
-function missingIds(rk){return Object.entries(pitcherNeeds(rk)).filter(([k,v])=>(S.inv[k]||0)<v).map(([k])=>k)}
+function sellableNow(){return S.recipes.filter(rk=>canPour(rk,S.inv))}
+function missingIds(rk){return Object.entries(cupNeeds(rk)).filter(([k,v])=>(S.inv[k]||0)<v).map(([k])=>k)}
 function missingNames(rk){return listWords(missingIds(rk).map(k=>INGREDIENTS[k].name.toLowerCase()))}
-/* Cups a stock of supplies can still pour: brew any flavor you can make until nothing brews. */
-function brewableServings(inv){let n=0,guard=0;while(guard++<300){const rk=S.recipes.find(r=>canBrew(r,inv));if(!rk)break;Object.entries(pitcherNeeds(rk)).forEach(([k,v])=>inv[k]-=v);n+=pitcherServes()}return n}
-function cupsFromSupplies(){const ice=icePerCup();return Math.min(brewableServings({...S.inv}),S.inv.cups||0,ice>0?Math.floor((S.inv.ice||0)/ice):Infinity)}
+/* Cups a stock of supplies can still pour: each flavor in turn, as many as it can make from what the ones before it left. */
+function pourableCups(inv){let n=0;S.recipes.forEach(rk=>{const k=cupsPossible(rk,inv);Object.entries(cupNeeds(rk)).forEach(([id,v])=>inv[id]-=k*v);n+=k});return n}
+function cupsFromSupplies(){const ice=icePerCup();return Math.min(pourableCups({...S.inv}),S.inv.cups||0,ice>0?Math.floor((S.inv.ice||0)/ice):Infinity)}
 /* Pointing at "Supplies for N cups" tells you the ice in each cup today. */
 function iceTip(){const n=icePerCup(),jug=S.gear.includes("jug")&&iceForTemp(M.temp)>0?" Insulated Jug saves 1.":"";return (n?`Each cup gets ${n} ice ${plural(n,"cube")} at ${M.temp}°F.`:`No ice needed at ${M.temp}°F.`)+jug}
 function renderProj(){
@@ -1577,25 +1583,21 @@ function renderProj(){
 /* ---------- Day resolution ---------- */
 let D=null; // day state
 const MORNING_SHARE=0.55;
-/* How much more can still be poured: open pitchers + what stock can still brew,
-   capped by the cups on hand and by the ice (every cup sold takes its cubes). */
+/* How much more can still be poured: what the stock still makes, capped by the cups on hand and by the ice (every cup sold takes its cubes). */
 function servingsReady(){
-  let open=0;Object.values(D.open).forEach(v=>open+=v);
   const ice=icePerCup();
-  return Math.min(S.inv.cups,open+brewableServings({...S.inv}),ice>0?Math.floor((S.inv.ice||0)/ice):Infinity);
+  return Math.min(S.inv.cups,pourableCups({...S.inv}),ice>0?Math.floor((S.inv.ice||0)/ice):Infinity);
 }
 function standDry(){return servingsReady()<=0}
 function cheapestFlavor(){return D.menu.reduce((a,bk)=>menuPrice(bk)<menuPrice(a)?bk:a,D.menu[0])}
-function brewPitcher(rk){
-  if(!canBrew(rk,S.inv))return false;
-  S.brewCount=(S.brewCount||0)+1;
-  const freePitcher=S.gear.includes("pitcher")&&S.brewCount%4===0; // Grandma's Pitcher: every 4th is on her
-  if(freePitcher)logLine(`<span class="good">Grandma's Pitcher: this pitcher is free.</span>`);
-  else Object.entries(pitcherNeeds(rk)).forEach(([k,v])=>{S.inv[k]-=v});
-  let servings=pitcherServes();
-  if(S.gear.includes("brother")&&!D.brotherSpilled){D.brotherSpilled=true;servings-=2;logLine(`<span class="bad">Little Brother spilled 2 cups.</span>`)}
-  D.open[rk]=servings;D.brewed[rk]=(D.brewed[rk]||0)+1;
-  return true;
+/* Pour one cup of a flavor: its supplies, the cup and the ice. */
+function pourCup(rk){
+  S.cupCount=(S.cupCount||0)+1;
+  const take=n=>Object.entries(cupNeeds(rk)).forEach(([k,v])=>{S.inv[k]-=v*n});
+  if(!(S.gear.includes("pitcher")&&S.cupCount%4===0))take(1); // Grandma's Pitcher: every 4th cup's lemonade is on her
+  S.inv.cups--;S.inv.ice-=icePerCup();
+  if(S.gear.includes("brother")&&!D.brotherSpilled){D.brotherSpilled=true; // the first cup of the day: he spills 2 more
+    const n=Math.min(2,cupsPossible(rk,S.inv));if(n){take(n);logLine(`<span class="bad">Little Brother spilled ${n} ${plural(n,"cup")}.</span>`)}}
 }
 /* One customer, one cup. Returns sold | price | out. */
 function serveOne(ck){
@@ -1618,15 +1620,12 @@ function serveOne(ck){
       if(alt&&tryBuy(alt))rk=alt; else return "price";
     }
   }
-  if(!D.open[rk]||D.open[rk]<=0){
-    if(!brewPitcher(rk)){
-      const alt=D.menu.filter(r2=>r2!==rk&&((D.open[r2]||0)>0||canBrew(r2,S.inv))).sort((x,y)=>appealFor(ck,y,b)-appealFor(ck,x,b))[0];
-      if(!alt)return "out";
-      rk=alt;
-      if((!D.open[rk]||D.open[rk]<=0)&&!brewPitcher(rk))return "out";
-    }
+  if(!canPour(rk,S.inv)){ // out of this flavor: the next one they like
+    const alt=D.menu.filter(r2=>r2!==rk&&canPour(r2,S.inv)).sort((x,y)=>appealFor(ck,y,b)-appealFor(ck,x,b))[0];
+    if(!alt)return "out";
+    rk=alt;
   }
-  D.open[rk]--;S.inv.cups--;S.inv.ice-=icePerCup();
+  pourCup(rk);
   const rev=saleRevenue(1,menuPrice(rk),rk);
   D.revenue+=rev;D.revBy[rk]=(D.revBy[rk]||0)+rev;D.tips+=rev*tipRate()*Math.random();
   D.cogs+=servingCost(rk);
@@ -1643,7 +1642,7 @@ function openStand(){
   sfx.pop();
   M.actualWx=M.trueWx;
   D={signs:putOut,build:b,
-     roll:rnd(0.87,1.13),open:{},brewed:{},soldBy:{},soldByCrowd:{},sold:0,morningSold:0,unmet:0,
+     roll:rnd(0.87,1.13),soldBy:{},soldByCrowd:{},sold:0,morningSold:0,unmet:0,
      awayPrice:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
      skip:false,done:false,brotherSpilled:false,crewLeft:0,paidCups:0};
   const canSell=sellableNow();D.menu=canSell.length?canSell:S.recipes.slice(); // only flavors you have supplies for
@@ -1847,7 +1846,6 @@ function resumeAfternoon(){if(!D||D.done)return;const msg=$("#dayMsg");if(msg)ms
 /* ---------- Evening: report, draft, quotas ---------- */
 function finishDay(){
   if(D.done)return;D.done=true;
-  const wasted=Object.values(D.open).reduce((s,v)=>s+v,0);
   const readyLeft=servingsReady();
   const soldOut=readyLeft<=0&&D.sold>0;
   // how many of the people who came got lemonade; leftover supplies keep for tomorrow, so they never count against you
@@ -1855,7 +1853,6 @@ function finishDay(){
   const unserved=Math.max(0,D.demand-D.sold);
   // money is shown in cents, so the day's total is built from cent-rounded parts: the report's rows always add up exactly
   let revenue=Math.round(D.revenue*100)/100, tips=Math.round(D.tips*100)/100;
-  const pourCost=D.sold>0?D.cogs/D.sold:servingCost(S.recipes[0]);
   let bannerBonus=0;
   if(S.gear.includes("selloutbanner")&&soldOut&&unserved>0){bannerBonus=Math.min(unserved,D.sold);revenue+=bannerBonus}
   const totalIn=revenue+tips;
@@ -1876,8 +1873,8 @@ function finishDay(){
   }
   const repBefore=S.rep;
   S.rep=clamp(Math.round((S.rep+repDelta)*10)/10,1,5);
-  // perfect day: everyone served, nothing poured out
-  const perfect=unserved===0&&wasted===0&&D.sold>0&&made>0;
+  // perfect day: everyone served
+  const perfect=unserved===0&&D.sold>0&&made>0;
   if(perfect)S.perfectDays++; // celebrated when its stamp lands on the receipt, below
   else if(made>20){sfx.good()} else if(made<0){sfx.bad()}
   // HOT STREAK: serve 3 of 4 customers and make money, and the day chains.
@@ -1905,16 +1902,14 @@ function finishDay(){
   let counter="";const outCount=Math.max(0,unserved-D.awayPrice); // left because supplies ran out
   if(unserved>0&&(D.awayOut>0||D.unmet>0))counter=`You ran out. ${outCount} more ${plural(outCount,"person","people")} wanted lemonade. That's about <b>${fmt(outCount*Math.max(avgPrice,1))}</b> you missed. Buy more supplies.`;
   else if(D.awayPrice>unserved*0.4&&D.awayPrice>0)counter=`${D.awayPrice} ${plural(D.awayPrice,"person","people")} walked away. The price was too high. Try a lower price.`;
-  else if(wasted>0)counter=`${wasted} ${plural(wasted,"cup")} ${wasted===1?"was":"were"} poured out at closing. That's <b>${fmt(wasted*pourCost)}</b> wasted.`;
   else if(unserved>0)counter=`${unserved} ${plural(unserved,"person","people")} didn't buy. Try a lower price or another sign.`;
-  else counter=`Everyone got lemonade, and nothing went to waste.`;
+  else counter=`Everyone got lemonade.`;
   const tonight=overnight(); // ice melts and old produce goes bad once you close
   const byCups=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]);
   const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${iconHtml("flavor",rk)}</span> ${n} ${plural(n,"cup")} at ${fmt(menuPrice(rk))}</span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
   const upgradeBonus=Math.round((D.revenue-Object.entries(D.soldBy).reduce((s,[rk,n])=>s+n*menuPrice(rk),0))*100)/100;
   const walked=D.awayPrice,ranOut=Math.max(0,unserved-walked),why=[];
   if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);
-  const brewedTotal=Object.values(D.brewed).reduce((s,v)=>s+v,0);
   const invLine=Object.keys(INGREDIENTS).filter(id=>(S.inv[id]||0)>0).map(id=>`${S.inv[id]}${iconHtml("supply",id)}`).join(" ");
   const repExtra=repNotes.slice(D.demand>0?1:0); // the first note (people served) is the line above it
   const repLine=repNotes.length?`Stars: ${repBefore.toFixed(1)} → <b>${S.rep.toFixed(1)}</b>${repExtra.length?` (${repExtra.join(", ")})`:""}`:`Stars: <b>${S.rep.toFixed(1)}</b> (no change)`;
@@ -1951,8 +1946,6 @@ function finishDay(){
     <details class="numbers"><summary>See every number</summary>
       <ul class="facts">
         ${byCups.map(([rk,n])=>`<li>${iconHtml("flavor",rk)} ${RECIPES[rk].name}: <b>${n} ${plural(n,"cup")}</b></li>`).join("")}
-        <li>Pitchers made: <b>${brewedTotal}</b></li>
-        ${wasted?`<li>Cups poured out: <b>${wasted}</b></li>`:""}
         <li>Supplies left: <b>${invLine||"none"}</b></li>
       </ul>
       <h4 class="todayHead">Today</h4>
@@ -2003,8 +1996,8 @@ function gearCard(g,full){
   return {cls:g.rar,rar:g.rar,art:gearIconHtml(g.id),title:g.name,desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:"")}}
 function draftCardHtml(p){
   if(p.kind==="gear")return gearCard(GEAR.find(x=>x.id===p.id),S.gear.length>=gearSlots());
-  if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(pitcherNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
-    return {cls:"flavor",art:`${iconHtml("flavor",p.id)}<span class="artTags">${tagChips(r.tags)}</span>`,title:r.name,desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each pitcher needs ${needs}.`}}
+  if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(cupNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
+    return {cls:"flavor",art:`${iconHtml("flavor",p.id)}<span class="artTags">${tagChips(r.tags)}</span>`,title:r.name,desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each cup takes ${needs}.`}}
   const amt=fmt(18+22*actIndex());
   return {cls:"cash",art:`<i class="coinPile" role="img" aria-label="Coins"></i><b class="artAmt">+${amt}</b>`,title:"Cousin's Gift",desc:`+${amt} cash right now. It gets bigger later in the summer.`};
 }
