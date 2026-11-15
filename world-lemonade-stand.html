@@ -501,6 +501,31 @@ body:has(.stage){overflow:hidden}
 .dock .item{flex:none;width:62px}
 .dock .drawer{position:absolute;left:0;bottom:calc(100% + 10px);z-index:10;width:min(340px,calc(100vw - 24px));margin:0;box-shadow:0 6px 0 rgba(43,33,24,.3),0 10px 24px rgba(0,0,0,.2)}
 .dock .stepper b{min-width:50px}
+/* The morning and the selling day lay out the ground the same way: the day's cards in the middle, the supplies card on the right. */
+.dockIn.split{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:12px}
+.dockMain{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:12px;min-width:0}
+.dock .spotCard{justify-self:center}
+/* The supplies card: what you have, then the cups each flavor can make and what one pitcher of it needs.
+   In the morning you tap a supply to buy it; on the selling day the same card counts down as you sell. */
+.inv{position:relative;display:grid;gap:4px;width:min(440px,100%);background:var(--ink);color:#fff;border-radius:14px;padding:8px 12px 10px;box-shadow:0 5px 0 rgba(0,0,0,.25)}
+.dock .inv>.mLbl{margin:0;color:var(--lemon)}
+.inv .drawer{color:var(--ink)}
+.invRow{display:flex;gap:8px;overflow-x:auto;padding:10px 2px 6px;margin:0 -2px;scrollbar-width:none}
+.invRow .sep{flex:none;width:2px;border-radius:1px;background:rgba(255,247,224,.25)}
+.inv .item .n{background:var(--lemon);color:var(--ink)}
+.inv .item .n.zero{background:var(--red);color:#fff}
+.inv .item.ro{background:rgba(255,247,224,.1);border-color:transparent;box-shadow:none;color:#fff;cursor:default} /* the selling day: look, don't buy */
+.fList{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:3px 8px;max-height:104px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,247,224,.3) transparent;padding-top:4px;border-top:2px solid rgba(255,247,224,.15)}
+.fRow{display:contents}
+.fName{font-weight:800;font-size:var(--fs-sm);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fRow.none .fName{opacity:.6}
+.recipe{display:flex;gap:6px;font-size:var(--fs-sm);font-weight:900}
+.need{display:inline-flex;align-items:center;gap:1px;white-space:nowrap}
+.need.short{color:#ff8f6b}
+.fCups{font-family:var(--font-display);font-size:var(--fs-xl);line-height:1;color:var(--lemon);text-align:right;font-variant-numeric:tabular-nums;min-width:2ch}
+.fRow.none .fCups{color:#ff8f6b}
+.perCup{font-size:var(--fs-xs);font-weight:700;line-height:1.35;opacity:.9}
+.perCup .icon,.recipe .icon{vertical-align:-3px}
 /* Today's prices: a price tag per flavor. The tags sit in one row that scrolls sideways,
    so any number of flavors fits without the card growing. */
 .prices{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:rgba(43,33,24,.25) transparent;padding-bottom:4px}
@@ -555,15 +580,12 @@ body:has(.stage){overflow:hidden}
 .tSlot.empty{background:none;border:2px dashed rgba(255,247,224,.3)}
 .tSlot .icon{--sz:32px;vertical-align:0}
 .starNum{display:none}
-@media (min-width:901px){ /* wide screens: the supplies shelf sits on the ground at its own width */
-  .morning .dockIn{flex-wrap:nowrap;align-items:stretch}
-  .morning #mShop{flex:0 1 auto;min-width:230px}
-}
-/* When the stand opens, the camera moves in: the selling day draws the scene at 3× on big screens */
-@media (min-width:900px) and (min-height:720px){.stage.day,.stage.day .sky{--px:3}.stage .ground{min-height:max(190px,26vh)}}
-@media (min-width:900px) and (min-height:940px){.stage,.stage .sky{--px:3}}
+/* The morning and the selling day share one camera: the scene at 3× on big screens */
+@media (min-width:900px) and (min-height:720px){.stage,.stage .sky{--px:3}.stage .ground{min-height:max(190px,26vh)}}
 @media (max-width:900px){ /* narrower screens: the supplies shelf spans the ground */
   .dockIn{gap:10px}
+  .dockIn.split{grid-template-columns:minmax(0,1fr)} /* the supplies card goes under the day's cards */
+  .dock .inv{width:100%}
   .dock .supShelf{flex:1 1 100%}
   .dock .shelfRow{justify-content:space-between}
   .spotCard .price{width:140px}
@@ -1370,12 +1392,12 @@ function renderMorning(){
       <div class="skyTop">
         ${news?`<div class="news" role="status">${news}</div>`:""}
         <div class="side">${S.endless?`<button class="btn sm ghost" onclick="retireMorning()">Stop and keep my score (${fmt(S.cash)})</button>`:""}</div>
-        <div class="spotCard" id="mSpot"></div>
       </div>
     </div>
     <div class="ground dock" id="mDock">
-      <div class="dockIn">
-        <div class="supShelf" id="mShop" role="group" aria-label="Supplies"></div>
+      <div class="dockIn split">
+        <div class="spotCard" id="mSpot"></div>
+        <div class="inv" id="mShop" role="group" aria-label="Supplies"></div>
       </div>
     </div>
   </div>`;
@@ -1399,10 +1421,10 @@ document.addEventListener("click",e=>{
 /* Redraw the morning's controls in place, so the sky keeps drifting, and keep focus on the control just used. */
 function morningParts(){
   const ae=document.activeElement,f=ae&&ae.dataset?ae.dataset.f:null;
-  const strips=[".shelfRow",".prices"].map(sel=>[sel,$(sel)?$(sel).scrollLeft:0]); // keep sideways strips where the player left them
+  const strips=[".invRow",".prices"].map(sel=>[sel,$(sel)?$(sel).scrollLeft:0]); // keep sideways strips where the player left them
   $("#mScene").innerHTML=mSceneHtml();
   $("#mSpot").innerHTML=mSpotHtml();
-  $("#mShop").innerHTML=mShopHtml();
+  $("#mShop").innerHTML=invHtml(false);
   strips.forEach(([sel,x])=>{const el=$(sel);if(el)el.scrollLeft=x});
   renderProj();
   fitStage();
@@ -1447,12 +1469,33 @@ function setSpotCard(i,quiet){
   document.querySelectorAll("#mSpot .carNav .dot").forEach(b=>b.setAttribute("aria-current",+b.dataset.k===i));
   document.querySelectorAll("#mSpot .carNav .arrow").forEach(b=>b.setAttribute("aria-disabled",+b.dataset.d<0?i===0:i===SPOT_SLIDES.length-1));
 }
-function mShopHtml(){
+/* The supplies card, the same in the morning and on the selling day (day=true). It shows what you have,
+   then the cups each flavor can make and what one pitcher of it needs; red marks what's short.
+   In the morning you tap a supply to buy it. On the selling day it counts down: a sold cup and its ice
+   leave the shelf when the buyer pays, like Cups left, and a flavor counts its open pitcher too. */
+function invHtml(day){
+  const unpaid=day&&!D.skip?D.sold-D.paidCups:0,ice=icePerCup(),serves=pitcherServes();
+  const have=id=>(S.inv[id]||0)+(id==="cups"?unpaid:id==="ice"?unpaid*ice:0);
   const basics=["cups","lemons","sugar","ice"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
-  const item=id=>{const n=S.inv[id]||0,open=M.shopOpen===id;
-    return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`};
-  return `<div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>${learnHint(HOW_STEPS[2][1])}
-    <div class="shelfRow" onwheel="wheelSideways(event,this)">${basics.map(item).join("")}${extras.length?`<i class="sep" aria-hidden="true"></i>${extras.map(item).join("")}`:""}</div>${M.shopOpen?mDrawerHtml(M.shopOpen):""}`;
+  const item=id=>{const n=have(id),open=!day&&M.shopOpen===id,face=`${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span>`;
+    return day?`<div class="item ro" role="img" aria-label="${INGREDIENTS[id].name}: ${n}">${face}</div>`
+      :`<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${face}</button>`};
+  const cupCap=Math.min(have("cups"),ice>0?Math.floor(have("ice")/ice):Infinity);
+  const poured=rk=>day?(D.open[rk]||0)+(D.skip?0:(D.soldBy[rk]||0)-(D.paidBy[rk]||0)):0; // an open pitcher, and cups not paid for yet
+  const cupsOf=rk=>Math.min(poured(rk)+pitchersPossible(rk,S.inv)*serves,cupCap);
+  const most=Math.max(0,...S.recipes.map(rk=>poured(rk)+pitchersPossible(rk,S.inv)*serves));
+  const each=(id,n,left)=>`<b class="need${left<most?" short":""}">${n}${iconHtml("supply",id)}</b>`; // red when it stops a flavor before its pitchers do
+  const row=rk=>{const n=cupsOf(rk),r=RECIPES[rk];
+    return `<div class="fRow${n?"":" none"}">${iconHtml("flavor",rk)}<span class="fName">${r.name}</span>
+      <span class="recipe" aria-label="One pitcher needs ${listWords(Object.entries(pitcherNeeds(rk)).map(([k,v])=>`${v} ${INGREDIENTS[k].name.toLowerCase()}`))}">${Object.entries(pitcherNeeds(rk)).map(([k,v])=>`<span class="need${(S.inv[k]||0)<v&&!poured(rk)?" short":""}">${v}${iconHtml("supply",k)}</span>`).join("")}</span>
+      <b class="fCups" tabindex="0"${tip(`${n} ${plural(n,"cup")} of ${r.name}.`)}>${n}</b></div>`};
+  const lbl=day?`<div class="mLbl"><span>Supplies</span></div>`
+    :`<div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>`; // no first-day hint: the card says what each cup takes
+  return `${lbl}
+    <div class="invRow" onwheel="wheelSideways(event,this)">${basics.map(item).join("")}${extras.length?`<i class="sep" aria-hidden="true"></i>${extras.map(item).join("")}`:""}</div>${!day&&M.shopOpen?mDrawerHtml(M.shopOpen):""}
+    <div class="mLbl"><span>Cups you can make</span><small>A pitcher makes ${serves}.</small></div>
+    <div class="fList" onwheel="wheelSideways(event,this)">${S.recipes.map(row).join("")}</div>
+    <div class="perCup">Each cup also takes ${each("cups",1,have("cups"))}${ice?` ${each("ice",ice,ice>0?Math.floor(have("ice")/ice):Infinity)}`:""}.${S.recipes.length>1?" Flavors share lemons and sugar.":""}</div>`;
 }
 function mDrawerHtml(id){
   const ing=INGREDIENTS[id],n=S.inv[id]||0;
@@ -1598,7 +1641,7 @@ function openStand(){
   D={signs:putOut,build:b,
      roll:rnd(0.87,1.13),open:{},brewed:{},soldBy:{},soldByCrowd:{},sold:0,morningSold:0,unmet:0,
      awayPrice:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
-     skip:false,done:false,brotherSpilled:false,crewLeft:0,paidCups:0};
+     skip:false,done:false,brotherSpilled:false,crewLeft:0,paidCups:0,paidBy:{}};
   const canSell=sellableNow();D.menu=canSell.length?canSell:S.recipes.slice(); // only flavors you have supplies for
   const minPrice=Math.min(...D.menu.map(rk=>menuPrice(rk)));
   D.crew=M.event&&M.event.id==="crewbuy"&&minPrice<=CREW_MAX_PRICE+1e-9?crewSize():0;
@@ -1625,7 +1668,7 @@ function renderDayScene(){
       </div>
     </div>
     <div class="ground dock">
-      <div class="dockIn">
+      <div class="dockIn split"><div class="dockMain">
         <div class="dayCard">
           <span id="dayMsg">Open for business…</span>
           <div class="dayBar" tabindex="0"${tip("How much of today is done. The line marks noon.")}><i id="dayFill"></i></div>
@@ -1634,6 +1677,8 @@ function renderDayScene(){
         <div class="statChip" tabindex="0"${tip("Cups you can still make with your supplies.")}><span>Cups left</span><b id="stStock">${servingsReady()}</b></div>
         <div class="statChip" tabindex="0"${tip("Money from sales and tips today.")}><span>Money</span><b id="stTill">$0</b></div>
         <div class="statChip" tabindex="0"${tip("People still waiting to buy.")}><span>In line</span><b id="stDem">${D.demand}</b></div>
+      </div>
+        <div class="inv" id="dInv" aria-label="Supplies">${invHtml(true)}</div>
       </div>
     </div>
   </div>`;
@@ -1714,6 +1759,7 @@ function updateDayStats(){
   st.textContent=D.skip?servingsReady():servingsReady()+(D.sold-D.paidCups); // a cup counts down when its buyer pays at the counter, like the money
   const till=D.skip?D.revenue+D.tips:D.paid; // money lands when a buyer pays at the counter; Skip shows it all
   $("#stTill").textContent=fmt(till);
+  $("#dInv").innerHTML=invHtml(true);
   showCash(S.cash+till); // the HUD counts up with each sale; the evening adds bonuses on top
   const left=Math.max(0,D.demand-D.sold-D.awayPrice-D.awayOut);
   $("#stDem").textContent=left;
@@ -1750,7 +1796,7 @@ function spawnCustomer(ck,{buys=false,paid=0,got={},say=null,streak=0}={}){
     const payCoin=k=>{sfx.coin(Math.max(0,streak-coins+1+k));spawnCoin(spot)};
     payCoin(0);for(let k=1;k<coins;k++)after(k*140,()=>payCoin(k));
     spawnFlavor(spot,got);
-    day.paid+=paid;day.paidCups+=cupsBought;updateDayStats();
+    day.paid+=paid;day.paidCups+=cupsBought;Object.entries(got).forEach(([rk,n])=>day.paidBy[rk]=(day.paidBy[rk]||0)+n);updateDayStats();
     if(say)after(1000,()=>spawnBubble(say,d)); // pay first, then talk, so the coin and flavor don't overlap the bubble
     after(800,()=>{day.buying--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())});
   });
