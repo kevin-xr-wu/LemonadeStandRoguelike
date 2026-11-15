@@ -61,6 +61,9 @@ h1,h2,h3,.btn,.helpBtn,.mLbl,.choice .ttl,.artAmt,.hud .money,.calPage,.dayOf,.f
 .soundBtn.off .hudIcon{background-position-x:calc(-48px*var(--px))}
 .helpBtn{width:34px;height:34px;padding:0;border-radius:50%;background:var(--lemon);color:var(--ink);font-size:var(--fs-lg);font-weight:900;box-shadow:inset 0 -3px 0 var(--lemon2)}
 .helpBtn:hover{background:#ffe470}
+.hudEnd{flex:none;background:none;border:2px solid rgba(255,247,224,.35);border-radius:10px;padding:5px 10px;color:var(--paper2);font-family:var(--font-display);font-size:var(--fs-sm);font-weight:900;line-height:1.1;white-space:nowrap}
+.hudEnd:hover{background:rgba(255,247,224,.12)}
+.hudEnd:focus-visible{outline:3px solid var(--blue)}
 @media (prefers-reduced-motion:reduce){.hudCoins .money,.hudCoins .hudIcon{animation:none!important}}
 .iconBtn{background:var(--card);border:3px solid var(--ink);border-radius:12px;padding:6px 12px;font-weight:800;box-shadow:0 3px 0 rgba(43,33,24,.8)}
 .iconBtn:active{transform:translateY(2px);box-shadow:none}
@@ -274,6 +277,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 /* The evening pops up over the closed stand: the day's report, then the upgrade pick. It sits under the HUD, so money, stars and upgrades stay in view. */
 .modalWrap.eve{z-index:40;padding-top:calc(var(--hudH) + 16px)}
 .eve .modal{max-width:760px;max-height:100%}
+.endAsk{max-width:440px}
 .flex{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .spread{justify-content:space-between}
 .mt{margin-top:14px}
@@ -391,7 +395,7 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 @media (max-width:560px){ /* phones: one-row top bar (sound moves into the ? help), stacked shelf */
   .playBtn{padding:14px 40px}
   .title .scoresBtn{padding:8px 20px;font-size:var(--fs-md)}
-  .hud .dayOf,#btnSound{display:none} /* the calendar page shows the day; its tip says "of 14" */
+  .hud .dayOf,#btnSound{display:none} /* the calendar page shows the day; its tip says "up to 100" */
   .hud{gap:12px}
   .helpBtn{margin-left:auto}
   .shelf .slots{order:3;flex:1 1 100%}
@@ -627,6 +631,9 @@ body:has(.stage){overflow:hidden}
   :root{--hudH:96px}
   #app:has(.stage) .hud{flex-wrap:wrap;row-gap:2px}
   .hudWx{order:10;flex:1 1 100%;justify-content:center;border-top:1px solid rgba(255,247,224,.15);padding:2px 0 1px} /* the 32px forecast icon fills the row */
+  #app:has(.stage) .hudWx{padding-right:84px} /* room for End run, which sits at the right end of the forecast row */
+  #app:has(.stage) .hudEnd{position:absolute;right:8px;bottom:8px}
+  .hud i.long{display:none} /* "of 100": the calendar's tip says the rest */
   .hudWx b{font-size:var(--fs-lg)}
 }
 @media (max-width:720px){
@@ -692,6 +699,7 @@ body:has(.stage){overflow:hidden}
     <button class="hudTray" id="hudTray" onclick="showBuild()" data-tip=""></button>
     <button class="hudBtn soundBtn" id="btnSound" data-tip="Sound on or off" aria-label="Sound on or off"><i class="hudIcon"></i></button>
     <button class="hudBtn helpBtn" id="btnHelp" data-tip="How to play" aria-label="How to play">?</button>
+    <button class="hudEnd" id="btnEnd" onclick="askEndRun()" data-tip="Stop here and keep your money as your score.">End run</button>
   </div>
   <div id="screen"></div>
 </div>
@@ -834,7 +842,7 @@ const sfx={
 
 /* ---------- celebrations, sized to the moment ----------
    Opening a crate is small: a sound (openCrate). A perfect day or a new combo is medium: a sound and a handful of
-   lemons and coins. Finishing the summer is big: the fanfare and a fountain of them. Each fires once, from the thing
+   lemons and coins. Reaching the last day is big: the fanfare and a fountain of them. Each fires once, from the thing
    being celebrated, after `wait` ms so it lands with that thing's own animation. Reduced motion keeps the sound only. */
 const stillMotion=()=>matchMedia("(prefers-reduced-motion:reduce)").matches;
 function celebrate(size,el,wait=0){
@@ -1068,14 +1076,14 @@ const SYNERGIES=[
 const KIDS=[
  {id:"classic", name:"The Classic",    start:30, desc:"The 1979 experience, plus drafts. No bias, no excuses.", gear:null},
 ];
-/* Two acts, seven days each; Endless keeps cycling the four areas. */
+/* A new act every seven days. After the fourth, the four areas come round again. */
 const ACTS=[
  {name:"Act 1 · Maple Street"},
  {name:"Act 2 · Riverside Park"},
  {name:"Act 3 · The Boardwalk"},
  {name:"Act 4 · County Fair"}
 ];
-const GEAR_SLOTS=5, GLASS_MAX=500, PRICE_MAX=10;
+const GEAR_SLOTS=5, GLASS_MAX=500, PRICE_MAX=10, MAX_DAYS=100;
 /* Demand events are applied by id in demandEstimate(); fn only for side effects outside the demand formula. */
 const CREW_MAX_PRICE=3.00;
 function crewSize(){return 30+15*actIndex()}
@@ -1169,7 +1177,7 @@ const spdBtnHtml=()=>`<button class="btn sm ghost" id="spdBtn" onclick="toggleSp
 function newRun(kidId){
   const kid=KIDS.find(k=>k.id===kidId);
   S={
-    kid, day:1, totalDays:14, actsCount:2, endless:false, completed:false, streak:0, bestStreak:0,
+    kid, day:1, daysPlayed:0, completed:false, streak:0, bestStreak:0,
     cash:kid.start,
     rep:3,
     recipes:["classic"], activeRecipe:"classic",
@@ -1185,7 +1193,7 @@ function newRun(kidId){
   if(kid.gear)S.gear.push(kid.gear);
   startMorning();
 }
-function actIndex(){return clamp(Math.floor((S.day-1)/7),0,S.actsCount-1)}
+function actIndex(){return Math.floor((S.day-1)/7)}
 function gearSlots(){return GEAR_SLOTS}
 function cheapestServingCost(){return Math.min(...S.recipes.map(rk=>servingCost(rk)))}
 /* Signs last one day. Each morning you buy the signs you want for today (at most SIGN_MAX), and every one
@@ -1343,11 +1351,11 @@ function updateHUD(){
   showCash(S.cash);
   const area=actFor(actIndex()).name.split("·")[1].trim();
   $("#hudDay").textContent=S.day;
-  $("#hudDayOf").innerHTML=S.endless?"Endless":`of ${S.totalDays}<i class="long"> days</i>`;
+  $("#hudDayOf").innerHTML=`of ${MAX_DAYS}<i class="long"> days</i>`;
   const wx=M&&WEATHERS[M.shownWx]; // shown while the morning or the selling day is on screen
   $("#hudWx").innerHTML=wx?`${iconHtml("weather",M.shownWx)} <b>${wx.name}, ${M.temp}°F</b>`:"";
   $("#hudWx").dataset.tip=wx?`Today's forecast. ${wx.desc} The forecast is always right.`:"";
-  $("#hudDayBox").dataset.tip=S.endless?`Day ${S.day}. Endless: play as long as you like. You're at ${area}.`:`Day ${S.day} of ${S.totalDays}. You're at ${area}.`;
+  $("#hudDayBox").dataset.tip=`Day ${S.day}. You can play up to ${MAX_DAYS} days. You're at ${area}.`;
   // each star fills from the left, one art pixel at a time: 3.4 stars is three full stars and a star 4 of 11 pixels full
   $("#hudRepBox").innerHTML=[0,1,2,3,4].map(i=>`<i class="star" style="--f:${Math.round(clamp(S.rep-i,0,1)*11)}"></i>`).join("")+`<b class="starNum">${S.rep.toFixed(1)}</b>`;
   $("#hudRepBox").setAttribute("aria-label",`${S.rep.toFixed(1)} out of 5 stars`);
@@ -1447,7 +1455,7 @@ function renderMorning(){
       <div id="mScene" style="display:contents"></div>
       <div class="skyTop">
         ${news?`<div class="news" role="status">${news}</div>`:""}
-        <div class="side">${S.endless?`<button class="btn sm ghost" onclick="retireMorning()">Stop and keep my score (${fmt(S.cash)})</button>`:""}</div>
+        <div class="side"></div>
         <div class="spotCard" id="mSpot"></div>
       </div>
     </div>
@@ -1937,6 +1945,8 @@ function finishDay(){
     else if(["cloudy","rainy"].includes(M.actualWx)&&S.jar>0){S.cash+=S.jar;S.lifetimeProfit+=S.jar;jarNote=`Rainy-Day Jar pays out <b>${fmt(S.jar)}</b>.`;S.jar=0}
   }
   S.cash=Math.round(S.cash*100)/100;
+  S.daysPlayed=S.day;
+  if(D.ending){endRun("retired");return} // End run was pressed while selling: today's sales count, then the run ends
   // counterfactual — the near-miss engine
   let counter="";const outCount=Math.max(0,unserved-D.awayPrice); // left because supplies ran out
   if(unserved>0&&(D.awayOut>0||D.unmet>0))counter=`You ran out. ${outCount} more ${plural(outCount,"person","people")} wanted lemonade. That's about <b>${fmt(outCount*Math.max(avgPrice,1))}</b> you missed. Buy more supplies.`;
@@ -1990,7 +2000,7 @@ function finishDay(){
       <h4 class="todayHead">Today</h4>
       <ul class="facts">${today.length?today.map(l=>`<li>${l}</li>`).join(""):"<li>A quiet day at the stand.</li>"}</ul>
     </details>
-    <div class="center mt"><button class="btn gold" onclick="afterReport()">${S.day%3===0?"Open your bonus crate":"Pick an upgrade"}</button></div>`);
+    <div class="center mt"><button class="btn gold" onclick="afterReport()">${S.day>=MAX_DAYS?"See your final score":S.day%3===0?"Open your bonus crate":"Pick an upgrade"}</button></div>`);
   countUp($("#madeAmt"),made);
   if(perfect)celebrate("medium",$(".rStamp"),1400); // .rStamp presses down 1.2s in and takes .2s
   updateHUD();
@@ -2003,6 +2013,7 @@ function eveSheet(html,cls=""){
   $("#eve").innerHTML=`<div class="modal${cls?" "+cls:""}">${html}</div>`;
 }
 function afterReport(){
+  if(S.day>=MAX_DAYS){S.completed=true;endRun("complete");return}
   if(S.cash<cheapestServingCost()&&S.cash<1){endRun("bankrupt","You don't have enough money to make a cup.");return}
   offerDraft();
 }
@@ -2140,23 +2151,7 @@ function grantDraft(p){
 function nextDay(){
   if(S.day===1&&!meta.hintsSeen){meta.hintsSeen=true;saveMeta()} // day 1 taught every step: no more hints
   S.day++;
-  if(!S.endless&&S.day>S.totalDays){summerComplete();return}
   startMorning();
-}
-/* ---------- Summer complete / Endless ----------
-   One screen ends the summer: the score, the run, and both choices. Finishing saves the run in place (endRun). */
-function summerComplete(){
-  S.completed=true;
-  const best=Math.max(meta.stats.best,Math.round(S.cash));
-  $("#screen").innerHTML=endHtml("Summer complete!","",`Your best: ${fmt(best)}`,`
-    <div class="flex mt" style="justify-content:center;gap:10px;flex-wrap:wrap">
-      <button class="btn gold" onclick="endRun('complete')">Finish and keep my score</button>
-      <button class="btn blue" onclick="goEndless()">Keep playing (Endless)</button>
-    </div>
-    <p class="small muted">Endless: keep your stand and play on. Stop any morning, or play until you run out of money.</p>`);
-  countUp($("#scoreAmt"),S.cash);
-  celebrate("big",$("#scoreAmt"),1100); // when the count-up lands
-  updateHUD();
 }
 /* The end of a run: heading, the score, highlights, the stand, then the buttons in #endBtns. */
 function endHtml(heading,sub,bestLine,buttons){
@@ -2164,7 +2159,7 @@ function endHtml(heading,sub,bestLine,buttons){
     <h2>${heading}</h2>
     ${sub}
     ${scoreHtml(bestLine)}
-    ${highlightsHtml(daysPlayed())}
+    ${highlightsHtml(S.daysPlayed)}
     <div id="endBoard"></div>
     <p class="muted">Your stand: ${buildSummary()}</p>
     ${S.discoveredSyn.length?`<p class="muted">Combos found: ${S.discoveredSyn.map(id=>SYNERGIES.find(s=>s.id===id).name).join(", ")}</p>`:""}
@@ -2175,39 +2170,49 @@ function endHtml(heading,sub,bestLine,buttons){
 function scoreHtml(bestLine){
   return `<div class="scoreLabel">Your score</div><div class="coinSpot"><div class="scoreBig" id="scoreAmt">${fmt(S.cash)}</div></div><p class="muted" id="bestLine" style="margin:2px 0 0">${bestLine}</p>`;
 }
-function daysPlayed(){return S.endless?S.day:clamp(S.day,0,14)}
 function highlightsHtml(days){
-  const hl=[[S.endless?days:`${days} of 14`,"days played"],[S.lifetimeSold,"cups sold"],
+  const hl=[[days,`${plural(days,"day")} played`],[S.lifetimeSold,"cups sold"],
     [`${S.bestStreak} ${plural(S.bestStreak,"day")}`,"best hot streak"],[S.perfectDays,`${plural(S.perfectDays,"perfect day")}`]];
   return `<ul class="highlights">${hl.map(([v,l])=>`<li><b>${v}</b><small>${l}</small></li>`).join("")}</ul>`;
 }
-function goEndless(){
-  S.endless=true;S.totalDays=Infinity;S.actsCount=Infinity;
-  S.log.push(`<span class="info">Endless. Stop any morning to keep your score.</span>`);
-  sfx.flip();startMorning(); // the summer was already celebrated
+/* ---------- End run: the HUD button. It asks first, then ends the run wherever you are ----------
+   In the morning, signs not put out yet are refunded. While selling, the rest of the day plays out at once and
+   its sales count (finishDay ends the run). In the evening, the money is already in. */
+function askEndRun(){
+  if(!S)return;
+  const selling=D&&!D.done,score=$(".stage.morning")?S.cash+M.signs*signPrice():S.cash;
+  $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal endAsk center">
+    <h2>End this run?</h2>
+    <p class="big">${selling?"Today's sales will still count toward your score.":`Your score will be the ${fmt(score)} you have now.`}</p>
+    <div class="flex mt" style="justify-content:center;gap:10px;flex-wrap:wrap">
+      <button class="btn gold" onclick="endRunNow()">End run</button>
+      <button class="btn ghost" onclick="closeModal()">Keep playing</button>
+    </div>
+  </div></div>`;
+  $("#modalRoot .ghost").focus();
+}
+function endRunNow(){
+  closeModal();if(!S)return;
+  if(D&&!D.done){D.ending=true;D.skip=true;return}
+  if($(".stage.morning"))retireMorning();else endRun("retired");
 }
 /* ---------- Run end / meta ---------- */
 function endRun(mode,reason){
   const st=meta.stats;
   st.runs++;if(S.completed){st.wins++;st.winsFull++}
-  st.days+=daysPlayed();st.sold+=S.lifetimeSold;st.profit+=Math.max(0,Math.round(S.lifetimeProfit));
+  st.days+=S.daysPlayed;st.sold+=S.lifetimeSold;st.profit+=Math.max(0,Math.round(S.lifetimeProfit));
   st.perfect+=S.perfectDays;st.sellouts+=S.sellouts;
   const prevBest=st.best;st.best=Math.max(st.best,Math.round(S.cash));
   meta.hintsSeen=true;
   saveMeta();
-  const place=addScore(Math.round(S.cash*100)/100,daysPlayed());
+  const place=addScore(Math.round(S.cash*100)/100,S.daysPlayed);
   const newBest=prevBest>0&&Math.round(S.cash)>prevBest;
-  const again=`<div class="flex mt" style="justify-content:center"><button class="btn gold" onclick="showTitle()">Play again</button></div>`;
-  if(mode==="complete"){ // the summer screen is already up and has celebrated: swap its buttons, nothing else
-    if(newBest)$("#bestLine").textContent="New best score!";
-    $("#endBtns").innerHTML=again;$("#endBtns button").focus();
-  }else{
-    if(mode==="retired")sfx.good();
-    $("#screen").innerHTML=endHtml(mode==="retired"?"Score saved":"Out of business",
-      `${S.endless&&S.completed?`<p class="muted" style="margin:2px 0">Summer complete, then Endless to Day ${S.day}.</p>`:""}${reason?`<p class="big">${reason}</p>`:""}`,
-      newBest?"New best score!":`Your best: ${fmt(st.best)}`,again);
-    countUp($("#scoreAmt"),S.cash);
-  }
+  const heading={complete:`You made it to day ${MAX_DAYS}!`,retired:"Score saved",bankrupt:"Out of business"}[mode];
+  if(mode==="retired")sfx.good();
+  $("#screen").innerHTML=endHtml(heading,reason?`<p class="big">${reason}</p>`:"",newBest?"New best score!":`Your best: ${fmt(st.best)}`,
+    `<div class="flex mt" style="justify-content:center"><button class="btn gold" onclick="showTitle()">Play again</button></div>`);
+  countUp($("#scoreAmt"),S.cash);
+  if(mode==="complete")celebrate("big",$("#scoreAmt"),1100); // when the count-up lands
   $("#endBoard").innerHTML=`<h3>High scores</h3>${boardHtml(loadScores(),place)}`;
   updateHUD();
   S=null;setTimeout(updateHUD,50);$("#hud").style.display="none";
@@ -2239,7 +2244,7 @@ function showHelp(){
     `<i class="hudIcon" role="img" aria-label="Coin"></i>`,`<i class="crateArt" style="--i:0" role="img" aria-label="Crate"></i>`];
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
     <div class="flex spread"><h2>How to play</h2><div class="flex"><button class="btn sm ghost soundBtn${soundOn?"":" off"}" onclick="toggleSound()"><i class="hudIcon"></i><span>${soundOn?"Sound on":"Sound off"}</span></button><button class="btn sm ghost" onclick="closeModal()">Close</button></div></div>
-    <p style="margin:6px 0 0">You have 14 days to make as much money as you can.</p>
+    <p style="margin:6px 0 0">You have up to ${MAX_DAYS} days to make as much money as you can.</p>
     <ol class="howSteps">${HOW_STEPS.map(([name,hint],k)=>`<li>${art[k]}<b><i>${k+1}</i>${name}</b><span>${hint}</span></li>`).join("")}</ol>
     <p class="small muted" style="margin:10px 0 0">Not sure what something does? Tap it to find out.</p>
   </div></div>`;
