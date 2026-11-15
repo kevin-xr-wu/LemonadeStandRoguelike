@@ -1526,7 +1526,7 @@ function setSpotCard(i){
   document.querySelectorAll("#mSpot .carNav .arrow").forEach(b=>b.setAttribute("aria-disabled",+b.dataset.d<0?i===0:i===SPOT_SLIDES.length-1));
 }
 function mShopHtml(){
-  const basics=["cups","lemons","sugar","ice"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))];
+  const basics=["cups","lemons","sugar","ice"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))].filter(id=>!basics.includes(id)); // Shikanji and Sharbat-e-Limoo take extra sugar, Citron Pressé extra lemons: those stay with the basics
   const item=id=>{const n=S.inv[id]||0,open=M.shopOpen===id;
     return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`};
   return `<div class="supShelf"><div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>${learnHint(HOW_STEPS[2][1])}
