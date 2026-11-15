@@ -31,7 +31,7 @@
 body{margin:0;font-family:var(--font-body);font-size:var(--fs-md);background:var(--lemon2);color:var(--ink);min-height:100vh}
 button{font-family:inherit;cursor:pointer}
 /* The display face: headings, buttons, signs and every number the player reads at a glance. Hints and descriptions stay in the body face. */
-h1,h2,h3,.btn,.helpBtn,.mLbl,.choice .ttl,.artAmt,.hud .money,.calPage,.dayOf,.fcMain,.dayStats b,.postFace,.item .n,.stepper b,.pName,#guessText b,
+h1,h2,h3,.btn,.helpBtn,.mLbl,.choice .ttl,.artAmt,.hud .money,.dayNum,.fcMain,.dayStats b,.postFace,.item .n,.stepper b,.pName,#guessText b,
 .rHead,.amt,.rTotal,.rStamp,.scoreLabel,.scoreBig,.highlights b{font-family:var(--font-display)}
 .mLbl small{font-family:var(--font-body)}
 #app{max-width:1060px;margin:0 auto;padding:12px 12px 40px}
@@ -40,7 +40,7 @@ h1,h2,h3,.btn,.helpBtn,.mLbl,.choice .ttl,.artAmt,.hud .money,.calPage,.dayOf,.f
 .hud{--px:2;display:flex;align-items:center;gap:24px;position:sticky;top:8px;z-index:50;background:var(--ink);color:#fff;border-radius:14px;padding:6px 8px 6px 12px;box-shadow:0 6px 0 rgba(0,0,0,.25)}
 .hudIcon{display:block;flex:none;width:calc(16px*var(--px));height:calc(16px*var(--px));background:var(--hudPng) 0 0/calc(86px*var(--px)) calc(16px*var(--px)) no-repeat;image-rendering:pixelated}
 .hudCoins,.hudDay{display:flex;align-items:center;gap:8px}
-.hud .money{font-size:var(--fs-xl);font-weight:900;line-height:1;color:var(--lemon);font-variant-numeric:tabular-nums}
+.hud .money,.dayNum{font-size:var(--fs-xl);font-weight:900;line-height:1;color:var(--lemon);font-variant-numeric:tabular-nums}
 .hud .money.neg{color:#ff8f6b}
 .hudCoins.up .money{animation:cashUp .45s}
 .hudCoins.down .money{animation:cashDown .45s}
@@ -48,8 +48,9 @@ h1,h2,h3,.btn,.helpBtn,.mLbl,.choice .ttl,.artAmt,.hud .money,.calPage,.dayOf,.f
 @keyframes cashUp{from{color:#9be15d}}
 @keyframes cashDown{from{color:#ff8f6b}}
 @keyframes coinBump{40%{translate:0 calc(-2px*var(--px))}}
-.calPage{background-position-x:calc(-16px*var(--px));display:flex;align-items:center;justify-content:center;padding-top:calc(5px*var(--px));color:var(--ink);font-size:var(--fs-lg);font-weight:900;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.04em}
-.dayOf{font-weight:800;font-size:var(--fs-md);color:var(--paper2)}
+.calPage{background-position-x:calc(-16px*var(--px))}
+.dayNum{white-space:nowrap}
+.dayNum small{font-size:inherit}
 .starMeter{display:flex;gap:var(--px)}
 .star{position:relative;width:calc(11px*var(--px));height:calc(11px*var(--px));background:var(--hudPng) calc(-75px*var(--px)) 0/calc(86px*var(--px)) calc(16px*var(--px)) no-repeat;image-rendering:pixelated}
 .star:after{content:"";position:absolute;inset:0 auto 0 0;width:calc(var(--f)*var(--px)*1px);background:inherit;background-position-x:calc(-64px*var(--px))} /* --f: art pixels of the star filled in */
@@ -383,7 +384,7 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 @media (max-width:560px){ /* phones: one-row top bar (sound moves into the ? help), stacked shelf */
   .playBtn{padding:14px 40px}
   .title .scoresBtn{padding:8px 20px;font-size:var(--fs-md)}
-  .hud .dayOf,#btnSound{display:none} /* the calendar page shows the day; its tip says "up to 100" */
+  #btnSound{display:none}
   .hud{gap:12px}
   .helpBtn{margin-left:auto}
   .shelf .slots{order:3;flex:1 1 100%}
@@ -412,9 +413,8 @@ button,input,select{touch-action:manipulation}
   .panel{padding:13px;margin-top:10px}
   /* HUD: icons stay at 2× so they read on a phone; the bar gets tighter instead */
   .hud{gap:16px;top:4px;padding:4px 6px 4px 10px;border-radius:12px}
-  .hud .money{font-size:var(--fs-lg)}
+  .hud .money,.dayNum{font-size:var(--fs-lg)}
   .hudCoins,.hudDay{gap:5px}
-  .dayOf{font-size:var(--fs-sm)}
   .helpBtn{width:30px;height:30px}
   .iconBtn{padding:6px 9px;border-radius:10px}
   /* Scene scales down */
@@ -618,7 +618,6 @@ body:has(.stage){overflow:hidden}
   .hudWx{order:10;flex:1 1 100%;justify-content:center;border-top:1px solid rgba(255,247,224,.15);padding:2px 0 1px} /* the 32px forecast icon fills the row */
   #app:has(.stage) .hudWx{padding-right:84px} /* room for End run, which sits at the right end of the forecast row */
   #app:has(.stage) .hudEnd{position:absolute;right:8px;bottom:8px}
-  .hud i.long{display:none} /* "of 100": the calendar's tip says the rest */
   .hudWx b{font-size:var(--fs-lg)}
 }
 @media (max-width:720px){
@@ -640,11 +639,14 @@ body:has(.stage){overflow:hidden}
   .tSlot.empty{background:none;border:2px solid rgba(255,247,224,.4)}
   .tSlot .icon{display:none}
 }
-@media (max-width:560px){ /* phones: the star meter becomes one star and the number, to make room for the upgrade tray */
+@media (max-width:560px){ /* phones: the star meter becomes one star and the number, and the day a small "Day" over the number, to make room for the upgrade tray */
   .hud{gap:10px}
   .starMeter .star:nth-child(n+2){display:none}
   .starMeter{align-items:center;gap:4px}
   .starNum{display:block;font-family:var(--font-display);font-size:var(--fs-lg);color:var(--lemon);line-height:1}
+  .hud .calPage{display:none}
+  .hud .dayNum{display:flex;flex-direction:column;align-items:center;font-size:var(--fs-lg)}
+  .hud .dayNum small{font-family:var(--font-body);font-size:var(--fs-xs);font-weight:800;line-height:1.1;color:var(--paper2);text-transform:uppercase}
 }
 /* The stage never scrolls. When it is taller than the window, fitStage() adds these one at a time until it fits:
    tighter spacing, no first-day hints, then smaller sprites, so the scene stays big as long as it can. */
@@ -678,7 +680,7 @@ body:has(.stage){overflow:hidden}
 <div id="app">
   <div class="hud" id="hud" style="display:none">
     <div class="hudCoins" id="hudMoney" tabindex="0" data-tip="Your money. It's also your score."><i class="hudIcon"></i><span class="money" id="hudCash">$30</span></div>
-    <div class="hudDay" id="hudDayBox" tabindex="0" data-tip=""><span class="hudIcon calPage" id="hudDay"></span><span class="dayOf" id="hudDayOf"></span></div>
+    <div class="hudDay" id="hudDayBox" tabindex="0" data-tip=""><i class="hudIcon calPage"></i><span class="dayNum" id="hudDay"></span></div>
     <div class="hudWx" id="hudWx" tabindex="0" data-tip=""></div>
     <div class="starMeter" id="hudRepBox" tabindex="0" data-tip="" role="img"></div>
     <button class="hudTray" id="hudTray" onclick="showBuild()" data-tip=""></button>
@@ -1333,12 +1335,11 @@ function updateHUD(){
   $("#hud").style.display="flex";
   showCash(S.cash);
   const area=actFor(actIndex()).name.split("·")[1].trim();
-  $("#hudDay").textContent=S.day;
-  $("#hudDayOf").innerHTML=`of ${MAX_DAYS}<i class="long"> days</i>`;
+  $("#hudDay").innerHTML=`<small>Day </small>${S.day}`;
   const wx=M&&WEATHERS[M.shownWx]; // shown while the morning or the selling day is on screen
   $("#hudWx").innerHTML=wx?`${iconHtml("weather",M.shownWx)} <b>${wx.name}, ${M.temp}°F</b>`:"";
   $("#hudWx").dataset.tip=wx?`Today's forecast. ${wx.desc} The forecast is always right.`:"";
-  $("#hudDayBox").dataset.tip=`Day ${S.day}. You can play up to ${MAX_DAYS} days. You're at ${area}.`;
+  $("#hudDayBox").dataset.tip=`Day ${S.day}. You're at ${area}.`;
   // each star fills from the left, one art pixel at a time: 3.4 stars is three full stars and a star 4 of 11 pixels full
   $("#hudRepBox").innerHTML=[0,1,2,3,4].map(i=>`<i class="star" style="--f:${Math.round(clamp(S.rep-i,0,1)*11)}"></i>`).join("")+`<b class="starNum">${S.rep.toFixed(1)}</b>`;
   $("#hudRepBox").setAttribute("aria-label",`${S.rep.toFixed(1)} out of 5 stars`);
