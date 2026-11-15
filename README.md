@@ -19,6 +19,8 @@ Each day:
 
 After day 14, keep your score or keep playing in Endless.
 
+Your 10 best runs go on the High scores board, with the cash and days of each. The game saves the board in a cookie.
+
 ## Core mechanics
 
 - You start with $30. The money you end with is your score. If you can't pay for one cup, the game ends.
