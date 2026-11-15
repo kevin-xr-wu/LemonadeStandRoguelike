@@ -1115,10 +1115,11 @@ const GOOD_EVENTS=["crewbuy","heatwave","lemonsale","puppy","newspaper","birthda
    new spots, gear, recipes, kids, and events join the pools once unlocked. */
 
 /* ============================================================ STATE ============================================================ */
-let meta={discoveredSyn:[],hintsSeen:false,stats:{runs:0,wins:0,winsFull:0,best:0,sold:0,profit:0,days:0,perfect:0,sellouts:0}};
+let meta={discoveredSyn:[],hintsSeen:false,helpSeen:false,stats:{runs:0,wins:0,winsFull:0,best:0,sold:0,profit:0,days:0,perfect:0,sellouts:0}};
 try{const m=JSON.parse(localStorage.getItem("squeezed_meta"));if(m){
   if(Array.isArray(m.discoveredSyn))meta.discoveredSyn=m.discoveredSyn;
   meta.hintsSeen=!!m.hintsSeen;
+  meta.helpSeen=!!m.helpSeen;
   if(m.stats)meta.stats=Object.assign(meta.stats,m.stats);
   else{ /* Legacy Lemon Tree save: purchased power retires with the tree, but career progress carries into unlock stats. */
     meta.stats.runs=m.runs||0;meta.stats.wins=m.wins||0;meta.stats.best=m.best||0;
@@ -1426,8 +1427,12 @@ function showTitle(){
     <div class="ground"><button class="btn gold playBtn" onclick="selectKid('classic')">PLAY</button><button class="btn ghost scoresBtn" onclick="showScores()">High scores</button></div>
   </div>`;
 }
+/* The first time you play, How to play comes up before day 1, and closing it starts the day.
+   Players who already have a finished run or day-1 hints behind them go straight in. */
 function selectKid(kidId){
-  sfx.pop();newRun(kidId);
+  sfx.pop();
+  if(!meta.helpSeen&&!meta.hintsSeen&&!meta.stats.runs){showHelp(()=>{meta.helpSeen=true;saveMeta();newRun(kidId)});return}
+  newRun(kidId);
 }
 
 /* ---------- Morning ---------- */
@@ -2228,8 +2233,11 @@ function showBuild(){
     <ul class="list">${SYNERGIES.map(s=>{const on=b.activeSynergies.includes(s.id);return `<li${on?"":' class="off"'}><span class="onOff${on?" on":""}">${on?"On":"Off"}</span> <b>${s.name}</b>: ${s.desc}</li>`}).join("")}</ul>
   </div></div>`;
 }
-/* The ? help: the day's steps as picture tiles. */
-function showHelp(){
+/* The ? help: the day's steps as picture tiles. Given then (the first PLAY), it ends with Start Day 1,
+   and closing it any way runs then. */
+let helpThen=null;
+function showHelp(then){
+  helpThen=then||null;
   const art=[iconHtml("spot","Maple St. Spot",true),iconHtml("supply","signs",true),iconHtml("supply","lemons",true),gearIconHtml("pricetag",true),
     `<i class="hudIcon" role="img" aria-label="Coin"></i>`,gearIconHtml("secondcart",true)];
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
@@ -2237,7 +2245,9 @@ function showHelp(){
     <p style="margin:6px 0 0">You have up to ${MAX_DAYS} days to make as much money as you can.</p>
     <ol class="howSteps">${HOW_STEPS.map(([name,hint],k)=>`<li>${art[k]}<b><i>${k+1}</i>${name}</b><span>${hint}</span></li>`).join("")}</ol>
     <p class="small muted" style="margin:10px 0 0">Not sure what something does? Tap it to find out.</p>
+    ${then?`<div class="center mt"><button class="btn gold" onclick="closeModal()">Start Day 1</button></div>`:""}
   </div></div>`;
+  if(then)$("#modalRoot .btn.gold").focus();
 }
 /* The high score board: place, cash and days played. mine is the row to light up. */
 function boardHtml(list,mine=-1){
@@ -2251,7 +2261,7 @@ function showScores(){
     ${list.length?boardHtml(list):`<p>No high scores yet. Play a game and your score will show up here.</p>`}
   </div></div>`;
 }
-function closeModal(){$("#modalRoot").innerHTML=""}
+function closeModal(){$("#modalRoot").innerHTML="";const then=helpThen;helpThen=null;if(then)then()}
 /* ---------- Tips: point at, focus or tap anything with data-tip to see what it means ---------- */
 const tipBox=document.createElement("div");tipBox.id="tipBox";tipBox.setAttribute("role","tooltip");document.body.appendChild(tipBox);
 let tipFor=null,tipAt=0;
@@ -2270,7 +2280,7 @@ document.addEventListener("focusout",()=>{if(!touchOnly())hideTip()});
 document.addEventListener("click",e=>{if(!touchOnly())return;const el=e.target.closest("[data-tip]");
   if(el&&!el.matches("button,input")){if(el===tipFor)hideTip();else showTip(el)}else hideTip()});
 addEventListener("scroll",()=>{if(tipFor&&performance.now()-tipAt>250)hideTip()},{passive:true,capture:true}); // a tap can nudge the page; don't close the tip it just opened
-$("#btnHelp").addEventListener("click",showHelp);
+$("#btnHelp").addEventListener("click",()=>showHelp());
 function toggleSound(){soundOn=!soundOn;document.querySelectorAll(".soundBtn").forEach(b=>{b.classList.toggle("off",!soundOn);const t=b.querySelector("span");if(t)t.textContent=soundOn?"Sound on":"Sound off"});if(soundOn)sfx.pop()}
 $("#btnSound").addEventListener("click",toggleSound);
 showTitle();
