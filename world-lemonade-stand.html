@@ -243,6 +243,16 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .highlights li{display:flex;flex-direction:column;align-items:center;line-height:1.25}
 .highlights b{font-size:var(--fs-lg)}
 .highlights small{font-size:var(--fs-sm);opacity:.75}
+/* High scores: the 10 best runs. The run that just ended is the lemon row. */
+.board{margin:6px auto 0;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.board th{font-size:var(--fs-sm);font-weight:800;opacity:.72;padding:2px 16px;text-align:right}
+.board td{font-family:var(--font-display);font-size:var(--fs-lg);line-height:1.2;padding:3px 16px;text-align:right;border-top:2px dotted #cdbf9d}
+.board td:first-child{opacity:.72}
+.board tr.mine td{background:var(--lemon);border-top-color:transparent;opacity:1}
+.board tr.mine+tr td{border-top-color:transparent}
+.board tr.mine td:first-child{border-radius:8px 0 0 8px}
+.board tr.mine td:last-child{border-radius:0 8px 8px 0}
+.modal.scoresModal{max-width:420px} /* .modal comes later, so this needs both classes */
 @media (prefers-reduced-motion:reduce){.dropCoin{display:none}.rStamp{animation:none}}
 .synBanner{background:var(--green2);color:#fff;border-radius:12px;padding:10px 14px;font-weight:900;font-size:var(--fs-md);margin-top:10px}
 .synBanner.newCombo{font-size:var(--fs-lg)}
@@ -282,9 +292,10 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .logo{margin:auto 0;line-height:0;position:relative;z-index:7}
 .logo img{width:calc(var(--px)*166px);image-rendering:pixelated;filter:drop-shadow(0 4px 3px rgba(0,0,0,.25))}
 .title .stand{width:calc(var(--px)*64px)}
-.title .ground{height:calc(var(--px)*48px);min-height:84px;background-size:calc(var(--px)*64px) calc(var(--px)*32px);display:flex;align-items:center;justify-content:center}
+.title .ground{height:auto;min-height:max(84px,calc(var(--px)*48px));background-size:calc(var(--px)*64px) calc(var(--px)*32px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding-block:16px} /* PLAY, then High scores under it; the ground grows to hold both and the sky gives up the room */
 .title .ground:before{top:calc(var(--px)*-9px);height:calc(var(--px)*14px);background-size:calc(var(--px)*64px) calc(var(--px)*14px)}
-.title .playBtn{position:relative;z-index:6}
+.title .playBtn,.title .scoresBtn{position:relative;z-index:6}
+.title .scoresBtn{padding:9px 26px;white-space:nowrap}
 .titleBtns{--px:2;position:absolute;top:10px;right:10px;display:flex;align-items:center;gap:4px;z-index:8;background:var(--ink);border-radius:14px;padding:4px 6px} /* the HUD's sound and help buttons */
 @media (min-width:900px) and (min-height:720px){.scene.title,.title .sky{--px:3}}
 @media (max-width:359px),(max-height:500px){.scene.title,.title .sky{--px:1}}
@@ -379,6 +390,7 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 }
 @media (max-width:560px){ /* phones: one-row top bar (sound moves into the ? help), stacked shelf */
   .playBtn{padding:14px 40px}
+  .title .scoresBtn{padding:8px 20px;font-size:var(--fs-md)}
   .hud .dayOf,#btnSound{display:none} /* the calendar page shows the day; its tip says "of 14" */
   .hud{gap:12px}
   .helpBtn{margin-left:auto}
@@ -1106,6 +1118,26 @@ try{const m=JSON.parse(localStorage.getItem("squeezed_meta"));if(m){
   }
 }}catch(e){}
 function saveMeta(){try{localStorage.setItem("squeezed_meta",JSON.stringify(meta))}catch(e){}}
+/* High scores: the 10 best runs as {cash, days}, best first, saved in a cookie.
+   Browsers don't keep cookies for a page opened from a file, so a copy goes in localStorage too. */
+const SCORES_KEY="wls_scores",SCORES_MAX=10;
+function loadScores(){
+  let raw=null;
+  try{const m=document.cookie.match(/(?:^|;\s*)wls_scores=([^;]*)/);if(m)raw=decodeURIComponent(m[1])}catch(e){}
+  if(!raw)try{raw=localStorage.getItem(SCORES_KEY)}catch(e){}
+  try{const a=JSON.parse(raw);if(Array.isArray(a))return a.filter(r=>r&&Number.isFinite(r.cash)&&Number.isFinite(r.days)).slice(0,SCORES_MAX)}catch(e){}
+  return [];
+}
+function saveScores(list){
+  const raw=JSON.stringify(list);
+  try{document.cookie=`${SCORES_KEY}=${encodeURIComponent(raw)}; max-age=${400*24*3600}; SameSite=Lax`}catch(e){} // 400 days is the longest a browser keeps a cookie
+  try{localStorage.setItem(SCORES_KEY,raw)}catch(e){}
+}
+function addScore(cash,days){ // returns the run's place on the board (0 is the top), or -1 if it didn't make the board
+  const list=loadScores();let i=list.findIndex(r=>cash>r.cash);if(i<0)i=list.length; // a tie goes below the older run
+  if(i>=SCORES_MAX)return -1;
+  list.splice(i,0,{cash,days});saveScores(list.slice(0,SCORES_MAX));return i;
+}
 
 
 let S=null; // run state
@@ -1385,7 +1417,7 @@ function showTitle(){
       <h1 class="logo"><img src="${LOGO_PNG}" alt="World Lemonade Stand"></h1>
       <img class="stand" src="${STAND_PNG}" alt="">
     </div>
-    <div class="ground"><button class="btn gold playBtn" onclick="selectKid('classic')">PLAY</button></div>
+    <div class="ground"><button class="btn gold playBtn" onclick="selectKid('classic')">PLAY</button><button class="btn ghost scoresBtn" onclick="showScores()">High scores</button></div>
   </div>`;
 }
 function selectKid(kidId){
@@ -2133,6 +2165,7 @@ function endHtml(heading,sub,bestLine,buttons){
     ${sub}
     ${scoreHtml(bestLine)}
     ${highlightsHtml(daysPlayed())}
+    <div id="endBoard"></div>
     <p class="muted">Your stand: ${buildSummary()}</p>
     ${S.discoveredSyn.length?`<p class="muted">Combos found: ${S.discoveredSyn.map(id=>SYNERGIES.find(s=>s.id===id).name).join(", ")}</p>`:""}
     <div id="endBtns">${buttons}</div>
@@ -2162,6 +2195,7 @@ function endRun(mode,reason){
   const prevBest=st.best;st.best=Math.max(st.best,Math.round(S.cash));
   meta.hintsSeen=true;
   saveMeta();
+  const place=addScore(Math.round(S.cash*100)/100,daysPlayed());
   const newBest=prevBest>0&&Math.round(S.cash)>prevBest;
   const again=`<div class="flex mt" style="justify-content:center"><button class="btn gold" onclick="showTitle()">Play again</button></div>`;
   if(mode==="complete"){ // the summer screen is already up and has celebrated: swap its buttons, nothing else
@@ -2174,6 +2208,7 @@ function endRun(mode,reason){
       newBest?"New best score!":`Your best: ${fmt(st.best)}`,again);
     countUp($("#scoreAmt"),S.cash);
   }
+  $("#endBoard").innerHTML=`<h3>High scores</h3>${boardHtml(loadScores(),place)}`;
   updateHUD();
   S=null;setTimeout(updateHUD,50);$("#hud").style.display="none";
 }
@@ -2207,6 +2242,18 @@ function showHelp(){
     <p style="margin:6px 0 0">You have 14 days to make as much money as you can.</p>
     <ol class="howSteps">${HOW_STEPS.map(([name,hint],k)=>`<li>${art[k]}<b><i>${k+1}</i>${name}</b><span>${hint}</span></li>`).join("")}</ol>
     <p class="small muted" style="margin:10px 0 0">Not sure what something does? Tap it to find out.</p>
+  </div></div>`;
+}
+/* The high score board: place, cash and days played. mine is the row to light up. */
+function boardHtml(list,mine=-1){
+  return `<table class="board"><thead><tr><th><span class="sr">Place</span></th><th>Cash</th><th>Days</th></tr></thead>
+    <tbody>${list.map((r,i)=>`<tr${i===mine?' class="mine" aria-current="true"':""}><td>${i+1}</td><td>${fmt(r.cash)}</td><td>${r.days}</td></tr>`).join("")}</tbody></table>`;
+}
+function showScores(){
+  const list=loadScores();
+  $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal scoresModal">
+    <div class="flex spread"><h2>High scores</h2><button class="btn sm ghost" onclick="closeModal()">Close</button></div>
+    ${list.length?boardHtml(list):`<p>No high scores yet. Play a game and your score will show up here.</p>`}
   </div></div>`;
 }
 function closeModal(){$("#modalRoot").innerHTML=""}
