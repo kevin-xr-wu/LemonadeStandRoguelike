@@ -493,7 +493,7 @@ body:has(.stage){overflow:hidden}
 .hudWx .icon{--sz:calc(16px*var(--px));align-self:center}
 .hudWx:empty,#app:not(:has(.stage)) .hudWx{display:none} /* only for the morning and the selling day */
 .stage{--px:2;position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden auto;background:#8a6b46}
-.stage .sky{--px:2;flex:1 0 auto;height:auto;display:flex;flex-direction:column;padding:calc(var(--hudH) + 18px) 12px calc(84px*var(--px))}
+.stage .sky{--px:2;flex:1 0 auto;height:auto;display:flex;flex-direction:column;padding:calc(var(--hudH) + 18px) 12px max(calc(84px*var(--px)),calc(67px*var(--px) + 30px))} /* room at the bottom for the stand and its menu sign (67 art pixels up, about 27px tall), so the cards above never cover the sign at 1× */
 .stage .ground{flex:none;height:auto;z-index:auto;background-size:calc(64px*var(--px)) calc(32px*var(--px));padding:calc(12px*var(--px)) 12px calc(14px + env(safe-area-inset-bottom,0px))}
 .stage .ground:before{z-index:3;top:calc(-9px*var(--px));height:calc(14px*var(--px));background-size:calc(64px*var(--px)) calc(14px*var(--px))}
 .stage .stand{width:calc(64px*var(--px))}
