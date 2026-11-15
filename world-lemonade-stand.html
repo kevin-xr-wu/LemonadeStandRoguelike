@@ -2052,7 +2052,8 @@ function renderDraftScreen(){
     <p class="muted" style="margin-top:0">It starts working tomorrow. The other two go away.</p>
     ${learnHint(HOW_STEPS[5][1])}
     ${shelfHtml()}
-    <div class="choices">${draftChoices.map((p,i)=>cardHtml(draftCardHtml(p),`onclick="pickDraft(${i})"${flip?` style="--k:${i}"`:""}`,flip?"flipIn":"")).join("")}</div>`);
+    <div class="choices">${draftChoices.map((p,i)=>cardHtml(draftCardHtml(p),`onclick="pickDraft(${i})"${flip?` style="--k:${i}"`:""}`,flip?"flipIn":"")).join("")}</div>
+    <div class="center mt"><button class="btn sm ghost" onclick="nextDay()">Skip</button></div>`);
 }
 function offerDraft(){
   if(S.day%3===0){offerCrate();return}
