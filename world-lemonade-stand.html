@@ -970,7 +970,7 @@ const INGREDIENTS={
 };
 /* The supply shelf holds cups, lemons, sugar and ice, plus at most SUPPLY_MAX supplies for your flavors.
    A new flavor that needs more room than that comes in only if an old one goes out (showFlavorSwap). */
-const BASIC_SUPPLIES=["cups","lemons","sugar","ice"],SUPPLY_MAX=8;
+const BASIC_SUPPLIES=["cups","lemons","sugar","ice"],SUPPLY_MAX=4;
 function flavorSupplies(recipes){return [...new Set(recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))].filter(id=>!BASIC_SUPPLIES.includes(id))} // Shikanji and Sharbat-e-Limoo take extra sugar, Citron Pressé extra lemons: those stay with the basics
 function fitsShelf(recipes){return flavorSupplies(recipes).length<=SUPPLY_MAX}
 function swapOptions(rk){return S.recipes.filter(r=>fitsShelf([...S.recipes.filter(x=>x!==r),rk]))} // the flavors whose leaving alone makes room for rk
