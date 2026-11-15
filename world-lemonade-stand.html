@@ -93,19 +93,15 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .pick.legendary{--frame:#f5b301;--artBg:#fff3a0}
 .pick.flavor{--frame:#a86a3a;--artBg:#2f3b33}
 .pick.cash{--frame:#2e7d46;--artBg:#9be08a}
-.pick.crate{--artBg:#7fc4e8}
 .cardArt{position:relative;display:flex;align-items:center;justify-content:center;gap:4px 10px;min-height:calc(24px*var(--px) + 12px);padding:6px;background:var(--artBg);border-radius:8px;overflow:hidden}
 .cardArt .icon{--sz:calc(16px*var(--px));vertical-align:0;filter:drop-shadow(0 calc(var(--px)*1px) 0 rgba(43,33,24,.25))}
 .cardBody{flex:1;display:block;background:#fff;border-radius:8px;padding:8px 10px 12px}
 .pick .ttl{display:block;line-height:1.2}
 .pick .desc{display:block}
-.pick:disabled{cursor:default;color:var(--ink)} /* the crate being opened keeps its ink text */
 .pick.flavor .cardArt{flex-direction:column}
 .artTags{display:flex;flex-wrap:wrap;justify-content:center}
-.coinPile,.crateArt{display:block;flex:none;image-rendering:pixelated;filter:drop-shadow(0 calc(var(--px)*1px) 0 rgba(43,33,24,.25))}
-.coinPile{width:calc(28px*var(--px));height:calc(18px*var(--px));background:var(--coinPilePng) 0 0/100% 100%}
+.coinPile{display:block;flex:none;width:calc(28px*var(--px));height:calc(18px*var(--px));background:var(--coinPilePng) 0 0/100% 100%;image-rendering:pixelated;filter:drop-shadow(0 calc(var(--px)*1px) 0 rgba(43,33,24,.25))}
 .artAmt{font-size:var(--fs-xl);font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
-.crateArt{width:calc(32px*var(--px));height:calc(30px*var(--px));background:var(--cratesPng) calc(var(--i)*-32px*var(--px)) 0/calc(96px*var(--px)) 100% no-repeat}
 .orn{position:absolute;width:calc(11px*var(--px));height:calc(11px*var(--px));background:var(--ornamentsPng) 0 0/calc(99px*var(--px)) 100% no-repeat;image-rendering:pixelated;pointer-events:none}
 .orn.tl{top:-3px;left:-3px}.orn.tr{top:-3px;right:-3px}.orn.bl{bottom:-3px;left:-3px}.orn.br{bottom:-3px;right:-3px}
 .orn.tr{background-position-x:calc(-11px*var(--px))}.orn.bl{background-position-x:calc(-22px*var(--px))}.orn.br{background-position-x:calc(-33px*var(--px))}
@@ -118,13 +114,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .choice.pick.out{--frame:#938e99;--artBg:#cbc7cf;transform:translateY(3px);box-shadow:0 1px 0 rgba(43,33,24,.85)}
 .pick.out .outMark{display:block}
 .pick.out .cardArt>:not(.outMark),.pick.out .cardBody,.pick.out .orn{opacity:.5;filter:grayscale(1)}
-/* Crates: the one you pick shakes, the others step back; then the cards flip in, one after another */
-.pick.crate.opening .crateArt{animation:crateShake .56s ease-out}
-.pick.crate.passed{opacity:.45;transition:opacity .2s}
-@keyframes crateShake{20%{transform:rotate(-6deg)}40%{transform:rotate(6deg)}60%{transform:rotate(-4deg) translateY(-4px)}80%{transform:translateY(-10px) scale(1.06)}}
-.pick.flipIn{animation:flipIn .45s ease-out calc(var(--k)*.13s) backwards}
-@keyframes flipIn{from{transform:perspective(700px) rotateY(-90deg);opacity:.4}}
-@media (prefers-reduced-motion:reduce){.pick.flipIn,.pick.crate.opening .crateArt{animation:none}.pick.legendary .cardArt:after{display:none}}
+@media (prefers-reduced-motion:reduce){.pick.legendary .cardArt:after{display:none}}
 /* New combo: the flavors that make it, on small chalkboards */
 .comboCups{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:2px 0 10px}
 .comboCup{display:inline-flex;flex-direction:column;align-items:center;gap:4px;background:#2f3b33;box-shadow:inset 0 0 0 4px #a86a3a;border-radius:10px;padding:10px 12px 8px}
@@ -314,7 +304,6 @@ details summary{cursor:pointer;font-weight:900;padding:6px 0}
 .howSteps{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .howSteps li{--px:2;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--paper2);border-radius:12px;padding:10px 6px 8px;text-align:center;line-height:1.25}
 .howSteps .icon{--sz:32px;vertical-align:0}
-.howSteps .crateArt{--px:1;margin-top:2px}
 .howSteps b{font-size:var(--fs-sm)}
 .howSteps b i{font-style:normal;display:inline-block;min-width:20px;margin-right:4px;background:var(--ink);color:var(--lemon);border-radius:99px;font-family:var(--font-display);font-size:var(--fs-md);line-height:20px}
 .howSteps span{font-size:var(--fs-xs);opacity:.8}
@@ -797,13 +786,10 @@ const CUSTOMER_WALK_PNG={
 };
 /* Pick-card art, drawn in Pixelwright. Card Ornaments: 11×11 corner caps (epic TL, TR, BL, BR, then legendary TL, TR, BL, BR) and the swap-out X. */
 const CARD_ORNAMENTS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAAALCAMAAABcQsOQAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAARlJREFUeNqlU9ESgyAMkxcKZ7nb/3/tkrQbMuVpuVNLrQ0k9ShbHAv2dc+1uGWMayS8LKH/fsdsa70RxpDoCu23ltnooEcZ3cz9PM9ScHfHEuE4bxzINsNbq7WWgjvCbghbvXEg667ujkZlWDMECXcstxy9v3rH9wHTcsNxiEQU5LA6G+YSLyHNzDKR55gNc4kHpLnWNhWBJCh4Gkg0KxxyBcfFEjilLJpCp2/WanLQlsncciN5igyWXQSHbJkc4RI3uNTi0JvTRWd6Ejo/KC+XKJcw0qVnd2UL5RJauBSbl/F7DquQKycakyCXnjli2j4T/Zm2mKiYrtTs8h214jALS3iR5GsJs3CJ0EQDNC376vH/H72pm//5G7PuD+2Vf61rAAAAAElFTkSuQmCC";
-/* 32×30 crates: upgrade, flavor, surprise (offerCrate). */
-const CRATES_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAAeCAMAAADkbuu7AAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAhpJREFUeNq1VdFygzAMqweDMspDuXb//6mT4jiJIYHuevVdobaChB3HXNp2rcRE5L6uvN5FNkDhe89zTSk2bRT41BWG2ypQWUvGZVluyfdejauWAThXmYLCuiKNMgVZbrQY8F6zGrXSkB4C4XlSGEekVM7ozL5IJ/RaGuMHw+Q4KPnzQ0VacDJ2YlxynUJpRlXAGwb6ac4vGZNi8Rf9nwW+Dw3LwK+vPqqCEkCjEIDCTIGgQvpCGyRNdgrEwqgEHdEEQFKWGZWBHwQIFNL9oTkBpDDiR5ppkwGZ4IOblzJ+tgfv2kV+YY9KHhE4y9Dh7NDZRyDwfD4f0u0sAtJXsLTmy+Mq4HAKSEuAgPRt/q6jQPnMRgC4ZdD3sXFSS6UMug6e4c5MIOEq4PCLPGgWFHSiLVYgEpSWxAqB+HjcAycQLO3Jdcj/I9R1rR02gdYmqwBvySiQPSPIEW87XAUcHgSs/Bhn4SDZRuxKUNuD03NgBDLyrE5juGkdDwQyzvlmphm4SJnBOOD9YcNQz2DXSQG3j4NOUwq4SCGAGrFC45Ba9aUSvSKQe0gFml1S6yLONzMVcBHXRRAYBgj8q4tONzmYnTKUh32UukrPwWGJ9gdtc5J1aHILscv8xIQrR0WcppGgMiycAPG6QBg5xSDCNSx2s6g6LJoZFLhN09r3IE3T90bFx78HOjT3LWLTtNVCcZXDN7OIkY9/k/8AuucyC0pTVucAAAAASUVORK5CYII=";
 /* 28×18 coin pile, the Cousin's Gift card's art. */
 const COIN_PILE_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAASCAMAAAB/2U7WAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAH1JREFUeNqNkTsOwCAMQ8nSwP0vXOcLoRlqMSCeDI4ZY5AL249orjUhbiiYoJ4SB+vgw4tVTwdTP5xn+NtZwl9O8ezw1UliU6rhi5P8xn2RmkwLBhyznUU8SyEQC/AYOyrEY+jLnTF1VCjQnjs+KUM5rVXlPJrzrjE7K7/+AmcJBr6H6hLzAAAAAElFTkSuQmCC";
 document.documentElement.style.setProperty("--grassPng",`url(${GRASS_PNG})`);
 document.documentElement.style.setProperty("--ornamentsPng",`url(${CARD_ORNAMENTS_PNG})`);
-document.documentElement.style.setProperty("--cratesPng",`url(${CRATES_PNG})`);
 document.documentElement.style.setProperty("--coinPilePng",`url(${COIN_PILE_PNG})`);
 document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
 document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
@@ -841,9 +827,9 @@ const sfx={
 };
 
 /* ---------- celebrations, sized to the moment ----------
-   Opening a crate is small: a sound (openCrate). A perfect day or a new combo is medium: a sound and a handful of
-   lemons and coins. Reaching the last day is big: the fanfare and a fountain of them. Each fires once, from the thing
-   being celebrated, after `wait` ms so it lands with that thing's own animation. Reduced motion keeps the sound only. */
+   A perfect day or a new combo is medium: a sound and a handful of lemons and coins. Reaching the last day is big:
+   the fanfare and a fountain of them. Each fires once, from the thing being celebrated, after `wait` ms so it lands
+   with that thing's own animation. Reduced motion keeps the sound only. */
 const stillMotion=()=>matchMedia("(prefers-reduced-motion:reduce)").matches;
 function celebrate(size,el,wait=0){
   setTimeout(()=>{
@@ -2000,13 +1986,13 @@ function finishDay(){
       <h4 class="todayHead">Today</h4>
       <ul class="facts">${today.length?today.map(l=>`<li>${l}</li>`).join(""):"<li>A quiet day at the stand.</li>"}</ul>
     </details>
-    <div class="center mt"><button class="btn gold" onclick="afterReport()">${S.day>=MAX_DAYS?"See your final score":S.day%3===0?"Open your bonus crate":"Pick an upgrade"}</button></div>`);
+    <div class="center mt"><button class="btn gold" onclick="afterReport()">${S.day>=MAX_DAYS?"See your final score":"Pick an upgrade"}</button></div>`);
   countUp($("#madeAmt"),made);
   if(perfect)celebrate("medium",$(".rStamp"),1400); // .rStamp presses down 1.2s in and takes .2s
   updateHUD();
   D.report={profit:made,perfect};
 }
-/* The evening pops up over the closed stand, one sheet at a time: the report, then the crate, the pick, a swap or a new combo.
+/* The evening pops up over the closed stand, one sheet at a time: the report, then the pick, a swap or a new combo.
    The stand behind it can't be pressed. The next morning replaces the stage, and the sheet goes with it. */
 function eveSheet(html,cls=""){
   if(!$("#eve")){$(".stage").inert=true;$("#screen").insertAdjacentHTML("beforeend",`<div class="modalWrap eve" id="eve"></div>`)}
@@ -2017,11 +2003,11 @@ function afterReport(){
   if(S.cash<cheapestServingCost()&&S.cash<1){endRun("bankrupt","You don't have enough money to make a cup.");return}
   offerDraft();
 }
-/* ---------- Drafts & crates ---------- */
-let draftChoices=[],draftTitle="",pendingDraft=null;
-function buildDraftPool(rareOnly){
+/* ---------- Drafts ---------- */
+let draftChoices=[],pendingDraft=null;
+function buildDraftPool(){
   const pool=[];
-  GEAR.forEach(g=>{if(!S.gear.includes(g.id)&&(!rareOnly||["rare","epic","legendary"].includes(g.rar)))pool.push({kind:"gear",id:g.id,w:g.rar==="legendary"?2:g.rar==="epic"?4:g.rar==="rare"?7:10})});
+  GEAR.forEach(g=>{if(!S.gear.includes(g.id))pool.push({kind:"gear",id:g.id,w:g.rar==="legendary"?2:g.rar==="epic"?4:g.rar==="rare"?7:10})});
   Object.keys(RECIPES).forEach(rk=>{if(!S.recipes.includes(rk))pool.push({kind:"recipe",id:rk,w:8})});
   pool.push({kind:"cash",id:"cash",w:5});
   // tag-weighted drafting: recipes sharing tags you already serve come up more (synergy must stay findable)
@@ -2031,8 +2017,8 @@ function buildDraftPool(rareOnly){
   if(actIndex()>=2)pool.forEach(p=>{if(p.kind==="gear"){const g=GEAR.find(x=>x.id===p.id);if(g&&g.rar==="common")p.w*=0.4}});
   return pool;
 }
-function drawDraft(rareOnly){
-  const pool=buildDraftPool(rareOnly);const out=[];const used=new Set();
+function drawDraft(){
+  const pool=buildDraftPool();const out=[];const used=new Set();
   while(out.length<3&&pool.length){
     const c=sampleWeighted(pool.filter(p=>!used.has(p.kind+":"+p.id)).map(p=>({k:p,w:p.w})));
     if(!c)break;used.add(c.k.kind+":"+c.k.id);out.push(c.k);
@@ -2051,53 +2037,22 @@ function draftCardHtml(p){
   const amt=fmt(18+22*actIndex());
   return {cls:"cash",art:`<i class="coinPile" role="img" aria-label="Coins"></i><b class="artAmt">+${amt}</b>`,title:"Cousin's Gift",desc:`+${amt} cash right now. It gets bigger later in the summer.`};
 }
-function cardHtml(c,attrs,extra=""){
+function cardHtml(c,attrs){
   const caps=c.rar==="epic"||c.rar==="legendary"?["tl","tr","bl","br"].map(k=>`<i class="orn ${k}" aria-hidden="true"></i>`).join(""):"";
-  return `<button class="choice pick ${c.cls} ${extra}"${c.rar?tip(`${RARITY[c.rar]}. ${RARITY_TIP}`):""} ${attrs}>${c.rar?`<span class="sr">${RARITY[c.rar]} upgrade.</span>`:""}<span class="cardArt">${c.art}<i class="outMark" aria-hidden="true"></i></span><span class="cardBody"><span class="ttl">${c.title}</span><span class="desc">${c.desc}</span></span>${caps}</button>`;
+  return `<button class="choice pick ${c.cls}"${c.rar?tip(`${RARITY[c.rar]}. ${RARITY_TIP}`):""} ${attrs}>${c.rar?`<span class="sr">${RARITY[c.rar]} upgrade.</span>`:""}<span class="cardArt">${c.art}<i class="outMark" aria-hidden="true"></i></span><span class="cardBody"><span class="ttl">${c.title}</span><span class="desc">${c.desc}</span></span>${caps}</button>`;
 }
-let draftFlip=false; // the next draft screen deals its cards in with a flip (a crate just opened)
 function renderDraftScreen(){
-  const flip=draftFlip;draftFlip=false;
   eveSheet(`
-    <h2>${draftTitle}</h2>
+    <h2>Pick an upgrade</h2>
     <p class="muted" style="margin-top:0">It starts working tomorrow. The other two go away.</p>
     ${learnHint(HOW_STEPS[5][1])}
     ${shelfHtml()}
-    <div class="choices">${draftChoices.map((p,i)=>cardHtml(draftCardHtml(p),`onclick="pickDraft(${i})"${flip?` style="--k:${i}"`:""}`,flip?"flipIn":"")).join("")}</div>
+    <div class="choices">${draftChoices.map((p,i)=>cardHtml(draftCardHtml(p),`onclick="pickDraft(${i})"`)).join("")}</div>
     <div class="center mt"><button class="btn sm ghost" onclick="nextDay()">Skip</button></div>`);
 }
 function offerDraft(){
-  if(S.day%3===0){offerCrate();return}
-  draftChoices=drawDraft(false);sfx.flip();
-  draftTitle="Pick an upgrade";
+  draftChoices=drawDraft();sfx.flip();
   renderDraftScreen();
-}
-const CRATES=[["gear","Upgrade crate","3 rare (or better) stand upgrades."],["recipe","Flavor crate","3 new flavors."],["wild","Surprise crate","3 of anything: upgrades, flavors or cash."]];
-function offerCrate(){
-  eveSheet(`
-    <h2>Bonus crate</h2>
-    <p class="big">Every 3rd day you get a free crate. Which one?</p>
-    <div class="choices">${CRATES.map(([k,name,desc],i)=>`<button class="choice pick crate" onclick="pickCrate(this,'${k}')"><span class="cardArt"><i class="crateArt" style="--i:${i}" aria-hidden="true"></i></span><span class="cardBody"><span class="ttl">${name}</span><span class="desc">${desc}</span></span></button>`).join("")}</div>`,"center");
-}
-/* The crate you pick shakes open while the others step back, then its three cards flip in. */
-function pickCrate(btn,kind){
-  document.querySelectorAll(".pick.crate").forEach(b=>{b.disabled=true;b.classList.add(b===btn?"opening":"passed")});
-  sfx.tick();
-  setTimeout(()=>openCrate(kind),stillMotion()?0:560);
-}
-function openCrate(kind,title){
-  sfx.good(); // a small celebration: sound only
-  let pool;
-  if(kind==="gear")pool=GEAR.filter(g=>!S.gear.includes(g.id)&&["rare","epic","legendary"].includes(g.rar)).map(g=>({kind:"gear",id:g.id,w:5}));
-  else if(kind==="recipe")pool=Object.keys(RECIPES).filter(rk=>!S.recipes.includes(rk)).map(rk=>({kind:"recipe",id:rk,w:5}));
-  else pool=buildDraftPool(false);
-  draftChoices=[];const used=new Set();
-  const add=list=>{for(const p of shuffle(list)){if(draftChoices.length>=3)break;const key=p.kind+":"+p.id;if(used.has(key))continue;used.add(key);draftChoices.push(p)}};
-  add(pool);
-  if(draftChoices.length<3)add(buildDraftPool(true)); // crate ran thin — top it up with other rare loot
-  if(!draftChoices.length){draftChoices=[{kind:"cash",id:"cash"}]}
-  draftTitle=title||"Bonus crate: pick one";
-  draftFlip=true;renderDraftScreen();
 }
 function pickDraft(i){
   const p=draftChoices[i];if(!p)return;
@@ -2242,7 +2197,7 @@ function showBuild(){
 /* The ? help: the day's steps as picture tiles. */
 function showHelp(){
   const art=[iconHtml("spot","Maple St. Spot",true),iconHtml("supply","signs",true),iconHtml("supply","lemons",true),gearIconHtml("pricetag",true),
-    `<i class="hudIcon" role="img" aria-label="Coin"></i>`,`<i class="crateArt" style="--i:0" role="img" aria-label="Crate"></i>`];
+    `<i class="hudIcon" role="img" aria-label="Coin"></i>`,gearIconHtml("secondcart",true)];
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
     <div class="flex spread"><h2>How to play</h2><div class="flex"><button class="btn sm ghost soundBtn${soundOn?"":" off"}" onclick="toggleSound()"><i class="hudIcon"></i><span>${soundOn?"Sound on":"Sound off"}</span></button><button class="btn sm ghost" onclick="closeModal()">Close</button></div></div>
     <p style="margin:6px 0 0">You have up to ${MAX_DAYS} days to make as much money as you can.</p>
