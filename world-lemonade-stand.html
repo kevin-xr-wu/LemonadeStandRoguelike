@@ -968,6 +968,12 @@ const INGREDIENTS={
   blacktea:{name:"Black Tea",pack:16,price:1.20},
   cucumbering:{name:"Cucumbers",pack:16,price:1.60}
 };
+/* The supply shelf holds cups, lemons, sugar and ice, plus at most SUPPLY_MAX supplies for your flavors.
+   A new flavor that needs more room than that comes in only if an old one goes out (showFlavorSwap). */
+const BASIC_SUPPLIES=["cups","lemons","sugar","ice"],SUPPLY_MAX=4;
+function flavorSupplies(recipes){return [...new Set(recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))].filter(id=>!BASIC_SUPPLIES.includes(id))} // Shikanji and Sharbat-e-Limoo take extra sugar, Citron Pressé extra lemons: those stay with the basics
+function fitsShelf(recipes){return flavorSupplies(recipes).length<=SUPPLY_MAX}
+function swapOptions(rk){return S.recipes.filter(r=>fitsShelf([...S.recipes.filter(x=>x!==r),rk]))} // the flavors whose leaving alone makes room for rk
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
 const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name},gearB:{ids:["sunhat","awning","ponchos","icecrush","thermo","jug","shavedice","lemonzest","plaque","zester","tipjar","piggy","selloutbanner","rainjar","clover","wholesale","pitcher","squeezerpro","lemontree"],name:id=>GEAR.find(g=>g.id===id).name},crowd:{ids:["kids","parents","athletes","tourists","foodies","artists"],name:id=>CROWDS[id].name},weather:{ids:["sunny","hot","perfect","cloudy","rainy","windy"],name:id=>WEATHERS[id].name}};
 function iconHtml(kind,id,big){const k=ICONS[kind];const i=k.ids.indexOf(id);if(i<0)console.warn("iconHtml: unknown "+kind+" icon id",id);return `<span class="icon ${kind}${big?" big":""}" style="--i:${i}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
@@ -1525,7 +1531,7 @@ function setSpotCard(i){
   document.querySelectorAll("#mSpot .carNav .arrow").forEach(b=>b.setAttribute("aria-disabled",+b.dataset.d<0?i===0:i===SPOT_SLIDES.length-1));
 }
 function mShopHtml(){
-  const basics=["cups","lemons","sugar","ice"],extras=[...new Set(S.recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))].filter(id=>!basics.includes(id)); // Shikanji and Sharbat-e-Limoo take extra sugar, Citron Pressé extra lemons: those stay with the basics
+  const basics=BASIC_SUPPLIES,extras=flavorSupplies(S.recipes);
   const item=id=>{const n=S.inv[id]||0,open=M.shopOpen===id;
     return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`};
   return `<div class="supShelf"><div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>${learnHint(HOW_STEPS[2][1])}
@@ -2013,7 +2019,7 @@ let draftChoices=[],pendingDraft=null;
 function buildDraftPool(){
   const pool=[];
   GEAR.forEach(g=>{if(!S.gear.includes(g.id))pool.push({kind:"gear",id:g.id,w:g.rar==="legendary"?2:g.rar==="epic"?4:g.rar==="rare"?7:10})});
-  Object.keys(RECIPES).forEach(rk=>{if(!S.recipes.includes(rk))pool.push({kind:"recipe",id:rk,w:8})});
+  Object.keys(RECIPES).forEach(rk=>{if(!S.recipes.includes(rk)&&(fitsShelf([...S.recipes,rk])||swapOptions(rk).length))pool.push({kind:"recipe",id:rk,w:8})}); // a flavor no single swap can fit isn't offered
   pool.push({kind:"cash",id:"cash",w:5});
   // tag-weighted drafting: recipes sharing tags you already serve come up more (synergy must stay findable)
   const b=computeBuild();
@@ -2038,7 +2044,7 @@ function gearCard(g,full){
 function draftCardHtml(p){
   if(p.kind==="gear")return gearCard(GEAR.find(x=>x.id===p.id),S.gear.length>=gearSlots());
   if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(cupNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
-    return {cls:"flavor",art:`${iconHtml("flavor",p.id)}<span class="artTags">${tagChips(r.tags)}</span>`,title:r.name,desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each cup takes ${needs}.`}}
+    return {cls:"flavor",art:`${iconHtml("flavor",p.id)}<span class="artTags">${tagChips(r.tags)}</span>`,title:r.name,desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each cup takes ${needs}.`+(fitsShelf([...S.recipes,p.id])?"":`<br><b class="warn">Your supply shelf is full. You'll swap a flavor out.</b>`)}}
   const amt=fmt(18+22*actIndex());
   return {cls:"cash",art:`<i class="coinPile" role="img" aria-label="Coins"></i><b class="artAmt">+${amt}</b>`,title:"Cousin's Gift",desc:`+${amt} cash right now. It gets bigger later in the summer.`};
 }
@@ -2062,6 +2068,7 @@ function offerDraft(){
 function pickDraft(i){
   const p=draftChoices[i];if(!p)return;
   if(p.kind==="gear"&&S.gear.length>=gearSlots()){showSwap(p);return}
+  if(p.kind==="recipe"&&!fitsShelf([...S.recipes,p.id])){showFlavorSwap(p);return}
   grantDraft(p);
 }
 /* Gear slots are full: the new piece only comes in if an old one goes out. Tap one to mark it (dimmed, with an X), then Swap. */
@@ -2083,6 +2090,28 @@ function markSwap(i){
 function swapFor(i){
   const p=pendingDraft;if(!p||!S.gear[i])return;pendingDraft=null;
   const g=GEAR.find(x=>x.id===S.gear[i]);S.gear.splice(i,1);S.log.push(`<span class="info">Swapped out ${gearIconHtml(g.id)} ${g.name}.</span>`);
+  grantDraft(p);
+}
+/* The supply shelf is full: the new flavor only comes in if an old one goes out. Only flavors whose leaving makes room
+   are offered. Supplies no flavor needs any more leave the shelf, with whatever you have of them, and the card says so. */
+let swapFlavors=[];
+function flavorGoes(rk,newRk){const rest=[...S.recipes.filter(x=>x!==rk),newRk];return flavorSupplies(S.recipes).filter(id=>!flavorSupplies(rest).includes(id))} // supplies that leave the shelf
+function showFlavorSwap(p){
+  pendingDraft=p;swapOut=-1;swapFlavors=swapOptions(p.id);sfx.flip();
+  const card=rk=>{const c=draftCardHtml({kind:"recipe",id:rk}),lost=flavorGoes(rk,p.id).filter(id=>S.inv[id]>0);
+    if(lost.length)c.desc+=`<br><b class="warn">You'll lose your ${listWords(lost.map(id=>`${S.inv[id]} ${iconHtml("supply",id)} ${INGREDIENTS[id].name.toLowerCase()}`))}.</b>`;
+    return c};
+  eveSheet(`
+    <h2>Your supply shelf is full</h2>
+    <p style="margin-top:0">Which flavor should go? You'll get <b>${iconHtml("flavor",p.id)} ${RECIPES[p.id].name}</b>.</p>
+    <div class="choices" id="swapCards">${swapFlavors.map((rk,i)=>cardHtml(card(rk),`onclick="markSwap(${i})" aria-pressed="false"`)).join("")}</div>
+    <div class="flex mt" style="justify-content:center"><button class="btn sm ghost" onclick="pendingDraft=null;renderDraftScreen()">Back</button><button class="btn sm ghost" onclick="pendingDraft=null;nextDay()">Keep my flavors</button><button class="btn sm" id="swapGo" disabled onclick="swapFlavor(swapOut)">Swap</button></div>`);
+}
+function swapFlavor(i){
+  const p=pendingDraft,rk=swapFlavors[i];if(!p||!rk)return;pendingDraft=null;
+  flavorGoes(rk,p.id).forEach(id=>{delete S.inv[id];delete S.lots[id]});
+  S.recipes=S.recipes.filter(x=>x!==rk);delete S.menuPrices[rk];
+  S.log.push(`<span class="info">Swapped out ${iconHtml("flavor",rk)} ${RECIPES[rk].name}.</span>`);
   grantDraft(p);
 }
 /* The flavors on your menu that make a combo, as small chalkboards with the tags that count. */
