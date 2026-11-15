@@ -1469,12 +1469,12 @@ function mSpotHtml(){
     <div class="carNav">${arrow(-1,"‹")}${SPOT_SLIDES.map((_,k)=>dot(k)).join("")}${arrow(1,"›")}</div>`;
 }
 /* The top card's slides, in the order the help teaches: where to sell, signs, the prices, then open.
-   Picking a spot slides on to the next slide; the arrows and dots go back and forth. */
+   Picking a spot stays on its slide; the arrows and dots go back and forth. */
 const SPOT_SLIDES=["Choose a spot to open your stand","Signs today","Today's prices","Ready to open?"];
-function setSpotCard(i,quiet){
+function setSpotCard(i){
   i=clamp(i,0,SPOT_SLIDES.length-1);
   if(M.card===i)return;
-  M.card=i;if(!quiet)sfx.tick();
+  M.card=i;sfx.tick();
   const sl=$("#mSpot .slides");if(!sl)return;
   void sl.offsetWidth; // slide from where it is now
   sl.style.setProperty("--card",i);
@@ -1546,11 +1546,7 @@ function buyItem(id,tier=0){
   if(S.cash<price){sfx.bad();return}
   S.cash=Math.round((S.cash-price)*100)/100;addStock(id,qty,price);sfx.coin(3);updateHUD();morningParts();
 }
-function chooseLoc(i){
-  const kb=document.activeElement&&document.activeElement.matches(":focus-visible"); // picked with the keyboard: follow it to the next slide
-  M.loc=M.locs[i];sfx.flip();showBackdrop(M.loc);morningParts();setSpotCard(1,true);
-  if(kb){const next=$("#mSpot .slide:not([inert]) button");if(next)next.focus({preventScroll:true})}
-}
+function chooseLoc(i){M.loc=M.locs[i];sfx.flip();showBackdrop(M.loc);morningParts()}
 function openShelf(id){M.shopOpen=M.shopOpen===id?null:id;sfx.flip();morningParts()}
 function stepSigns(d){ // + buys one sign, − gives one back for what it cost
   const p=signPrice();
