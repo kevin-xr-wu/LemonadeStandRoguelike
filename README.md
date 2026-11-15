@@ -1,6 +1,6 @@
 # World Lemonade Stand
 
-A lemonade stand game. Make as much money as you can in 14 days.
+A lemonade stand game. Make as much money as you can in up to 100 days.
 
 ## Play
 
@@ -17,7 +17,7 @@ Each day:
 5. See how you did.
 6. Pick an upgrade for tomorrow.
 
-After day 14, keep your score or keep playing in Endless.
+Play as long as you like, up to day 100. Press End run in the top bar to stop and keep your score.
 
 Your 10 best runs go on the High scores board, with the cash and days of each. The game saves the board in a cookie.
 
