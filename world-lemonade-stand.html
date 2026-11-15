@@ -1713,7 +1713,6 @@ function renderDayScene(){
         </div>
         <div class="statChip" tabindex="0"${tip("Cups you can still make with your supplies.")}><span>Cups left</span><b id="stStock">${servingsReady()}</b></div>
         <div class="statChip" tabindex="0"${tip("Money from sales and tips today.")}><span>Money</span><b id="stTill">$0</b></div>
-        <div class="statChip" tabindex="0"${tip("People still waiting to buy.")}><span>In line</span><b id="stDem">${D.demand}</b></div>
       </div>
     </div>
   </div>`;
@@ -1796,7 +1795,6 @@ function updateDayStats(){
   $("#stTill").textContent=fmt(till);
   showCash(S.cash+till); // the HUD counts up with each sale; the evening adds bonuses on top
   const left=Math.max(0,D.demand-D.sold-D.awayPrice-D.awayOut);
-  $("#stDem").textContent=left;
   $("#dayFill").style.width=(D.demand?100*(1-left/D.demand):100)+"%";
 }
 /* Customers walk across the scene. Buyers stop at the counter and face you while they pay,
