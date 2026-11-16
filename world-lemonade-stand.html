@@ -272,6 +272,13 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .modalWrap.eve{z-index:40;padding-top:calc(var(--hudH) + 16px)}
 .eve .modal{max-width:760px;max-height:100%}
 .endAsk{max-width:440px}
+/* Upgrade your stand: the stand now and after, at 2×, standing on one line, then what the new level does */
+.standUpBox{max-width:460px}
+.standPair{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:6px 0 4px}
+.standPair img{width:calc(var(--w)*2px);image-rendering:pixelated;filter:drop-shadow(0 4px 3px rgba(0,0,0,.25))}
+.standPair .toNext{flex:none;align-self:center;width:32px;height:32px;background:var(--arrowPng) 0 0/200% 100% no-repeat;image-rendering:pixelated;rotate:90deg}
+.perks{list-style:none;margin:10px auto 0;padding:0;display:grid;gap:4px;font-weight:800;line-height:1.35}
+@media (max-width:400px){.standPair .now,.standPair .toNext{display:none}} /* too narrow for both at 2×: just the new one */
 .flex{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .spread{justify-content:space-between}
 .mt{margin-top:14px}
@@ -370,8 +377,15 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .pName{font-weight:900;font-size:var(--fs-md)}
 .pOut{grid-column:1/-1;font-size:var(--fs-sm);font-weight:700;color:var(--red)}
 /* Today's signs stand on the grass by the stand. --k is its place out from the stand, --side left or right. */
-.signSlot{--w:calc(16px*var(--px) + 16px);position:absolute;bottom:0;z-index:5;width:var(--w);height:var(--w);margin-left:calc(var(--w)/-2);left:calc(50% + var(--side)*(32px*var(--px) + var(--w)/2 + 2px + var(--k)*(var(--w) + 2px)));display:flex;align-items:flex-end;justify-content:center}
+.signSlot{--w:calc(16px*var(--px) + 16px);position:absolute;bottom:0;z-index:5;width:var(--w);height:var(--w);margin-left:calc(var(--w)/-2);left:calc(50% + var(--side)*(var(--standW,64)*.5px*var(--px) + var(--w)/2 + 2px + var(--k)*(var(--w) + 2px)));display:flex;align-items:flex-end;justify-content:center}
 .signSlot .icon{--sz:calc(16px*var(--px));filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+/* The stand upgrade arrow stands on top of the stand in the morning. It bobs, green, once you have the money; grey until then. */
+.standUp{--a:calc(16px*var(--px));position:absolute;z-index:6;left:50%;bottom:calc((var(--standTop) + 1)*1px*var(--px) - 6px);margin-left:calc(var(--a)/-2 - 6px);padding:6px;background:none;border:0;border-radius:12px;cursor:pointer}
+.standUp i{display:block;width:var(--a);height:var(--a);background:var(--arrowPng) 100% 0/200% 100% no-repeat;image-rendering:pixelated;filter:drop-shadow(0 2px 1px rgba(0,0,0,.3))}
+.standUp.ok i{background-position-x:0;animation:standUpBob 1.4s ease-in-out infinite}
+.standUp:focus-visible{outline:3px solid var(--blue)}
+@keyframes standUpBob{50%{translate:0 calc(-2px*var(--px))}}
+@media (prefers-reduced-motion:reduce){.standUp.ok i{animation:none}}
 @media (min-width:721px){
   .postFace{display:flex;align-items:center;justify-content:center;gap:8px;font-size:var(--fs-md)}
   .shelfRow{grid-template-columns:repeat(auto-fill,84px)}
@@ -482,10 +496,13 @@ body:has(.stage){overflow:hidden}
 .hudWx .icon{--sz:calc(16px*var(--px));align-self:center}
 .hudWx:empty,#app:not(:has(.stage)) .hudWx{display:none} /* only for the morning and the selling day */
 .stage{--px:2;position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden auto;background:#8a6b46}
-.stage .sky{--px:2;flex:1 0 auto;height:auto;display:flex;flex-direction:column;padding:calc(var(--hudH) + 18px) 12px calc(84px*var(--px))}
+.stage .sky{--px:2;flex:1 0 auto;height:auto;display:flex;flex-direction:column;padding:calc(var(--hudH) + 18px) 12px calc(var(--skyRoom,84)*1px*var(--px))}
 .stage .ground{flex:none;height:auto;z-index:auto;background-size:calc(64px*var(--px)) calc(32px*var(--px));padding:calc(12px*var(--px)) 12px calc(14px + env(safe-area-inset-bottom,0px))}
 .stage .ground:before{z-index:3;top:calc(-9px*var(--px));height:calc(14px*var(--px));background-size:calc(64px*var(--px)) calc(14px*var(--px))}
-.stage .stand{width:calc(64px*var(--px))}
+.stage .stand{width:calc(var(--standW,64)*1px*var(--px))} /* --standW, --standTop and --skyRoom come from the stand's level (standVars) */
+.stage .stand.levelUp{transform-origin:50% 100%;animation:levelUp .5s ease-out}
+@keyframes levelUp{0%{scale:.85 1.12}45%{scale:1.06 .95}100%{scale:1}}
+@media (prefers-reduced-motion:reduce){.stage .stand.levelUp{animation:none}}
 .stage .cust{--s:var(--px);bottom:calc(1px*var(--px))}
 .stage .coin{--s:var(--px);--rise:calc(14px*var(--px));bottom:calc(32px*var(--px))}
 .stage .bubble{--rise:calc(3px*var(--px))}
@@ -596,7 +613,7 @@ body:has(.stage){overflow:hidden}
 .cbList{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 16px}
 .cb{display:flex;align-items:center;gap:6px}
 .cb.none{opacity:.4}
-/* The HUD's upgrade tray: your five slots, always in view. Tap it to see them all. On phones the slots shrink to pips. */
+/* The HUD's upgrade tray: your upgrade slots (5 to 7, by stand level), always in view. Tap it to see them all. On phones the slots shrink to pips. */
 .hudTray{display:flex;align-items:center;gap:4px;background:none;border:0;border-radius:10px;padding:4px;color:inherit}
 .hudTray:hover{background:rgba(255,247,224,.12)}
 .hudTray:focus-visible{outline:3px solid var(--blue)}
@@ -721,6 +738,11 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const plural=(n,one,many)=>n===1?one:(many||one+"s");
 /* 64×64 pixel-art stand, drawn in Pixelwright. CSS shows it at 2×, or 1× on small screens (.stand). */
 const STAND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAARVBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v+Jh7gjAAAAAXRSTlMAQObYZgAAAfNJREFUeNrdl+12wiAMhsW6SaebHs+x93+pC+SDAIFS6y/jduAN4WkILdrDB5nbaDXgN9odDQWpTJCqAPn8+xXNECxLQg6gKTmACSbAWRdpAEyCDejKDEDzNwEyQpHACqBOoZHAmk6ERgJNQJlCmcAoQAjuB+2PjbQ4Ss0OAVzQbmykxVFqdrwb4BwNu8JR6uSQKuLwAQPAjQ5oLQ0OJOgbAewYAvhJ77UhbqqOBDcFwPDpU0c3ANYJdLUBp9xFGS9PtjQaAEV0BEzZ0/VAJYQ0eK+ja4B7cEcAsoh1gFqyW2ayM+wdL6APcG6evfdcg9kvi/ezHwbgdDCYEZT3yxMAlAHvSA+A0/1ZAMILgFiSHiBe4Ayz6Y5jQOCJbgNk/ak1AKFrA3j9qg6yAsiJF9gBULSqA3fO31KhmEwBSHc8xqYWZ1CfAoznw32xRX/ZslB+FApwesHUKvYDXjRdxuNmK040yspqGm4TMJR4CxD8Tr79mnaLAPhvAS4QBGc+tNALf9GBbfCPARQk/wxnUAC4D/42IBZGZWB+GNDcBbqyroFkoWvQBMgXeNv6gD33wf47EQZUSFLaTSMbANFTAeKWrwASR08bAKgkDYBKpFVEDj5O+wDVLlQLfPc2TputAOw7UimH4d95Zqz5Mtl5Sf2gd+5/Q2ZNQf2Dk0AAAAAASUVORK5CYII=";
+/* The stand at level 2 (64×72: painted, with a FRESH sign) and level 3 (72×84: a kiosk with a giant lemon on the roof), drawn in Pixelwright like the first. STAND_LEVELS says what each level does. */
+const STAND2_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABICAMAAABx5AOBAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAjdJREFUeNrVl21zwyAIgOe6NWbt2lzvmv//UwcK+IaGNP0yupyC8ATRuOTj7eI2ZBvwPZKTBbCAXC4XuLiFC34oNoCHQIRQGPfRbgJ4P9Hd+YpZoN2WwVRmID2w22vAYS/U4DQUA+DoPoiUr9ZRs+2582Ym7jdIKNWyRIW0QiGtAZTxyzWKorBaE0oAhZQAJqgAp92kA1AJOmCoFgCK3wUoCFUCG4A2hU4CW3oidBLoAuoU6gSsACG4nyg3FtLFUOtsEAA88Sh3FtLFUOtseDfAORp2laHWk0GqGIc/ogOYowFaTQdDJOQbAeQTHfhJH7Xod2qOBHdCgPn/X+vdAWgn0FUHfJUmynh9sqRRBFTeAVCc2O4RNSGkwaX1bgHuwR0ByCS2AdmU3TqTTLB2PIExwLl59t5zDWa/rt7P3gyI4SAQgZr36xMAlAGvyAgQw/0kAOEhIJRkBAg3mCCadhwDkCd6HyDzT60CwK4O4PlndZAZQE48wQGAvLM6cGc6S4VCMhUg7fjom9oYQX1yUJ4PJ6dlsNctK5k9KhlADqsdcnsn4EXJy3jeLdWJRuulNR2zCjAl3gOgPa1nV+4BAFcPEF5y+eWWXre5RbsNkEHKnzmDCsB9sPcBoTBZBuqPAd1VqD5ywl+6e6pBF2DYwWPAkX1wfCfCQOaStNxMIzsAwdIAwpJvABInDzMAsiQVQJZIr4jsfJ6OAZpVaCb47mXEw3+fVIBjRyp98prf81Rf+2ftPt9/IH9vRmZysDVGrQAAAABJRU5ErkJggg==";
+const STAND3_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABUCAMAAAAWJ4GVAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAArZJREFUeNrtmIlu6yAQRTuvVZbXzXGU/ELT///B3lnAQFgtq2qlXkshA8zxGIM95qFXRN1d65x5JsDW0+Armuf5THQ+ryIx4Hg8Hg4HOgFE//hnDQWQyYFOJ+Lf8WsTCmMEFGiMxNEo5Q50GAmKw1mUgAaCMk7ivh8l6SjnIvG8rvlklH0J1B0U1dyXy+sJiTwrGBarUPUulTSohedA3beteGnQbjcykcjOndHgKimSRhcb7QpqgdxzZ1wp6JU1qeR/p5GAlGM99H8FFPWLSVuB6EVkvdWIrUpTQGpzOklbgWLOCCghbQUyTt2zbjKJEk7+nK1mTHD6b3oz5c1WM0DPpndT3mw1bwhSEj09kraQkik2U9ub8DOOkrhC2ozMRWCmtjcN5O4/xKA1Ur9gtaFCnvl8rsvlwsVZ0irCPeYi12Z+0fKXCqRAYnBf7q0FcwptJdCDu9b+ogCqPMzvjTEQPZkk4NAYA0Wvi8y7ox909QIoNKCXNojmHtDUAEWhX6+WSeJdDQPzh3XqiIgTvyV3hS9nIRMSEQEhZZ+neQbIhq0IUgxnMDrxwAFFbQIHFIhBV57jFZDPhDxISQZSFINwwgpIAtbkTi4uyG7ghQ8JkyxMriotERsfP07leVQFcbgMCMaJbrfb5yd+5DyBgViRKxVXv4KCcaIPk4ACgzOxFLQ+yUoXjHtJrZUHuVfCSr1tD9pqjCrJcI+ix4ZOHPvoGCuiFP5ngmTU9DO6LfsgZYcUZIueOzQn4DuDnEMCQvV0nIRE0zM6IzVAiYNLVIQlg7xDCkI1Ng32CyiERYdG5B3uQLL3EIBcFO7wETqQOXRFlD0aEUVjJOORRGLRtMZos7sWzqP2eq/No2W+9k7I37PW/kDfBSpvzrQVgbZ5GSnrsZSyV3Zmcj6ZjZeuXeFtdrl/tL4AudqLwJdXB3sAAAAASUVORK5CYII=";
+/* 32×16 sheet, drawn in Pixelwright: the 16×16 stand upgrade arrow in green (you have the money), then in grey (not yet). */
+const ARROW_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAMAAABA3o1rAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAGVJREFUeNrNj8ERwCAIBEMJahFi/w1GDi7wSPL2Xh67M8LlkZ14vvcxei8TWUu1duO9PRNwndnB03CeBjkNchpCHIYQh1G5GZXDsINc2pCBNPGMLeqO/CWvOENoSAoTKULkq//mBtM2FhvBcUYDAAAAAElFTkSuQmCC";
 /* 166×71 title logo, drawn in Pixelwright. The title screen shows it at its pixel size (--px). */
 const LOGO_PNG="data:image/png;base64,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";
 /* 64×14 grass edge and 64×32 dirt tile, drawn in Pixelwright. They repeat along .ground at 2×, or 1× on small screens. */
@@ -801,6 +823,7 @@ document.documentElement.style.setProperty("--ornamentsPng",`url(${CARD_ORNAMENT
 document.documentElement.style.setProperty("--coinPilePng",`url(${COIN_PILE_PNG})`);
 document.documentElement.style.setProperty("--groundPng",`url(${GROUND_PNG})`);
 document.documentElement.style.setProperty("--coinPng",`url(${COIN_PNG})`);
+document.documentElement.style.setProperty("--arrowPng",`url(${ARROW_PNG})`);
 document.documentElement.style.setProperty("--supplyIcons",`url(${SUPPLY_ICONS_PNG})`);
 document.documentElement.style.setProperty("--flavorIcons",`url(${FLAVOR_ICONS_PNG})`);
 document.documentElement.style.setProperty("--spotIcons",`url(${SPOT_ICONS_PNG})`);
@@ -973,11 +996,11 @@ const INGREDIENTS={
   blacktea:{name:"Black Tea",pack:16,price:1.20},
   cucumbering:{name:"Cucumbers",pack:16,price:1.60}
 };
-/* The supply shelf holds cups, lemons, sugar and ice, plus at most SUPPLY_MAX supplies for your flavors.
-   A new flavor that needs more room than that comes in only if an old one goes out (showFlavorSwap). */
-const BASIC_SUPPLIES=["cups","lemons","sugar","ice"],SUPPLY_MAX=4;
+/* The supply shelf holds cups, lemons, sugar and ice, plus a few supplies for your flavors: 4 at stand level 1, and one
+   more each level up (STAND_LEVELS shelf). A new flavor that needs more room than that comes in only if an old one goes out (showFlavorSwap). */
+const BASIC_SUPPLIES=["cups","lemons","sugar","ice"];
 function flavorSupplies(recipes){return [...new Set(recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))].filter(id=>!BASIC_SUPPLIES.includes(id))} // Shikanji and Sharbat-e-Limoo take extra sugar, Citron Pressé extra lemons: those stay with the basics
-function fitsShelf(recipes){return flavorSupplies(recipes).length<=SUPPLY_MAX}
+function fitsShelf(recipes){return flavorSupplies(recipes).length<=standLv().shelf}
 function swapOptions(rk){return S.recipes.filter(r=>fitsShelf([...S.recipes.filter(x=>x!==r),rk]))} // the flavors whose leaving alone makes room for rk
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
 const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name},gearB:{ids:["sunhat","awning","ponchos","icecrush","thermo","jug","shavedice","lemonzest","plaque","zester","tipjar","piggy","selloutbanner","rainjar","clover","wholesale","pitcher","squeezerpro","lemontree"],name:id=>GEAR.find(g=>g.id===id).name},crowd:{ids:["kids","parents","athletes","tourists","foodies","artists"],name:id=>CROWDS[id].name},weather:{ids:["sunny","hot","perfect","cloudy","rainy","windy"],name:id=>WEATHERS[id].name}};
@@ -1031,7 +1054,7 @@ const GEAR=[
  {id:"bigsign", name:"Roof sign", rar:"legendary", desc:"Every sign pulls as many customers as your first one."},
  // customers
  {id:"secondcart",name:"Second Cart", rar:"legendary", desc:"+30% customers every day."},
- {id:"franchiseflag",name:"Franchise Flag", rar:"epic",      desc:"+7% customers for each upgrade on your stand, this one included (+40% with all 5)."},
+ {id:"franchiseflag",name:"Franchise Flag", rar:"epic",      desc:"+7% customers for each upgrade on your stand, this one included."},
  {id:"loyalty", name:"Punch-Card Box", rar:"epic",      desc:"Each star brings twice as many extra people."},
  {id:"pricetag",name:"Charming Price Tags", rar:"common",    desc:"Flavors priced at a whole or half dollar ($2.00, $2.50…) draw 10% more customers."},
  {id:"chalkmenu",name:"Chalkboard Menu", rar:"rare",      desc:"If every flavor costs $3 or more: +20% customers."},
@@ -1084,7 +1107,20 @@ const ACTS=[
  {name:"Act 3 · The Boardwalk"},
  {name:"Act 4 · County Fair"}
 ];
-const GEAR_SLOTS=5, GLASS_MAX=500, PRICE_MAX=10, MAX_DAYS=100;
+const GLASS_MAX=500, PRICE_MAX=10, MAX_DAYS=100;
+/* Your stand has 3 levels. You buy the next one in the morning with the arrow on top of the stand. Each level up:
+   customers pay 10% more, the stand holds more of each supply (level 3 holds any amount), the supply shelf fits
+   one more flavor supply, and there's one more upgrade slot. The art: png, w its width in art pixels, top how far
+   its top sits above the ground line, room the sky the stage keeps clear above the ground for it (and the arrow). */
+const STAND_LEVELS=[
+ {png:STAND_PNG, w:64,top:61,room:84,pay:1,   hold:200,     shelf:4,slots:5},
+ {png:STAND2_PNG,w:64,top:71,room:92,pay:1.1, hold:400,     shelf:5,slots:6,cost:750},
+ {png:STAND3_PNG,w:72,top:84,room:90,pay:1.21,hold:Infinity,shelf:6,slots:7,cost:1500}, // the top level has no arrow over it
+];
+function standLv(){return STAND_LEVELS[(S&&S.standLevel||1)-1]}
+function nextStandLv(){return S?STAND_LEVELS[S.standLevel]:null} // null at the top level
+/* The stage's CSS for the stand: its width, its top (where the arrow stands) and the sky kept clear above the ground. */
+function standVars(){const l=standLv();return `--standW:${l.w};--standTop:${l.top};--skyRoom:${l.room}`}
 /* You pick an upgrade every 3 days, starting after day 1: days 1, 4, 7, 10, 13… */
 const UPGRADE_EVERY=3;
 function upgradeDay(day){return (day-1)%UPGRADE_EVERY===0}
@@ -1092,7 +1128,7 @@ function upgradeDay(day){return (day-1)%UPGRADE_EVERY===0}
 const CREW_MAX_PRICE=3.00;
 function crewSize(){return 30+15*actIndex()}
 /* Spots get busier as the summer heats up: traffic grows act by act. Everything else that
-   compounds in this game is the BUILD — 5 gear slots of multipliers, slot-scaling gear (Franchise Flag),
+   compounds in this game is the BUILD — 5 to 7 gear slots of multipliers, slot-scaling gear (Franchise Flag),
    the recipes on your menu and the synergies their tags unlock. Finishing the build IS the run. */
 function trafficScale(act){return 1+0.35*act}
 function priceMax(){return PRICE_MAX}
@@ -1187,7 +1223,7 @@ function newRun(kidId){
     rep:3,
     recipes:["classic"], activeRecipe:"classic",
     inv:{cups:25,lemons:32,sugar:32,ice:40}, menuPrices:{},
-    gear:[],
+    gear:[], standLevel:1,
     log:[], lifetimeProfit:0, lifetimeSold:0,
     todayCostMult:1, tomorrowCostMult:1,
     discoveredSyn:[], perfectDays:0, sellouts:0,
@@ -1199,7 +1235,8 @@ function newRun(kidId){
   startMorning();
 }
 function actIndex(){return Math.floor((S.day-1)/7)}
-function gearSlots(){return GEAR_SLOTS}
+function gearSlots(){return standLv().slots}
+function holdMax(){return standLv().hold} // the most of each supply your stand holds
 function cheapestServingCost(){return Math.min(...S.recipes.map(rk=>servingCost(rk)))}
 /* Signs last one day. Each morning you buy the signs you want for today (at most SIGN_MAX), and every one
    you buy goes out. + pays for a sign and − gives the money back, so the money moves as you choose;
@@ -1246,7 +1283,7 @@ function crowdAppeal(crowdKey,b){ // menu-level: their favorite flavor on your m
 /* What each crowd will pay depends on the sky: heat loosens wallets, rain tightens them. */
 const WX_PAY={sunny:1,hot:1.2,perfect:1.25,cloudy:0.95,rainy:0.9,windy:1};
 function payWillingness(crowdKey,b,wxKey){
-  let p=CROWDS[crowdKey].pay*(WX_PAY[wxKey]||1);
+  let p=CROWDS[crowdKey].pay*(WX_PAY[wxKey]||1)*standLv().pay; // a nicer stand: everyone pays a little more
   if(S.gear.includes("lemonzest"))p*=1.15;
   if(S.gear.includes("plaque")&&S.rep>=4.5)p*=1.2;
   if(b.activeSynergies.includes("palate")&&["parents","tourists","foodies"].includes(crowdKey))p*=1.3;
@@ -1282,7 +1319,8 @@ function genMorning(){
   M={trueWx,shownWx,temp,locs,loc:null,card:0,event:ev,signs:0,prices,
      special:S.gear.includes("special")?pick(S.recipes):null,
      dice:S.gear.includes("dice")?Math.round(rnd(0.7,1.6)*100)/100:0};
-  if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1;M.treeLemons=13+3*S.treeDays;addStock("lemons",M.treeLemons,0)}
+  if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1; // the tree only fills the stand up to what it holds
+    M.treeLemons=Math.max(0,Math.min(13+3*S.treeDays,holdMax()-(S.inv.lemons||0)));if(M.treeLemons)addStock("lemons",M.treeLemons,0)}
   S.todayCostMult=S.tomorrowCostMult||1;S.tomorrowCostMult=1;
   if(ev.fn)ev.fn(S);
 }
@@ -1478,10 +1516,11 @@ function renderMorning(){
   const diceHtml=M.dice?`<div class="callout">Lucky Dice: ${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers today.</div>`:"";
   const news=eventHtml+diceHtml+synHtml+streakHtml;
   $("#screen").innerHTML=`
-  <div class="stage morning">
+  <div class="stage morning" style="${standVars()}">
     <div class="sky ${M.shownWx}" id="skyBox">
       ${skyArt(M.shownWx,M.loc)}
-      <img class="stand" src="${STAND_PNG}" alt="">
+      <img class="stand" src="${standLv().png}" alt="">
+      ${nextStandLv()?`<button class="standUp" id="standUp" onclick="showStandUp()" data-f="standUp"><i></i></button>`:""}
       <div id="mScene" style="display:contents"></div>
       <div class="skyTop">
         ${news?`<div class="news" role="status">${news}</div>`:""}
@@ -1522,7 +1561,7 @@ function morningParts(){
   $("#mSpot").innerHTML=mSpotHtml();
   $("#mShop").innerHTML=mShopHtml();
   strips.forEach(([sel,[x,y]])=>{const el=$(sel);if(el){el.scrollLeft=x;el.scrollTop=y}});
-  renderProj();
+  renderProj();syncStandUp();
   fitStage();
   if(f){const el=document.querySelector(`[data-f="${f}"]`);if(el)el.focus({preventScroll:true})}
 }
@@ -1589,13 +1628,14 @@ function flavorCups(rk,inv=S.inv){const ice=icePerCup();return Math.min(cupsPoss
 /* One cup's recipe as icons, "2 [lemon] 1 [sugar]"; a supply you have too little of shows red. */
 function recipeHtml(rk){return Object.entries(cupNeeds(rk)).map(([k,v])=>`<span class="need${(S.inv[k]||0)<v?" short":""}">${v}${iconHtml("supply",k)}</span>`).join("")}
 function mDrawerHtml(id){
-  const ing=INGREDIENTS[id],n=S.inv[id]||0;
-  const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
+  const ing=INGREDIENTS[id],n=S.inv[id]||0,room=holdMax()-n; // a pack bigger than the room left won't fit on the stand
+  const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":"",
+    ing.pack*BULK[BULK.length-1].mult>room?`Your stand holds ${holdMax()}.`:""].filter(Boolean).join(" ");
   return `<div class="drawer" id="mDrawer">
     <div class="mLbl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}.</small></div>
     ${rule?`<div class="rule">${rule}</div>`:""}
     <div class="packs">${BULK.map((t,i)=>{const qty=ing.pack*t.mult,price=packPrice(id,i);
-      return `<button class="btn" onclick="buyItem('${id}',${i})" data-f="buy-${id}-${i}"${S.cash<price?' aria-disabled="true"':""} aria-label="Buy ${qty} ${ing.name.toLowerCase()} for ${fmt(price)}">+${qty}<small>${fmt(price)}</small>${t.off?`<i class="off">−${Math.round(t.off*100)}%</i>`:""}</button>`}).join("")}</div>
+      return `<button class="btn" onclick="buyItem('${id}',${i})" data-f="buy-${id}-${i}"${S.cash<price||qty>room?' aria-disabled="true"':""} aria-label="Buy ${qty} ${ing.name.toLowerCase()} for ${fmt(price)}">+${qty}<small>${fmt(price)}</small>${t.off?`<i class="off">−${Math.round(t.off*100)}%</i>`:""}</button>`}).join("")}</div>
   </div>`;
 }
 function stepperHtml(key,val,downCall,upCall,downLabel,upLabel,atMin,atMax){
@@ -1624,7 +1664,7 @@ function mPricesHtml(){
 function wheelSideways(e,el){if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&el.scrollWidth>el.clientWidth){el.scrollLeft+=e.deltaY;e.preventDefault()}}
 function buyItem(id,tier=0){
   const qty=INGREDIENTS[id].pack*BULK[tier].mult,price=packPrice(id,tier);
-  if(S.cash<price){sfx.bad();return}
+  if(S.cash<price||(S.inv[id]||0)+qty>holdMax()){sfx.bad();return}
   S.cash=Math.round((S.cash-price)*100)/100;addStock(id,qty,price);sfx.coin(3);updateHUD();morningParts();
 }
 function chooseLoc(i){M.loc=M.locs[i];sfx.flip();showBackdrop(M.loc);morningParts()}
@@ -1636,6 +1676,47 @@ function stepSigns(d){ // + buys one sign, − gives one back for what it cost
   updateHUD();morningParts();
 }
 function retireMorning(){S.cash=Math.round((S.cash+M.signs*signPrice())*100)/100;M.signs=0;endRun('retired')} // signs not put out yet go back for a refund
+/* ---------- Stand upgrades: the arrow on top of the stand, each morning until level 3 ----------
+   The arrow is green once you have the money and grey until then. Tapping it either way shows what the next level does. */
+function syncStandUp(){
+  const b=$("#standUp"),next=nextStandLv();if(!b||!next)return;
+  const ok=S.cash>=next.cost;
+  b.classList.toggle("ok",ok);
+  b.setAttribute("aria-label",`Upgrade your stand for ${fmt(next.cost)}`);
+  b.dataset.tip=ok?`Upgrade your stand for ${fmt(next.cost)}.`:`Upgrading your stand costs ${fmt(next.cost)}.`;
+}
+function showStandUp(){
+  const now=standLv(),next=nextStandLv();if(!next)return;
+  const short=Math.round((next.cost-S.cash)*100)/100;sfx.flip();
+  const perks=[`Customers pay ${Math.round((next.pay/now.pay-1)*100)}% more.`,
+    next.hold===Infinity?"It holds as many supplies as you want.":`It holds ${next.hold} of each supply.`,
+    "Your supply shelf fits 1 more flavor supply.",
+    "You get 1 more upgrade slot."];
+  const pic=(l,alt,cls)=>`<img class="${cls}" src="${l.png}" alt="${alt}" style="--w:${l.w}">`;
+  $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal standUpBox center">
+    <h2>Upgrade your stand</h2>
+    <div class="standPair">${pic(now,"Your stand now","now")}<i class="toNext" aria-hidden="true"></i>${pic(next,"Your stand after the upgrade","next")}</div>
+    <ul class="perks">${perks.map(p=>`<li>${p}</li>`).join("")}</ul>
+    <div class="flex mt" style="justify-content:center;gap:10px;flex-wrap:wrap">
+      <button class="btn ghost" onclick="closeModal()">Not now</button>
+      <button class="btn gold" onclick="buyStandUp()"${short>0?" disabled":""}>Upgrade for ${fmt(next.cost)}</button>
+    </div>
+    ${short>0?`<p class="muted" style="margin-bottom:0">You need ${fmt(short)} more.</p>`:""}
+  </div></div>`;
+  $(`#modalRoot .btn.${short>0?"ghost":"gold"}`).focus();
+}
+/* The new stand goes up in place, so the sky keeps drifting: the stage takes its size, the arrow goes once it's the last level. */
+function buyStandUp(){
+  const next=nextStandLv();if(!next||S.cash<next.cost){sfx.bad();return}
+  S.cash=Math.round((S.cash-next.cost)*100)/100;S.standLevel++;
+  closeModal();
+  const st=$(".stage.morning"),img=st.querySelector(".stand");
+  st.setAttribute("style",standVars());img.src=standLv().png;
+  if(!nextStandLv())$("#standUp").remove();
+  img.classList.remove("levelUp");void img.offsetWidth;img.classList.add("levelUp");
+  updateHUD();morningParts();
+  celebrate("medium",img);
+}
 function stepPrice(rk,d){
   const v=Math.round((M.prices[rk]+0.25*d)*100)/100;
   if(v<0.5||v>priceMax())return;
@@ -1737,10 +1818,10 @@ function openStand(){
 function cupsByHtml(){return `<div class="statChip cupsBy"><span>Cups left</span><div class="cbList">${S.recipes.map(rk=>`<span class="cb" data-cups="${rk}" tabindex="0">${iconHtml("flavor",rk,true)}<b></b></span>`).join("")}</div></div>`}
 function renderDayScene(){
   $("#screen").innerHTML=`
-  <div class="stage day">
+  <div class="stage day" style="${standVars()}">
     <div class="sky ${M.actualWx}" id="skyBox">
       ${skyArt(M.actualWx,M.loc)}
-      <img class="stand" src="${STAND_PNG}" alt="">
+      <img class="stand" src="${standLv().png}" alt="">
       ${signsHtml(D.signs)}
       <div id="fxLayer"></div>
       <div class="skyTop">
