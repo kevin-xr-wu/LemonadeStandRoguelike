@@ -1514,7 +1514,7 @@ document.addEventListener("click",e=>{
 function morningParts(){
   const ae=document.activeElement,f=ae&&ae.dataset?ae.dataset.f:null;
   const strips=[".shelfRow",".prices",".fList"].map(sel=>[sel,$(sel)?[$(sel).scrollLeft,$(sel).scrollTop]:[0,0]]); // keep scrolling strips where the player left them
-  $("#mScene").innerHTML=mSceneHtml();
+  $("#mScene").innerHTML=signsHtml(M.signs);
   $("#mSpot").innerHTML=mSpotHtml();
   $("#mShop").innerHTML=mShopHtml();
   strips.forEach(([sel,[x,y]])=>{const el=$(sel);if(el){el.scrollLeft=x;el.scrollTop=y}});
@@ -1523,9 +1523,10 @@ function morningParts(){
   if(f){const el=document.querySelector(`[data-f="${f}"]`);if(el)el.focus({preventScroll:true})}
 }
 const SIGN_SPOTS=8; // signs drawn on the grass; free signs past these still count, they just are not drawn
-function mSceneHtml(){
+/* The signs you bought stand by the stand: in the morning as you buy them, and all through the selling day. */
+function signsHtml(n){
   let signs="";
-  for(let k=0;k<Math.min(M.signs,SIGN_SPOTS);k++) // alternate left and right of the stand, working outward
+  for(let k=0;k<Math.min(n,SIGN_SPOTS);k++) // alternate left and right of the stand, working outward
     signs+=`<span class="signSlot" style="--k:${k>>1};--side:${k%2?1:-1}" aria-hidden="true">${iconHtml("supply","signs")}</span>`;
   return signs;
 }
@@ -1736,6 +1737,7 @@ function renderDayScene(){
     <div class="sky ${M.actualWx}" id="skyBox">
       ${skyArt(M.actualWx,M.loc)}
       <img class="stand" src="${STAND_PNG}" alt="">
+      ${signsHtml(D.signs)}
       <div id="fxLayer"></div>
       <div class="skyTop">
         <div class="side"></div>
