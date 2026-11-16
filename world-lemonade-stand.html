@@ -81,7 +81,8 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .choices.dealt .pick{animation:slideUp .2s ease-out backwards} /* a re-roll deals the new cards one after another */
 .choices.dealt .pick:nth-child(2){animation-delay:.06s}.choices.dealt .pick:nth-child(3){animation-delay:.12s}
 @media (prefers-reduced-motion:reduce){.choices.dealt .pick{animation:none}}
-.choice{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:13px;text-align:left;box-shadow:0 4px 0 rgba(43,33,24,.85);transition:transform .12s, box-shadow .12s;position:relative;width:100%}
+/* Cards are buttons, so they set their own text colour: a page hosting the game in dark mode would otherwise turn it white */
+.choice{background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:14px;padding:13px;text-align:left;box-shadow:0 4px 0 rgba(43,33,24,.85);transition:transform .12s, box-shadow .12s;position:relative;width:100%}
 .choice:hover{transform:translateY(-3px) rotate(-.4deg);box-shadow:0 7px 0 rgba(43,33,24,.85)}
 .choice:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(43,33,24,.85)}
 .choice .ttl{font-size:var(--fs-lg);font-weight:900;display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
