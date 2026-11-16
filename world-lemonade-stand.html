@@ -1017,6 +1017,8 @@ function iconHtml(kind,id,big){const k=ICONS[kind];const i=k.ids.indexOf(id);if(
 function gearIconHtml(id,big){if(ICONS.gearA.ids.includes(id))return iconHtml("gearA",id,big);if(ICONS.gearB.ids.includes(id))return iconHtml("gearB",id,big);return ""}
 /* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice in each cup. */
 const WX_TEMP={sunny:[72,86],hot:[88,103],perfect:[80,90],cloudy:[62,76],rainy:[54,68],windy:[66,79]};
+/* Every run opens the same way: a sunny day, a cloudy one, then a hot one. From day 4 the weather rolls as usual. */
+const OPENING_DAYS=[{wx:"sunny",temp:[80,85]},{wx:"cloudy",temp:[67,75]},{wx:"hot",temp:[90,100]}];
 function iceForTemp(t){return t>=100?4:t>=90?3:t>=80?2:t>=70?1:0}
 /* Supplies cost the same all run. Only today's events (a market sale, ants in the sugar) and the Wholesale Card change it. */
 function ingCost(id){return INGREDIENTS[id].price/INGREDIENTS[id].pack*((S&&S.todayCostMult)||1)*(S&&S.gear.includes("wholesale")?0.8:1)}
@@ -1309,7 +1311,8 @@ function genMorning(){
   const act=actIndex();
   // weather roll (deck-ish weights, act 2+ wilder)
   const wlist=Object.entries(WEATHERS).map(([k,v])=>({k,w:v.w*(k==="perfect"?1:act>=1&&["rainy","windy","cloudy"].includes(k)?1.25:1)}));
-  const trueWx=sampleWeighted(wlist).k;
+  const opening=OPENING_DAYS[S.day-1];
+  const trueWx=opening?opening.wx:sampleWeighted(wlist).k;
   // the forecast is always right: shown weather IS the day's weather
   const shownWx=trueWx;
   // locations: 3 distinct
@@ -1319,10 +1322,11 @@ function genMorning(){
   });
   // crowd mix for a location computed on selection
   const gv=S.gear.includes("grapevine"); // Town Grapevine: good news travels, bad news stalls
-  const evRoll=sampleWeighted(EVENTS.map(e=>({k:e.id,w:e.w*(gv?(GOOD_EVENTS.includes(e.id)?2:BAD_EVENTS.includes(e.id)?0.5:1):1)}))).k;
+  // no heat wave on the opening days, so their temperatures stay in range
+  const evRoll=sampleWeighted(EVENTS.filter(e=>!(opening&&e.id==="heatwave")).map(e=>({k:e.id,w:e.w*(gv?(GOOD_EVENTS.includes(e.id)?2:BAD_EVENTS.includes(e.id)?0.5:1):1)}))).k;
   const ev=EVENTS.find(e=>e.id===evRoll);
   const prices={};S.recipes.forEach(rk=>{prices[rk]=S.menuPrices[rk]!=null?S.menuPrices[rk]:RECIPES[rk].price});
-  const temp=ri(...WX_TEMP[trueWx]);
+  const temp=ri(...(opening?opening.temp:WX_TEMP[trueWx]));
   M={trueWx,shownWx,temp,locs,loc:null,card:0,event:ev,signs:0,prices,
      special:S.gear.includes("special")?pick(S.recipes):null,
      dice:S.gear.includes("dice")?Math.round(rnd(0.7,1.6)*100)/100:0};
