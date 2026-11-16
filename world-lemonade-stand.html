@@ -977,8 +977,8 @@ function gearIconHtml(id,big){if(ICONS.gearA.ids.includes(id))return iconHtml("g
 /* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice in each cup. */
 const WX_TEMP={sunny:[72,86],hot:[88,103],perfect:[80,90],cloudy:[62,76],rainy:[54,68],windy:[66,79]};
 function iceForTemp(t){return t>=100?4:t>=90?3:t>=80?2:t>=70?1:0}
-function actCostMult(){if(typeof S==="undefined"||!S)return 1;return [1,1.3,1.64,2][Math.min(actIndex(),3)]}
-function ingCost(id){return INGREDIENTS[id].price/INGREDIENTS[id].pack*actCostMult()*((S&&S.todayCostMult)||1)*(S&&S.gear.includes("wholesale")?0.8:1)}
+/* Supplies cost the same all run. Only today's events (a market sale, ants in the sugar) and the Wholesale Card change it. */
+function ingCost(id){return INGREDIENTS[id].price/INGREDIENTS[id].pack*((S&&S.todayCostMult)||1)*(S&&S.gear.includes("wholesale")?0.8:1)}
 /* Bulk deals, as in the classic stand: bigger packs cost less for each one. */
 const BULK=[{mult:1,off:0},{mult:3,off:0.10},{mult:6,off:0.20}];
 function packPrice(id,tier=0){const t=BULK[tier];return Math.round(ingCost(id)*INGREDIENTS[id].pack*t.mult*(1-t.off)*100)/100}
