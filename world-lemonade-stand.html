@@ -286,6 +286,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .logo{margin:auto 0;line-height:0;position:relative;z-index:7}
 .logo img{width:calc(var(--px)*166px);image-rendering:pixelated;filter:drop-shadow(0 4px 3px rgba(0,0,0,.25))}
 .title .stand{width:calc(var(--px)*64px)}
+.title .cust{--s:var(--px);bottom:calc(1px*var(--px))}
 .title .ground{height:auto;min-height:max(84px,calc(var(--px)*48px));background-size:calc(var(--px)*64px) calc(var(--px)*32px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding-block:16px} /* PLAY, then High scores under it; the ground grows to hold both and the sky gives up the room */
 .title .ground:before{top:calc(var(--px)*-9px);height:calc(var(--px)*14px);background-size:calc(var(--px)*64px) calc(var(--px)*14px)}
 .title .playBtn,.title .scoresBtn{position:relative;z-index:6}
@@ -900,8 +901,8 @@ function skyArt(wx,loc){
 /* The backdrop behind the stand: the spot's own, or the home street before a spot is picked. */
 const backdropIndex=loc=>Math.max(0,Object.keys(BACKDROP_PNG).indexOf(loc?loc.name:""));
 const backdropHtml=(loc,cls="")=>{const i=backdropIndex(loc);return `<i class="wx street${cls}" data-bd="${i}" style="background-image:var(--backdrop${i})"></i>`};
-function showBackdrop(loc){ // picking a spot crossfades its backdrop with the last one
-  const all=[...document.querySelectorAll("#skyBox .street")],old=all[all.length-1];
+function showBackdrop(loc,sky=$("#skyBox")){ // picking a spot crossfades its backdrop with the last one
+  const all=sky?[...sky.querySelectorAll(".street")]:[],old=all[all.length-1];
   if(!old||+old.dataset.bd===backdropIndex(loc))return;
   old.insertAdjacentHTML("afterend",backdropHtml(loc," fresh"));
   const el=old.nextElementSibling;void el.offsetWidth;el.classList.remove("fresh"); // fade in from clear
@@ -1422,10 +1423,32 @@ function showTitle(){
     <div class="sky sunny">
       <div class="titleBtns"><button class="hudBtn soundBtn${soundOn?"":" off"}" onclick="toggleSound()" aria-label="Sound on or off"><i class="hudIcon"></i></button><button class="hudBtn helpBtn" onclick="showHelp()" aria-label="How to play">?</button></div>
       <h1 class="logo"><img src="${LOGO_PNG}" alt="World Lemonade Stand"></h1>
+      ${backdropHtml(LOCATIONS[0])}
       <img class="stand" src="${STAND_PNG}" alt="">
     </div>
     <div class="ground"><button class="btn gold playBtn" onclick="selectKid('classic')">PLAY</button><button class="btn ghost scoresBtn" onclick="showScores()">High scores</button></div>
   </div>`;
+  titleScene($(".title .sky"));
+}
+/* Every few seconds the next spot's backdrop fades in behind the stand. One customer at a time, from that
+   spot's crowd, walks up from the left or right, buys a cup and walks off. The next one comes in soon after.
+   Both stop once the title is gone. With reduced motion, the title stays on the home street. */
+const TITLE_SPOT_MS=3000,TITLE_NEXT_MS=1000;
+function titleScene(sky){
+  if(stillMotion())return;
+  let at=0;
+  const nextSpot=()=>{if(!sky.isConnected)return;at=(at+1)%LOCATIONS.length;showBackdrop(LOCATIONS[at],sky);setTimeout(nextSpot,TITLE_SPOT_MS)};
+  setTimeout(nextSpot,TITLE_SPOT_MS);
+  const nextCustomer=()=>{
+    if(!sky.isConnected)return;
+    const {d,walkLook,faceFront,speed,counter,from,to}=newCustomer(sky,pick(Object.keys(LOCATIONS[at].bias)));
+    const walk=(a,b)=>d.animate([{left:a+"px"},{left:b+"px"}],{duration:Math.abs(b-a)/speed,fill:"forwards"}).finished;
+    walk(from,counter).then(()=>{
+      faceFront();
+      setTimeout(()=>{walkLook(true);walk(counter,to).then(()=>{d.remove();setTimeout(nextCustomer,TITLE_NEXT_MS)})},800);
+    });
+  };
+  setTimeout(nextCustomer,TITLE_NEXT_MS);
 }
 /* The first time you play, How to play comes up before day 1, and closing it starts the day.
    Players who already have a finished run or day-1 hints behind them go straight in. */
@@ -1821,13 +1844,20 @@ function updateDayStats(){
 /* Customers walk across the scene. Buyers stop at the counter and face you while they pay,
    then walk on with a cup; everyone else walks past, saying why as they pass the stand. */
 const WALK_SPEED=75; // sprite pixels a second, so phones and desktops walk at the same pace
-function spawnCustomer(ck,{buys=false,paid=0,got={},say=null,streak=0}={}){
-  const sky=$("#skyBox");if(!sky)return;
-  const day=D,d=document.createElement("div"),fw=ck==="parents"?32:24,fromLeft=Math.random()<0.5;
+/* A customer just off the left or right of the sky. walkLook(carry) shows them walking, with or without a cup;
+   faceFront() turns them to the counter. counter is a random place in front of the stand. */
+function newCustomer(sky,ck){
+  const d=document.createElement("div"),fw=ck==="parents"?32:24,fromLeft=Math.random()<0.5;
   const walkLook=carry=>{d.className=`cust ${carry?"carry":"walk"}${fromLeft?"":" left"}`;d.style.backgroundImage=`url(${CUSTOMER_WALK_PNG[ck]})`};
+  const faceFront=()=>{d.className="cust front";d.style.backgroundImage=`url(${CUSTOMER_PNG[ck]})`};
   d.style.setProperty("--fw",fw);walkLook(false);sky.appendChild(d);
   const W=sky.clientWidth,w=d.offsetWidth,speed=WALK_SPEED*(w/fw)/1000; // px per ms at 1×
-  const from=fromLeft?-w:W+w,to=fromLeft?W+w:-w;
+  const standW=(sky.querySelector(".stand")||d).offsetWidth,counter=W/2+(Math.random()-0.5)*standW*0.7;
+  return {d,walkLook,faceFront,W,speed,counter,from:fromLeft?-w:W+w,to:fromLeft?W+w:-w};
+}
+function spawnCustomer(ck,{buys=false,paid=0,got={},say=null,streak=0}={}){
+  const sky=$("#skyBox");if(!sky)return;
+  const day=D,{d,walkLook,faceFront,W,speed,counter:spot,from,to}=newCustomer(sky,ck);
   const walk=(a,b)=>{ // duration is authored at 1×; playbackRate carries the live speed
     const anim=d.animate([{left:a+"px"},{left:b+"px"}],{duration:Math.abs(b-a)/speed,fill:"forwards"});
     anim.playbackRate=SPEED;liveAnims.add(anim);
@@ -1841,11 +1871,10 @@ function spawnCustomer(ck,{buys=false,paid=0,got={},say=null,streak=0}={}){
     if(say)after(atStand,()=>spawnBubble(say,d)); // talk as they pass the stand
     return;
   }
-  const standW=($(".stand")||d).offsetWidth,spot=W/2+(Math.random()-0.5)*standW*0.7;
   day.onTheWay=(day.onTheWay||0)+1;
   walk(from,spot).then(()=>{
     if(!d.isConnected){day.onTheWay--;return}
-    d.className="cust front";d.style.backgroundImage=`url(${CUSTOMER_PNG[ck]})`;
+    faceFront();
     const cupsBought=Object.values(got).reduce((a,b)=>a+b,0);
     const coins=Math.min(3,cupsBought); // a coin per cup, up to 3, so bigger orders sound bigger
     const payCoin=k=>{sfx.coin(Math.max(0,streak-coins+1+k));spawnCoin(spot)};
