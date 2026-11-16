@@ -1782,7 +1782,7 @@ async function runDayPhase(phase){
     updateDayStats();
     await sleep(rnd(gap*0.75,gap*1.25));
   }
-  if(!isMorning){await buyersServed();finishDay();return}
+  if(!isMorning){await lastCustomers();finishDay();return}
   D.morningSold=D.sold;
   const msg=$("#dayMsg");if(msg)msg.textContent="Noon. More people are coming.";
   if(D.skip)resumeAfternoon();else after(900,resumeAfternoon);
@@ -1825,13 +1825,15 @@ function spawnCustomer(ck,{buys=false,paid=0,got={},say=null,streak=0}={}){
   };
   if(!buys){
     walk(from,to).then(()=>d.remove());
-    if(say)after(Math.abs(W/2-from)/speed,()=>spawnBubble(say,d)); // talk as they pass the stand
+    const atStand=Math.abs(W/2-from)/speed;
+    day.onTheWay=(day.onTheWay||0)+1;after(atStand,()=>day.onTheWay--); // the day isn't over until they've walked past the stand
+    if(say)after(atStand,()=>spawnBubble(say,d)); // talk as they pass the stand
     return;
   }
   const standW=($(".stand")||d).offsetWidth,spot=W/2+(Math.random()-0.5)*standW*0.7;
-  day.buying=(day.buying||0)+1;
+  day.onTheWay=(day.onTheWay||0)+1;
   walk(from,spot).then(()=>{
-    if(!d.isConnected){day.buying--;return}
+    if(!d.isConnected){day.onTheWay--;return}
     d.className="cust front";d.style.backgroundImage=`url(${CUSTOMER_PNG[ck]})`;
     const cupsBought=Object.values(got).reduce((a,b)=>a+b,0);
     const coins=Math.min(3,cupsBought); // a coin per cup, up to 3, so bigger orders sound bigger
@@ -1840,13 +1842,14 @@ function spawnCustomer(ck,{buys=false,paid=0,got={},say=null,streak=0}={}){
     spawnFlavor(spot,got);
     day.paid+=paid;day.paidCups+=cupsBought;Object.entries(got).forEach(([rk,n])=>{day.paidBy[rk]=(day.paidBy[rk]||0)+n});updateDayStats();
     if(say)after(1000,()=>spawnBubble(say,d)); // pay first, then talk, so the coin and flavor don't overlap the bubble
-    after(800,()=>{day.buying--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())});
+    after(800,()=>{day.onTheWay--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())});
   });
 }
-/* Before the report, let buyers who are on their way finish buying. */
-async function buyersServed(){
+/* Before the report, let the last customers reach the stand: buyers pay, and passers-by walk past it.
+   A sold-out day lasts as long as any other. */
+async function lastCustomers(){
   let waited=0; // in simulation ms, so the grace period scales with SPEED too
-  while(D&&D.buying>0&&!D.skip&&waited<5000){await sleep(100);waited+=100}
+  while(D&&D.onTheWay>0&&!D.skip&&waited<5000){await sleep(100);waited+=100}
 }
 /* One speech bubble at a time, sitting above the customer who is talking
    and following them as they walk. If someone else is mid-sentence, the
