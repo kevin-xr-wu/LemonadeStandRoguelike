@@ -517,8 +517,10 @@ body:has(.stage){overflow:hidden}
 .skyTop{position:relative;z-index:7;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);align-items:start;gap:10px}
 .skyTop .side{display:grid;gap:8px;justify-items:start;align-content:start}
 .spotCard{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 4px 0 rgba(43,33,24,.3);width:min(580px,100%);justify-self:center}
-.spotCard .postFace{font-size:var(--fs-sm);padding:4px 18px 4px 8px}
-.spotCard .mLbl{justify-content:center;margin:0 0 6px;font-size:var(--fs-sm)}
+.spotCard .postFace{font-size:var(--fs-md);padding:4px 18px 4px 8px}
+.spotCard .mLbl{justify-content:center;margin:0 0 8px;font-size:var(--fs-lg)}
+.spotCard .learn{font-size:var(--fs-md)}
+.spotCard .tag{font-size:var(--fs-sm)}
 .spotCard .posts{max-width:none}
 /* Today's news (events, Lucky Dice, combos, hot streak): one strip of notes just under the HUD */
 .news{grid-column:1/-1;justify-self:center;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:min(820px,100%)}
@@ -570,40 +572,48 @@ body:has(.stage){overflow:hidden}
 /* Today's prices: a price tag per flavor. The tags sit in one row that scrolls sideways,
    so any number of flavors fits without the card growing. */
 .prices{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:rgba(43,33,24,.25) transparent;padding-bottom:4px}
-.spotCard .price{flex:none;width:150px;scroll-snap-align:start;grid-template-columns:auto minmax(0,1fr);grid-template-rows:1fr auto;align-items:start;justify-items:start;gap:4px 8px;text-align:left} /* steppers line up along the bottom */
+.spotCard .price{flex:none;width:170px;scroll-snap-align:start;grid-template-columns:auto minmax(0,1fr);grid-template-rows:1fr auto;align-items:start;justify-items:start;gap:4px 8px;text-align:left} /* steppers line up along the bottom */
 .spotCard .price .stepper,.spotCard .price .pOut{grid-column:1/-1}
 .spotCard .price .stepper,.spotCard .price .pOut{justify-self:center;align-self:center} /* a flavor you cannot make today shows what it needs in place of its price */
 .spotCard .price .tag{margin:0}
 .spotCard .price>div{min-width:0;max-width:100%}
-.spotCard .pName{font-size:var(--fs-sm);line-height:1.15}
-.spotCard .pOut{font-size:var(--fs-xs);line-height:1.25}
+.spotCard .pName{font-size:var(--fs-md);line-height:1.15}
+.spotCard .pOut{font-size:var(--fs-sm);line-height:1.25}
 .spotCard .stepper button{width:34px;height:34px}
 .spotCard .stepper b{min-width:50px}
 /* The top card is a carousel: "Choose a spot to open your stand", "Signs today", "Today's prices", then "Ready to open?" with the cups your supplies make and Open */
 .signBuy{display:flex;align-items:center;justify-content:center;gap:12px}
-.signBuy .each{font-size:var(--fs-sm);font-weight:800}
+.signBuy .each{font-size:var(--fs-md);font-weight:800}
 .signBuy .each b{font-family:var(--font-display);font-weight:400;font-size:var(--fs-lg)}
-.signInfo{margin-top:8px;text-align:center;font-size:var(--fs-sm);line-height:1.35} /* what signs do, under the stepper */
+.signInfo{margin-top:8px;text-align:center;font-size:var(--fs-md);line-height:1.35} /* what signs do, under the stepper */
 .signInfo span{display:inline-block}
 .slides{display:flex;transform:translateX(calc(var(--card,0)*-100%));transition:transform .3s ease}
 .slide{flex:0 0 100%;min-width:0;padding:8px 10px 2px;display:flex;flex-direction:column;justify-content:center}
 .goBox{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:2px 0 4px}
 .goInfo{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
-.goChip{display:inline-flex;align-items:center;gap:6px;background:var(--paper2);border-radius:99px;padding:4px 12px;font-size:var(--fs-sm);font-weight:800;line-height:1.2;white-space:nowrap}
+.goChip{display:inline-flex;align-items:center;gap:6px;background:var(--paper2);border-radius:99px;padding:4px 12px;font-size:var(--fs-md);font-weight:800;line-height:1.2;white-space:nowrap}
 .goChip b{font-family:var(--font-display);font-size:var(--fs-lg);line-height:1;color:var(--green2)}
 .goChip .warnTxt{color:var(--red)}
-.spotCard #guessText{flex:none;flex-wrap:nowrap;gap:6px;font-size:var(--fs-sm)} /* beats the old guess bar's #guessText rules */
+.spotCard #guessText{flex:none;flex-wrap:nowrap;gap:6px;font-size:var(--fs-md)} /* beats the old guess bar's #guessText rules */
 .spotCard #guessText b{color:var(--green2)}
 .spotCard #btnOpen{width:min(260px,100%);padding:10px 24px;font-size:var(--fs-xl);margin:0}
-.carNav{display:flex;align-items:center;justify-content:center;gap:2px;padding:0 0 4px}
-.carNav button{display:flex;align-items:center;justify-content:center;min-width:32px;height:28px;padding:0;background:none;border:0;border-radius:8px;color:var(--ink);font-family:var(--font-display);font-size:var(--fs-xl);line-height:1}
-.carNav button:hover{background:var(--paper2)}
-.carNav button:focus-visible{outline:3px solid var(--blue)}
-.carNav button[aria-disabled="true"]{opacity:.25;cursor:default;background:none}
-.carNav .dot{min-width:22px}
-.carNav .dot:before{content:"";width:10px;height:10px;border-radius:50%;background:rgba(43,33,24,.25)}
-.carNav .dot[aria-current="true"]:before{background:var(--ink)}
-@media (prefers-reduced-motion:reduce){.slides{transition:none}}
+/* The arrows and dots are big and look pressable, so players see that this is how they move on. Next is lemon, like Open. */
+.carNav{--b:44px;display:flex;align-items:center;justify-content:center;gap:4px;padding:2px 0 10px}
+.carNav button{display:flex;align-items:center;justify-content:center;height:var(--b);padding:0;background:none;border:0;color:var(--ink)}
+.carNav button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.carNav .arrow{width:var(--b);margin:0 6px;background:var(--card);border:3px solid var(--ink);border-radius:50%;box-shadow:0 3px 0 rgba(43,33,24,.85)}
+.carNav .arrow[data-d="1"]{background:var(--lemon)}
+.carNav .arrow:hover{background:var(--paper2)}
+.carNav .arrow[data-d="1"]:hover{background:#ffe470}
+.carNav .arrow:active{transform:translateY(2px);box-shadow:none}
+.carNav .arrow[aria-disabled="true"],.carNav .arrow[aria-disabled="true"]:hover{opacity:.3;cursor:default;box-shadow:none;transform:none;background:var(--card)}
+.carNav .arrow svg{width:14px;height:20px;fill:currentColor;shape-rendering:crispEdges;translate:2px 0} /* a pixel chevron at 2×, nudged to sit in the middle by eye */
+.carNav .arrow[data-d="-1"] svg{scale:-1 1;translate:-2px 0}
+.carNav .dot{min-width:28px;border-radius:8px}
+.carNav .dot:before{content:"";width:14px;height:14px;border-radius:99px;background:rgba(43,33,24,.3);transition:width .2s}
+.carNav .dot:hover:before{background:rgba(43,33,24,.55)}
+.carNav .dot[aria-current="true"]:before{width:28px;background:var(--ink)} /* the slide you are on is a long dot */
+@media (prefers-reduced-motion:reduce){.slides,.carNav .dot:before{transition:none}}
 .dayCard{display:grid;gap:6px;min-width:260px;background:var(--ink);color:#fff;border-radius:14px;padding:10px 14px 12px;box-shadow:0 5px 0 rgba(0,0,0,.25)}
 .dayCard #dayMsg{font-weight:800;color:var(--lemon)}
 .dayBar{position:relative;height:10px;border-radius:99px;background:rgba(255,247,224,.2);overflow:hidden}
@@ -638,7 +648,7 @@ body:has(.stage){overflow:hidden}
   .dockIn{gap:10px}
   .dock .supShelf{flex:1 1 100%}
   .dock .shelfRow{justify-content:space-between}
-  .spotCard .price{width:140px}
+  .spotCard .price{width:160px}
   .dock .stepper button{width:34px;height:34px}
   .dock .stepper b{min-width:46px;font-size:var(--fs-md)}
 }
@@ -655,7 +665,7 @@ body:has(.stage){overflow:hidden}
   .skyTop{grid-template-columns:1fr;justify-items:stretch}
   .skyTop .side{justify-items:start}
   .spotCard .slide{padding:6px 8px 2px}
-  .spotCard .postFace{padding:5px 15px 5px 6px;font-size:var(--fs-xs)}
+  .spotCard .postFace{padding:5px 15px 5px 6px;font-size:var(--fs-sm)}
   .spotCard{justify-self:center}
   .dock .item{width:70px}
   .stage .ground{min-height:max(250px,32vh)}
@@ -686,8 +696,7 @@ body:has(.stage){overflow:hidden}
 .stage.fit-tight .sky{padding-top:calc(var(--hudH) + 16px)}
 .stage.fit-tight .skyTop{gap:6px}
 .stage.fit-tight .spotCard .slide{padding-top:6px}
-.stage.fit-tight .carNav{padding-bottom:2px}
-.stage.fit-tight .carNav button{height:22px}
+.stage.fit-tight .carNav{--b:36px;padding-bottom:6px}
 .stage.fit-tight .spotCard .mLbl{display:none}
 .stage.fit-tight .dockIn{gap:8px}
 .stage.fit-tight .dock .mLbl{margin-bottom:2px}
@@ -1590,14 +1599,15 @@ function mSpotHtml(){
       <button class="btn gold" id="btnOpen" onclick="openStand()" data-f="open">Open</button></div>`;
   const last=SPOT_SLIDES.length-1;
   const slide=(html,k)=>`<div class="slide" role="group" aria-roledescription="slide" aria-label="${SPOT_SLIDES[k]}"${k===card?"":" inert"}>${html}</div>`;
-  const arrow=(d,txt)=>`<button class="arrow" onclick="setSpotCard(M.card+${d})" data-d="${d}" data-f="car-arrow${d}" aria-label="${d<0?"Back":"Next"}"${(d<0?card===0:card===last)?' aria-disabled="true"':""}>${txt}</button>`;
+  const arrow=d=>`<button class="arrow" onclick="setSpotCard(M.card+${d})" data-d="${d}" data-f="car-arrow${d}" aria-label="${d<0?"Back":"Next"}"${(d<0?card===0:card===last)?' aria-disabled="true"':""}>${CHEVRON}</button>`;
   const dot=k=>`<button class="dot" onclick="setSpotCard(${k})" data-k="${k}" data-f="car-dot${k}" aria-label="${SPOT_SLIDES[k]}" aria-current="${k===card}"></button>`;
   return `<div class="slides" style="--card:${card}">${[where,mSignsHtml(),mPricesHtml(),go].map(slide).join("")}</div>
-    <div class="carNav">${arrow(-1,"‹")}${SPOT_SLIDES.map((_,k)=>dot(k)).join("")}${arrow(1,"›")}</div>`;
+    <div class="carNav">${arrow(-1)}${SPOT_SLIDES.map((_,k)=>dot(k)).join("")}${arrow(1)}</div>`;
 }
 /* The top card's slides, in the order the help teaches: where to sell, signs, the prices, then open.
    Picking a spot stays on its slide; the arrows and dots go back and forth. */
 const SPOT_SLIDES=["Choose a spot to open your stand","Signs today","Today's prices","Ready to open?"];
+const CHEVRON=`<svg viewBox="0 0 7 10" aria-hidden="true"><path d="M0 0h3v1h1v1h1v1h1v1h1v2h-1v1h-1v1h-1v1h-1v1h-3v-1h1v-1h1v-1h1v-1h1v-2h-1v-1h-1v-1h-1v-1h-1z"/></svg>`; // the carousel's arrow, 7×10 art pixels pointing right
 function setSpotCard(i){
   i=clamp(i,0,SPOT_SLIDES.length-1);
   if(M.card===i)return;
