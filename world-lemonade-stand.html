@@ -1637,7 +1637,6 @@ function servingsReady(){
   const ice=icePerCup();
   return Math.min(S.inv.cups,pourableCups({...S.inv}),ice>0?Math.floor((S.inv.ice||0)/ice):Infinity);
 }
-function standDry(){return servingsReady()<=0}
 function cheapestFlavor(){return D.menu.reduce((a,bk)=>menuPrice(bk)<menuPrice(a)?bk:a,D.menu[0])}
 /* Pour one cup of a flavor: its supplies, the cup and the ice. */
 function pourCup(rk){
@@ -1691,7 +1690,7 @@ function openStand(){
   sfx.pop();
   M.actualWx=M.trueWx;
   D={signs:putOut,build:b,
-     roll:rnd(0.87,1.13),soldBy:{},revByCrowd:{},sold:0,morningSold:0,unmet:0,
+     roll:rnd(0.87,1.13),soldBy:{},revByCrowd:{},sold:0,morningSold:0,dry:false,
      awayPrice:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
      skip:false,done:false,brotherSpilled:false,crewLeft:0,paidCups:0,paidBy:{}};
   const canSell=sellableNow();D.menu=canSell.length?canSell:S.recipes.slice(); // only flavors you have supplies for
@@ -1772,36 +1771,30 @@ function partySizes(people){
 }
 async function runDayPhase(phase){
   const isMorning=phase==="morning";
-  const target=isMorning?D.morningDemand:D.unmet+D.aftDemand;
+  const target=isMorning?D.morningDemand:D.aftDemand;
   if(isMorning&&D.crew)logLine(`<span class="good">${D.crew} road workers buy your cheapest flavor.</span>`);
   const mix=crowdMixFor(M.loc);
   const mixArr=[];Object.entries(mix).forEach(([k,v])=>{for(let i=0;i<v;i++)mixArr.push(k)});
-  let streak=0,processed=0,dry=false;
+  let streak=0,processed=0;
   const parties=partySizes(target),gap=600*Math.sqrt(12/Math.max(12,parties.length)); // more walkers come closer together, so busy days run only a little longer
   for(const size of parties){
     if(processed>=target)break;
     const ck=pick(mixArr)||"parents";const c=CROWDS[ck];
     let miss=null;const got={},takings=D.revenue+D.tips; // got: cups of each flavor this walker buys
     for(let j=0;j<size&&processed<target;j++){
-      const res=serveOne(ck);
       processed++;
+      if(D.dry){D.awayOut++;continue} // sold out: everyone else today walks past
+      const res=serveOne(ck);
       if(res==="sold"){streak++;got[D.lastFlavor]=(got[D.lastFlavor]||0)+1}
       else if(res==="price"){D.awayPrice++;streak=0;miss="too pricey…"}
-      else { // out of stock: the rest of this phase's line can't be served
-        if(isMorning){D.unmet+=target-processed}
-        else D.awayOut+=target-processed;
-        processed=target;dry=true;break;
-      }
+      else{D.dry=true;D.awayOut++;streak=0;logLine(`<span class="bad">${iconHtml("supply","cups")} You ran out of supplies.</span>`)}
     }
     if(!D.skip)spawnCustomer(ck,Object.keys(got).length?{buys:true,paid:D.revenue+D.tips-takings,got,streak,say:Math.random()<0.24?c.line:null}:{say:miss});
     updateDayStats();
-    if(dry)break;
     await sleep(rnd(gap*0.75,gap*1.25));
   }
-  if(dry&&(isMorning?D.unmet>0:D.awayOut>0))logLine(`<span class="bad">${iconHtml("supply","cups")} You ran out of supplies.${isMorning?" People in line will wait until noon.":""}</span>`);
-  if(!isMorning){await buyersServed();finishDay();return}
+  if(!isMorning){await lastCustomers();finishDay();return}
   D.morningSold=D.sold;
-  if(standDry()){await buyersServed();finishDay();return}
   const msg=$("#dayMsg");if(msg)msg.textContent="Noon. More people are coming.";
   if(D.skip)resumeAfternoon();else after(900,resumeAfternoon);
 }
@@ -1843,13 +1836,15 @@ function spawnCustomer(ck,{buys=false,paid=0,got={},say=null,streak=0}={}){
   };
   if(!buys){
     walk(from,to).then(()=>d.remove());
-    if(say)after(Math.abs(W/2-from)/speed,()=>spawnBubble(say,d)); // talk as they pass the stand
+    const atStand=Math.abs(W/2-from)/speed;
+    day.onTheWay=(day.onTheWay||0)+1;after(atStand,()=>day.onTheWay--); // the day isn't over until they've walked past the stand
+    if(say)after(atStand,()=>spawnBubble(say,d)); // talk as they pass the stand
     return;
   }
   const standW=($(".stand")||d).offsetWidth,spot=W/2+(Math.random()-0.5)*standW*0.7;
-  day.buying=(day.buying||0)+1;
+  day.onTheWay=(day.onTheWay||0)+1;
   walk(from,spot).then(()=>{
-    if(!d.isConnected){day.buying--;return}
+    if(!d.isConnected){day.onTheWay--;return}
     d.className="cust front";d.style.backgroundImage=`url(${CUSTOMER_PNG[ck]})`;
     const cupsBought=Object.values(got).reduce((a,b)=>a+b,0);
     const coins=Math.min(3,cupsBought); // a coin per cup, up to 3, so bigger orders sound bigger
@@ -1858,13 +1853,14 @@ function spawnCustomer(ck,{buys=false,paid=0,got={},say=null,streak=0}={}){
     spawnFlavor(spot,got);
     day.paid+=paid;day.paidCups+=cupsBought;Object.entries(got).forEach(([rk,n])=>{day.paidBy[rk]=(day.paidBy[rk]||0)+n});updateDayStats();
     if(say)after(1000,()=>spawnBubble(say,d)); // pay first, then talk, so the coin and flavor don't overlap the bubble
-    after(800,()=>{day.buying--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())});
+    after(800,()=>{day.onTheWay--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())});
   });
 }
-/* Before the report, let buyers who are on their way finish buying. */
-async function buyersServed(){
+/* Before the report, let the last customers reach the stand: buyers pay, and passers-by walk past it.
+   A sold-out day lasts as long as any other. */
+async function lastCustomers(){
   let waited=0; // in simulation ms, so the grace period scales with SPEED too
-  while(D&&D.buying>0&&!D.skip&&waited<5000){await sleep(100);waited+=100}
+  while(D&&D.onTheWay>0&&!D.skip&&waited<5000){await sleep(100);waited+=100}
 }
 /* One speech bubble at a time, sitting above the customer who is talking
    and following them as they walk. If someone else is mid-sentence, the
@@ -1962,7 +1958,7 @@ function finishDay(){
   // the sticky note: what running out cost you, or that everyone got lemonade. It gives no price advice;
   // the line above it says how many said it cost too much, and the player decides what to change.
   let counter="";const outCount=Math.max(0,unserved-D.awayPrice); // left because supplies ran out
-  if(unserved>0&&(D.awayOut>0||D.unmet>0))counter=`You ran out. ${outCount} more ${plural(outCount,"person","people")} wanted lemonade. That's about <b>${fmt(outCount*Math.max(avgPrice,1))}</b> you missed. Buy more supplies.`;
+  if(unserved>0&&D.awayOut>0)counter=`You ran out. ${outCount} more ${plural(outCount,"person","people")} wanted lemonade. That's about <b>${fmt(outCount*Math.max(avgPrice,1))}</b> you missed. Buy more supplies.`;
   else if(!unserved)counter=`Everyone got lemonade.`;
   const tonight=overnight(); // ice melts and old produce goes bad once you close
   const byCups=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]);
