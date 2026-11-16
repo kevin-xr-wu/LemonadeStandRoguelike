@@ -1338,6 +1338,7 @@ function crowdMixFor(loc){
   const mix={};Object.entries(base).forEach(([k,v])=>mix[k]=Math.round(v/tot*100));
   return mix;
 }
+function crowdList(loc){const a=[];Object.entries(crowdMixFor(loc)).forEach(([k,v])=>{for(let i=0;i<v;i++)a.push(k)});return a} // one entry per percent, so pick() draws a crowd by the spot's mix
 function demandEstimate(loc,signs,opts={}){
   const b=computeBuild(),menu=opts.menu||S.recipes;
   const useWx=opts.wx||M.shownWx;
@@ -1534,7 +1535,7 @@ function renderMorning(){
       </div>
     </div>
   </div>`;
-  morningParts();
+  morningParts();passersBy($("#skyBox"));
 }
 /* The stage never scrolls: if it is taller than the window, step through denser layouts until it fits. */
 const FIT_STEPS=["fit-tight","fit-min","fit-px2","fit-px1"];
@@ -1561,9 +1562,45 @@ function morningParts(){
   $("#mSpot").innerHTML=mSpotHtml();
   $("#mShop").innerHTML=mShopHtml();
   strips.forEach(([sel,[x,y]])=>{const el=$(sel);if(el){el.scrollLeft=x;el.scrollTop=y}});
-  renderProj();syncStandUp();
+  renderProj();syncStandUp();passersPace();
   fitStage();
   if(f){const el=document.querySelector(`[data-f="${f}"]`);if(el)el.focus({preventScroll:true})}
+}
+/* While you get ready, people walk past the stand without stopping. They come about as often as your customers
+   would if you opened now, so the street shows how busy today will be: the spot, signs, prices and the flavors
+   you have supplies for all change it. Nobody walks by until you pick a spot. */
+const PASS_MS=60000,PASS_MIN_MS=250; // a walker every second for a 60-customer day; the busiest days fill the street but never jam it
+function passersPace(){ // M.passGap: ms between walkers right now, 0 when nobody would come
+  const n=M.loc?demandEstimate(M.loc,M.signs,{menu:openingMenu()}).demand:0;
+  M.passGap=n>0?Math.max(PASS_MIN_MS,PASS_MS/n):0;
+  M.passCrowd=M.loc?crowdList(M.loc):[];
+}
+let passTimer=0;
+function passersBy(sky){
+  clearInterval(passTimer);
+  let pace=0,due=rnd(0.6,1.4),last=performance.now();
+  passTimer=setInterval(()=>{
+    if(!sky.isConnected){clearInterval(passTimer);return} // the morning is over
+    const now=performance.now();pace+=(now-last)/(M.passGap||Infinity);last=now;
+    if(pace<due)return;
+    pace=0;due=rnd(0.6,1.4);walkPast(sky);
+  },100);
+}
+/* One walker from the spot's crowd, `age` ms into their walk. Returns false if they would already be gone. */
+function walkPast(sky,age=0,fadeIn=0){
+  const {d,speed,from,to}=newCustomer(sky,pick(M.passCrowd)||"parents"),dur=Math.abs(to-from)/speed;
+  if(age>=dur){d.remove();return false}
+  const walk=d.animate([{left:from+"px"},{left:to+"px"}],{duration:dur,fill:"forwards"});walk.currentTime=age;
+  walk.finished.then(()=>d.remove());
+  if(fadeIn)d.animate({opacity:[0,1]},{duration:fadeIn,easing:"ease-out"});
+  return true;
+}
+/* A new spot: the last crowd fades out with its backdrop, and the new one is already out walking. */
+function newStreet(sky){
+  const fade=stillMotion()?0:600;
+  sky.querySelectorAll(".cust:not(.gone)").forEach(d=>{d.classList.add("gone");
+    if(fade)d.animate({opacity:[1,0]},{duration:fade,easing:"ease-in",fill:"forwards"}).finished.then(()=>d.remove());else d.remove()});
+  if(M.passGap)for(let age=M.passGap*rnd(0,1.4);walkPast(sky,age,fade);age+=M.passGap*rnd(0.6,1.4));
 }
 const SIGN_SPOTS=8; // signs drawn on the grass; free signs past these still count, they just are not drawn
 /* The signs you bought stand by the stand: in the morning as you buy them, and all through the selling day. */
@@ -1667,7 +1704,7 @@ function buyItem(id,tier=0){
   if(S.cash<price||(S.inv[id]||0)+qty>holdMax()){sfx.bad();return}
   S.cash=Math.round((S.cash-price)*100)/100;addStock(id,qty,price);sfx.coin(3);updateHUD();morningParts();
 }
-function chooseLoc(i){M.loc=M.locs[i];sfx.flip();showBackdrop(M.loc);morningParts()}
+function chooseLoc(i){const was=M.loc;M.loc=M.locs[i];sfx.flip();showBackdrop(M.loc);morningParts();if(M.loc!==was)newStreet($("#skyBox"))}
 function openShelf(id){M.shopOpen=M.shopOpen===id?null:id;sfx.flip();morningParts()}
 function stepSigns(d){ // + buys one sign, − gives one back for what it cost
   const p=signPrice();
@@ -1724,6 +1761,7 @@ function stepPrice(rk,d){
 }
 /* Today's menu: flavors you have supplies for. A flavor missing an ingredient sits out until you buy it. */
 function sellableNow(){return S.recipes.filter(rk=>canPour(rk,S.inv))}
+function openingMenu(){const can=sellableNow();return can.length?can:S.recipes.slice()} // the menu you would open with; with no supplies at all, every flavor stays on it
 function missingIds(rk){return Object.entries(cupNeeds(rk)).filter(([k,v])=>(S.inv[k]||0)<v).map(([k])=>k)}
 function missingNames(rk){return listWords(missingIds(rk).map(k=>INGREDIENTS[k].name.toLowerCase()))}
 /* Cups a stock of supplies can still pour: each flavor in turn, as many as it can make from what the ones before it left. */
@@ -1802,7 +1840,7 @@ function openStand(){
      roll:rnd(0.87,1.13),soldBy:{},revByCrowd:{},sold:0,morningSold:0,dry:false,
      awayPrice:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
      skip:false,done:false,brotherSpilled:false,crewLeft:0,paidCups:0,paidBy:{}};
-  const canSell=sellableNow();D.menu=canSell.length?canSell:S.recipes.slice(); // only flavors you have supplies for
+  D.menu=openingMenu();
   const minPrice=Math.min(...D.menu.map(rk=>menuPrice(rk)));
   D.crew=M.event&&M.event.id==="crewbuy"&&minPrice<=CREW_MAX_PRICE+1e-9?crewSize():0;
   D.crewLeft=D.crew;
@@ -1883,8 +1921,7 @@ async function runDayPhase(phase){
   const isMorning=phase==="morning";
   const target=isMorning?D.morningDemand:D.aftDemand;
   if(isMorning&&D.crew)logLine(`<span class="good">${D.crew} road workers buy your cheapest flavor.</span>`);
-  const mix=crowdMixFor(M.loc);
-  const mixArr=[];Object.entries(mix).forEach(([k,v])=>{for(let i=0;i<v;i++)mixArr.push(k)});
+  const mixArr=crowdList(M.loc);
   let streak=0,processed=0;
   const parties=partySizes(target),gap=600*Math.sqrt(12/Math.max(12,parties.length)); // more walkers come closer together, so busy days run only a little longer
   for(const size of parties){
