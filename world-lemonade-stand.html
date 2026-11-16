@@ -78,6 +78,9 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .big{font-size:var(--fs-lg);font-weight:800}
 /* Cards / choices */
 .choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin-top:10px}
+.choices.dealt .pick{animation:slideUp .2s ease-out backwards} /* a re-roll deals the new cards one after another */
+.choices.dealt .pick:nth-child(2){animation-delay:.06s}.choices.dealt .pick:nth-child(3){animation-delay:.12s}
+@media (prefers-reduced-motion:reduce){.choices.dealt .pick{animation:none}}
 .choice{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:13px;text-align:left;box-shadow:0 4px 0 rgba(43,33,24,.85);transition:transform .12s, box-shadow .12s;position:relative;width:100%}
 .choice:hover{transform:translateY(-3px) rotate(-.4deg);box-shadow:0 7px 0 rgba(43,33,24,.85)}
 .choice:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(43,33,24,.85)}
@@ -127,7 +130,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .btn{display:inline-block;background:var(--green);color:#fff;border:3px solid var(--ink);border-radius:14px;padding:13px 26px;font-size:var(--fs-lg);font-weight:900;box-shadow:0 5px 0 rgba(43,33,24,.9);transition:transform .1s,box-shadow .1s;text-shadow:1px 1px 0 rgba(0,0,0,.25)}
 .btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 rgba(43,33,24,.9)}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(43,33,24,.9)}
-.btn:disabled{filter:grayscale(.7);opacity:.55;cursor:not-allowed;transform:none}
+.btn:disabled,.btn[aria-disabled="true"]{filter:grayscale(.7);opacity:.55;cursor:not-allowed;transform:none}
 .btn.gold{background:var(--lemon);color:var(--ink);text-shadow:none}
 .btn.blue{background:var(--blue2)} .btn.ghost{background:#fff;color:var(--ink);text-shadow:none}
 .btn.sm{padding:8px 14px;font-size:var(--fs-sm);border-radius:11px}
@@ -2060,8 +2063,9 @@ function buildDraftPool(){
   if(actIndex()>=2)pool.forEach(p=>{if(p.kind==="gear"){const g=GEAR.find(x=>x.id===p.id);if(g&&g.rar==="common")p.w*=0.4}});
   return pool;
 }
-function drawDraft(){
+function drawDraft(skip=[]){
   const pool=buildDraftPool();const out=[];const used=new Set();
+  if(pool.length-skip.length>=3)skip.forEach(p=>used.add(p.kind+":"+p.id)); // a re-roll deals cards you weren't just shown
   while(out.length<3&&pool.length){
     const c=sampleWeighted(pool.filter(p=>!used.has(p.kind+":"+p.id)).map(p=>({k:p,w:p.w})));
     if(!c)break;used.add(c.k.kind+":"+c.k.id);out.push(c.k);
@@ -2084,18 +2088,31 @@ function cardHtml(c,attrs){
   const caps=c.rar==="epic"||c.rar==="legendary"?["tl","tr","bl","br"].map(k=>`<i class="orn ${k}" aria-hidden="true"></i>`).join(""):"";
   return `<button class="choice pick ${c.cls}"${c.rar?tip(`${RARITY[c.rar]}. ${RARITY_TIP}`):""} ${attrs}>${c.rar?`<span class="sr">${RARITY[c.rar]} upgrade.</span>`:""}<span class="cardArt">${c.art}<i class="outMark" aria-hidden="true"></i></span><span class="cardBody"><span class="ttl">${c.title}</span><span class="desc">${c.desc}</span></span>${caps}</button>`;
 }
+/* Re-roll deals three new cards for money. It costs $2, doubles with each re-roll, and is back to $2 at the next pick. */
+const REROLL_START=2;
+let rerollCost=REROLL_START;
+const draftCardsHtml=()=>draftChoices.map((p,i)=>cardHtml(draftCardHtml(p),`onclick="pickDraft(${i})"`)).join("");
+const rerollBtnHtml=()=>`<button class="btn sm" id="rerollBtn" onclick="rerollDraft()"${S.cash<rerollCost?' aria-disabled="true"':""}${tip(`Get three new cards. Each re-roll costs double the last one. It's back to ${fmt(REROLL_START)} next time you pick.`)}>Re-roll for ${fmt(rerollCost)}</button>`;
 function renderDraftScreen(){
   eveSheet(`
     <h2>Pick an upgrade</h2>
     <p class="muted" style="margin-top:0">It starts working tomorrow. The other two go away.</p>
     ${learnHint(HOW_STEPS[5][1])}
     ${shelfHtml()}
-    <div class="choices">${draftChoices.map((p,i)=>cardHtml(draftCardHtml(p),`onclick="pickDraft(${i})"`)).join("")}</div>
-    <div class="center mt"><button class="btn sm ghost" onclick="nextDay()">Skip</button></div>`);
+    <div class="choices" id="draftCards">${draftCardsHtml()}</div>
+    <div class="flex mt" style="justify-content:center">${rerollBtnHtml()}<button class="btn sm ghost" onclick="nextDay()">Skip</button></div>`);
 }
 function offerDraft(){
-  draftChoices=drawDraft();sfx.flip();
+  draftChoices=drawDraft();rerollCost=REROLL_START;sfx.flip();
   renderDraftScreen();
+}
+function rerollDraft(){
+  if(S.cash<rerollCost){sfx.bad();return}
+  S.cash=Math.round((S.cash-rerollCost)*100)/100;rerollCost*=2;
+  draftChoices=drawDraft(draftChoices);sfx.coin(3);sfx.flip();updateHUD();
+  const cards=$("#draftCards");cards.innerHTML=draftCardsHtml();
+  cards.classList.remove("dealt");void cards.offsetWidth;cards.classList.add("dealt"); // restart the deal animation
+  const btn=$("#rerollBtn");btn.textContent=`Re-roll for ${fmt(rerollCost)}`;btn.setAttribute("aria-disabled",S.cash<rerollCost); // kept in place, so keyboard focus stays on it
 }
 function pickDraft(i){
   const p=draftChoices[i];if(!p)return;
