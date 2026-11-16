@@ -908,12 +908,12 @@ function showBackdrop(loc){ // picking a spot crossfades its backdrop with the l
   all.forEach(s=>{s.classList.add("gone");setTimeout(()=>s.remove(),stillMotion()?0:600)}); // a backdrop still fading in fades back out from where it is
 }
 const CROWDS={
-  kids:      {name:"Kids",         pay:1.30, loves:["SWEET"],         hates:"SOUR",  line:"So sweet."},
-  parents:   {name:"Parents",      pay:2.40, loves:["FANCY","SWEET"], hates:null,    line:"worth it."},
-  athletes:  {name:"Athletes",     pay:1.70, loves:["SOUR","CHILLED"],hates:"SWEET", line:"That hit the spot."},
-  tourists:  {name:"Tourists",     pay:3.10, loves:["FANCY"],         hates:null,    line:"What a treat."},
-  foodies:   {name:"Foodies",      pay:4.20, loves:["FANCY","SOUR"],  hates:null,    line:"Really tasty."},
-  artists:   {name:"Artists",      pay:2.60, loves:["FANCY","FIZZY"], hates:null,    line:"Beautiful."}
+  kids:      {name:"Kids",         pay:1.56, loves:["SWEET"],         hates:"SOUR",  line:"So sweet."},
+  parents:   {name:"Parents",      pay:2.88, loves:["FANCY","SWEET"], hates:null,    line:"worth it."},
+  athletes:  {name:"Athletes",     pay:2.04, loves:["SOUR","CHILLED"],hates:"SWEET", line:"That hit the spot."},
+  tourists:  {name:"Tourists",     pay:3.72, loves:["FANCY"],         hates:null,    line:"What a treat."},
+  foodies:   {name:"Foodies",      pay:5.04, loves:["FANCY","SOUR"],  hates:null,    line:"Really tasty."},
+  artists:   {name:"Artists",      pay:3.12, loves:["FANCY","FIZZY"], hates:null,    line:"Beautiful."}
 };
 const LOCATIONS=[
   {name:"Maple St. Spot", traffic:17, bias:{kids:3,parents:3,artists:1}, wx:null,        desc:"Your home street. Lots of families."},
@@ -931,28 +931,28 @@ const LOCATIONS=[
   {name:"The Marina", traffic:28, bias:{tourists:4,foodies:3},            wx:"hot+",      desc:"Sailors and tourists with money to spend."}
 ];
 const RECIPES={
-  classic:{name:"Classic Sweet", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.25, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
-  strawberry:{name:"Strawberry Lemonade", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:2.75, needs:{strawberries:1},    desc:"Lemonade with fresh strawberries."},
-  limonana:{name:"Limonana", origin:"Levant",             tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{mint:1},            desc:"Mint blended with crushed ice."},
-  brazilian:{name:"Brazilian Lemonade", origin:"Brazil",         tags:["SWEET","FANCY"], appeal:1.08,price:3.25, needs:{condmilk:1},        desc:"Creamy with condensed milk."},
-  shikanji:{name:"Shikanji", origin:"India",              tags:["SOUR"],          appeal:1.04,price:2.50, needs:{sugar:2,ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
-  chia:{name:"Agua de Limón con Chía", origin:"Mexico",          tags:["CHILLED"],       appeal:1.03,price:2.75, needs:{chia:1},            desc:"Lemonade with chia seeds."},
-  citron:{name:"Citron Pressé", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.04,price:2.75, needs:{lemons:3,sparkling:1},desc:"Paris cafe style. Tart and sparkling."},
-  rosewater:{name:"Sharbat-e-Limoo", origin:"Iran",               tags:["FANCY","SWEET"], appeal:1.07,price:3.25, needs:{sugar:2,rosewater:1},desc:"Lemon with rosewater."},
-  salted:{name:"Salted Lemonade", origin:"Vietnam",            tags:["SOUR"],          appeal:1.02,price:2.25, needs:{seasalt:1},         desc:"Salty lemon drink."},
-  palmer:{name:"Arnold Palmer", origin:"USA",                tags:["SWEET","SOUR"],  appeal:1.08,price:2.75, needs:{blacktea:1},        desc:"Half iced tea, half lemonade."},
-  cucumber:{name:"Cucumber Lemonade", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.03,price:2.50, needs:{cucumbering:1},     desc:"Cool cucumber lemonade."},
-  ramune:{name:"Ramune Lemonade", origin:"Japan",              tags:["FIZZY","SWEET"], appeal:1.06,price:2.75, needs:{sparkling:2},       desc:"Japanese soda-shop fizz."}
+  classic:{name:"Classic Sweet", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.75, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
+  strawberry:{name:"Strawberry Lemonade", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:3.25, needs:{strawberries:1},    desc:"Lemonade with fresh strawberries."},
+  limonana:{name:"Limonana", origin:"Levant",             tags:["CHILLED"],       appeal:1.03,price:3.00, needs:{mint:1},            desc:"Mint blended with crushed ice."},
+  brazilian:{name:"Brazilian Lemonade", origin:"Brazil",         tags:["SWEET","FANCY"], appeal:1.08,price:3.75, needs:{condmilk:1},        desc:"Creamy with condensed milk."},
+  shikanji:{name:"Shikanji", origin:"India",              tags:["SOUR"],          appeal:1.04,price:3.00, needs:{sugar:3,ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
+  chia:{name:"Agua de Limón con Chía", origin:"Mexico",          tags:["CHILLED"],       appeal:1.03,price:3.25, needs:{chia:1},            desc:"Lemonade with chia seeds."},
+  citron:{name:"Citron Pressé", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.04,price:3.50, needs:{lemons:3,sparkling:1},desc:"Paris cafe style. Tart and sparkling."},
+  rosewater:{name:"Sharbat-e-Limoo", origin:"Iran",               tags:["FANCY","SWEET"], appeal:1.07,price:3.75, needs:{sugar:3,rosewater:1},desc:"Lemon with rosewater."},
+  salted:{name:"Salted Lemonade", origin:"Vietnam",            tags:["SOUR"],          appeal:1.02,price:2.75, needs:{seasalt:1},         desc:"Salty lemon drink."},
+  palmer:{name:"Arnold Palmer", origin:"USA",                tags:["SWEET","SOUR"],  appeal:1.08,price:3.25, needs:{blacktea:1},        desc:"Half iced tea, half lemonade."},
+  cucumber:{name:"Cucumber Lemonade", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.03,price:3.00, needs:{cucumbering:1},     desc:"Cool cucumber lemonade."},
+  ramune:{name:"Ramune Lemonade", origin:"Japan",              tags:["FIZZY","SWEET"], appeal:1.06,price:3.25, needs:{sparkling:2},       desc:"Japanese soda-shop fizz."}
 };
 /* ---------- Inventory: ingredients, the shop ----------
-   Every cup takes 2 lemons and 1 sugar, plus its flavor's own supplies (RECIPES needs, per cup). A few real recipes
-   take more: Citron Pressé is a glass of pressed lemon juice (3 lemons), Shikanji and Sharbat-e-Limoo are sweeter (2 sugar).
-   Each pack for a flavor makes 16 cups: 32 lemons, 16 of everything else.
+   Every cup takes 2 lemons and 2 sugar, plus its flavor's own supplies (RECIPES needs, per cup). A few real recipes
+   take more: Citron Pressé is a glass of pressed lemon juice (3 lemons), Shikanji and Sharbat-e-Limoo are sweeter (3 sugar).
+   Lemons are the big cost: 50¢ each, in bags of 10 (45¢ each by 30, 40¢ by 60). A flavor's own pack makes 16 cups.
    Stock persists between days — buying well IS the production decision now. */
-const BASE_NEEDS={lemons:2,sugar:1};
+const BASE_NEEDS={lemons:2,sugar:2};
 const INGREDIENTS={
   cups:{name:"Cups",pack:25,price:2.50},
-  lemons:{name:"Lemons",pack:32,price:3.00},
+  lemons:{name:"Lemons",pack:10,price:5.00},
   sugar:{name:"Sugar",pack:16,price:1.60},
   ice:{name:"Ice Cubes",pack:40,price:1.20},
   signs:{name:"Signs",pack:1,price:5.00},
@@ -983,8 +983,8 @@ function gearIconHtml(id,big){if(ICONS.gearA.ids.includes(id))return iconHtml("g
 /* Each morning rolls a temperature (°F) inside its sky's range; the temperature, not the sky, sets the ice in each cup. */
 const WX_TEMP={sunny:[72,86],hot:[88,103],perfect:[80,90],cloudy:[62,76],rainy:[54,68],windy:[66,79]};
 function iceForTemp(t){return t>=100?4:t>=90?3:t>=80?2:t>=70?1:0}
-function actCostMult(){if(typeof S==="undefined"||!S)return 1;return [1,1.3,1.64,2][Math.min(actIndex(),3)]}
-function ingCost(id){return INGREDIENTS[id].price/INGREDIENTS[id].pack*actCostMult()*((S&&S.todayCostMult)||1)*(S&&S.gear.includes("wholesale")?0.8:1)}
+/* Supplies cost the same all run. Only today's events (a market sale, ants in the sugar) and the Wholesale Card change it. */
+function ingCost(id){return INGREDIENTS[id].price/INGREDIENTS[id].pack*((S&&S.todayCostMult)||1)*(S&&S.gear.includes("wholesale")?0.8:1)}
 /* Bulk deals, as in the classic stand: bigger packs cost less for each one. */
 const BULK=[{mult:1,off:0},{mult:3,off:0.10},{mult:6,off:0.20}];
 function packPrice(id,tier=0){const t=BULK[tier];return Math.round(ingCost(id)*INGREDIENTS[id].pack*t.mult*(1-t.off)*100)/100}
@@ -1181,7 +1181,7 @@ function newRun(kidId){
     cash:kid.start,
     rep:3,
     recipes:["classic"], activeRecipe:"classic",
-    inv:{cups:25,lemons:32,sugar:16,ice:40}, menuPrices:{},
+    inv:{cups:25,lemons:32,sugar:32,ice:40}, menuPrices:{},
     gear:[],
     log:[], lifetimeProfit:0, lifetimeSold:0,
     todayCostMult:1, tomorrowCostMult:1,
