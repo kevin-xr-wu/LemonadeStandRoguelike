@@ -1110,8 +1110,8 @@ const GLASS_MAX=500, PRICE_MAX=10, MAX_DAYS=100;
    its top sits above the ground line, room the sky the stage keeps clear above the ground for it (and the arrow). */
 const STAND_LEVELS=[
  {png:STAND_PNG, w:64,top:61,room:84,pay:1,   hold:200,     shelf:4,slots:5},
- {png:STAND2_PNG,w:64,top:71,room:92,pay:1.1, hold:400,     shelf:5,slots:6,cost:150},
- {png:STAND3_PNG,w:72,top:84,room:90,pay:1.21,hold:Infinity,shelf:6,slots:7,cost:600}, // the top level has no arrow over it
+ {png:STAND2_PNG,w:64,top:71,room:92,pay:1.1, hold:400,     shelf:5,slots:6,cost:750},
+ {png:STAND3_PNG,w:72,top:84,room:90,pay:1.21,hold:Infinity,shelf:6,slots:7,cost:1500}, // the top level has no arrow over it
 ];
 function standLv(){return STAND_LEVELS[(S&&S.standLevel||1)-1]}
 function nextStandLv(){return S?STAND_LEVELS[S.standLevel]:null} // null at the top level
