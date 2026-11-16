@@ -1905,7 +1905,7 @@ async function runDayPhase(phase){
       const res=serveOne(ck);
       if(res==="sold"){streak++;got[D.lastFlavor]=(got[D.lastFlavor]||0)+1}
       else if(res==="price"){D.awayPrice++;streak=0;miss="too pricey…"}
-      else{D.dry=true;D.awayOut++;streak=0;logLine(`<span class="bad">${iconHtml("supply","cups")} You ran out of supplies.</span>`)}
+      else{D.dry=true;D.awayOut++;streak=0} // the Sold Out sign goes up on the stand (updateDayStats)
     }
     if(!D.skip)spawnCustomer(ck,Object.keys(got).length?{buys:true,paid:D.revenue+D.tips-takings,got,streak,say:Math.random()<0.24?c.line:null}:{say:miss});
     updateDayStats();
