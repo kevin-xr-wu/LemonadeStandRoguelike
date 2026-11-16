@@ -386,6 +386,11 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .standUp:focus-visible{outline:3px solid var(--blue)}
 @keyframes standUpBob{50%{translate:0 calc(-2px*var(--px))}}
 @media (prefers-reduced-motion:reduce){.standUp.ok i{animation:none}}
+/* Once the last cup is handed over, the Sold Out sign drops onto the stand. It covers the stand's own sign, which sits 14 art pixels up on every level. */
+.soldOut{display:none;position:absolute;left:50%;bottom:calc(14px*var(--px));transform:translateX(-50%);width:calc(40px*var(--px));image-rendering:pixelated;z-index:5}
+.soldOut.up{display:block;animation:soldOutDrop .4s ease-out}
+@keyframes soldOutDrop{0%{translate:0 calc(-8px*var(--px));opacity:0}70%{translate:0 calc(1px*var(--px));opacity:1}100%{translate:0 0}}
+@media (prefers-reduced-motion:reduce){.soldOut.up{animation:none}}
 @media (min-width:721px){
   .postFace{display:flex;align-items:center;justify-content:center;gap:8px;font-size:var(--fs-md)}
   .shelfRow{grid-template-columns:repeat(auto-fill,84px)}
@@ -741,6 +746,8 @@ const STAND_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt
 /* The stand at level 2 (64×72: painted, with a FRESH sign) and level 3 (72×84: a kiosk with a giant lemon on the roof), drawn in Pixelwright like the first. STAND_LEVELS says what each level does. */
 const STAND2_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABICAMAAABx5AOBAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAjdJREFUeNrVl21zwyAIgOe6NWbt2lzvmv//UwcK+IaGNP0yupyC8ATRuOTj7eI2ZBvwPZKTBbCAXC4XuLiFC34oNoCHQIRQGPfRbgJ4P9Hd+YpZoN2WwVRmID2w22vAYS/U4DQUA+DoPoiUr9ZRs+2582Ym7jdIKNWyRIW0QiGtAZTxyzWKorBaE0oAhZQAJqgAp92kA1AJOmCoFgCK3wUoCFUCG4A2hU4CW3oidBLoAuoU6gSsACG4nyg3FtLFUOtsEAA88Sh3FtLFUOtseDfAORp2laHWk0GqGIc/ogOYowFaTQdDJOQbAeQTHfhJH7Xod2qOBHdCgPn/X+vdAWgn0FUHfJUmynh9sqRRBFTeAVCc2O4RNSGkwaX1bgHuwR0ByCS2AdmU3TqTTLB2PIExwLl59t5zDWa/rt7P3gyI4SAQgZr36xMAlAGvyAgQw/0kAOEhIJRkBAg3mCCadhwDkCd6HyDzT60CwK4O4PlndZAZQE48wQGAvLM6cGc6S4VCMhUg7fjom9oYQX1yUJ4PJ6dlsNctK5k9KhlADqsdcnsn4EXJy3jeLdWJRuulNR2zCjAl3gOgPa1nV+4BAFcPEF5y+eWWXre5RbsNkEHKnzmDCsB9sPcBoTBZBuqPAd1VqD5ywl+6e6pBF2DYwWPAkX1wfCfCQOaStNxMIzsAwdIAwpJvABInDzMAsiQVQJZIr4jsfJ6OAZpVaCb47mXEw3+fVIBjRyp98prf81Rf+2ftPt9/IH9vRmZysDVGrQAAAABJRU5ErkJggg==";
 const STAND3_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABUCAMAAAAWJ4GVAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAArZJREFUeNrtmIlu6yAQRTuvVZbXzXGU/ELT///B3lnAQFgtq2qlXkshA8zxGIM95qFXRN1d65x5JsDW0+Armuf5THQ+ryIx4Hg8Hg4HOgFE//hnDQWQyYFOJ+Lf8WsTCmMEFGiMxNEo5Q50GAmKw1mUgAaCMk7ivh8l6SjnIvG8rvlklH0J1B0U1dyXy+sJiTwrGBarUPUulTSohedA3beteGnQbjcykcjOndHgKimSRhcb7QpqgdxzZ1wp6JU1qeR/p5GAlGM99H8FFPWLSVuB6EVkvdWIrUpTQGpzOklbgWLOCCghbQUyTt2zbjKJEk7+nK1mTHD6b3oz5c1WM0DPpndT3mw1bwhSEj09kraQkik2U9ub8DOOkrhC2ozMRWCmtjcN5O4/xKA1Ur9gtaFCnvl8rsvlwsVZ0irCPeYi12Z+0fKXCqRAYnBf7q0FcwptJdCDu9b+ogCqPMzvjTEQPZkk4NAYA0Wvi8y7ox909QIoNKCXNojmHtDUAEWhX6+WSeJdDQPzh3XqiIgTvyV3hS9nIRMSEQEhZZ+neQbIhq0IUgxnMDrxwAFFbQIHFIhBV57jFZDPhDxISQZSFINwwgpIAtbkTi4uyG7ghQ8JkyxMriotERsfP07leVQFcbgMCMaJbrfb5yd+5DyBgViRKxVXv4KCcaIPk4ACgzOxFLQ+yUoXjHtJrZUHuVfCSr1tD9pqjCrJcI+ix4ZOHPvoGCuiFP5ngmTU9DO6LfsgZYcUZIueOzQn4DuDnEMCQvV0nIRE0zM6IzVAiYNLVIQlg7xDCkI1Ng32CyiERYdG5B3uQLL3EIBcFO7wETqQOXRFlD0aEUVjJOORRGLRtMZos7sWzqP2eq/No2W+9k7I37PW/kDfBSpvzrQVgbZ5GSnrsZSyV3Zmcj6ZjZeuXeFtdrl/tL4AudqLwJdXB3sAAAAASUVORK5CYII=";
+/* 40×11 Sold Out sign, drawn in Pixelwright. It goes up over the stand's own sign when the cups run out (.soldOut). */
+const SOLD_OUT_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAALCAMAAAA6GD/HAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAFpJREFUeNqNkUESABAIRdli4RbG/S8oX6lFi//LUPMaRSmVknCDUhWwE2oGzikLjiNS18UQGwgA9vYfarGC28tzcCu4Yj4Dl1/9CDQUe9TWwzDM1I3SfXHuZw7TrhCnI28PzgAAAABJRU5ErkJggg==";
 /* 32×16 sheet, drawn in Pixelwright: the 16×16 stand upgrade arrow in green (you have the money), then in grey (not yet). */
 const ARROW_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAMAAABA3o1rAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAGVJREFUeNrNj8ERwCAIBEMJahFi/w1GDi7wSPL2Xh67M8LlkZ14vvcxei8TWUu1duO9PRNwndnB03CeBjkNchpCHIYQh1G5GZXDsINc2pCBNPGMLeqO/CWvOENoSAoTKULkq//mBtM2FhvBcUYDAAAAAElFTkSuQmCC";
 /* 166×71 title logo, drawn in Pixelwright. The title screen shows it at its pixel size (--px). */
@@ -1822,6 +1829,7 @@ function renderDayScene(){
     <div class="sky ${M.actualWx}" id="skyBox">
       ${skyArt(M.actualWx,M.loc)}
       <img class="stand" src="${standLv().png}" alt="">
+      <img class="soldOut" id="soldOut" src="${SOLD_OUT_PNG}" alt="Sold out">
       ${signsHtml(D.signs)}
       <div id="fxLayer"></div>
       <div class="skyTop">
@@ -1897,7 +1905,7 @@ async function runDayPhase(phase){
       const res=serveOne(ck);
       if(res==="sold"){streak++;got[D.lastFlavor]=(got[D.lastFlavor]||0)+1}
       else if(res==="price"){D.awayPrice++;streak=0;miss="too pricey…"}
-      else{D.dry=true;D.awayOut++;streak=0;logLine(`<span class="bad">${iconHtml("supply","cups")} You ran out of supplies.</span>`)}
+      else{D.dry=true;D.awayOut++;streak=0} // the Sold Out sign goes up on the stand (updateDayStats)
     }
     if(!D.skip)spawnCustomer(ck,Object.keys(got).length?{buys:true,paid:D.revenue+D.tips-takings,got,streak,say:Math.random()<0.24?c.line:null}:{say:miss});
     updateDayStats();
@@ -1918,7 +1926,9 @@ function shownInv(){
 }
 function updateDayStats(){
   const st=$("#stStock");if(!st||D.done)return; // once closed, the evening has counted the till into your money
-  st.textContent=D.skip?servingsReady():servingsReady()+(D.sold-D.paidCups); // a cup counts down when its buyer pays at the counter, like the money
+  const cups=D.skip?servingsReady():servingsReady()+(D.sold-D.paidCups); // a cup counts down when its buyer pays at the counter, like the money
+  st.textContent=cups;
+  $("#soldOut").classList.toggle("up",cups<=0);
   const inv=shownInv();
   document.querySelectorAll("[data-cups]").forEach(el=>{const rk=el.dataset.cups,n=flavorCups(rk,inv),t=`${RECIPES[rk].name}: ${n?`you can still make ${n} ${plural(n,"cup")}`:"none left"}. Flavors share lemons and sugar.`;
     el.querySelector("b").textContent=n;el.classList.toggle("none",!n);el.dataset.tip=t;el.setAttribute("aria-label",t)});
