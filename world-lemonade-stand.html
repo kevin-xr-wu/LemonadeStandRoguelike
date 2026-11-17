@@ -1684,7 +1684,7 @@ function mDrawerHtml(id){
   const ing=INGREDIENTS[id],n=S.inv[id]||0,hold=holdMax(id),room=hold-n; // a pack bigger than the room left won't fit on the stand
   const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
   return `<div class="drawer" id="mDrawer">
-    <div class="mLbl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}${hold<Infinity?` of ${hold}`:""}.</small></div>
+    <div class="mLbl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}. ${hold<Infinity?`The limit is ${hold}.`:"There's no limit."}</small></div>
     ${rule?`<div class="rule">${rule}</div>`:""}
     <div class="packs">${BULK.map((t,i)=>{const qty=ing.pack*t.mult,price=packPrice(id,i);
       return `<button class="btn" onclick="buyItem('${id}',${i})" data-f="buy-${id}-${i}"${S.cash<price||qty>room?' aria-disabled="true"':""} aria-label="Buy ${qty} ${ing.name.toLowerCase()} for ${fmt(price)}">+${qty}<small>${fmt(price)}</small>${t.off?`<i class="off">−${Math.round(t.off*100)}%</i>`:""}</button>`}).join("")}</div>
@@ -1741,7 +1741,7 @@ function showStandUp(){
   const now=standLv(),next=nextStandLv();if(!next)return;
   const short=Math.round((next.cost-S.cash)*100)/100;sfx.flip();
   const perks=[`Customers pay ${Math.round((next.pay/now.pay-1)*100)}% more.`,
-    next.hold===Infinity?"It holds as many supplies as you want.":`It holds ${next.hold} of each supply.`,
+    next.hold===Infinity?"There's no limit on supplies.":`The supply limit goes up from ${now.hold} to ${next.hold}.`,
     "Your supply shelf fits 1 more flavor supply.",
     "You get 1 more upgrade slot."];
   const pic=(l,alt,cls)=>`<img class="${cls}" src="${l.png}" alt="${alt}" style="--w:${l.w}">`;
