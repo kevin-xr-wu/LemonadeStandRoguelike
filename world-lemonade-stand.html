@@ -1568,15 +1568,6 @@ function fitStage(){
 }
 addEventListener("resize",fitStage);
 if(window.ResizeObserver)new ResizeObserver(fitStage).observe($("#hud")); // the HUD changes height when it fills in or wraps
-/* The supplies shelf and its wholesale drawer are one component: a click anywhere else
-   in the morning (a spot, a slide arrow, a stepper, the sky) puts the drawer away. */
-document.addEventListener("click",e=>{
-  if(!M||!M.shopOpen||!$(".stage.morning"))return;
-  const path=e.composedPath(); // the path, not the target: opening the drawer re-renders the shelf, which detaches the button that was tapped
-  if(path.some(n=>n.id==="mShop"))return;
-  if(!path.some(n=>n.classList&&n.classList.contains("morning")))return; // only clicks in the morning count, so the click that started the day leaves the cups open
-  M.shopOpen=null;morningParts();
-});
 /* Redraw the morning's controls in place, so the sky keeps drifting, and keep focus on the control just used. */
 function morningParts(){
   const ae=document.activeElement,f=ae&&ae.dataset?ae.dataset.f:null;
@@ -1689,11 +1680,10 @@ function flavorCups(rk,inv=S.inv){const ice=icePerCup();return Math.min(cupsPoss
 /* One cup's recipe as icons, "2 [lemon] 1 [sugar]"; a supply you have too little of shows red. */
 function recipeHtml(rk){return Object.entries(cupNeeds(rk)).map(([k,v])=>`<span class="need${(S.inv[k]||0)<v?" short":""}">${v}${iconHtml("supply",k)}</span>`).join("")}
 function mDrawerHtml(id){
-  const ing=INGREDIENTS[id],n=S.inv[id]||0,room=holdMax()-n; // a pack bigger than the room left won't fit on the stand
-  const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":"",
-    ing.pack*BULK[BULK.length-1].mult>room?`Your stand holds ${holdMax()}.`:""].filter(Boolean).join(" ");
+  const ing=INGREDIENTS[id],n=S.inv[id]||0,hold=holdMax(),room=hold-n; // a pack bigger than the room left won't fit on the stand
+  const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
   return `<div class="drawer" id="mDrawer">
-    <div class="mLbl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}.</small></div>
+    <div class="mLbl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}${hold<Infinity?` of ${hold}`:""}.</small></div>
     ${rule?`<div class="rule">${rule}</div>`:""}
     <div class="packs">${BULK.map((t,i)=>{const qty=ing.pack*t.mult,price=packPrice(id,i);
       return `<button class="btn" onclick="buyItem('${id}',${i})" data-f="buy-${id}-${i}"${S.cash<price||qty>room?' aria-disabled="true"':""} aria-label="Buy ${qty} ${ing.name.toLowerCase()} for ${fmt(price)}">+${qty}<small>${fmt(price)}</small>${t.off?`<i class="off">−${Math.round(t.off*100)}%</i>`:""}</button>`}).join("")}</div>
