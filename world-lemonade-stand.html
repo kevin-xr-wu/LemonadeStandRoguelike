@@ -1222,12 +1222,27 @@ function toggleSpeed(){
   const b=document.querySelector("#spdBtn");if(b)b.textContent=spdLabel();
   sfx.flip();
 }
+/* The game holds still while its tab is hidden. A browser barely runs a hidden tab, and some hold every walk
+   started there until you come back, then set them all off at once, stacked on top of each other. So playNow()
+   stops while the tab is hidden, which holds every wait and every new walker, and the walks on screen pause. */
+let hiddenAt=document.hidden?performance.now():null,hiddenFor=0,heldAnims=[];
+function playNow(){return (hiddenAt===null?performance.now():hiddenAt)-hiddenFor} // performance.now(), less the time spent hidden
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden&&hiddenAt===null){
+    hiddenAt=performance.now();
+    heldAnims=document.getAnimations().filter(a=>a.playState==="running");
+    heldAnims.forEach(a=>{const t=a.currentTime;a.pause();a.currentTime=t}); // setting the time pauses it now, not at the next frame
+  }else if(!document.hidden&&hiddenAt!==null){
+    hiddenFor+=performance.now()-hiddenAt;hiddenAt=null;
+    heldAnims.forEach(a=>{if(a.playState==="paused")a.play()});heldAnims=[];
+  }
+});
 /* setTimeout that runs on simulation time: after(800) fires after 800ms
    of scaled time, so a mid-wait speed toggle stretches/shrinks it too. */
 function after(ms,fn){
-  let acc=0,last=performance.now();
+  let acc=0,last=playNow();
   const iv=setInterval(()=>{
-    const now=performance.now();acc+=(now-last)*SPEED;last=now;
+    const now=playNow();acc+=(now-last)*SPEED;last=now;
     if(acc>=ms){clearInterval(iv);fn()}
   },40);
   return iv;
@@ -1593,10 +1608,10 @@ function passersPace(){ // M.passGap: ms between walkers right now, 0 when nobod
 let passTimer=0;
 function passersBy(sky){
   clearInterval(passTimer);
-  let pace=0,due=rnd(0.6,1.4),last=performance.now();
+  let pace=0,due=rnd(0.6,1.4),last=playNow();
   passTimer=setInterval(()=>{
     if(!sky.isConnected){clearInterval(passTimer);return} // the morning is over
-    const now=performance.now();pace+=(now-last)/(M.passGap||Infinity);last=now;
+    const now=playNow();pace+=(now-last)/(M.passGap||Infinity);last=now;
     if(pace<due)return;
     pace=0;due=rnd(0.6,1.4);walkPast(sky);
   },100);
@@ -1903,10 +1918,10 @@ function logLine(html){const el=$("#dayToast");if(el){el.innerHTML=html;el.style
 function sleep(ms){ // simulation-time wait: scales with SPEED, live, and Skip ends it now
   return new Promise(res=>{
     if(D&&D.skip)return res();
-    let acc=0,last=performance.now();
+    let acc=0,last=playNow();
     const iv=setInterval(()=>{
       if(D&&D.skip){clearInterval(iv);return res()}
-      const now=performance.now();acc+=(now-last)*SPEED;last=now;
+      const now=playNow();acc+=(now-last)*SPEED;last=now;
       if(acc>=ms){clearInterval(iv);res()}
     },40);
   });
