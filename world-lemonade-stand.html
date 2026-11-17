@@ -1133,7 +1133,7 @@ const GLASS_MAX=500, PRICE_MAX=10, MAX_DAYS=100;
    its top sits above the ground line, room the sky the stage keeps clear above the ground for it (and the arrow). */
 const STAND_LEVELS=[
  {png:STAND_PNG, w:64,top:61,room:84,pay:1,   hold:200,     iceHold:400,     shelf:4,slots:5},
- {png:STAND2_PNG,w:64,top:71,room:92,pay:1.1, hold:400,     iceHold:400,     shelf:5,slots:6,cost:500},
+ {png:STAND2_PNG,w:64,top:71,room:92,pay:1.1, hold:400,     iceHold:800,     shelf:5,slots:6,cost:500},
  {png:STAND3_PNG,w:72,top:84,room:90,pay:1.21,hold:Infinity,iceHold:Infinity,shelf:6,slots:7,cost:1000}, // the top level has no arrow over it
 ];
 function standLv(){return STAND_LEVELS[(S&&S.standLevel||1)-1]}
@@ -1741,7 +1741,7 @@ function showStandUp(){
   const now=standLv(),next=nextStandLv();if(!next)return;
   const short=Math.round((next.cost-S.cash)*100)/100;sfx.flip();
   const perks=[`Customers pay ${Math.round((next.pay/now.pay-1)*100)}% more.`,
-    next.hold===Infinity?"There's no limit on supplies.":`The supply limit goes up from ${now.hold} to ${next.hold}.`,
+    ...(next.hold===Infinity?["There's no limit on supplies."]:[`The supply limit goes up from ${now.hold} to ${next.hold}.`,`The ice limit goes up from ${now.iceHold} to ${next.iceHold}.`]),
     "Your supply shelf fits 1 more flavor supply.",
     "You get 1 more upgrade slot."];
   const pic=(l,alt,cls)=>`<img class="${cls}" src="${l.png}" alt="${alt}" style="--w:${l.w}">`;
