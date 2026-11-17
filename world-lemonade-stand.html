@@ -1337,6 +1337,7 @@ function genMorning(){
   const prices={};S.recipes.forEach(rk=>{prices[rk]=S.menuPrices[rk]!=null?S.menuPrices[rk]:RECIPES[rk].price});
   const temp=ri(...(opening?opening.temp:WX_TEMP[trueWx]));
   M={trueWx,shownWx,temp,locs,loc:null,card:0,event:ev,signs:0,prices,
+     shopOpen:"cups", // each day opens with the cups drawer out, so players see they can buy more supplies
      special:S.gear.includes("special")?pick(S.recipes):null,
      dice:S.gear.includes("dice")?Math.round(rnd(0.7,1.6)*100)/100:0};
   if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1; // the tree only fills the stand up to what it holds
@@ -1571,7 +1572,9 @@ if(window.ResizeObserver)new ResizeObserver(fitStage).observe($("#hud")); // the
    in the morning (a spot, a slide arrow, a stepper, the sky) puts the drawer away. */
 document.addEventListener("click",e=>{
   if(!M||!M.shopOpen||!$(".stage.morning"))return;
-  if(e.composedPath().some(n=>n.id==="mShop"))return; // the path, not the target: opening the drawer re-renders the shelf, which detaches the button that was tapped
+  const path=e.composedPath(); // the path, not the target: opening the drawer re-renders the shelf, which detaches the button that was tapped
+  if(path.some(n=>n.id==="mShop"))return;
+  if(!path.some(n=>n.classList&&n.classList.contains("morning")))return; // only clicks in the morning count, so the click that started the day leaves the cups open
   M.shopOpen=null;morningParts();
 });
 /* Redraw the morning's controls in place, so the sky keeps drifting, and keep focus on the control just used. */
