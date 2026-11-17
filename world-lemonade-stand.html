@@ -1128,12 +1128,13 @@ const ACTS=[
 const GLASS_MAX=500, PRICE_MAX=10, MAX_DAYS=100;
 /* Your stand has 3 levels. You buy the next one in the morning with the arrow on top of the stand. Each level up:
    customers pay 10% more, the stand holds more of each supply (level 3 holds any amount), the supply shelf fits
-   one more flavor supply, and there's one more upgrade slot. The art: png, w its width in art pixels, top how far
+   one more flavor supply, and there's one more upgrade slot. Ice has its own limit, iceHold: a hot day puts up to
+   4 cubes in each cup. The art: png, w its width in art pixels, top how far
    its top sits above the ground line, room the sky the stage keeps clear above the ground for it (and the arrow). */
 const STAND_LEVELS=[
- {png:STAND_PNG, w:64,top:61,room:84,pay:1,   hold:200,     shelf:4,slots:5},
- {png:STAND2_PNG,w:64,top:71,room:92,pay:1.1, hold:400,     shelf:5,slots:6,cost:500},
- {png:STAND3_PNG,w:72,top:84,room:90,pay:1.21,hold:Infinity,shelf:6,slots:7,cost:1000}, // the top level has no arrow over it
+ {png:STAND_PNG, w:64,top:61,room:84,pay:1,   hold:200,     iceHold:400,     shelf:4,slots:5},
+ {png:STAND2_PNG,w:64,top:71,room:92,pay:1.1, hold:400,     iceHold:400,     shelf:5,slots:6,cost:500},
+ {png:STAND3_PNG,w:72,top:84,room:90,pay:1.21,hold:Infinity,iceHold:Infinity,shelf:6,slots:7,cost:1000}, // the top level has no arrow over it
 ];
 function standLv(){return STAND_LEVELS[(S&&S.standLevel||1)-1]}
 function nextStandLv(){return S?STAND_LEVELS[S.standLevel]:null} // null at the top level
@@ -1254,7 +1255,7 @@ function newRun(kidId){
 }
 function actIndex(){return Math.floor((S.day-1)/7)}
 function gearSlots(){return standLv().slots}
-function holdMax(){return standLv().hold} // the most of each supply your stand holds
+function holdMax(id){const l=standLv();return id==="ice"?l.iceHold:l.hold} // the most of a supply your stand holds
 function cheapestServingCost(){return Math.min(...S.recipes.map(rk=>servingCost(rk)))}
 /* Signs last one day. Each morning you buy the signs you want for today (at most SIGN_MAX), and every one
    you buy goes out. + pays for a sign and − gives the money back, so the money moves as you choose;
@@ -1341,7 +1342,7 @@ function genMorning(){
      special:S.gear.includes("special")?pick(S.recipes):null,
      dice:S.gear.includes("dice")?Math.round(rnd(0.7,1.6)*100)/100:0};
   if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1; // the tree only fills the stand up to what it holds
-    M.treeLemons=Math.max(0,Math.min(13+3*S.treeDays,holdMax()-(S.inv.lemons||0)));if(M.treeLemons)addStock("lemons",M.treeLemons,0)}
+    M.treeLemons=Math.max(0,Math.min(13+3*S.treeDays,holdMax("lemons")-(S.inv.lemons||0)));if(M.treeLemons)addStock("lemons",M.treeLemons,0)}
   S.todayCostMult=S.tomorrowCostMult||1;S.tomorrowCostMult=1;
   if(ev.fn)ev.fn(S);
 }
@@ -1680,7 +1681,7 @@ function flavorCups(rk,inv=S.inv){const ice=icePerCup();return Math.min(cupsPoss
 /* One cup's recipe as icons, "2 [lemon] 1 [sugar]"; a supply you have too little of shows red. */
 function recipeHtml(rk){return Object.entries(cupNeeds(rk)).map(([k,v])=>`<span class="need${(S.inv[k]||0)<v?" short":""}">${v}${iconHtml("supply",k)}</span>`).join("")}
 function mDrawerHtml(id){
-  const ing=INGREDIENTS[id],n=S.inv[id]||0,hold=holdMax(),room=hold-n; // a pack bigger than the room left won't fit on the stand
+  const ing=INGREDIENTS[id],n=S.inv[id]||0,hold=holdMax(id),room=hold-n; // a pack bigger than the room left won't fit on the stand
   const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
   return `<div class="drawer" id="mDrawer">
     <div class="mLbl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}${hold<Infinity?` of ${hold}`:""}.</small></div>
@@ -1715,7 +1716,7 @@ function mPricesHtml(){
 function wheelSideways(e,el){if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&el.scrollWidth>el.clientWidth){el.scrollLeft+=e.deltaY;e.preventDefault()}}
 function buyItem(id,tier=0){
   const qty=INGREDIENTS[id].pack*BULK[tier].mult,price=packPrice(id,tier);
-  if(S.cash<price||(S.inv[id]||0)+qty>holdMax()){sfx.bad();return}
+  if(S.cash<price||(S.inv[id]||0)+qty>holdMax(id)){sfx.bad();return}
   S.cash=Math.round((S.cash-price)*100)/100;addStock(id,qty,price);sfx.coin(3);updateHUD();morningParts();
 }
 function chooseLoc(i){const was=M.loc;M.loc=M.locs[i];sfx.flip();showBackdrop(M.loc);morningParts();if(M.loc!==was)newStreet($("#skyBox"))}
