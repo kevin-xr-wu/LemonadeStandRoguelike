@@ -1216,37 +1216,24 @@ let S=null; // run state
 let SPEED=1;try{SPEED=localStorage.getItem("wls_speed")==="2"?2:1}catch(e){}
 const liveAnims=new Set(); // walk animations currently on screen
 function toggleSpeed(){
+  simNow(); // bank the time so far at the old speed
   SPEED=SPEED===1?2:1;
   try{localStorage.setItem("wls_speed",String(SPEED))}catch(e){}
   liveAnims.forEach(a=>{try{a.playbackRate=SPEED}catch(e){}});
   const b=document.querySelector("#spdBtn");if(b)b.textContent=spdLabel();
   sfx.flip();
 }
-/* The game holds still while its tab is hidden. A browser barely runs a hidden tab, and some hold every walk
-   started there until you come back, then set them all off at once, stacked on top of each other. So playNow()
-   stops while the tab is hidden, which holds every wait and every new walker, and the walks on screen pause. */
-let hiddenAt=document.hidden?performance.now():null,hiddenFor=0,heldAnims=[];
-function playNow(){return (hiddenAt===null?performance.now():hiddenAt)-hiddenFor} // performance.now(), less the time spent hidden
-document.addEventListener("visibilitychange",()=>{
-  if(document.hidden&&hiddenAt===null){
-    hiddenAt=performance.now();
-    heldAnims=document.getAnimations().filter(a=>a.playState==="running");
-    heldAnims.forEach(a=>{const t=a.currentTime;a.pause();a.currentTime=t}); // setting the time pauses it now, not at the next frame
-  }else if(!document.hidden&&hiddenAt!==null){
-    hiddenFor+=performance.now()-hiddenAt;hiddenAt=null;
-    heldAnims.forEach(a=>{if(a.playState==="paused")a.play()});heldAnims=[];
-  }
-});
+/* Simulation time: ms of scaled time, so it runs twice as fast on Fast. It keeps running while the tab is hidden.
+   A hidden tab wakes its timers only now and then, so every wait is "until" a time on this clock, never "for" a while:
+   a late timer catches up on everything that came due instead of stretching the day. */
+let simT=0,simAt=performance.now();
+function simNow(){const now=performance.now();simT+=(now-simAt)*SPEED;simAt=now;return simT}
 /* setTimeout that runs on simulation time: after(800) fires after 800ms
-   of scaled time, so a mid-wait speed toggle stretches/shrinks it too. */
-function after(ms,fn){
-  let acc=0,last=playNow();
-  const iv=setInterval(()=>{
-    const now=playNow();acc+=(now-last)*SPEED;last=now;
-    if(acc>=ms){clearInterval(iv);fn()}
-  },40);
-  return iv;
+   of scaled time, so a mid-wait speed toggle stretches/shrinks it too. at(t) fires once the clock reaches t. */
+function at(t,fn){
+  const iv=setInterval(()=>{if(simNow()>=t){clearInterval(iv);fn()}},40);
 }
+function after(ms,fn){at(simNow()+ms,fn)}
 const spdLabel=()=>SPEED===2?"Fast":"Normal";
 const spdBtnHtml=()=>`<button class="btn sm ghost" id="spdBtn" onclick="toggleSpeed()">${spdLabel()}</button>`;
 function newRun(kidId){
@@ -1605,13 +1592,14 @@ function passersPace(){ // M.passGap: ms between walkers right now, 0 when nobod
   M.passGap=n>0?Math.max(PASS_MIN_MS,PASS_MS/n):0;
   M.passCrowd=M.loc?crowdList(M.loc):[];
 }
-let passTimer=0;
+let passTimer=0,passSky=null;
 function passersBy(sky){
-  clearInterval(passTimer);
-  let pace=0,due=rnd(0.6,1.4),last=playNow();
+  clearInterval(passTimer);passSky=sky;
+  let pace=0,due=rnd(0.6,1.4),last=performance.now();
   passTimer=setInterval(()=>{
     if(!sky.isConnected){clearInterval(passTimer);return} // the morning is over
-    const now=playNow();pace+=(now-last)/(M.passGap||Infinity);last=now;
+    const now=performance.now();pace+=(now-last)/(M.passGap||Infinity);last=now;
+    if(document.hidden)pace=0; // nobody new while the tab is hidden: the street fills afresh when it's back
     if(pace<due)return;
     pace=0;due=rnd(0.6,1.4);walkPast(sky);
   },100);
@@ -1625,9 +1613,9 @@ function walkPast(sky,age=0,fadeIn=0){
   if(fadeIn)d.animate({opacity:[0,1]},{duration:fadeIn,easing:"ease-out"});
   return true;
 }
-/* A new spot: the last crowd fades out with its backdrop, and the new one is already out walking. */
-function newStreet(sky){
-  const fade=stillMotion()?0:600;
+/* A new spot: the last crowd fades out with its backdrop, and the new one is already out walking.
+   With fade 0 the crowd swaps at once, as when you come back to the tab. */
+function newStreet(sky,fade=stillMotion()?0:600){
   sky.querySelectorAll(".cust:not(.gone)").forEach(d=>{d.classList.add("gone");
     if(fade)d.animate({opacity:[1,0]},{duration:fade,easing:"ease-in",fill:"forwards"}).finished.then(()=>d.remove());else d.remove()});
   if(M.passGap)for(let age=M.passGap*rnd(0,1.4);walkPast(sky,age,fade);age+=M.passGap*rnd(0.6,1.4));
@@ -1915,15 +1903,10 @@ function renderDayScene(){
 }
 /* The newest line of the day pops up as a toast over the sky; the evening report keeps them all. */
 function logLine(html){const el=$("#dayToast");if(el){el.innerHTML=html;el.style.animation="none";void el.offsetWidth;el.style.animation=""} S.log.push(html)}
-function sleep(ms){ // simulation-time wait: scales with SPEED, live, and Skip ends it now
+function sleepUntil(t){ // simulation-time wait until the clock reaches t: scales with SPEED, live, and Skip ends it now
   return new Promise(res=>{
-    if(D&&D.skip)return res();
-    let acc=0,last=playNow();
-    const iv=setInterval(()=>{
-      if(D&&D.skip){clearInterval(iv);return res()}
-      const now=playNow();acc+=(now-last)*SPEED;last=now;
-      if(acc>=ms){clearInterval(iv);res()}
-    },40);
+    if(D&&D.skip||simNow()>=t)return res();
+    const iv=setInterval(()=>{if(D&&D.skip||simNow()>=t){clearInterval(iv);res()}},40);
   });
 }
 function specialBonus(rk){return S.gear.includes("special")&&M&&M.special===rk?0.5:0}
@@ -1950,6 +1933,7 @@ function partySizes(people){
 }
 async function runDayPhase(phase){
   const isMorning=phase==="morning";
+  if(isMorning)D.next=simNow(); // when the next walker is due, on the simulation clock
   const target=isMorning?D.morningDemand:D.aftDemand;
   if(isMorning&&D.crew)logLine(`<span class="good">${D.crew} road workers buy your cheapest flavor.</span>`);
   const mixArr=crowdList(M.loc);
@@ -1967,14 +1951,16 @@ async function runDayPhase(phase){
       else if(res==="price"){D.awayPrice++;streak=0;miss="too pricey…"}
       else{D.dry=true;D.awayOut++;streak=0} // the Sold Out sign goes up on the stand (updateDayStats)
     }
-    if(!D.skip)spawnCustomer(ck,Object.keys(got).length?{buys:true,paid:D.revenue+D.tips-takings,got,streak,say:Math.random()<0.24?c.line:null}:{say:miss});
+    if(!D.skip)spawnCustomer(ck,Object.keys(got).length?{buys:true,paid:D.revenue+D.tips-takings,got,streak,say:Math.random()<0.24?c.line:null}:{say:miss},D.next);
     updateDayStats();
-    await sleep(rnd(gap*0.75,gap*1.25));
+    D.next+=rnd(gap*0.75,gap*1.25);
+    await sleepUntil(D.next);
   }
-  if(!isMorning){await lastCustomers();finishDay();return}
+  if(!isMorning){await lastCustomers();await tabShown();finishDay();return} // a day that ends in a hidden tab shows its report when you're back
   D.morningSold=D.sold;
   const msg=$("#dayMsg");if(msg)msg.textContent="Noon. More people are coming.";
-  if(D.skip)resumeAfternoon();else after(900,resumeAfternoon);
+  D.next+=900;
+  if(D.skip)resumeAfternoon();else sleepUntil(D.next).then(resumeAfternoon);
 }
 /* Supplies as the ground counts them: a cup comes off when its buyer pays at the counter, so cups poured for buyers
    still walking up count as not made yet. Skip shows what's really left. */
@@ -2012,41 +1998,59 @@ function newCustomer(sky,ck){
   const standW=(sky.querySelector(".stand")||d).offsetWidth,counter=W/2+(Math.random()-0.5)*standW*0.7;
   return {d,walkLook,faceFront,W,speed,counter,from:fromLeft?-w:W+w,to:fromLeft?W+w:-w};
 }
-function spawnCustomer(ck,{buys=false,paid=0,got={},say=null,streak=0}={}){
+/* A walker sets off at t0 on the simulation clock and keeps to that clock: buyers walk up, pay, wait 800ms and
+   walk on. Paying, talking and leaving all happen on time even while the tab is hidden; only the drawing waits. */
+function spawnCustomer(ck,{buys=false,paid=0,got={},say=null,streak=0}={},t0=simNow()){
   const sky=$("#skyBox");if(!sky)return;
   const day=D,{d,walkLook,faceFront,W,speed,counter:spot,from,to}=newCustomer(sky,ck);
-  const walk=(a,b)=>{ // duration is authored at 1×; playbackRate carries the live speed
-    const anim=d.animate([{left:a+"px"},{left:b+"px"}],{duration:Math.abs(b-a)/speed,fill:"forwards"});
-    anim.playbackRate=SPEED;liveAnims.add(anim);
-    anim.finished.finally(()=>liveAnims.delete(anim));
-    return anim.finished;
-  };
+  const walkMs=(a,b)=>Math.abs(b-a)/speed; // at 1×, the clock's own unit
+  day.onTheWay=(day.onTheWay||0)+1;
   if(!buys){
-    walk(from,to).then(()=>d.remove());
-    const atStand=Math.abs(W/2-from)/speed;
-    day.onTheWay=(day.onTheWay||0)+1;after(atStand,()=>day.onTheWay--); // the day isn't over until they've walked past the stand
-    if(say)after(atStand,()=>spawnBubble(say,d)); // talk as they pass the stand
+    const T=walkMs(from,to),atStand=walkMs(from,W/2);
+    d.path={t0,T,frames:[{left:from+"px"},{left:to+"px"}]};drawWalk(d);
+    at(t0+atStand,()=>{day.onTheWay--;if(say)spawnBubble(say,d)}); // the day isn't over until they've walked past the stand; they talk as they pass it
+    at(t0+T,()=>d.remove());
     return;
   }
-  day.onTheWay=(day.onTheWay||0)+1;
-  walk(from,spot).then(()=>{
-    if(!d.isConnected){day.onTheWay--;return}
+  const up=walkMs(from,spot),off=up+800,T=off+walkMs(spot,to);
+  d.path={t0,T,frames:[{left:from+"px"},{left:spot+"px",offset:up/T},{left:spot+"px",offset:off/T},{left:to+"px"}]};drawWalk(d);
+  at(t0+up,()=>{
+    if(!d.isConnected)return; // the street emptied for the report
     faceFront();
     const cupsBought=Object.values(got).reduce((a,b)=>a+b,0);
     const coins=Math.min(3,cupsBought); // a coin per cup, up to 3, so bigger orders sound bigger
     const payCoin=k=>{sfx.coin(Math.max(0,streak-coins+1+k));spawnCoin(spot)};
-    payCoin(0);for(let k=1;k<coins;k++)after(k*140,()=>payCoin(k));
-    spawnFlavor(spot,got);
+    if(!document.hidden){payCoin(0);for(let k=1;k<coins;k++)after(k*140,()=>payCoin(k));spawnFlavor(spot,got)} // a hidden tab takes the money quietly
     day.paid+=paid;day.paidCups+=cupsBought;Object.entries(got).forEach(([rk,n])=>{day.paidBy[rk]=(day.paidBy[rk]||0)+n});updateDayStats();
-    if(say)after(1000,()=>spawnBubble(say,d)); // pay first, then talk, so the coin and flavor don't overlap the bubble
-    after(800,()=>{day.onTheWay--;if(!d.isConnected)return;walkLook(true);walk(spot,to).then(()=>d.remove())});
   });
+  if(say)at(t0+up+1000,()=>spawnBubble(say,d)); // pay first, then talk, so the coin and flavor don't overlap the bubble
+  at(t0+off,()=>{day.onTheWay--;if(d.isConnected)walkLook(true)});
+  at(t0+T,()=>d.remove());
 }
+/* Draws a walker where the clock says they are now, and walks them on from there at the live speed. A walk started
+   in a hidden tab can be held until the tab is back and then set off with every other one, all drawn in one spot.
+   So a hidden tab draws no walks, and coming back redraws every walker in their own place. */
+function drawWalk(d){
+  const p=d.path;if(!p||document.hidden)return;
+  d.getAnimations().forEach(a=>{if(liveAnims.has(a))a.cancel()});
+  const a=d.animate(p.frames,{duration:p.T,fill:"forwards"});
+  a.playbackRate=SPEED;a.currentTime=simNow()-p.t0;
+  liveAnims.add(a);a.onfinish=a.oncancel=()=>liveAnims.delete(a);
+}
+const tabShown=()=>new Promise(res=>{
+  if(!document.hidden)return res();
+  document.addEventListener("visibilitychange",function back(){if(!document.hidden){document.removeEventListener("visibilitychange",back);res()}});
+});
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden)return;
+  document.querySelectorAll("#skyBox .cust").forEach(drawWalk);
+  if(passSky&&passSky.isConnected)newStreet(passSky,0); // the morning street, already out walking
+});
 /* Before the report, let the last customers reach the stand: buyers pay, and passers-by walk past it.
    A sold-out day lasts as long as any other. */
 async function lastCustomers(){
-  let waited=0; // in simulation ms, so the grace period scales with SPEED too
-  while(D&&D.onTheWay>0&&!D.skip&&waited<5000){await sleep(100);waited+=100}
+  const end=simNow()+5000; // in simulation ms, so the grace period scales with SPEED too
+  while(D&&D.onTheWay>0&&!D.skip&&simNow()<end)await sleepUntil(simNow()+100);
 }
 /* One speech bubble at a time, sitting above the customer who is talking
    and following them as they walk. If someone else is mid-sentence, the
