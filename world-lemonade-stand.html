@@ -2433,7 +2433,6 @@ function showHelp(then){
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
     <div class="flex spread"><h2>How to play</h2><div class="flex"><button class="btn sm ghost soundBtn${soundOn?"":" off"}" onclick="toggleSound()"><i class="hudIcon"></i><span>${soundOn?"Sound on":"Sound off"}</span></button><button class="btn sm ghost" onclick="closeModal()">Close</button></div></div>
     <ol class="howSteps">${HOW_STEPS.map(([name,hint],k)=>`<li>${art[k]}<b><i>${k+1}</i>${name}</b><span>${hint}</span></li>`).join("")}</ol>
-    <p class="small muted" style="margin:10px 0 0">Not sure what something does? Tap it to find out.</p>
     ${then?`<div class="center mt"><button class="btn gold" onclick="closeModal()">Start Day 1</button></div>`:""}
   </div></div>`;
   if(then)$("#modalRoot .btn.gold").focus();
