@@ -2200,11 +2200,15 @@ function buildDraftPool(){
   if(actIndex()>=2)pool.forEach(p=>{if(p.kind==="gear"){const g=GEAR.find(x=>x.id===p.id);if(g&&g.rar==="common")p.w*=0.4}});
   return pool;
 }
+/* A pick deals at most 2 flavors, and once one flavor is dealt, the others are a lot less likely to join it. */
+const DRAFT_MAX_FLAVORS=2,SECOND_FLAVOR_ODDS=0.35;
 function drawDraft(skip=[]){
   const pool=buildDraftPool();const out=[];const used=new Set();
   if(pool.length-skip.length>=3)skip.forEach(p=>used.add(p.kind+":"+p.id)); // a re-roll deals cards you weren't just shown
   while(out.length<3&&pool.length){
-    const c=sampleWeighted(pool.filter(p=>!used.has(p.kind+":"+p.id)).map(p=>({k:p,w:p.w})));
+    const flavors=out.filter(p=>p.kind==="recipe").length;
+    const c=sampleWeighted(pool.filter(p=>!used.has(p.kind+":"+p.id)&&(p.kind!=="recipe"||flavors<DRAFT_MAX_FLAVORS))
+      .map(p=>({k:p,w:p.kind==="recipe"&&flavors?p.w*SECOND_FLAVOR_ODDS:p.w})));
     if(!c)break;used.add(c.k.kind+":"+c.k.id);out.push(c.k);
   }
   return out;
