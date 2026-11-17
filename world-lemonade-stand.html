@@ -23,7 +23,7 @@
   --fs-xs:12px; --fs-sm:14px; --fs-md:16px; --fs-lg:20px; --fs-xl:28px; --fs-2xl:40px; --fs-3xl:64px;
 }
 /* Three surface levels, so the eye can tell what to press:
-   1. Page surfaces (.panel, .scene, .supShelf, .modal): a fill and rounded corners. No ink border, no hard shadow.
+   1. Page surfaces (.scene, .supShelf, .modal): a fill and rounded corners. No ink border, no hard shadow.
    2. Grouped content (My Stand, slots, chips, pills, hints, banners, callouts, the log, the buy drawer): a flat fill, no border.
    3. Things you press (.btn, .iconBtn, .choice, .item, .stepper button, .post): the chunky ink border and offset shadow,
       which collapse when pressed. Nothing else gets that look. */
@@ -69,7 +69,6 @@ h1,h2,h3,.btn,.helpBtn,.mLbl,.choice .ttl,.artAmt,.hud .money,.dayNum,.fcMain,.d
 .iconBtn{background:var(--card);border:3px solid var(--ink);border-radius:12px;padding:6px 12px;font-weight:800;box-shadow:0 3px 0 rgba(43,33,24,.8)}
 .iconBtn:active{transform:translateY(2px);box-shadow:none}
 /* Panels */
-.panel{background:var(--card);border-radius:var(--radius);padding:18px;margin-top:14px;position:relative}
 h2{margin:0 0 8px;font-size:var(--fs-xl)}
 h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .center{text-align:center}
@@ -271,6 +270,9 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 /* The evening pops up over the closed stand: the day's report, then the upgrade pick every 3 days. It sits under the HUD, so money, stars and upgrades stay in view. */
 .modalWrap.eve{z-index:40;padding-top:calc(var(--hudH) + 16px)}
 .eve .modal{max-width:760px;max-height:100%}
+/* The end of a run pops up the same way. The HUD is gone by then, so the card centres in the whole window. */
+.modalWrap.eve.runEnd{padding-top:14px}
+.eve .modal.endCard{max-width:600px}
 .endAsk{max-width:440px}
 /* Upgrade your stand: the stand now and after, at 2×, standing on one line, then what the new level does */
 .standUpBox{max-width:460px}
@@ -432,7 +434,6 @@ button,input,select{touch-action:manipulation}
   #app{padding:8px 8px 34px}
   h2{font-size:var(--fs-lg)}
   .big{font-size:var(--fs-md)}
-  .panel{padding:13px;margin-top:10px}
   /* HUD: icons stay at 2× so they read on a phone; the bar gets tighter instead */
   .hud{gap:16px;top:4px;padding:4px 6px 4px 10px;border-radius:12px}
   .hud .money,.dayNum{font-size:var(--fs-lg)}
@@ -464,7 +465,7 @@ button,input,select{touch-action:manipulation}
   .rRow{padding:2px 0}
   .dayNotes p{margin-bottom:8px}
   .log{font-size:var(--fs-xs);max-height:150px}
-  .modalWrap{padding:8px}
+  .modalWrap,.modalWrap.eve.runEnd{padding:8px}
   .modal{padding:15px;max-height:92dvh}
 }
 @media (max-width:560px){
@@ -476,7 +477,6 @@ button,input,select{touch-action:manipulation}
   .hud{gap:8px}
   .hud .money{font-size:var(--fs-md)}
   .btn{padding:12px 18px;font-size:var(--fs-md)}
-  .panel{padding:11px}
 }
 @media (max-height:500px) and (orientation:landscape){
   .playBtn{padding:12px 40px}
@@ -2125,6 +2125,8 @@ function finishDay(){
   }
   S.cash=Math.round(S.cash*100)/100;
   S.daysPlayed=S.day;
+  $("#dayMsg").textContent="Closed for today.";$(".dayBtns").remove();
+  document.querySelectorAll("#skyBox .cust,#skyBox .bubble").forEach(el=>el.remove()); // the street empties: anyone still walking up doesn't pay
   if(D.ending){endRun("retired");return} // End run was pressed while selling: today's sales count, then the run ends
   // the sticky note: what running out cost you, or that everyone got lemonade. It gives no price advice;
   // the line above it says how many said it cost too much, and the player decides what to change.
@@ -2143,8 +2145,6 @@ function finishDay(){
   const topCust=Object.entries(D.revByCrowd).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([ck,m])=>{const pct=Math.max(1,Math.round(100*m/D.revenue));
     return `<li tabindex="0"${tip(`${pct}% of the money from today's sales came from ${CROWDS[ck].name}.`)}>${iconHtml("crowd",ck,true)}<b>${pct}%</b><small>${CROWDS[ck].name}</small></li>`}).join("");
   const stamp=perfect?`<span class="rStamp">Perfect day</span>`:soldOut?`<span class="rStamp">Sold out</span>`:made<0?`<span class="rStamp bad">Rough day</span>`:"";
-  $("#dayMsg").textContent="Closed for today.";$(".dayBtns").remove();
-  document.querySelectorAll("#skyBox .cust,#skyBox .bubble").forEach(el=>el.remove()); // the street empties: anyone still walking up doesn't pay
   eveSheet(`
     <h2>Day ${S.day} results</h2>
     ${learnHint(HOW_STEPS[4][1])}
@@ -2176,7 +2176,8 @@ function finishDay(){
   D.report={profit:made,perfect};
 }
 /* The evening pops up over the closed stand, one sheet at a time: the report, then the pick, a swap or a new combo.
-   The stand behind it can't be pressed. The next morning replaces the stage, and the sheet goes with it. */
+   The end of a run uses the same sheet, over whatever was on screen. The stand behind it can't be pressed.
+   The next morning (or the title, after a run) replaces the stage, and the sheet goes with it. */
 function eveSheet(html,cls=""){
   if(!$("#eve")){$(".stage").inert=true;$("#screen").insertAdjacentHTML("beforeend",`<div class="modalWrap eve" id="eve"></div>`)}
   $("#eve").innerHTML=`<div class="modal${cls?" "+cls:""}">${html}</div>`;
@@ -2335,7 +2336,7 @@ function nextDay(){
 }
 /* The end of a run: heading, the score, highlights, the stand, then the buttons in #endBtns. */
 function endHtml(heading,sub,bestLine,buttons){
-  return `<div class="panel center">
+  return `
     <h2>${heading}</h2>
     ${sub}
     ${scoreHtml(bestLine)}
@@ -2343,8 +2344,7 @@ function endHtml(heading,sub,bestLine,buttons){
     <div id="endBoard"></div>
     <p class="muted">Your stand: ${buildSummary()}</p>
     ${S.discoveredSyn.length?`<p class="muted">Combos found: ${S.discoveredSyn.map(id=>SYNERGIES.find(s=>s.id===id).name).join(", ")}</p>`:""}
-    <div id="endBtns">${buttons}</div>
-  </div>`;
+    <div id="endBtns">${buttons}</div>`;
 }
 /* The score, big, then four highlights of the run. */
 function scoreHtml(bestLine){
@@ -2389,8 +2389,9 @@ function endRun(mode,reason){
   const newBest=prevBest>0&&Math.round(S.cash)>prevBest;
   const heading={complete:`You made it to day ${MAX_DAYS}!`,retired:"Score saved",bankrupt:"Out of business"}[mode];
   if(mode==="retired")sfx.good();
-  $("#screen").innerHTML=endHtml(heading,reason?`<p class="big">${reason}</p>`:"",newBest?"New best score!":`Your best: ${fmt(st.best)}`,
-    `<div class="flex mt" style="justify-content:center"><button class="btn gold" onclick="showTitle()">Play again</button></div>`);
+  eveSheet(endHtml(heading,reason?`<p class="big">${reason}</p>`:"",newBest?"New best score!":`Your best: ${fmt(st.best)}`,
+    `<div class="flex mt" style="justify-content:center"><button class="btn gold" onclick="showTitle()">Play again</button></div>`),"center endCard");
+  $("#eve").classList.add("runEnd");
   countUp($("#scoreAmt"),S.cash);
   if(mode==="complete")celebrate("big",$("#scoreAmt"),1100); // when the count-up lands
   $("#endBoard").innerHTML=`<h3>High scores</h3>${boardHtml(loadScores(),place)}`;
