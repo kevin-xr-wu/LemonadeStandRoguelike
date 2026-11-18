@@ -1132,8 +1132,8 @@ const GLASS_MAX=500, PRICE_MAX=10, MAX_DAYS=100;
    4 cubes in each cup. The art: png, w its width in art pixels, top how far
    its top sits above the ground line, room the sky the stage keeps clear above the ground for it (and the arrow). */
 const STAND_LEVELS=[
- {png:STAND_PNG, w:64,top:61,room:84,pay:1,   hold:200,     iceHold:400,     shelf:4,slots:5},
- {png:STAND2_PNG,w:64,top:71,room:92,pay:1.1, hold:400,     iceHold:800,     shelf:5,slots:6,cost:500},
+ {png:STAND_PNG, w:64,top:61,room:84,pay:1,   hold:250,     iceHold:500,     shelf:4,slots:5},
+ {png:STAND2_PNG,w:64,top:71,room:92,pay:1.1, hold:500,     iceHold:1000,    shelf:5,slots:6,cost:500},
  {png:STAND3_PNG,w:72,top:84,room:90,pay:1.21,hold:Infinity,iceHold:Infinity,shelf:6,slots:7,cost:1000}, // the top level has no arrow over it
 ];
 function standLv(){return STAND_LEVELS[(S&&S.standLevel||1)-1]}
