@@ -216,6 +216,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .amt{font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
 .rTotal{border-top:2px dashed #cdbf9d;margin-top:8px;padding-top:10px;font-weight:900}
 .rTotal .amt{font-size:var(--fs-xl);line-height:1}
+.rRow small,.rTotal small{display:block;font-family:var(--font-body);font-size:var(--fs-sm);font-weight:600;opacity:.7} /* a row's second line: what each cup cost, how many signs */
 .coinSpot{position:relative;display:inline-block}
 .dropCoin{--s:2;position:absolute;bottom:30%;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;pointer-events:none;animation:coinDrop .5s ease-in both}
 @keyframes coinDrop{0%{transform:translateY(-60px) rotate(-30deg);opacity:0}25%,80%{opacity:1}100%{transform:translateY(0) rotate(20deg) scale(.6);opacity:0}}
@@ -273,6 +274,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 /* The end of a run pops up the same way. The HUD is gone by then, so the card centres in the whole window. */
 .modalWrap.eve.runEnd{padding-top:14px}
 .eve .modal.endCard{max-width:600px}
+.endCard .receiptBox{margin:4px auto 18px;text-align:left} /* the run's receipt: money made, what it cost, the profit */
 .endAsk{max-width:440px}
 /* Upgrade your stand: the stand now and after, at 2×, standing on one line, then what the new level does */
 .standUpBox{max-width:460px}
@@ -748,6 +750,7 @@ const ri=(a,b)=>Math.floor(rnd(a,b+1));
 const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const fmt=n=>{const v=Math.round(n*100)/100;return (v<0?"-$":"$")+Math.abs(v).toFixed(2).replace(/\.00$/,"")};
+const fmtCents=v=>v<0.995?`${Math.round(v*100)}¢`:fmt(v); // what a cup costs to make: 62¢, or $1.05 once it's a dollar
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const plural=(n,one,many)=>n===1?one:(many||one+"s");
 /* 64×64 pixel-art stand, drawn in Pixelwright. CSS shows it at 2×, or 1× on small screens (.stand). */
@@ -1245,7 +1248,8 @@ function newRun(kidId){
     log:[], lifetimeProfit:0, lifetimeSold:0,
     todayCostMult:1, tomorrowCostMult:1,
     discoveredSyn:[], perfectDays:0, sellouts:0,
-    startCash:kid.start
+    startCash:kid.start,
+    spent:{signs:0,supplies:0,stand:0,rerolls:0}, signsOut:0 // for the end of the run's receipt
   };
   S.avgCost={};Object.keys(S.inv).forEach(id=>{S.avgCost[id]=ingCost(id)});
   S.lots={};Object.keys(SHELF).forEach(id=>{if(S.inv[id])S.lots[id]=[{qty:S.inv[id],day:1}]}); // starting supplies are fresh on day 1
@@ -1261,6 +1265,8 @@ function cheapestServingCost(){return Math.min(...S.recipes.map(rk=>servingCost(
    opening the stand uses them up. Free signs from upgrades are on top of the cap. */
 const SIGN_MAX=8;
 function signPrice(){return INGREDIENTS.signs.price} // $5 all game: the act, supply sales and ants, and the Wholesale Card don't change it
+/* Every purchase goes through pay(), so the end of a run can say where the money went. A refund pays a negative amount. */
+function pay(kind,amt){S.cash=Math.round((S.cash-amt)*100)/100;S.spent[kind]=Math.round((S.spent[kind]+amt)*100)/100}
 /* ---------- build aggregation ---------- */
 /* b.tags = flavor tags on your menu's recipes (feeds synergies). Gear carries no tags. */
 function computeBuild(){
@@ -1717,17 +1723,17 @@ function wheelSideways(e,el){if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&el.scroll
 function buyItem(id,tier=0){
   const qty=INGREDIENTS[id].pack*BULK[tier].mult,price=packPrice(id,tier);
   if(S.cash<price||(S.inv[id]||0)+qty>holdMax(id)){sfx.bad();return}
-  S.cash=Math.round((S.cash-price)*100)/100;addStock(id,qty,price);sfx.coin(3);updateHUD();morningParts();
+  pay("supplies",price);addStock(id,qty,price);sfx.coin(3);updateHUD();morningParts();
 }
 function chooseLoc(i){const was=M.loc;M.loc=M.locs[i];sfx.flip();showBackdrop(M.loc);morningParts();if(M.loc!==was)newStreet($("#skyBox"))}
 function openShelf(id){M.shopOpen=M.shopOpen===id?null:id;sfx.flip();morningParts()}
 function stepSigns(d){ // + buys one sign, − gives one back for what it cost
   const p=signPrice();
-  if(d<0){if(M.signs<=0)return;M.signs--;S.cash=Math.round((S.cash+p)*100)/100;sfx.tick()}
-  else{if(S.cash<p||M.signs>=SIGN_MAX){sfx.bad();return}M.signs++;S.cash=Math.round((S.cash-p)*100)/100;sfx.coin(3)}
+  if(d<0){if(M.signs<=0)return;M.signs--;pay("signs",-p);sfx.tick()}
+  else{if(S.cash<p||M.signs>=SIGN_MAX){sfx.bad();return}M.signs++;pay("signs",p);sfx.coin(3)}
   updateHUD();morningParts();
 }
-function retireMorning(){S.cash=Math.round((S.cash+M.signs*signPrice())*100)/100;M.signs=0;endRun('retired')} // signs not put out yet go back for a refund
+function retireMorning(){pay("signs",-M.signs*signPrice());M.signs=0;endRun('retired')} // signs not put out yet go back for a refund
 /* ---------- Stand upgrades: the arrow on top of the stand, each morning until level 3 ----------
    The arrow is green once you have the money and grey until then. Tapping it either way shows what the next level does. */
 function syncStandUp(){
@@ -1760,7 +1766,7 @@ function showStandUp(){
 /* The new stand goes up in place, so the sky keeps drifting: the stage takes its size, the arrow goes once it's the last level. */
 function buyStandUp(){
   const next=nextStandLv();if(!next||S.cash<next.cost){sfx.bad();return}
-  S.cash=Math.round((S.cash-next.cost)*100)/100;S.standLevel++;
+  pay("stand",next.cost);S.standLevel++;
   closeModal();
   const st=$(".stage.morning"),img=st.querySelector(".stand");
   st.setAttribute("style",standVars());img.src=standLv().png;
@@ -1835,11 +1841,12 @@ function serveOne(ck){
     if(!alt)return "out";
     rk=alt;
   }
+  const cost=servingCost(rk); // priced before pouring: once a supply runs out, it's priced at the shop's price instead
   pourCup(rk);
   const rev=saleRevenue(1,menuPrice(rk),rk);
   D.revenue+=rev;D.revBy[rk]=(D.revBy[rk]||0)+rev;D.tips+=rev*tipRate()*Math.random();
   D.revByCrowd[ck]=(D.revByCrowd[ck]||0)+rev; // the money each crowd paid: the evening report shows the top customers
-  D.cogs+=servingCost(rk);
+  D.costBy[rk]=(D.costBy[rk]||0)+cost; // the evening receipt says what a cup of each flavor cost to make
   D.sold++;D.soldBy[rk]=(D.soldBy[rk]||0)+1;D.lastFlavor=rk; // the day scene shows it over the buyer
   if(D.crewLeft>0)D.crewLeft--;
   return "sold";
@@ -1848,12 +1855,13 @@ function openStand(){
   if(!M.loc){alert("Pick a spot first.");return}
   const b=computeBuild();
   const putOut=M.signs; // every sign bought this morning goes out, and they're paid for already: starting the day never charges you
+  S.signsOut+=putOut;
   S.recipes.forEach(rk=>{S.menuPrices[rk]=M.prices[rk]});
   sfx.pop();
   M.actualWx=M.trueWx;
   D={signs:putOut,build:b,
      roll:rnd(0.87,1.13),soldBy:{},revByCrowd:{},sold:0,morningSold:0,dry:false,
-     awayPrice:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
+     awayPrice:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,costBy:{},
      skip:false,done:false,brotherSpilled:false,crewLeft:0,paidCups:0,paidBy:{}};
   D.menu=openingMenu();
   const minPrice=Math.min(...D.menu.map(rk=>menuPrice(rk)));
@@ -2151,7 +2159,7 @@ function finishDay(){
   else if(!unserved)counter=`Everyone got lemonade.`;
   const tonight=overnight(); // ice melts and old produce goes bad once you close
   const byCups=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]);
-  const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${iconHtml("flavor",rk)}</span> ${n} ${plural(n,"cup")} at ${fmt(menuPrice(rk))}</span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
+  const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${iconHtml("flavor",rk)}</span> ${n} ${plural(n,"cup")} at ${fmt(menuPrice(rk))}<small>Each cup cost ${fmtCents(D.costBy[rk]/n)} to make.</small></span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
   const upgradeBonus=Math.round((D.revenue-Object.entries(D.soldBy).reduce((s,[rk,n])=>s+n*menuPrice(rk),0))*100)/100;
   const walked=D.awayPrice,ranOut=Math.max(0,unserved-walked),why=[];
   if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);
@@ -2266,7 +2274,7 @@ function offerDraft(){
 }
 function rerollDraft(){
   if(S.cash<rerollCost){sfx.bad();return}
-  S.cash=Math.round((S.cash-rerollCost)*100)/100;rerollCost*=2;
+  pay("rerolls",rerollCost);rerollCost*=2;
   draftChoices=drawDraft(draftChoices);sfx.coin(3);sfx.flip();updateHUD();
   const cards=$("#draftCards");cards.innerHTML=draftCardsHtml();
   cards.classList.remove("dealt");void cards.offsetWidth;cards.classList.add("dealt"); // restart the deal animation
@@ -2350,13 +2358,14 @@ function nextDay(){
   S.day++;
   startMorning();
 }
-/* The end of a run: heading, the score, highlights, the stand, then the buttons in #endBtns. */
+/* The end of a run: heading, the score, highlights, the run's receipt, the stand, then the buttons in #endBtns. */
 function endHtml(heading,sub,bestLine,buttons){
   return `
     <h2>${heading}</h2>
     ${sub}
     ${scoreHtml(bestLine)}
     ${highlightsHtml(S.daysPlayed)}
+    ${profitHtml()}
     <div id="endBoard"></div>
     <p class="muted">Your stand: ${buildSummary()}</p>
     ${S.discoveredSyn.length?`<p class="muted">Combos found: ${S.discoveredSyn.map(id=>SYNERGIES.find(s=>s.id===id).name).join(", ")}</p>`:""}
@@ -2365,6 +2374,23 @@ function endHtml(heading,sub,bestLine,buttons){
 /* The score, big, then four highlights of the run. */
 function scoreHtml(bestLine){
   return `<div class="scoreLabel">Your score</div><div class="coinSpot"><div class="scoreBig" id="scoreAmt">${fmt(S.cash)}</div></div><p class="muted" id="bestLine" style="margin:2px 0 0">${bestLine}</p>`;
+}
+/* The run's receipt: money made, then what the signs, supplies, stand and re-rolls cost, then the profit (the score minus
+   the starting money). Money made is the profit plus all that spending, so the rows always add up. */
+function profitHtml(){
+  const sp=S.spent,profit=Math.round((S.cash-S.startCash)*100)/100,cups=S.lifetimeSold;
+  const made=Math.round((profit+sp.signs+sp.supplies+sp.stand+sp.rerolls)*100)/100;
+  const row=(label,amt,more)=>`<div class="rRow"><span>${label}${more?`<small>${more}</small>`:""}</span><span class="amt">${amt}</span></div>`;
+  const cost=(label,amt,more)=>amt>0?row(label,`−${fmt(amt)}`,more):"";
+  return `<div class="receiptBox"><div class="receiptWrap"><div class="receipt">
+    <div class="rHead">Your money</div>
+    ${row("Money made",`+${fmt(made)}`,"Sales, tips and bonuses.")}
+    ${cost("Signs",sp.signs,`${S.signsOut} ${plural(S.signsOut,"sign")} at ${fmt(signPrice())} each.`)}
+    ${cost("Supplies",sp.supplies,cups?`About ${fmtCents(sp.supplies/cups)} for each cup you sold.`:"")}
+    ${cost("Stand upgrades",sp.stand)}
+    ${cost("Re-rolls",sp.rerolls)}
+    <div class="rTotal"><span>Total profit<small>You started with ${fmt(S.startCash)}.</small></span><span class="amt ${profit>=0?"pos":"negc"}">${fmt(profit)}</span></div>
+  </div></div></div>`;
 }
 function highlightsHtml(days){
   const hl=[[days,`${plural(days,"day")} played`],[S.lifetimeSold,"cups sold"],
