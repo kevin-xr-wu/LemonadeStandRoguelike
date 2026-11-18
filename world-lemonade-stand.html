@@ -733,14 +733,14 @@ body:has(.stage){overflow:hidden}
 <body>
 <div id="app">
   <div class="hud" id="hud" style="display:none">
-    <div class="hudCoins" id="hudMoney" tabindex="0" data-tip="Your money. It's also your score."><i class="hudIcon"></i><span class="money" id="hudCash">$30</span></div>
-    <div class="hudDay" id="hudDayBox" tabindex="0" data-tip=""><i class="hudIcon calPage"></i><span class="dayNum" id="hudDay"></span></div>
+    <div class="hudCoins" id="hudMoney"><i class="hudIcon"></i><span class="money" id="hudCash">$30</span></div>
+    <div class="hudDay" id="hudDayBox"><i class="hudIcon calPage"></i><span class="dayNum" id="hudDay"></span></div>
     <div class="hudWx" id="hudWx" tabindex="0" data-tip=""></div>
-    <div class="starMeter" id="hudRepBox" tabindex="0" data-tip="" role="img"></div>
-    <button class="hudTray" id="hudTray" onclick="showBuild()" data-tip=""></button>
-    <button class="hudBtn soundBtn" id="btnSound" data-tip="Sound on or off" aria-label="Sound on or off"><i class="hudIcon"></i></button>
-    <button class="hudBtn helpBtn" id="btnHelp" data-tip="How to play" aria-label="How to play">?</button>
-    <button class="hudEnd" id="btnEnd" onclick="askEndRun()" data-tip="Stop here and keep your money as your score.">End run</button>
+    <div class="starMeter" id="hudRepBox" tabindex="0" data-tip="Stars go up when most people get lemonade. More stars bring more people." role="img"></div>
+    <button class="hudTray" id="hudTray" onclick="showBuild()"></button>
+    <button class="hudBtn soundBtn" id="btnSound" aria-label="Sound on or off"><i class="hudIcon"></i></button>
+    <button class="hudBtn helpBtn" id="btnHelp" aria-label="How to play">?</button>
+    <button class="hudEnd" id="btnEnd" onclick="askEndRun()">End run</button>
   </div>
   <div id="screen"></div>
 </div>
@@ -1431,19 +1431,15 @@ function updateHUD(){
   if(!S){$("#hud").style.display="none";hudCash.shown=null;return}
   $("#hud").style.display="flex";
   showCash(S.cash);
-  const area=actFor(actIndex()).name.split("·")[1].trim();
   $("#hudDay").innerHTML=`<small>Day </small>${S.day}`;
   const wx=M&&WEATHERS[M.shownWx]; // shown while the morning or the selling day is on screen
   $("#hudWx").innerHTML=wx?`${iconHtml("weather",M.shownWx)} <b>${wx.name}, ${M.temp}°F</b>`:"";
-  $("#hudWx").dataset.tip=wx?`Today's forecast. ${wx.desc} The forecast is always right.`:"";
-  $("#hudDayBox").dataset.tip=`Day ${S.day}. You're at ${area}.`;
+  $("#hudWx").dataset.tip=wx?wx.desc:"";
   // each star fills from the left, one art pixel at a time: 3.4 stars is three full stars and a star 4 of 11 pixels full
   $("#hudRepBox").innerHTML=[0,1,2,3,4].map(i=>`<i class="star" style="--f:${Math.round(clamp(S.rep-i,0,1)*11)}"></i>`).join("")+`<b class="starNum">${S.rep.toFixed(1)}</b>`;
   $("#hudRepBox").setAttribute("aria-label",`${S.rep.toFixed(1)} out of 5 stars`);
-  $("#hudRepBox").dataset.tip=`${S.rep.toFixed(1)} stars. They go up when most people get lemonade. More stars bring more people.`;
   const tray=$("#hudTray"),n=S.gear.length;
   tray.innerHTML=Array.from({length:gearSlots()},(_,i)=>S.gear[i]?`<span class="tSlot">${gearIconHtml(S.gear[i])}</span>`:`<span class="tSlot empty"></span>`).join("");
-  tray.dataset.tip=`My stand: ${n} of ${gearSlots()} upgrades. Tap to see them all.`;
   tray.setAttribute("aria-label",`My stand, ${n} of ${gearSlots()} upgrades`);
 }
 /* The HUD's money counts to each new amount, so buying and selling feel like coins changing hands. */
@@ -1464,30 +1460,20 @@ function showCash(to){
 function escAttr(t){return String(t).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function tip(t){return ` data-tip="${escAttr(t)}"`}
 function listWords(a){return a.length<2?a.join(""):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
-const TAG_INFO={SWEET:"Sweet drinks.",SOUR:"Tart, lemony drinks.",FANCY:"Fancy, special drinks.",CHILLED:"Drinks served icy cold.",FIZZY:"Bubbly drinks."};
+/* "Kids and Parents love sweet drinks. Athletes don't.": who loves a tag and who doesn't. */
 function tagTip(t){
-  const fans=Object.values(CROWDS).filter(c=>c.loves.includes(t)).map(c=>c.name),foes=Object.values(CROWDS).filter(c=>c.hates===t).map(c=>c.name);
-  return `${TAG_INFO[t]||""}${fans.length?` ${listWords(fans)} love them.`:""}${foes.length?` ${listWords(foes)} don't.`:""}`;
+  const fans=Object.values(CROWDS).filter(c=>c.loves.includes(t)).map(c=>c.name),foes=Object.values(CROWDS).filter(c=>c.hates===t).map(c=>c.name),drinks=`${t.toLowerCase()} drinks`;
+  return [fans.length?`${listWords(fans)} love ${drinks}.`:"",foes.length?`${listWords(foes)} ${fans.length?"don't":`don't like ${drinks}`}.`:""].filter(Boolean).join(" ");
 }
 function flavorFans(tags){return Object.entries(CROWDS).filter(([,c])=>c.loves.some(t=>tags.includes(t))).map(([k,c])=>`${iconHtml("crowd",k)} ${c.name}`).join(", ")}
 function tagChips(tags){return tags.map(t=>`<span class="tag"${tip(tagTip(t))}>${t.charAt(0)+t.slice(1).toLowerCase()}</span>`).join("")}
 const RARITY={common:"Common",rare:"Rare",epic:"Epic",legendary:"Legendary"},RARITY_TIP="Rarer upgrades show up less often: common, rare, epic, then legendary.";
 function rarBadge(r){return `<span class="rar ${r}"${tip(RARITY_TIP)}>${r}</span>`}
-function ingTip(id){
-  if(id==="cups")return "Every customer needs 1 cup.";
-  if(id==="lemons")return `${perCupTip("lemons","lemon","lemons")} Lemons stay fresh for ${SHELF.lemons} ${plural(SHELF.lemons,"day")}.`;
-  if(id==="sugar")return perCupTip("sugar","sugar","sugar");
-  if(id==="ice")return "Hotter days put more ice in each cup. Half of your leftover ice melts each night.";
-  return `Needed for ${listWords(S.recipes.filter(rk=>(RECIPES[rk].needs||{})[id]).map(rk=>`${RECIPES[rk].name} (${RECIPES[rk].needs[id]} per cup)`))}.`;
-}
-/* "Each cup takes 2 lemons. Citron Pressé takes 3.": the usual amount, then your flavors that take a different one. */
-function perCupTip(id,one,many){const n=cupNeeds("classic")[id];
-  return `Each cup takes ${n} ${plural(n,one,many)}.`+S.recipes.filter(rk=>cupNeeds(rk)[id]!==n).map(rk=>` ${RECIPES[rk].name} takes ${cupNeeds(rk)[id]}.`).join("")}
 /* Your upgrade slots, shown wherever you make choices so upgrades never hide. */
 function shelfHtml(){
   let slots="";
   for(let i=0;i<gearSlots();i++){const g=GEAR.find(x=>x.id===S.gear[i]);
-    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${gearIconHtml(g.id,true)}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You get to pick an upgrade after each day.")}></span>`}
+    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${gearIconHtml(g.id,true)}</span>`:`<span class="slot empty"></span>`}
   return `<div class="shelf"><b>My Stand</b><div class="slots">${slots}</div><button class="btn sm ghost" onclick="showBuild()">See all</button></div>`;
 }
 /* The day, step by step. The ? help lists them all. On a player's first day, tips walk them through the morning
@@ -1647,7 +1633,7 @@ function mSpotHtml(){
     <div class="posts">${M.locs.map((l,i)=>`<button class="post" onclick="chooseLoc(${i})" data-f="loc${i}" aria-pressed="${M.loc===l}" aria-label="${l.name}"><span class="postFace">${iconHtml("spot",l.name,true)}<span>${l.name}</span></span></button>`).join("")}</div>`;
   const go=`<div class="mLbl">Ready to open?</div>
     <div class="goBox"><div class="goInfo"><span class="goChip">${M.loc?`${iconHtml("spot",M.loc.name)} ${M.loc.name}`:`<span class="warnTxt">Pick a spot first</span>`}</span>
-      <span class="goChip" id="guessText" tabindex="0"${tip(iceTip())}></span></div>
+      <span class="goChip" id="guessText"></span></div>
       <button class="btn gold" id="btnOpen" onclick="openStand()" data-f="open">Open</button></div>`;
   const last=SPOT_SLIDES.length-1;
   const slide=(html,k)=>`<div class="slide" role="group" aria-roledescription="slide" aria-label="${SPOT_SLIDES[k]}"${k===card?"":" inert"}>${html}</div>`;
@@ -1674,18 +1660,18 @@ function setSpotCard(i){
 function mShopHtml(){
   const basics=BASIC_SUPPLIES,extras=flavorSupplies(S.recipes);
   const item=id=>{const n=S.inv[id]||0,open=M.shopOpen===id;
-    return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`};
-  return `<div class="supShelf"><div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>
+    return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}">${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`};
+  return `<div class="supShelf"><div class="mLbl"><span>Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>
     <div class="shelfRow" onwheel="wheelSideways(event,this)">${basics.map(item).join("")}${extras.length?`<i class="sep" aria-hidden="true"></i>${extras.map(item).join("")}`:""}</div></div>${M.shopOpen?mDrawerHtml(M.shopOpen):""}
     ${canMakeHtml()}`;
 }
 /* Under the shelf: the cups each flavor can make from what you have, and what each cup of it takes. */
 function canMakeHtml(){
   const ice=icePerCup(),most=Math.max(0,...S.recipes.map(rk=>cupsPossible(rk,S.inv)));
-  const each=(id,n,left)=>`<b class="need${left<most?" short":""}"${left<most?tip(`${INGREDIENTS[id].name} run out first.`):""}>${n}${iconHtml("supply",id)}</b>`; // red when it stops a flavor before its lemons and sugar do
+  const each=(id,n,left)=>`<b class="need${left<most?" short":""}"${left<most?tip(`You'll run out of ${INGREDIENTS[id].name.toLowerCase()} first.`):""}>${n}${iconHtml("supply",id)}</b>`; // red when it stops a flavor before its lemons and sugar do
   const row=rk=>{const n=flavorCups(rk);
     return `<div class="fRow${n?"":" none"}">${iconHtml("flavor",rk,true)}<span class="fName">${RECIPES[rk].name}</span>
-      <span class="fCups" tabindex="0"${tip(n?`You can make ${n} ${plural(n,"cup")} of ${RECIPES[rk].name}.`:`Not enough for ${RECIPES[rk].name}. Red shows what's short.`)}><b>${n}</b>${plural(n,"cup")}</span>
+      <span class="fCups"><b>${n}</b>${plural(n,"cup")}</span>
       <span class="recipe" aria-label="Each cup takes ${listWords(Object.entries(cupNeeds(rk)).map(([k,v])=>`${v} ${INGREDIENTS[k].name.toLowerCase()}`))}">${recipeHtml(rk)}</span></div>`};
   return `<div class="canMake"><div class="mLbl">Cups you can make</div>
     <div class="perCup"><span>Each cup also takes ${each("cups",1,S.inv.cups||0)}${ice?` ${each("ice",ice,Math.floor((S.inv.ice||0)/ice))}`:""}</span></div>
@@ -1700,7 +1686,7 @@ function mDrawerHtml(id){
   const ing=INGREDIENTS[id],n=S.inv[id]||0,hold=holdMax(id),room=hold-n; // a pack bigger than the room left won't fit on the stand
   const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
   return `<div class="drawer" id="mDrawer">
-    <div class="mLbl"><span tabindex="0"${tip(ingTip(id))}>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}. ${hold<Infinity?`The limit is ${hold}.`:"There's no limit."}</small></div>
+    <div class="mLbl"><span>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}. ${hold<Infinity?`The limit is ${hold}.`:"There's no limit."}</small></div>
     ${rule?`<div class="rule">${rule}</div>`:""}
     <div class="packs">${BULK.map((t,i)=>{const qty=ing.pack*t.mult,price=packPrice(id,i);
       return `<button class="btn" onclick="buyItem('${id}',${i})" data-f="buy-${id}-${i}"${S.cash<price||qty>room?' aria-disabled="true"':""} aria-label="Buy ${qty} ${ing.name.toLowerCase()} for ${fmt(price)}">+${qty}<small>${fmt(price)}</small>${t.off?`<i class="off">−${Math.round(t.off*100)}%</i>`:""}</button>`}).join("")}</div>
@@ -1725,7 +1711,7 @@ function mPricesHtml(){
     return `<div class="price${ok?"":" out"}">${iconHtml("flavor",rk,true)}
       <div><span class="pName" tabindex="0"${tip(`${r.desc} From: ${r.origin.replace(" · ",", ")}.`)}>${r.name}</span><div>${tagChips(r.tags)}${special}</div></div>
       ${ok?stepperHtml("price-"+rk,fmt(p),`stepPrice('${rk}',-1)`,`stepPrice('${rk}',1)`,`Lower ${r.name} price, now ${fmt(p)}`,`Raise ${r.name} price, now ${fmt(p)}`,p<=0.5,p>=priceMax())
-        :`<div class="pOut" tabindex="0"${tip(`Not selling today. You need ${missingNames(rk)}.`)}>Need ${missingIds(rk).map(k=>iconHtml("supply",k)).join(" ")}</div>`}
+        :`<div class="pOut">Need ${missingIds(rk).map(k=>iconHtml("supply",k)).join(" ")}</div>`}
     </div>`}).join("")}</div>`;
 }
 /* A mouse wheel scrolls a sideways strip (the supplies shelf, the price tags) sideways. */
@@ -1752,7 +1738,6 @@ function syncStandUp(){
   const ok=S.cash>=next.cost;
   b.classList.toggle("ok",ok);
   b.setAttribute("aria-label",`Upgrade your stand for ${fmt(next.cost)}`);
-  b.dataset.tip=ok?`Upgrade your stand for ${fmt(next.cost)}.`:`Upgrading your stand costs ${fmt(next.cost)}.`;
 }
 function showStandUp(){
   const now=standLv(),next=nextStandLv();if(!next)return;
@@ -1795,12 +1780,9 @@ function stepPrice(rk,d){
 function sellableNow(){return S.recipes.filter(rk=>canPour(rk,S.inv))}
 function openingMenu(){const can=sellableNow();return can.length?can:S.recipes.slice()} // the menu you would open with; with no supplies at all, every flavor stays on it
 function missingIds(rk){return Object.entries(cupNeeds(rk)).filter(([k,v])=>(S.inv[k]||0)<v).map(([k])=>k)}
-function missingNames(rk){return listWords(missingIds(rk).map(k=>INGREDIENTS[k].name.toLowerCase()))}
 /* Cups a stock of supplies can still pour: each flavor in turn, as many as it can make from what the ones before it left. */
 function pourableCups(inv){let n=0;S.recipes.forEach(rk=>{const k=cupsPossible(rk,inv);Object.entries(cupNeeds(rk)).forEach(([id,v])=>inv[id]-=k*v);n+=k});return n}
 function cupsFromSupplies(){const ice=icePerCup();return Math.min(pourableCups({...S.inv}),S.inv.cups||0,ice>0?Math.floor((S.inv.ice||0)/ice):Infinity)}
-/* Pointing at "Supplies for N cups" tells you the ice in each cup today. */
-function iceTip(){const n=icePerCup(),jug=S.gear.includes("jug")&&iceForTemp(M.temp)>0?" Insulated Jug saves 1.":"";return (n?`Each cup gets ${n} ice ${plural(n,"cube")} at ${M.temp}°F.`:`No ice needed at ${M.temp}°F.`)+jug}
 function renderProj(){
   const gt=$("#guessText");if(!gt)return;
   $("#btnOpen").disabled=!M.loc;
@@ -1888,7 +1870,7 @@ function openStand(){
   runDayPhase("morning");
 }
 /* Cups left for each flavor you own, on wide screens. updateDayStats fills in the numbers. */
-function cupsByHtml(){return `<div class="statChip cupsBy"><span>Cups left</span><div class="cbList">${S.recipes.map(rk=>`<span class="cb" data-cups="${rk}" tabindex="0">${iconHtml("flavor",rk,true)}<b></b></span>`).join("")}</div></div>`}
+function cupsByHtml(){return `<div class="statChip cupsBy"><span>Cups left</span><div class="cbList">${S.recipes.map(rk=>`<span class="cb" data-cups="${rk}" tabindex="0"${tip(RECIPES[rk].name)}>${iconHtml("flavor",rk,true)}<b></b></span>`).join("")}</div></div>`}
 function renderDayScene(){
   $("#screen").innerHTML=`
   <div class="stage day" style="${standVars()}">
@@ -1907,12 +1889,12 @@ function renderDayScene(){
       <div class="dockIn">
         <div class="dayCard">
           <span id="dayMsg">Open for business…</span>
-          <div class="dayBar" tabindex="0"${tip("How much of today is done. The line marks noon.")}><i id="dayFill"></i></div>
+          <div class="dayBar"><i id="dayFill"></i></div>
           <div class="dayBtns"><button class="btn sm ghost" onclick="D.skip=true">Skip</button>${spdBtnHtml()}</div>
         </div>
-        <div class="statChip cupsAll" tabindex="0"${tip("Cups you can still make with your supplies.")}><span>Cups left</span><b id="stStock">${servingsReady()}</b></div>
+        <div class="statChip cupsAll"><span>Cups left</span><b id="stStock">${servingsReady()}</b></div>
         ${cupsByHtml()}
-        <div class="statChip" tabindex="0"${tip("Money from sales and tips today.")}><span>Money</span><b id="stTill">$0</b></div>
+        <div class="statChip"><span>Money</span><b id="stTill">$0</b></div>
       </div>
     </div>
   </div>`;
@@ -1994,7 +1976,7 @@ function updateDayStats(){
   $("#soldOut").classList.toggle("up",cups<=0);
   const inv=shownInv();
   document.querySelectorAll("[data-cups]").forEach(el=>{const rk=el.dataset.cups,n=flavorCups(rk,inv),t=`${RECIPES[rk].name}: ${n?`you can still make ${n} ${plural(n,"cup")}`:"none left"}. Flavors share lemons and sugar.`;
-    el.querySelector("b").textContent=n;el.classList.toggle("none",!n);el.dataset.tip=t;el.setAttribute("aria-label",t)});
+    el.querySelector("b").textContent=n;el.classList.toggle("none",!n);el.setAttribute("aria-label",t)});
   const till=D.skip?D.revenue+D.tips:D.paid; // money lands when a buyer pays at the counter; Skip shows it all
   $("#stTill").textContent=fmt(till);
   showCash(S.cash+till); // the HUD counts up with each sale; the evening adds bonuses on top
@@ -2270,7 +2252,7 @@ function cardHtml(c,attrs){
 const REROLL_START=2;
 let rerollCost=REROLL_START;
 const draftCardsHtml=()=>draftChoices.map((p,i)=>cardHtml(draftCardHtml(p),`onclick="pickDraft(${i})"`)).join("");
-const rerollBtnHtml=()=>`<button class="btn sm" id="rerollBtn" onclick="rerollDraft()"${S.cash<rerollCost?' aria-disabled="true"':""}${tip(`Get three new cards. Each re-roll costs double the last one. It's back to ${fmt(REROLL_START)} next time you pick.`)}>Re-roll for ${fmt(rerollCost)}</button>`;
+const rerollBtnHtml=()=>`<button class="btn sm" id="rerollBtn" onclick="rerollDraft()"${S.cash<rerollCost?' aria-disabled="true"':""}${tip(`Each re-roll costs double the last one. It's back to ${fmt(REROLL_START)} next time you pick.`)}>Re-roll for ${fmt(rerollCost)}</button>`;
 function renderDraftScreen(){
   eveSheet(`
     <h2>Pick an upgrade</h2>
