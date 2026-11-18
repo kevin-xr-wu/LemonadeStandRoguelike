@@ -1109,7 +1109,7 @@ const GEAR=[
  {id:"zester",  name:"Zester of Doom", rar:"rare",      desc:"Sour flavors earn +$0.50 per cup."},
  {id:"tipjar",  name:"Cracked Tip Jar", rar:"common",    desc:"Customers tip three times as much."},
  {id:"piggy",   name:"Compound Piggy", rar:"epic",      desc:"Each night, your piggy bank adds 4% of your money over $150 (up to $200)."},
- {id:"selloutbanner",name:"Sellout Banner", rar:"rare",      desc:"When you sell out, people still in line pre-pay $1 each for tomorrow (max one per cup you sold)."},
+ {id:"selloutbanner",name:"Sellout Banner", rar:"rare",      desc:"+0.2★ reputation on days you sell out."},
  {id:"rainjar", name:"Rainy-Day Jar", rar:"rare",      desc:"Sunny, hot and perfect days add 15% of the money you made to the jar. The next cloudy or rainy day, it pays out."},
  {id:"clover",  name:"Four-Leaf Clover", rar:"rare",      desc:"Once every 7 days, it saves a hot streak that would end."},
  // stock & costs
@@ -2006,9 +2006,7 @@ function finishDay(){
   const served=D.demand>0?D.sold/D.demand:1;
   const unserved=Math.max(0,D.demand-D.sold);
   // money is shown in cents, so the day's total is built from cent-rounded parts: the report's rows always add up exactly
-  let revenue=Math.round(D.revenue*100)/100, tips=Math.round(D.tips*100)/100;
-  let bannerBonus=0;
-  if(S.gear.includes("selloutbanner")&&soldOut&&unserved>0){bannerBonus=Math.min(unserved,D.sold);revenue+=bannerBonus}
+  const revenue=Math.round(D.revenue*100)/100, tips=Math.round(D.tips*100)/100;
   const totalIn=revenue+tips;
   const made=Math.round(totalIn*100)/100; // money made today: sales and tips (supplies — signs included — were paid for when bought)
   S.cash+=totalIn;S.cash=Math.round(S.cash*100)/100;
@@ -2021,6 +2019,7 @@ function finishDay(){
   const avgPrice=D.sold>0?Object.entries(D.soldBy).reduce((s,[rk,n])=>s+menuPrice(rk)*n,0)/D.sold:0;
   if(S.gear.includes("chalk")&&D.signs+D.build.freeSigns>=4){repDelta+=0.2;repNotes.push("chalk art +0.2")}
   if(S.gear.includes("mascot")&&served<0.75){repDelta-=0.1;repNotes.push("mascot suit −0.1")}
+  if(S.gear.includes("selloutbanner")&&soldOut){repDelta+=0.2;repNotes.push("sellout banner +0.2")}
   const repBefore=S.rep;
   S.rep=clamp(Math.round((S.rep+repDelta)*10)/10,1,5);
   // perfect day: everyone served
@@ -2078,7 +2077,6 @@ function finishDay(){
           <div class="rHead">${iconHtml("spot",M.loc.name)} ${M.loc.name}</div>
           ${sellRows}
           ${upgradeBonus>0.004?`<div class="rRow"><span>Upgrade bonuses</span><span class="amt">+${fmt(upgradeBonus)}</span></div>`:""}
-          ${bannerBonus?`<div class="rRow"><span>Sellout Banner pre-sales</span><span class="amt">+${fmt(bannerBonus)}</span></div>`:""}
           <div class="rRow"><span>Tips</span><span class="amt">+${fmt(tips)}</span></div>
           <div class="rTotal"><span>Money made today</span><span class="coinSpot"><span class="amt ${made>=0?"pos":"negc"}" id="madeAmt">${fmt(made)}</span></span></div>
           ${stamp}
