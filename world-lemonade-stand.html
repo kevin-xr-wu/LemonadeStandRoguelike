@@ -1132,13 +1132,6 @@ const SYNERGIES=[
 const KIDS=[
  {id:"classic", name:"The Classic",    start:30, desc:"The 1979 experience, plus drafts. No bias, no excuses.", gear:null},
 ];
-/* A new act every seven days. After the fourth, the four areas come round again. */
-const ACTS=[
- {name:"Act 1 · Maple Street"},
- {name:"Act 2 · Riverside Park"},
- {name:"Act 3 · The Boardwalk"},
- {name:"Act 4 · County Fair"}
-];
 const GLASS_MAX=500, PRICE_MAX=10, MAX_DAYS=100;
 /* Your stand has 3 levels. You buy the next one in the morning with the arrow on top of the stand. Each level up:
    customers pay 10% more, the stand holds more of each supply (level 3 holds any amount), the supply shelf fits
@@ -1164,7 +1157,6 @@ function trafficScale(act){return 1+0.35*act}
 function priceMax(){return PRICE_MAX}
 function glassMax(){return GLASS_MAX}
 
-function actFor(i){if(i<ACTS.length)return ACTS[i];const a=ACTS[i%4];return {...a,name:"Act "+(i+1)+" · "+a.name.split("· ")[1]}}
 const EVENTS=[
  {id:"crewbuy", w:6,  txt:()=>`${crewSize()} road workers stop by at lunch. They only buy if a flavor costs ${fmt(CREW_MAX_PRICE)} or less.`},
  {id:"closure", w:7,  txt:"Street closed for repairs. 65% fewer customers."},
@@ -1266,7 +1258,7 @@ function newRun(kidId){
   if(kid.gear)S.gear.push(kid.gear);
   startMorning();
 }
-function actIndex(){return Math.floor((S.day-1)/7)}
+function actIndex(){return Math.floor((S.day-1)/7)} // a new act every seven days
 function gearSlots(){return standLv().slots}
 function holdMax(id){const l=standLv();return id==="ice"?l.iceHold:l.hold} // the most of a supply your stand holds
 function cheapestServingCost(){return Math.min(...S.recipes.map(rk=>servingCost(rk)))}
