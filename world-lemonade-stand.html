@@ -1154,11 +1154,12 @@ function nextStandLv(){return S?STAND_LEVELS[S.standLevel]:null} // null at the 
 function standVars(){const l=standLv();return `--standW:${l.w};--standTop:${l.top};--skyRoom:${l.room}`}
 /* Demand events are applied by id in demandEstimate(); fn only for side effects outside the demand formula. */
 const CREW_MAX_PRICE=3.00;
-function crewSize(){return 30+15*actIndex()}
-/* Spots get busier as the summer heats up: traffic grows act by act. Everything else that
+function crewSize(){return 30+15*trafficStep()} // the road crew grows with the traffic
+/* Spots get busier as the summer heats up: traffic steps up every 5 days and tops out on day 16. Everything else that
    compounds in this game is the BUILD — 5 to 7 gear slots of multipliers, slot-scaling gear (Franchise Flag),
    the recipes on your menu and the synergies their tags unlock. Finishing the build IS the run. */
-function trafficScale(act){return 1+0.35*act}
+function trafficStep(){return Math.min(3,Math.floor((S.day-1)/5))} // 0 on days 1–5, 1 on 6–10, 2 on 11–15, 3 from day 16 on
+function trafficScale(){return 1+0.35*trafficStep()} // 1×, 1.35×, 1.7×, then 2.05×
 function priceMax(){return PRICE_MAX}
 function glassMax(){return GLASS_MAX}
 
@@ -1263,7 +1264,6 @@ function newRun(kidId){
   if(kid.gear)S.gear.push(kid.gear);
   startMorning();
 }
-function actIndex(){return Math.floor((S.day-1)/7)} // a new act every seven days
 function gearSlots(){return standLv().slots}
 function holdMax(id){const l=standLv();return id==="ice"?l.iceHold:l.hold} // the most of a supply your stand holds
 function cheapestServingCost(){return Math.min(...S.recipes.map(rk=>servingCost(rk)))}
@@ -1271,7 +1271,7 @@ function cheapestServingCost(){return Math.min(...S.recipes.map(rk=>servingCost(
    you buy goes out. + pays for a sign and − gives the money back, so the money moves as you choose;
    opening the stand uses them up. Free signs from upgrades are on top of the cap. */
 const SIGN_MAX=8;
-function signPrice(){return INGREDIENTS.signs.price} // $5 all game: the act, supply sales and ants, and the Wholesale Card don't change it
+function signPrice(){return INGREDIENTS.signs.price} // $5 all game: supply sales and ants, and the Wholesale Card don't change it
 /* Every purchase goes through pay(), so the end of a run can say where the money went. A refund pays a negative amount. */
 function pay(kind,amt){S.cash=Math.round((S.cash-amt)*100)/100;S.spent[kind]=Math.round((S.spent[kind]+amt)*100)/100}
 /* ---------- build aggregation ---------- */
@@ -1330,15 +1330,14 @@ function priceFactor(pay,p){
 /* ---------- morning generation ---------- */
 let M=null; // morning state
 function genMorning(){
-  const act=actIndex();
-  const wlist=Object.entries(WEATHERS).map(([k,v])=>({k,w:v.w})); // the same odds in every act
+  const wlist=Object.entries(WEATHERS).map(([k,v])=>({k,w:v.w})); // the same odds every day
   const opening=OPENING_DAYS[S.day-1];
   const trueWx=opening?opening.wx:sampleWeighted(wlist).k;
   // the forecast is always right: shown weather IS the day's weather
   const shownWx=trueWx;
   // locations: 3 distinct
   const locs=shuffle(LOCATIONS).slice(0,S.gear.includes("map")?4:3).map(l=>{
-    let traffic=Math.round(l.traffic*trafficScale(act)*rnd(0.9,1.1));
+    let traffic=Math.round(l.traffic*trafficScale()*rnd(0.9,1.1));
     return {...l,traffic};
   });
   // crowd mix for a location computed on selection
@@ -1361,8 +1360,6 @@ function genMorning(){
 function crowdMixFor(loc){
   // base mix + location bias -> exact %
   const base={kids:18,parents:18,athletes:15,tourists:10,foodies:8,artists:11};
-  const act=actIndex();
-  if(act>=2)base.tourists+=7; if(act>=3){base.tourists+=9;base.foodies+=3;base.kids-=3}
   Object.entries(loc.bias).forEach(([k,v])=>{base[k]=(base[k]||0)+v*3});
   if(loc.name==="Boardwalk")base.tourists+=8;
   let tot=Object.values(base).reduce((a,b)=>a+b,0);
@@ -2123,8 +2120,8 @@ function finishDay(){
   if(served>=0.75&&made>0){
     S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);
     if(S.streak>=2){const pct=Math.min(25,3*S.streak);const bonus=Math.round(revenue*pct/100*100)/100;S.cash+=bonus;S.lifetimeProfit+=bonus;streakNote=`Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Bonus: <b>${fmt(bonus)}</b> (${pct}% of sales).`}
-  } else if(S.gear.includes("clover")&&S.streak>=2&&S.cloverAct!==actIndex()){
-    S.cloverAct=actIndex();streakNote=`Your Four-Leaf Clover saved your streak of ${S.streak} ${plural(S.streak,"day")}.`;
+  } else if(S.gear.includes("clover")&&S.streak>=2&&(S.cloverDay==null||S.day-S.cloverDay>=7)){
+    S.cloverDay=S.day;streakNote=`Your Four-Leaf Clover saved your streak of ${S.streak} ${plural(S.streak,"day")}.`;
   } else {
     if(S.streak>=2)streakNote=`Your streak of ${S.streak} ${plural(S.streak,"day")} ended (${served<0.75?"fewer than 3 out of 4 customers got lemonade":"no money made"}).`;
     S.streak=0;
@@ -2212,10 +2209,9 @@ function buildDraftPool(){
   // tag-weighted drafting: recipes sharing tags you already serve come up more (synergy must stay findable)
   const b=computeBuild();
   pool.forEach(p=>{if(p.kind==="recipe")RECIPES[p.id].tags.forEach(t=>{if(b.tags[t])p.w*=1.5})});
-  // late game: commons fade, the pool heats up — progression shouldn't taper just as rents spike
-  if(actIndex()>=2)pool.forEach(p=>{if(p.kind==="gear"){const g=GEAR.find(x=>x.id===p.id);if(g&&g.rar==="common")p.w*=0.4}});
   return pool;
 }
+function giftAmt(){return 18+22*trafficStep()} // the Cousin's Gift grows with the traffic
 /* A pick deals at most 2 flavors, and once one flavor is dealt, the others are a lot less likely to join it. */
 const DRAFT_MAX_FLAVORS=2,SECOND_FLAVOR_ODDS=0.35;
 function drawDraft(skip=[]){
@@ -2240,7 +2236,7 @@ function draftCardHtml(p){
     const price=S.menuPrices[p.id]!=null?S.menuPrices[p.id]:r.price;
     return {cls:"flavor",label:"New Flavor",art:`${iconHtml("flavor",p.id)}<span class="artTags">${tagChips(r.tags,false)}</span>`,title:r.name,from:r.origin.replace(" · ",", "),
       desc:`${r.desc}<br>Sells for <b>${fmt(price)}</b>.<br>Each cup takes ${needs}.`+(fitsShelf([...S.recipes,p.id])?"":`<br><b class="warn">Your supply shelf is full. You'll swap a flavor out.</b>`)}}
-  const amt=fmt(18+22*actIndex());
+  const amt=fmt(giftAmt());
   return {cls:"cash",art:`<i class="coinPile" role="img" aria-label="Coins"></i><b class="artAmt">+${amt}</b>`,title:"Cousin's Gift",desc:`+${amt} cash right now. It gets bigger later in the summer.`};
 }
 function cardHtml(c,attrs){
@@ -2331,7 +2327,7 @@ function comboCupsHtml(s){
 function grantDraft(p){
   if(p.kind==="gear"){S.gear.push(p.id);if(p.id==="lemontree")S.treeDays=0;const g=GEAR.find(x=>x.id===p.id);S.log.push(`<span class="good">New upgrade: ${gearIconHtml(g.id)} ${g.name}</span>`)}
   if(p.kind==="recipe"){S.recipes.push(p.id);const r=RECIPES[p.id];S.log.push(`<span class="good">New flavor: ${iconHtml("flavor",p.id)} ${r.name}</span>`)}
-  if(p.kind==="cash"){const amt=18+22*actIndex();S.cash+=amt;S.log.push(`<span class="good">Your cousin gave you ${fmt(amt)}.</span>`)}
+  if(p.kind==="cash"){const amt=giftAmt();S.cash+=amt;S.log.push(`<span class="good">Your cousin gave you ${fmt(amt)}.</span>`)}
   // synergy discovery check
   const b=computeBuild();const newOnes=b.synergies.filter(s=>!S.discoveredSyn.includes(s.id));
   if(newOnes.length){
