@@ -1114,7 +1114,7 @@ const GEAR=[
  {id:"clover",  name:"Four-Leaf Clover", rar:"rare",      desc:"Once every 7 days, it saves a hot streak that would end."},
  // stock & costs
  {id:"wholesale",name:"Wholesale Card", rar:"common",    desc:"All ingredient packs cost 20% less."},
- {id:"pitcher", name:"Grandma's Pitcher", rar:"common",    desc:"Every 4th cup uses only a cup and ice."},
+ {id:"pitcher", name:"Grandma's Pitcher", rar:"common",    desc:"+10% customers every day."},
  {id:"squeezerpro",name:"Lemon Squeezer Pro",rar:"epic",      desc:"Every cup takes 1 less lemon."},
  {id:"lemontree",name:"Lemon Tree", rar:"legendary", desc:"16 free lemons every morning, plus 3 more for each day you've had it."},
 ];
@@ -1246,6 +1246,7 @@ function computeBuild(){
   if(S.gear.includes("painted"))b.freeSigns+=3;
   if(S.gear.includes("secondcart"))b.demandMult*=1.3;
   if(S.gear.includes("mascot"))b.demandMult*=1.25;
+  if(S.gear.includes("pitcher"))b.demandMult*=1.1;
   if(S.gear.includes("passport"))b.demandMult*=1+0.04*new Set(S.recipes.map(rk=>RECIPES[rk].origin.split(" · ")[0])).size;
   if(S.gear.includes("franchiseflag"))b.demandMult*=Math.pow(1.07,S.gear.length); // worth more with every slot you fill
   if(S.gear.includes("tipjar"))b.tipMult*=3;
@@ -1720,9 +1721,8 @@ function servingsReady(){
 }
 /* Pour one cup of a flavor: its supplies, the cup and the ice. */
 function pourCup(rk){
-  S.cupCount=(S.cupCount||0)+1;
   const take=n=>Object.entries(cupNeeds(rk)).forEach(([k,v])=>{S.inv[k]-=v*n});
-  if(!(S.gear.includes("pitcher")&&S.cupCount%4===0))take(1); // Grandma's Pitcher: every 4th cup's lemonade is on her
+  take(1);
   S.inv.cups--;S.inv.ice-=icePerCup();
   if(S.gear.includes("brother")&&!D.brotherSpilled){D.brotherSpilled=true; // the first cup of the day: he spills 2 more
     const n=Math.min(2,cupsPossible(rk,S.inv));if(n){take(n);logLine(`<span class="bad">Little Brother spilled ${n} ${plural(n,"cup")}.</span>`)}}
