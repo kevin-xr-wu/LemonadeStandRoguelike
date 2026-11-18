@@ -87,7 +87,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .choice .ttl{font-size:var(--fs-lg);font-weight:900;display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
 .choice .desc{font-size:var(--fs-sm);margin-top:5px;line-height:1.38}
 .rar{font-size:var(--fs-xs);font-weight:900;text-transform:uppercase;letter-spacing:.07em;padding:3px 8px;border-radius:99px;white-space:nowrap;flex-shrink:0;align-self:flex-start}
-.rar.common{background:#ead6a8}.rar.rare{background:#d8f2ff}.rar.epic{background:#f28a5b}.rar.legendary{background:var(--lemon)}
+.rar.common{background:#ead6a8}.rar.rare{background:#d8f2ff}.rar.epic{background:#f28a5b}.rar.legendary{background:var(--lemon)}.rar.flavor{background:#2f3b33;color:#fff7e0}
 /* Pick cards (cardHtml): the ink border, then a frame in the card's colour, an art window and a white body.
    Upgrades: the frame is the rarity (tan, blue, red, gold); epic and legendary get Pixelwright corner caps, legendary a shine.
    Flavors sit on a chalkboard in a wood frame; cash is a coin pile on green. Art pixels are --px screen pixels. */
@@ -100,7 +100,9 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .cardArt{position:relative;display:flex;align-items:center;justify-content:center;gap:4px 10px;min-height:calc(24px*var(--px) + 12px);padding:6px;background:var(--artBg);border-radius:8px;overflow:hidden}
 .cardArt .icon{--sz:calc(16px*var(--px));vertical-align:0;filter:drop-shadow(0 calc(var(--px)*1px) 0 rgba(43,33,24,.25))}
 .cardBody{flex:1;display:block;background:#fff;border-radius:8px;padding:8px 10px 12px}
+.pick .rar{display:inline-block;margin-bottom:5px} /* the rarity, or "New Flavor", over the name */
 .pick .ttl{display:block;line-height:1.2}
+.pick .from{display:block;font-size:var(--fs-xs);font-weight:800;opacity:.72;margin-top:2px}
 .pick .desc{display:block}
 .pick.flavor .cardArt{flex-direction:column}
 .artTags{display:flex;flex-wrap:wrap;justify-content:center}
@@ -1459,7 +1461,7 @@ function tagTip(t){
   return `${TAG_INFO[t]||""}${fans.length?` ${listWords(fans)} love them.`:""}${foes.length?` ${listWords(foes)} don't.`:""}`;
 }
 function flavorFans(tags){return Object.entries(CROWDS).filter(([,c])=>c.loves.some(t=>tags.includes(t))).map(([k,c])=>`${iconHtml("crowd",k)} ${c.name}`).join(", ")}
-function tagChips(tags){return tags.map(t=>`<span class="tag"${tip(tagTip(t))}>${t.charAt(0)+t.slice(1).toLowerCase()}</span>`).join("")}
+function tagChips(tags,tips=true){return tags.map(t=>`<span class="tag"${tips?tip(tagTip(t)):""}>${t.charAt(0)+t.slice(1).toLowerCase()}</span>`).join("")}
 const RARITY={common:"Common",rare:"Rare",epic:"Epic",legendary:"Legendary"},RARITY_TIP="Rarer upgrades show up less often: common, rare, epic, then legendary.";
 function rarBadge(r){return `<span class="rar ${r}"${tip(RARITY_TIP)}>${r}</span>`}
 function ingTip(id){
@@ -2240,19 +2242,21 @@ function drawDraft(skip=[]){
 }
 /* Pick cards. The frame shows the rarity: tan common, blue rare, red epic, gold legendary, with corner caps on epic
    and legendary. The art shows the type: an upgrade's item, a flavor's cup and tags on a chalkboard, a coin pile for cash.
-   The rarity word is in the tip and in hidden text, so colour is never the only clue. */
+   The card's label says it in words too (the rarity, or "New Flavor"), so colour is never the only clue. Cards have no tips. */
 function gearCard(g,full){
-  return {cls:g.rar,rar:g.rar,art:gearIconHtml(g.id),title:g.name,desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:"")}}
+  return {cls:g.rar,rar:g.rar,label:RARITY[g.rar],art:gearIconHtml(g.id),title:g.name,desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:"")}}
 function draftCardHtml(p){
   if(p.kind==="gear")return gearCard(GEAR.find(x=>x.id===p.id),S.gear.length>=gearSlots());
   if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(cupNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
-    return {cls:"flavor",art:`${iconHtml("flavor",p.id)}<span class="artTags">${tagChips(r.tags)}</span>`,title:r.name,desc:`${r.desc} Liked by ${flavorFans(r.tags)}. Each cup takes ${needs}.`+(fitsShelf([...S.recipes,p.id])?"":`<br><b class="warn">Your supply shelf is full. You'll swap a flavor out.</b>`)}}
+    const price=S.menuPrices[p.id]!=null?S.menuPrices[p.id]:r.price;
+    return {cls:"flavor",label:"New Flavor",art:`${iconHtml("flavor",p.id)}<span class="artTags">${tagChips(r.tags,false)}</span>`,title:r.name,from:r.origin.replace(" · ",", "),
+      desc:`${r.desc}<br>Sells for <b>${fmt(price)}</b>. Costs <b>${fmtCents(servingCost(p.id))}</b> to make.<br>Each cup takes ${needs}.`+(fitsShelf([...S.recipes,p.id])?"":`<br><b class="warn">Your supply shelf is full. You'll swap a flavor out.</b>`)}}
   const amt=fmt(18+22*actIndex());
   return {cls:"cash",art:`<i class="coinPile" role="img" aria-label="Coins"></i><b class="artAmt">+${amt}</b>`,title:"Cousin's Gift",desc:`+${amt} cash right now. It gets bigger later in the summer.`};
 }
 function cardHtml(c,attrs){
   const caps=c.rar==="epic"||c.rar==="legendary"?["tl","tr","bl","br"].map(k=>`<i class="orn ${k}" aria-hidden="true"></i>`).join(""):"";
-  return `<button class="choice pick ${c.cls}"${c.rar?tip(`${RARITY[c.rar]}. ${RARITY_TIP}`):""} ${attrs}>${c.rar?`<span class="sr">${RARITY[c.rar]} upgrade.</span>`:""}<span class="cardArt">${c.art}<i class="outMark" aria-hidden="true"></i></span><span class="cardBody"><span class="ttl">${c.title}</span><span class="desc">${c.desc}</span></span>${caps}</button>`;
+  return `<button class="choice pick ${c.cls}" ${attrs}><span class="cardArt">${c.art}<i class="outMark" aria-hidden="true"></i></span><span class="cardBody">${c.label?`<span class="rar ${c.cls}">${c.label}</span>`:""}<span class="ttl">${c.title}</span>${c.from?`<span class="from">From: ${c.from}</span>`:""}<span class="desc">${c.desc}</span></span>${caps}</button>`;
 }
 /* Re-roll deals three new cards for money. It costs $2, doubles with each re-roll, and is back to $2 at the next pick. */
 const REROLL_START=2;
@@ -2313,7 +2317,7 @@ let swapFlavors=[];
 function flavorGoes(rk,newRk){const rest=[...S.recipes.filter(x=>x!==rk),newRk];return flavorSupplies(S.recipes).filter(id=>!flavorSupplies(rest).includes(id))} // supplies that leave the shelf
 function showFlavorSwap(p){
   pendingDraft=p;swapOut=-1;swapFlavors=swapOptions(p.id);sfx.flip();
-  const card=rk=>{const c=draftCardHtml({kind:"recipe",id:rk}),lost=flavorGoes(rk,p.id).filter(id=>S.inv[id]>0);
+  const card=rk=>{const c=draftCardHtml({kind:"recipe",id:rk}),lost=flavorGoes(rk,p.id).filter(id=>S.inv[id]>0);c.label=""; // a flavor you have isn't new
     if(lost.length)c.desc+=`<br><b class="warn">You'll lose your ${listWords(lost.map(id=>`${S.inv[id]} ${iconHtml("supply",id)} ${INGREDIENTS[id].name.toLowerCase()}`))}.</b>`;
     return c};
   eveSheet(`
