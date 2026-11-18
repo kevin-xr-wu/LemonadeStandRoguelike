@@ -2515,16 +2515,16 @@ addEventListener("scroll",()=>{if(tipFor&&performance.now()-tipAt>250)hideTip()}
 /* ---------- The first morning's tips: they walk a new player through it, one at a time ----------
    The forecast, a spot, supplies, then the carousel's arrow up to Open. Each tip points at its control and
    moves on once you've done that part (or tapped Got it, where there's nothing you have to do). They end when
-   the stand opens. at() picks the control (a selector; several matches count as one box) and say() the words,
-   both for where the player is right now. */
+   the stand opens. While a tip shows, only the tip and its part of the screen take taps (see coachGate).
+   at: the control it rings (several matches count as one box). use: the part you can tap, if more than that.
+   say(): the words, for the slide the player is on. */
 const COACH=[
-  {id:"forecast",ok:true,at:()=>"#hudWx>*",say:()=>`Here's today's weather. ${FORECAST_HINT}`},
-  {id:"spot",done:()=>M.loc,at:()=>M.card?'#mSpot .dot[data-k="0"]':"#mSpot .posts",
-    say:()=>M.card?"Tap here to go back and pick a spot.":`Pick a spot for your stand. ${HOW_STEPS[0][1]}`},
-  {id:"supplies",ok:true,at:()=>"#mShop .shelfRow,#mDrawer",say:()=>`Tap a supply to buy more. ${HOW_STEPS[2][1]}`},
-  {id:"next",done:()=>M.card===SPOT_SLIDES.length-1,at:()=>'#mSpot .arrow[data-d="1"]',
+  {id:"forecast",ok:true,at:"#hudWx>*",use:"#hudWx",say:()=>`Here's today's weather. ${FORECAST_HINT}`},
+  {id:"spot",done:()=>M.loc,at:"#mSpot .posts",say:()=>`Pick a spot for your stand. ${HOW_STEPS[0][1]}`},
+  {id:"supplies",ok:true,at:"#mShop .shelfRow,#mDrawer",use:"#mShop",say:()=>`Tap a supply to buy more. ${HOW_STEPS[2][1]}`},
+  {id:"next",done:()=>M.card===SPOT_SLIDES.length-1,at:'#mSpot .arrow[data-d="1"]',use:"#mSpot", // the slides' signs and prices too
     say:()=>["Now tap the arrow to see signs and prices.","Put up signs if you like, then tap the arrow.",`Set your prices, then tap the arrow. ${HOW_STEPS[3][1]}`][M.card]},
-  {id:"open",done:()=>false,at:()=>"#btnOpen",say:()=>"When you're ready, tap Open to start selling."}
+  {id:"open",done:()=>false,at:"#btnOpen",use:"#mSpot",say:()=>"When you're ready, tap Open to start selling."}
 ];
 let coach=null; // {ok: the tips dismissed with Got it, key: the tip on screen}
 const coachBox=document.createElement("div");coachBox.id="coach";coachBox.setAttribute("role","status");
@@ -2533,14 +2533,28 @@ document.body.append(coachBox,coachRing);
 function startCoach(){if(!coach){coach={ok:{},key:""};requestAnimationFrame(coachTick)}}
 function endCoach(){coach=null;coachBox.classList.remove("on");coachRing.classList.remove("on")}
 function coachOk(id){if(coach){coach.ok[id]=true;sfx.tick()}}
+function coachStep(){return coach&&COACH.find(s=>!(s.ok?coach.ok[s.id]:s.done()))}
+/* A tap anywhere else while a tip shows does nothing, and the tip gives a little shake so the player looks at it.
+   Every action in the game is a click, so stopping clicks here (before any button sees them) is enough;
+   stopping the pointerdown too keeps a blocked button from taking focus. */
+function coachGate(e){
+  const s=coachStep();
+  if(!s||!coachBox.classList.contains("on")||coachBox.contains(e.target)||e.target.closest(s.use||s.at))return;
+  e.preventDefault();e.stopPropagation();
+  if(e.type!=="click")return;
+  hideTip();
+  if(!stillMotion())coachBox.animate([{translate:"0 0"},{translate:"-6px 0"},{translate:"6px 0"},{translate:"-3px 0"},{translate:"0 0"}],{duration:320,easing:"ease-out"});
+}
+addEventListener("pointerdown",coachGate,true);
+addEventListener("click",coachGate,true);
 /* Every frame: show the first tip not done yet under its control (over it if there's no room), so it follows the
    carousel and the layout. It hides while a window is open over the game, or when its control is on a slide out of view.
    The forecast's control is its icon and words, since narrow screens stretch #hudWx across the HUD. */
 function coachTick(){
   if(!coach)return;
   requestAnimationFrame(coachTick);
-  const s=COACH.find(s=>!(s.ok?coach.ok[s.id]:s.done()));
-  const els=s&&!$("#modalRoot").childElementCount&&!$("#eve")?[...document.querySelectorAll(s.at())].filter(e=>!e.closest("[inert]")):[];
+  const s=coachStep();
+  const els=s&&!$("#modalRoot").childElementCount&&!$("#eve")?[...document.querySelectorAll(s.at)].filter(e=>!e.closest("[inert]")):[];
   if(!els.length){coachBox.classList.remove("on");coachRing.classList.remove("on");return}
   const say=s.say();
   if(coach.key!==s.id+say){coach.key=s.id+say;coachBox.classList.remove("on");
