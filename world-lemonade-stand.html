@@ -932,13 +932,14 @@ function countUp(el,to){
 }
 
 /* ============================================================ DATA ============================================================ */
+/* w: how many days in 100 have that sky. Cloudy and rainy together are 15 in 100. */
 const WEATHERS={
-  sunny:  {name:"Sunny",       mult:1.0,  w:34, desc:"A normal day."},
-  hot:    {name:"Hot & Dry",   mult:1.55, w:16, desc:"Lots of thirsty people. They pay more."},
-  perfect:{name:"Perfect day", mult:2.1,  w:5,  desc:"Big crowds and good tips. It doesn't happen often."},
-  cloudy: {name:"Cloudy",      mult:0.68, w:22, desc:"Fewer people today."},
-  rainy:  {name:"Rainy",       mult:0.42, w:11, desc:"Most people stay home."},
-  windy:  {name:"Windy",       mult:0.85, w:12, desc:"A little less busy."},
+  sunny:  {name:"Sunny",       mult:1.0,  w:44, desc:"A normal day."},
+  hot:    {name:"Hot & Dry",   mult:1.55, w:20, desc:"Lots of thirsty people. They pay more."},
+  perfect:{name:"Perfect day", mult:2.1,  w:6,  desc:"Big crowds and good tips. It doesn't happen often."},
+  cloudy: {name:"Cloudy",      mult:0.68, w:10, desc:"Fewer people today."},
+  rainy:  {name:"Rainy",       mult:0.42, w:5,  desc:"Most people stay home."},
+  windy:  {name:"Windy",       mult:0.85, w:15, desc:"A little less busy."},
 };
 /* The weather you can see in the scene, then the spot's backdrop in front of it. Moving things start where
    `left` puts them (the negative delay picks up the animation there), so with reduced motion they just sit there. */
@@ -1330,8 +1331,7 @@ function priceFactor(pay,p){
 let M=null; // morning state
 function genMorning(){
   const act=actIndex();
-  // weather roll (deck-ish weights, act 2+ wilder)
-  const wlist=Object.entries(WEATHERS).map(([k,v])=>({k,w:v.w*(k==="perfect"?1:act>=1&&["rainy","windy","cloudy"].includes(k)?1.25:1)}));
+  const wlist=Object.entries(WEATHERS).map(([k,v])=>({k,w:v.w})); // the same odds in every act
   const opening=OPENING_DAYS[S.day-1];
   const trueWx=opening?opening.wx:sampleWeighted(wlist).k;
   // the forecast is always right: shown weather IS the day's weather
