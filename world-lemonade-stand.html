@@ -2015,10 +2015,10 @@ function finishDay(){
   S.cash+=totalIn;S.cash=Math.round(S.cash*100)/100;
   S.lifetimeProfit+=made;S.lifetimeSold+=D.sold;
   if(soldOut)S.sellouts++;
-  // stars: serve at least half of today's customers and they go up 0.2 (0.3 for 9 in 10), so a player who
-  // serves 50–90% on most days reaches 5 stars by about day 15. Fewer than half takes stars away.
+  // stars: serve at least half of today's customers and they go up (0.1 from half, 0.2 from 7 in 10, 0.3 from 9 in 10).
+  // Fewer than half takes stars away.
   let repDelta=0,repNotes=[];
-  if(D.demand>0){const step=served>=0.9?0.3:served>=0.5?0.2:served>=0.3?-0.1:-0.2;
+  if(D.demand>0){const step=served>=0.9?0.3:served>=0.7?0.2:served>=0.5?0.1:served>=0.3?-0.1:-0.2;
     repDelta+=step;repNotes.push(`${D.sold} of ${D.demand} ${plural(D.demand,"person","people")} got lemonade${step?` ${step>0?"+":"−"}${Math.abs(step)}`:""}`)}
   const avgPrice=D.sold>0?Object.entries(D.soldBy).reduce((s,[rk,n])=>s+menuPrice(rk)*n,0)/D.sold:0;
   if(S.gear.includes("chalk")&&D.signs+D.build.freeSigns>=4){repDelta+=0.2;repNotes.push("chalk art +0.2")}
