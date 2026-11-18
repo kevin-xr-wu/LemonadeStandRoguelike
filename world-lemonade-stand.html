@@ -2250,7 +2250,7 @@ function draftCardHtml(p){
   if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(cupNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
     const price=S.menuPrices[p.id]!=null?S.menuPrices[p.id]:r.price;
     return {cls:"flavor",label:"New Flavor",art:`${iconHtml("flavor",p.id)}<span class="artTags">${tagChips(r.tags,false)}</span>`,title:r.name,from:r.origin.replace(" · ",", "),
-      desc:`${r.desc}<br>Sells for <b>${fmt(price)}</b>. Costs <b>${fmtCents(servingCost(p.id))}</b> to make.<br>Each cup takes ${needs}.`+(fitsShelf([...S.recipes,p.id])?"":`<br><b class="warn">Your supply shelf is full. You'll swap a flavor out.</b>`)}}
+      desc:`${r.desc}<br>Sells for <b>${fmt(price)}</b>.<br>Each cup takes ${needs}.`+(fitsShelf([...S.recipes,p.id])?"":`<br><b class="warn">Your supply shelf is full. You'll swap a flavor out.</b>`)}}
   const amt=fmt(18+22*actIndex());
   return {cls:"cash",art:`<i class="coinPile" role="img" aria-label="Coins"></i><b class="artAmt">+${amt}</b>`,title:"Cousin's Gift",desc:`+${amt} cash right now. It gets bigger later in the summer.`};
 }
