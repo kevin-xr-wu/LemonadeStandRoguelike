@@ -311,7 +311,20 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 @media (max-width:359px),(max-height:500px){.scene.title,.title .sky{--px:1}}
 /* First-day hints: one line under the step it explains */
 .learn{display:inline-block;background:var(--lemon);color:var(--ink);border-radius:10px;padding:3px 10px;font-size:var(--fs-sm);font-weight:800;line-height:1.35}
-.mLbl+.learn,h2+.learn{margin:0 0 8px}
+h2+.learn{margin:0 0 8px}
+/* First-morning tips: a lemon bubble pointing at one control (--ax: where its point sits), and a ring around that control.
+   Hidden ones keep their size, so coachTick() can measure the next tip before it shows. */
+#coach{position:fixed;left:0;top:0;z-index:60;width:max-content;max-width:min(280px,calc(100vw - 16px));background:var(--lemon);color:var(--ink);border-radius:12px;padding:10px 14px;font-size:var(--fs-md);font-weight:800;line-height:1.35;box-shadow:0 4px 0 rgba(43,33,24,.35);visibility:hidden}
+#coach p{margin:0}
+#coach .btn{display:block;margin:8px 0 0 auto}
+#coach:after{content:"";position:absolute;bottom:100%;left:calc(var(--ax) - 10px);border:10px solid transparent;border-bottom-color:var(--lemon)}
+#coach.above:after{bottom:auto;top:100%;border-color:var(--lemon) transparent transparent}
+#coachRing{position:fixed;z-index:59;pointer-events:none;border:3px solid var(--ink);border-radius:14px;box-shadow:0 0 0 3px var(--lemon);visibility:hidden}
+#coach.on,#coachRing.on{visibility:visible}
+#coach.on{animation:slideUp .2s ease-out}
+#coachRing.on{animation:coachPulse 1.2s ease-in-out infinite}
+@keyframes coachPulse{50%{scale:1.05;opacity:.5}}
+@media (prefers-reduced-motion:reduce){#coach.on,#coachRing.on{animation:none}}
 .list{margin:6px 0 0;padding-left:20px;display:grid;gap:6px;line-height:1.45}
 .list li.off{color:rgba(43,33,24,.6)}
 /* How to play: the day's steps as picture tiles */
@@ -521,7 +534,6 @@ body:has(.stage){overflow:hidden}
 .spotCard{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 4px 0 rgba(43,33,24,.3);width:min(580px,100%);justify-self:center}
 .spotCard .postFace{font-size:var(--fs-md);padding:4px 18px 4px 8px}
 .spotCard .mLbl{justify-content:center;margin:0 0 8px;font-size:var(--fs-lg)}
-.spotCard .learn{font-size:var(--fs-md)}
 .spotCard .tag{font-size:var(--fs-sm)}
 .spotCard .posts{max-width:none}
 /* Today's news (events, Lucky Dice, combos, hot streak): one strip of notes just under the HUD */
@@ -693,7 +705,7 @@ body:has(.stage){overflow:hidden}
   .hud .dayNum small{font-family:var(--font-body);font-size:var(--fs-xs);font-weight:800;line-height:1.1;color:var(--paper2);text-transform:uppercase}
 }
 /* The stage never scrolls. When it is taller than the window, fitStage() adds these one at a time until it fits:
-   tighter spacing, no first-day hints, then smaller sprites, so the scene stays big as long as it can. */
+   tighter spacing, one-line names and news, then smaller sprites, so the scene stays big as long as it can. */
 .stage.fit-tight .ground{min-height:0;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
 .stage.fit-tight .sky{padding-top:calc(var(--hudH) + 16px)}
 .stage.fit-tight .skyTop{gap:6px}
@@ -703,7 +715,6 @@ body:has(.stage){overflow:hidden}
 .stage.fit-tight .dockIn{gap:8px}
 .stage.fit-tight .dock .mLbl{margin-bottom:2px}
 .stage.fit-px2,.stage.fit-px2 .sky{--px:2}
-.stage.fit-min .learn{display:none}
 .stage.fit-min .spotCard .pName{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stage.fit-min .news>*{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stage.fit-px1,.stage.fit-px1 .sky{--px:1}
@@ -1175,11 +1186,10 @@ const GOOD_EVENTS=["crewbuy","heatwave","lemonsale","puppy","newspaper","birthda
    new spots, gear, recipes, kids, and events join the pools once unlocked. */
 
 /* ============================================================ STATE ============================================================ */
-let meta={discoveredSyn:[],hintsSeen:false,helpSeen:false,stats:{runs:0,wins:0,winsFull:0,best:0,sold:0,profit:0,days:0,perfect:0,sellouts:0}};
+let meta={discoveredSyn:[],hintsSeen:false,stats:{runs:0,wins:0,winsFull:0,best:0,sold:0,profit:0,days:0,perfect:0,sellouts:0}};
 try{const m=JSON.parse(localStorage.getItem("squeezed_meta"));if(m){
   if(Array.isArray(m.discoveredSyn))meta.discoveredSyn=m.discoveredSyn;
   meta.hintsSeen=!!m.hintsSeen;
-  meta.helpSeen=!!m.helpSeen;
   if(m.stats)meta.stats=Object.assign(meta.stats,m.stats);
   else{ /* Legacy Lemon Tree save: purchased power retires with the tree, but career progress carries into unlock stats. */
     meta.stats.runs=m.runs||0;meta.stats.wins=m.wins||0;meta.stats.best=m.best||0;
@@ -1479,7 +1489,8 @@ function shelfHtml(){
     slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${gearIconHtml(g.id,true)}</span>`:`<span class="slot empty" tabindex="0"${tip("Empty slot. You get to pick an upgrade after each day.")}></span>`}
   return `<div class="shelf"><b>My Stand</b><div class="slots">${slots}</div><button class="btn sm ghost" onclick="showBuild()">See all</button></div>`;
 }
-/* The day, step by step. The ? help lists them all; on a player's first day each hint shows where its step happens. */
+/* The day, step by step. The ? help lists them all. On a player's first day, tips walk them through the morning
+   (see COACH) and the evening's hints show where the last two steps happen. */
 const FORECAST_HINT="Hot days are busy. Rain keeps people home.";
 const HOW_STEPS=[["Pick a spot","Each spot has its own crowd."],["Put up signs","Signs bring more customers."],["Buy supplies","Each cup uses some. Hot days need more ice."],["Set your price","Charge too much and people walk away."],["See how you did","Count up your sales and tips."],["Pick an upgrade","Make your stand even better."]];
 function firstDay(){return S&&S.day===1&&!meta.hintsSeen}
@@ -1520,17 +1531,15 @@ function titleScene(sky){
   };
   setTimeout(nextCustomer,TITLE_NEXT_MS);
 }
-/* The first time you play, How to play comes up before day 1, and closing it starts the day.
-   Players who already have a finished run or day-1 hints behind them go straight in. */
 function selectKid(kidId){
   sfx.pop();
-  if(!meta.helpSeen&&!meta.hintsSeen&&!meta.stats.runs){showHelp(()=>{meta.helpSeen=true;saveMeta();newRun(kidId)});return}
   newRun(kidId);
 }
 
 /* ---------- Morning ---------- */
 function startMorning(){
   genMorning();renderMorning();updateHUD();
+  if(firstDay())startCoach();
 }
 function renderMorning(){
   const b=computeBuild();
@@ -1633,7 +1642,7 @@ function signsHtml(n){
 }
 function mSpotHtml(){
   const card=M.card;
-  const where=`<div class="mLbl">Choose a spot to open your stand</div>${learnHint(HOW_STEPS[0][1])}
+  const where=`<div class="mLbl">Choose a spot to open your stand</div>
     <div class="posts">${M.locs.map((l,i)=>`<button class="post" onclick="chooseLoc(${i})" data-f="loc${i}" aria-pressed="${M.loc===l}" aria-label="${l.name}"><span class="postFace">${iconHtml("spot",l.name,true)}<span>${l.name}</span></span></button>`).join("")}</div>`;
   const go=`<div class="mLbl">Ready to open?</div>
     <div class="goBox"><div class="goInfo"><span class="goChip">${M.loc?`${iconHtml("spot",M.loc.name)} ${M.loc.name}`:`<span class="warnTxt">Pick a spot first</span>`}</span>
@@ -1665,7 +1674,7 @@ function mShopHtml(){
   const basics=BASIC_SUPPLIES,extras=flavorSupplies(S.recipes);
   const item=id=>{const n=S.inv[id]||0,open=M.shopOpen===id;
     return `<button class="item" onclick="openShelf('${id}')" data-f="item-${id}" aria-expanded="${open}"${open?' aria-controls="mDrawer"':""} aria-label="${INGREDIENTS[id].name}, you have ${n}"${tip(ingTip(id))}>${iconHtml("supply",id,true)}<span class="n${n?"":" zero"}">${n}</span><span class="nm">${INGREDIENTS[id].name}</span></button>`};
-  return `<div class="supShelf"><div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>${learnHint(HOW_STEPS[2][1])}
+  return `<div class="supShelf"><div class="mLbl"><span${tip("Tap one to buy. Bigger packs cost less each.")} tabindex="0">Supplies</span>${M.treeLemons?`<small>Lemon Tree: +${M.treeLemons} ${plural(M.treeLemons,"lemon")}</small>`:""}</div>
     <div class="shelfRow" onwheel="wheelSideways(event,this)">${basics.map(item).join("")}${extras.length?`<i class="sep" aria-hidden="true"></i>${extras.map(item).join("")}`:""}</div></div>${M.shopOpen?mDrawerHtml(M.shopOpen):""}
     ${canMakeHtml()}`;
 }
@@ -1710,7 +1719,7 @@ function mSignsHtml(){
     <div class="signInfo">${info.map(s=>`<span>${s}</span>`).join(" ")}</div>`; // a narrow card wraps between sentences, never inside one
 }
 function mPricesHtml(){
-  return `<div class="mLbl">Today's prices</div>${learnHint(HOW_STEPS[3][1])}<div class="prices" onwheel="wheelSideways(event,this)">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canPour(rk,S.inv);
+  return `<div class="mLbl">Today's prices</div><div class="prices" onwheel="wheelSideways(event,this)">${S.recipes.map(rk=>{const r=RECIPES[rk],p=M.prices[rk],ok=canPour(rk,S.inv);
     const special=M.special===rk&&S.gear.includes("special")?' <span class="tag">Special +$0.50</span>':"";
     return `<div class="price${ok?"":" out"}">${iconHtml("flavor",rk,true)}
       <div><span class="pName" tabindex="0"${tip(`${r.desc} From: ${r.origin.replace(" · ",", ")}.`)}>${r.name}</span><div>${tagChips(r.tags)}${special}</div></div>
@@ -1724,6 +1733,7 @@ function buyItem(id,tier=0){
   const qty=INGREDIENTS[id].pack*BULK[tier].mult,price=packPrice(id,tier);
   if(S.cash<price||(S.inv[id]||0)+qty>holdMax(id)){sfx.bad();return}
   pay("supplies",price);addStock(id,qty,price);sfx.coin(3);updateHUD();morningParts();
+  if(coach)coach.ok.supplies=true; // the supplies tip has done its job
 }
 function chooseLoc(i){const was=M.loc;M.loc=M.locs[i];sfx.flip();showBackdrop(M.loc);morningParts();if(M.loc!==was)newStreet($("#skyBox"))}
 function openShelf(id){M.shopOpen=M.shopOpen===id?null:id;sfx.flip();morningParts()}
@@ -1853,6 +1863,7 @@ function serveOne(ck){
 }
 function openStand(){
   if(!M.loc){alert("Pick a spot first.");return}
+  endCoach();
   const b=computeBuild();
   const putOut=M.signs; // every sign bought this morning goes out, and they're paid for already: starting the day never charges you
   S.signsOut+=putOut;
@@ -2425,7 +2436,7 @@ function endRun(mode,reason){
   st.days+=S.daysPlayed;st.sold+=S.lifetimeSold;st.profit+=Math.max(0,Math.round(S.lifetimeProfit));
   st.perfect+=S.perfectDays;st.sellouts+=S.sellouts;
   const prevBest=st.best;st.best=Math.max(st.best,Math.round(S.cash));
-  meta.hintsSeen=true;
+  meta.hintsSeen=true;endCoach();
   saveMeta();
   const place=addScore(Math.round(S.cash*100)/100,S.daysPlayed);
   const newBest=prevBest>0&&Math.round(S.cash)>prevBest;
@@ -2461,19 +2472,14 @@ function showBuild(){
     <ul class="list">${SYNERGIES.map(s=>{const on=b.activeSynergies.includes(s.id);return `<li${on?"":' class="off"'}><span class="onOff${on?" on":""}">${on?"On":"Off"}</span> <b>${s.name}</b>: ${s.desc}</li>`}).join("")}</ul>
   </div></div>`;
 }
-/* The ? help: the day's steps as picture tiles. Given then (the first PLAY), it ends with Start Day 1,
-   and closing it any way runs then. */
-let helpThen=null;
-function showHelp(then){
-  helpThen=then||null;
+/* The ? help: the day's steps as picture tiles. */
+function showHelp(){
   const art=[iconHtml("spot","Maple St. Spot",true),iconHtml("supply","signs",true),iconHtml("supply","lemons",true),gearIconHtml("pricetag",true),
     `<i class="hudIcon" role="img" aria-label="Coin"></i>`,gearIconHtml("secondcart",true)];
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
     <div class="flex spread"><h2>How to play</h2><div class="flex"><button class="btn sm ghost soundBtn${soundOn?"":" off"}" onclick="toggleSound()"><i class="hudIcon"></i><span>${soundOn?"Sound on":"Sound off"}</span></button><button class="btn sm ghost" onclick="closeModal()">Close</button></div></div>
     <ol class="howSteps">${HOW_STEPS.map(([name,hint],k)=>`<li>${art[k]}<b><i>${k+1}</i>${name}</b><span>${hint}</span></li>`).join("")}</ol>
-    ${then?`<div class="center mt"><button class="btn gold" onclick="closeModal()">Start Day 1</button></div>`:""}
   </div></div>`;
-  if(then)$("#modalRoot .btn.gold").focus();
 }
 /* The high score board: place, cash and days played. mine is the row to light up. */
 function boardHtml(list,mine=-1){
@@ -2487,7 +2493,7 @@ function showScores(){
     ${list.length?boardHtml(list):`<p>No high scores yet. Play a game and your score will show up here.</p>`}
   </div></div>`;
 }
-function closeModal(){$("#modalRoot").innerHTML="";const then=helpThen;helpThen=null;if(then)then()}
+function closeModal(){$("#modalRoot").innerHTML=""}
 /* ---------- Tips: point at, focus or tap anything with data-tip to see what it means ---------- */
 const tipBox=document.createElement("div");tipBox.id="tipBox";tipBox.setAttribute("role","tooltip");document.body.appendChild(tipBox);
 let tipFor=null,tipAt=0;
@@ -2506,6 +2512,49 @@ document.addEventListener("focusout",()=>{if(!touchOnly())hideTip()});
 document.addEventListener("click",e=>{if(!touchOnly())return;const el=e.target.closest("[data-tip]");
   if(el&&!el.matches("button,input")){if(el===tipFor)hideTip();else showTip(el)}else hideTip()});
 addEventListener("scroll",()=>{if(tipFor&&performance.now()-tipAt>250)hideTip()},{passive:true,capture:true}); // a tap can nudge the page; don't close the tip it just opened
+/* ---------- The first morning's tips: they walk a new player through it, one at a time ----------
+   The forecast, a spot, supplies, then the carousel's arrow up to Open. Each tip points at its control and
+   moves on once you've done that part (or tapped Got it, where there's nothing you have to do). They end when
+   the stand opens. at() picks the control (a selector; several matches count as one box) and say() the words,
+   both for where the player is right now. */
+const COACH=[
+  {id:"forecast",ok:true,at:()=>"#hudWx>*",say:()=>`Here's today's weather. ${FORECAST_HINT}`},
+  {id:"spot",done:()=>M.loc,at:()=>M.card?'#mSpot .dot[data-k="0"]':"#mSpot .posts",
+    say:()=>M.card?"Tap here to go back and pick a spot.":`Pick a spot for your stand. ${HOW_STEPS[0][1]}`},
+  {id:"supplies",ok:true,at:()=>"#mShop .shelfRow,#mDrawer",say:()=>`Tap a supply to buy more. ${HOW_STEPS[2][1]}`},
+  {id:"next",done:()=>M.card===SPOT_SLIDES.length-1,at:()=>'#mSpot .arrow[data-d="1"]',
+    say:()=>["Now tap the arrow to see signs and prices.","Put up signs if you like, then tap the arrow.",`Set your prices, then tap the arrow. ${HOW_STEPS[3][1]}`][M.card]},
+  {id:"open",done:()=>false,at:()=>"#btnOpen",say:()=>"When you're ready, tap Open to start selling."}
+];
+let coach=null; // {ok: the tips dismissed with Got it, key: the tip on screen}
+const coachBox=document.createElement("div");coachBox.id="coach";coachBox.setAttribute("role","status");
+const coachRing=document.createElement("div");coachRing.id="coachRing";
+document.body.append(coachBox,coachRing);
+function startCoach(){if(!coach){coach={ok:{},key:""};requestAnimationFrame(coachTick)}}
+function endCoach(){coach=null;coachBox.classList.remove("on");coachRing.classList.remove("on")}
+function coachOk(id){if(coach){coach.ok[id]=true;sfx.tick()}}
+/* Every frame: show the first tip not done yet under its control (over it if there's no room), so it follows the
+   carousel and the layout. It hides while a window is open over the game, or when its control is on a slide out of view.
+   The forecast's control is its icon and words, since narrow screens stretch #hudWx across the HUD. */
+function coachTick(){
+  if(!coach)return;
+  requestAnimationFrame(coachTick);
+  const s=COACH.find(s=>!(s.ok?coach.ok[s.id]:s.done()));
+  const els=s&&!$("#modalRoot").childElementCount&&!$("#eve")?[...document.querySelectorAll(s.at())].filter(e=>!e.closest("[inert]")):[];
+  if(!els.length){coachBox.classList.remove("on");coachRing.classList.remove("on");return}
+  const say=s.say();
+  if(coach.key!==s.id+say){coach.key=s.id+say;coachBox.classList.remove("on");
+    coachBox.innerHTML=`<p>${say}</p>${s.ok?`<button class="btn sm ghost" onclick="coachOk('${s.id}')">Got it</button>`:""}`}
+  const rs=els.map(e=>e.getBoundingClientRect()),card=els[0].closest(".spotCard"),c=card?card.getBoundingClientRect():{left:-Infinity,right:Infinity}; // a spot card's posts can run past its edge
+  const r={left:Math.max(c.left,Math.min(...rs.map(q=>q.left))),right:Math.min(c.right,Math.max(...rs.map(q=>q.right))),top:Math.min(...rs.map(q=>q.top)),bottom:Math.max(...rs.map(q=>q.bottom))};
+  const w=coachBox.offsetWidth,h=coachBox.offsetHeight,pad=8,gap=20; // gap: room for the ring and the bubble's point
+  const above=r.bottom+gap+h>innerHeight-pad&&r.top-gap-h>=pad,mid=(r.left+r.right)/2,left=clamp(mid-w/2,pad,innerWidth-w-pad);
+  Object.assign(coachBox.style,{left:left+"px",top:(above?r.top-gap-h:r.bottom+gap)+"px"});
+  coachBox.style.setProperty("--ax",clamp(mid-left,20,w-20)+"px");
+  coachBox.classList.toggle("above",above);coachBox.classList.add("on");
+  Object.assign(coachRing.style,{left:r.left-6+"px",top:r.top-6+"px",width:r.right-r.left+12+"px",height:r.bottom-r.top+12+"px"});
+  coachRing.classList.add("on");
+}
 $("#btnHelp").addEventListener("click",()=>showHelp());
 function toggleSound(){soundOn=!soundOn;document.querySelectorAll(".soundBtn").forEach(b=>{b.classList.toggle("off",!soundOn);const t=b.querySelector("span");if(t)t.textContent=soundOn?"Sound on":"Sound off"});if(soundOn)sfx.pop()}
 $("#btnSound").addEventListener("click",toggleSound);
