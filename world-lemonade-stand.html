@@ -216,6 +216,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .amt{font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
 .rTotal{border-top:2px dashed #cdbf9d;margin-top:8px;padding-top:10px;font-weight:900}
 .rTotal .amt{font-size:var(--fs-xl);line-height:1}
+.rRow small,.rTotal small{display:block;font-family:var(--font-body);font-size:var(--fs-sm);font-weight:600;opacity:.7} /* a row's second line: what each cup cost, how many signs */
 .coinSpot{position:relative;display:inline-block}
 .dropCoin{--s:2;position:absolute;bottom:30%;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;pointer-events:none;animation:coinDrop .5s ease-in both}
 @keyframes coinDrop{0%{transform:translateY(-60px) rotate(-30deg);opacity:0}25%,80%{opacity:1}100%{transform:translateY(0) rotate(20deg) scale(.6);opacity:0}}
@@ -274,7 +275,6 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .modalWrap.eve.runEnd{padding-top:14px}
 .eve .modal.endCard{max-width:600px}
 .endCard .receiptBox{margin:4px auto 18px;text-align:left} /* the run's receipt: money made, what it cost, the profit */
-.rRow small,.rTotal small{display:block;font-family:var(--font-body);font-size:var(--fs-sm);font-weight:600;opacity:.7}
 .endAsk{max-width:440px}
 /* Upgrade your stand: the stand now and after, at 2×, standing on one line, then what the new level does */
 .standUpBox{max-width:460px}
@@ -750,6 +750,7 @@ const ri=(a,b)=>Math.floor(rnd(a,b+1));
 const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const fmt=n=>{const v=Math.round(n*100)/100;return (v<0?"-$":"$")+Math.abs(v).toFixed(2).replace(/\.00$/,"")};
+const fmtCents=v=>v<0.995?`${Math.round(v*100)}¢`:fmt(v); // what a cup costs to make: 62¢, or $1.05 once it's a dollar
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const plural=(n,one,many)=>n===1?one:(many||one+"s");
 /* 64×64 pixel-art stand, drawn in Pixelwright. CSS shows it at 2×, or 1× on small screens (.stand). */
@@ -1843,11 +1844,12 @@ function serveOne(ck){
     if(!alt)return "out";
     rk=alt;
   }
+  const cost=servingCost(rk); // priced before pouring: once a supply runs out, it's priced at the shop's price instead
   pourCup(rk);
   const rev=saleRevenue(1,menuPrice(rk),rk);
   D.revenue+=rev;D.revBy[rk]=(D.revBy[rk]||0)+rev;D.tips+=rev*tipRate()*Math.random();
   D.revByCrowd[ck]=(D.revByCrowd[ck]||0)+rev; // the money each crowd paid: the evening report shows the top customers
-  D.cogs+=servingCost(rk);
+  D.costBy[rk]=(D.costBy[rk]||0)+cost; // the evening receipt says what a cup of each flavor cost to make
   D.sold++;D.soldBy[rk]=(D.soldBy[rk]||0)+1;D.lastFlavor=rk; // the day scene shows it over the buyer
   if(D.crewLeft>0)D.crewLeft--;
   return "sold";
@@ -1862,7 +1864,7 @@ function openStand(){
   M.actualWx=M.trueWx;
   D={signs:putOut,build:b,
      roll:rnd(0.87,1.13),soldBy:{},revByCrowd:{},sold:0,morningSold:0,dry:false,
-     awayPrice:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,cogs:0,
+     awayPrice:0,awayOut:0,revenue:0,revBy:{},tips:0,paid:0,costBy:{},
      skip:false,done:false,brotherSpilled:false,crewLeft:0,paidCups:0,paidBy:{}};
   D.menu=openingMenu();
   const minPrice=Math.min(...D.menu.map(rk=>menuPrice(rk)));
@@ -2160,7 +2162,7 @@ function finishDay(){
   else if(!unserved)counter=`Everyone got lemonade.`;
   const tonight=overnight(); // ice melts and old produce goes bad once you close
   const byCups=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]);
-  const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${iconHtml("flavor",rk)}</span> ${n} ${plural(n,"cup")} at ${fmt(menuPrice(rk))}</span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
+  const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${iconHtml("flavor",rk)}</span> ${n} ${plural(n,"cup")} at ${fmt(menuPrice(rk))}<small>Each cup cost ${fmtCents(D.costBy[rk]/n)} to make.</small></span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
   const upgradeBonus=Math.round((D.revenue-Object.entries(D.soldBy).reduce((s,[rk,n])=>s+n*menuPrice(rk),0))*100)/100;
   const walked=D.awayPrice,ranOut=Math.max(0,unserved-walked),why=[];
   if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);
@@ -2381,14 +2383,13 @@ function scoreHtml(bestLine){
 function profitHtml(){
   const sp=S.spent,profit=Math.round((S.cash-S.startCash)*100)/100,cups=S.lifetimeSold;
   const made=Math.round((profit+sp.signs+sp.supplies+sp.stand+sp.rerolls)*100)/100;
-  const cents=v=>v<0.995?`${Math.round(v*100)}¢`:fmt(v);
   const row=(label,amt,more)=>`<div class="rRow"><span>${label}${more?`<small>${more}</small>`:""}</span><span class="amt">${amt}</span></div>`;
   const cost=(label,amt,more)=>amt>0?row(label,`−${fmt(amt)}`,more):"";
   return `<div class="receiptBox"><div class="receiptWrap"><div class="receipt">
     <div class="rHead">Your money</div>
     ${row("Money made",`+${fmt(made)}`,"Sales, tips and bonuses.")}
     ${cost("Signs",sp.signs,`${S.signsOut} ${plural(S.signsOut,"sign")} at ${fmt(signPrice())} each.`)}
-    ${cost("Supplies",sp.supplies,cups?`About ${cents(sp.supplies/cups)} for each cup you sold.`:"")}
+    ${cost("Supplies",sp.supplies,cups?`About ${fmtCents(sp.supplies/cups)} for each cup you sold.`:"")}
     ${cost("Stand upgrades",sp.stand)}
     ${cost("Re-rolls",sp.rerolls)}
     <div class="rTotal"><span>Total profit<small>You started with ${fmt(S.startCash)}.</small></span><span class="amt ${profit>=0?"pos":"negc"}">${fmt(profit)}</span></div>
