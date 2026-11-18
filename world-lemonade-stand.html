@@ -676,7 +676,7 @@ body:has(.stage){overflow:hidden}
 }
 @media (max-width:720px){
   :root{--hudH:78px}
-  .skyTop{grid-template-columns:1fr;justify-items:stretch}
+  .skyTop{grid-template-columns:minmax(0,1fr);justify-items:stretch} /* minmax(0,…): a one-line news note (fit-min) can't widen the spot card past the screen */
   .skyTop .side{justify-items:start}
   .spotCard .slide{padding:6px 8px 2px}
   .spotCard .postFace{padding:5px 15px 5px 6px;font-size:var(--fs-sm)}
