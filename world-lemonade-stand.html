@@ -1347,8 +1347,9 @@ function genMorning(){
   });
   // crowd mix for a location computed on selection
   const gv=S.gear.includes("grapevine"); // Town Grapevine: good news travels, bad news stalls
-  // no heat wave on the opening days, so their temperatures stay in range
-  const evRoll=sampleWeighted(EVENTS.filter(e=>!(opening&&e.id==="heatwave")).map(e=>({k:e.id,w:e.w*(gv?(GOOD_EVENTS.includes(e.id)?2:BAD_EVENTS.includes(e.id)?0.5:1):1)}))).k;
+  // no heat wave on the opening days, so their temperatures stay in range, and no pricier supplies on the
+  // first-morning tour, so the starting money buys the middle pack of each supply it has you buy
+  const evRoll=sampleWeighted(EVENTS.filter(e=>!(opening&&e.id==="heatwave")&&!(firstDay()&&e.id==="sugarant")).map(e=>({k:e.id,w:e.w*(gv?(GOOD_EVENTS.includes(e.id)?2:BAD_EVENTS.includes(e.id)?0.5:1):1)}))).k;
   const ev=EVENTS.find(e=>e.id===evRoll);
   const prices={};S.recipes.forEach(rk=>{prices[rk]=S.menuPrices[rk]!=null?S.menuPrices[rk]:RECIPES[rk].price});
   const temp=ri(...(opening?opening.temp:WX_TEMP[trueWx]));
@@ -1733,7 +1734,7 @@ function buyItem(id,tier=0){
   const qty=INGREDIENTS[id].pack*BULK[tier].mult,price=packPrice(id,tier);
   if(S.cash<price||(S.inv[id]||0)+qty>holdMax(id)){sfx.bad();return}
   pay("supplies",price);addStock(id,qty,price);sfx.coin(3);updateHUD();morningParts();
-  if(coach)coach.ok.supplies=true; // the supplies tip has done its job
+  if(coach&&tier===1)coach.bought[id]=true; // the tour has you buy each supply's middle pack
 }
 function chooseLoc(i){const was=M.loc;M.loc=M.locs[i];sfx.flip();showBackdrop(M.loc);morningParts();if(M.loc!==was)newStreet($("#skyBox"))}
 function openShelf(id){M.shopOpen=M.shopOpen===id?null:id;sfx.flip();morningParts()}
@@ -2513,33 +2514,38 @@ document.addEventListener("click",e=>{if(!touchOnly())return;const el=e.target.c
   if(el&&!el.matches("button,input")){if(el===tipFor)hideTip();else showTip(el)}else hideTip()});
 addEventListener("scroll",()=>{if(tipFor&&performance.now()-tipAt>250)hideTip()},{passive:true,capture:true}); // a tap can nudge the page; don't close the tip it just opened
 /* ---------- The first morning's tips: they walk a new player through it, one at a time ----------
-   The forecast, a spot, supplies, then the carousel's arrow up to Open. Each tip points at its control and
-   moves on once you've done that part (or tapped Got it, where there's nothing you have to do). They end when
-   the stand opens. While a tip shows, only the tip and its part of the screen take taps (see coachGate).
-   at: the control it rings (several matches count as one box). use: the part you can tap, if more than that.
-   say(): the words, for the slide the player is on. */
+   The forecast, a spot, the middle pack of each supply in turn, then the carousel's arrow up to Open. Each tip
+   points at its control and moves on once you've done that part (or tapped Got it, where there's nothing you have
+   to do). They end when the stand opens. While a tip shows, only the tip and its part of the screen take taps
+   (see coachGate). at: the control it rings (several matches count as one box; a function when it changes as you
+   go). use: the part you can tap, if more than that. say(): the words, for where the player is. */
 const COACH=[
   {id:"forecast",ok:true,at:"#hudWx>*",use:"#hudWx",say:()=>`Here's today's weather. ${FORECAST_HINT}`},
   {id:"spot",done:()=>M.loc,at:"#mSpot .posts",say:()=>`Pick a spot for your stand. ${HOW_STEPS[0][1]}`},
-  {id:"supplies",ok:true,at:"#mShop .shelfRow,#mDrawer",use:"#mShop",say:()=>`Tap a supply to buy more. ${HOW_STEPS[2][1]}`},
+  {id:"supplies",done:()=>!coachSupply(),at:()=>{const id=coachSupply();return M.shopOpen===id?`#mDrawer [data-f="buy-${id}-1"]`:`#mShop [data-f="item-${id}"]`},
+    say:()=>{const id=coachSupply(),nm=INGREDIENTS[id].name,first=Object.keys(coach.bought).length?"":"Every cup you sell uses supplies. ";
+      return first+(M.shopOpen===id?`Buy the middle pack of ${nm.toLowerCase()}.`:`${first?"Tap":"Now tap"} ${nm}.${id==="ice"?" Hot days need more ice.":""}`)}},
   {id:"next",done:()=>M.card===SPOT_SLIDES.length-1,at:'#mSpot .arrow[data-d="1"]',use:"#mSpot", // the slides' signs and prices too
-    say:()=>["Now tap the arrow to see signs and prices.","Put up signs if you like, then tap the arrow.",`Set your prices, then tap the arrow. ${HOW_STEPS[3][1]}`][M.card]},
+    say:()=>["Now tap the arrow to see signs and prices.",S.cash>=signPrice()?"Put up signs if you like, then tap the arrow.":"You can try signs another day. Tap the arrow to go on.",`Set your prices, then tap the arrow. ${HOW_STEPS[3][1]}`][M.card]},
   {id:"open",done:()=>false,at:"#btnOpen",use:"#mSpot",say:()=>"When you're ready, tap Open to start selling."}
 ];
-let coach=null; // {ok: the tips dismissed with Got it, key: the tip on screen}
+let coach=null; // {ok: the tips dismissed with Got it, bought: the supplies whose middle pack you bought, key: the tip on screen}
 const coachBox=document.createElement("div");coachBox.id="coach";coachBox.setAttribute("role","status");
 const coachRing=document.createElement("div");coachRing.id="coachRing";
 document.body.append(coachBox,coachRing);
-function startCoach(){if(!coach){coach={ok:{},key:""};requestAnimationFrame(coachTick)}}
+function startCoach(){if(!coach){coach={ok:{},bought:{},key:""};requestAnimationFrame(coachTick)}}
 function endCoach(){coach=null;coachBox.classList.remove("on");coachRing.classList.remove("on")}
 function coachOk(id){if(coach){coach.ok[id]=true;sfx.tick()}}
 function coachStep(){return coach&&COACH.find(s=>!(s.ok?coach.ok[s.id]:s.done()))}
+const coachSel=v=>typeof v==="function"?v():v;
+/* The supply the tour has you buy next: each one on the shelf in turn, skipping one whose middle pack you can't afford or fit. */
+function coachSupply(){return [...BASIC_SUPPLIES,...flavorSupplies(S.recipes)].find(id=>!coach.bought[id]&&S.cash>=packPrice(id,1)&&(S.inv[id]||0)+INGREDIENTS[id].pack*BULK[1].mult<=holdMax(id))}
 /* A tap anywhere else while a tip shows does nothing, and the tip gives a little shake so the player looks at it.
    Every action in the game is a click, so stopping clicks here (before any button sees them) is enough;
    stopping the pointerdown too keeps a blocked button from taking focus. */
 function coachGate(e){
   const s=coachStep();
-  if(!s||!coachBox.classList.contains("on")||coachBox.contains(e.target)||e.target.closest(s.use||s.at))return;
+  if(!s||!coachBox.classList.contains("on")||coachBox.contains(e.target)||e.target.closest(coachSel(s.use||s.at)))return;
   e.preventDefault();e.stopPropagation();
   if(e.type!=="click")return;
   hideTip();
@@ -2554,7 +2560,7 @@ function coachTick(){
   if(!coach)return;
   requestAnimationFrame(coachTick);
   const s=coachStep();
-  const els=s&&!$("#modalRoot").childElementCount&&!$("#eve")?[...document.querySelectorAll(s.at)].filter(e=>!e.closest("[inert]")):[];
+  const els=s&&!$("#modalRoot").childElementCount&&!$("#eve")?[...document.querySelectorAll(coachSel(s.at))].filter(e=>!e.closest("[inert]")):[];
   if(!els.length){coachBox.classList.remove("on");coachRing.classList.remove("on");return}
   const say=s.say();
   if(coach.key!==s.id+say){coach.key=s.id+say;coachBox.classList.remove("on");
