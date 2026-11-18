@@ -1080,7 +1080,7 @@ const GEAR=[
  {id:"mega",    name:"Cardboard Megaphone", rar:"common",    desc:"Signs bring 40% more customers."},
  {id:"brother", name:"Little Brother", rar:"rare",      desc:"2 free signs every day, but he spills 2 cups of lemonade each day."},
  {id:"chalk",   name:"Sidewalk Chalk Art", rar:"rare",      desc:"+0.2★ reputation on days you put out 4 or more signs."},
- {id:"bigsign", name:"Roof sign", rar:"legendary", desc:"Every sign pulls as many customers as your first one."},
+ {id:"bigsign", name:"Roof sign", rar:"legendary", desc:"Customers will pay 30% more."},
  // customers
  {id:"secondcart",name:"Second Cart", rar:"legendary", desc:"+30% customers every day."},
  {id:"franchiseflag",name:"Franchise Flag", rar:"epic",      desc:"+7% customers for each upgrade on your stand, this one included."},
@@ -1270,6 +1270,7 @@ const WX_PAY={sunny:1,hot:1.2,perfect:1.25,cloudy:0.95,rainy:0.9,windy:1};
 function payWillingness(crowdKey,b,wxKey){
   let p=CROWDS[crowdKey].pay*(WX_PAY[wxKey]||1)*standLv().pay; // a nicer stand: everyone pays a little more
   if(S.gear.includes("lemonzest"))p*=1.15;
+  if(S.gear.includes("bigsign"))p*=1.3; // Roof sign: the stand looks fancy from down the street
   if(S.gear.includes("plaque")&&S.rep>=4.5)p*=1.2;
   return p;
 }
@@ -1328,9 +1329,7 @@ function demandEstimate(loc,signs,opts={}){
   let trafficBase=loc.traffic;
   const repMult=(0.7+(S.rep-1)*0.2)*(S.gear.includes("loyalty")? (0.7+(S.rep-1)*0.4)/ (0.7+(S.rep-1)*0.2):1);
   const effSigns=signs+b.freeSigns;
-  let signBonus;
-  if(S.gear.includes("bigsign"))signBonus=1+0.10*effSigns*b.signMult;
-  else signBonus=1+0.16*Math.sqrt(Math.max(effSigns,0))*b.signMult;
+  const signBonus=1+0.16*Math.sqrt(Math.max(effSigns,0))*b.signMult;
   // per crowd: their best flavor drives whether they come; ALL flavors share the split by preference
   let weighted=0,baseShare=0;const split={};
   Object.entries(mix).forEach(([ck,pct])=>{
