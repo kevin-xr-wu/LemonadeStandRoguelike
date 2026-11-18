@@ -2524,7 +2524,7 @@ const COACH=[
   {id:"spot",done:()=>M.loc,at:"#mSpot .posts",say:()=>`Pick a spot for your stand. ${HOW_STEPS[0][1]}`},
   {id:"supplies",done:()=>!coachSupply(),at:()=>{const id=coachSupply();return M.shopOpen===id?`#mDrawer [data-f="buy-${id}-1"]`:`#mShop [data-f="item-${id}"]`},
     say:()=>{const id=coachSupply(),nm=INGREDIENTS[id].name,first=Object.keys(coach.bought).length?"":"Every cup you sell uses supplies. ";
-      return first+(M.shopOpen===id?`Buy the middle pack of ${nm.toLowerCase()}.`:`${first?"Tap":"Now tap"} ${nm}.${id==="ice"?" Hot days need more ice.":""}`)}},
+      return first+(M.shopOpen===id?`Buy ${INGREDIENTS[id].pack*BULK[1].mult} ${nm.toLowerCase()}.`:`${first?"Tap":"Now tap"} ${nm}.${id==="ice"?" Hot days need more ice.":""}`)}},
   {id:"next",done:()=>M.card===SPOT_SLIDES.length-1,at:'#mSpot .arrow[data-d="1"]',use:"#mSpot", // the slides' signs and prices too
     say:()=>["Now tap the arrow to see signs and prices.",S.cash>=signPrice()?"Put up signs if you like, then tap the arrow.":"You can try signs another day. Tap the arrow to go on.",`Set your prices, then tap the arrow. ${HOW_STEPS[3][1]}`][M.card]},
   {id:"open",done:()=>false,at:"#btnOpen",use:"#mSpot",say:()=>"When you're ready, tap Open to start selling."}
