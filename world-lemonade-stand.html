@@ -1309,11 +1309,14 @@ function genMorning(){
   if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1; // the tree only fills the stand up to what it holds
     M.treeLemons=Math.max(0,Math.min(13+3*S.treeDays,holdMax("lemons")-(S.inv.lemons||0)));if(M.treeLemons)addStock("lemons",M.treeLemons,0)}
 }
-function crowdMixFor(loc){
+/* Flavors draw their fans: a crowd that loves a flavor on today's menu is 10% more likely to be the one walking by. */
+const FAN_PULL=1.1;
+function crowdMixFor(loc,menu=openingMenu()){
   // base mix + location bias -> exact %
   const base={kids:18,parents:18,athletes:15,tourists:10,foodies:8,artists:11};
   Object.entries(loc.bias).forEach(([k,v])=>{base[k]=(base[k]||0)+v*3});
   if(loc.name==="Boardwalk")base.tourists+=8;
+  Object.keys(base).forEach(ck=>{if(menu.some(rk=>tasteFor(ck,rk)>1))base[ck]*=FAN_PULL});
   let tot=Object.values(base).reduce((a,b)=>a+b,0);
   const magnets={sponsor:"athletes",tourbus:"tourists",foodblog:"foodies"}; // ~+10 points of that crowd each
   Object.entries(magnets).forEach(([g,ck])=>{if(S.gear.includes(g))base[ck]+=tot*0.13});
@@ -1321,7 +1324,7 @@ function crowdMixFor(loc){
   const mix={};Object.entries(base).forEach(([k,v])=>mix[k]=Math.round(v/tot*100));
   return mix;
 }
-function crowdList(loc){const a=[];Object.entries(crowdMixFor(loc)).forEach(([k,v])=>{for(let i=0;i<v;i++)a.push(k)});return a} // one entry per percent, so pick() draws a crowd by the spot's mix
+function crowdList(loc,menu){const a=[];Object.entries(crowdMixFor(loc,menu)).forEach(([k,v])=>{for(let i=0;i<v;i++)a.push(k)});return a} // one entry per percent, so pick() draws a crowd by the spot's mix
 function demandEstimate(loc,signs,opts={}){
   const b=computeBuild(),menu=opts.menu||S.recipes;
   const useWx=opts.wx||M.shownWx;
@@ -1331,7 +1334,7 @@ function demandEstimate(loc,signs,opts={}){
   if(S.gear.includes("ponchos")&&useWx==="rainy")wxMult*=1.6;
   if(S.gear.includes("awning")&&(useWx==="cloudy"||useWx==="rainy"))wxMult*=1.25;
   wxMult*=tempMult(M.temp);
-  const mix=crowdMixFor(loc);
+  const mix=crowdMixFor(loc,menu);
   let trafficBase=loc.traffic;
   const repMult=(0.7+(S.rep-1)*0.2)*(S.gear.includes("loyalty")? (0.7+(S.rep-1)*0.4)/ (0.7+(S.rep-1)*0.2):1);
   const effSigns=signs+b.freeSigns;
@@ -1848,7 +1851,7 @@ async function runDayPhase(phase){
   const isMorning=phase==="morning";
   if(isMorning)D.next=simNow(); // when the next walker is due, on the simulation clock
   const target=isMorning?D.morningDemand:D.aftDemand;
-  const mixArr=crowdList(M.loc);
+  const mixArr=crowdList(M.loc,D.menu);
   let streak=0,processed=0;
   const parties=partySizes(target),gap=600*Math.sqrt(12/Math.max(12,parties.length)); // more walkers come closer together, so busy days run only a little longer
   for(const size of parties){
