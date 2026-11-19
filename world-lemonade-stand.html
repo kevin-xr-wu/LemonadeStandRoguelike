@@ -331,7 +331,6 @@ h2+.learn{margin:0 0 8px}
 .howSteps b i{font-style:normal;display:inline-block;min-width:20px;margin-right:4px;background:var(--ink);color:var(--lemon);border-radius:99px;font-family:var(--font-display);font-size:var(--fs-md);line-height:20px}
 .howSteps span{font-size:var(--fs-xs);opacity:.8}
 @media (max-width:420px){.howSteps{gap:6px}.howSteps li{padding:8px 4px 6px}}
-.btn.soundBtn{--px:1;display:inline-flex;align-items:center;gap:6px}
 .shelf{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--paper2);border-radius:12px;padding:8px 12px;margin:10px 0 4px}
 .slots{display:flex;gap:8px;flex-wrap:wrap;flex:1}
 .slot{width:46px;height:46px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center}
@@ -415,10 +414,11 @@ h2+.learn{margin:0 0 8px}
   .guessBar i.long{display:none}
   .guessBar #btnOpen{flex:0 0 auto;margin-left:auto;padding:10px 16px!important}
 }
-@media (max-width:560px){ /* phones: one-row top bar (sound moves into the ? help), stacked shelf */
+@media (max-width:560px){ /* phones: one-row top bar (sound moves down to the forecast row), stacked shelf */
   .playBtn{padding:14px 40px}
   .title .scoresBtn{padding:8px 20px;font-size:var(--fs-md)}
-  #btnSound{display:none}
+  #app:has(.stage) #btnSound{position:absolute;left:8px;bottom:5px;padding:0} /* the left end of the forecast row, across from End run */
+  #app:has(.stage) .hudWx{padding-left:40px}
   .hud{gap:12px}
   .helpBtn{margin-left:auto}
   .shelf .slots{order:3;flex:1 1 100%}
@@ -2397,7 +2397,7 @@ function showHelp(){
   const art=[iconHtml("spot","Maple St. Spot",true),iconHtml("supply","signs",true),iconHtml("supply","lemons",true),gearIconHtml("pricetag",true),
     `<i class="hudIcon" role="img" aria-label="Coin"></i>`,gearIconHtml("secondcart",true)];
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
-    <div class="flex spread"><h2>How to play</h2><div class="flex"><button class="btn sm ghost soundBtn${soundOn?"":" off"}" onclick="toggleSound()"><i class="hudIcon"></i><span>${soundOn?"Sound on":"Sound off"}</span></button><button class="btn sm ghost" onclick="closeModal()">Close</button></div></div>
+    <div class="flex spread"><h2>How to play</h2><button class="btn sm ghost" onclick="closeModal()">Close</button></div>
     <ol class="howSteps">${HOW_STEPS.map(([name,hint],k)=>`<li>${art[k]}<b><i>${k+1}</i>${name}</b><span>${hint}</span></li>`).join("")}</ol>
   </div></div>`;
 }
@@ -2495,7 +2495,7 @@ function coachTick(){
   coachRing.classList.add("on");
 }
 $("#btnHelp").addEventListener("click",()=>showHelp());
-function toggleSound(){soundOn=!soundOn;document.querySelectorAll(".soundBtn").forEach(b=>{b.classList.toggle("off",!soundOn);const t=b.querySelector("span");if(t)t.textContent=soundOn?"Sound on":"Sound off"});if(soundOn)sfx.pop()}
+function toggleSound(){soundOn=!soundOn;document.querySelectorAll(".soundBtn").forEach(b=>b.classList.toggle("off",!soundOn));if(soundOn)sfx.pop()}
 $("#btnSound").addEventListener("click",toggleSound);
 showTitle();
 </script>
