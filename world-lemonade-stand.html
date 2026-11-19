@@ -985,20 +985,20 @@ const LOCATIONS=[
 /* Flavors have rarities like upgrades: common flavors have one tag, rare ones two, and epic ones are fancy. Rarer
    flavors earn more, and flavors of the same rarity earn about the same: appeal evens out their tags and what a cup
    costs. Shikanji's is higher because it takes two spots on the supply shelf. Starting prices are set so the same
-   holds for a player who never changes them: a chilled flavor starts cheap, near what athletes (its fans) will pay. */
+   holds for a player who never changes them: a chilled flavor starts just under what athletes (its fans) will pay. */
 const RECIPES={
-  classic:{name:"Classic Sweet", rar:"common", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.75, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
-  strawberry:{name:"Strawberry Lemonade", rar:"common", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:3.50, needs:{strawberries:1},    desc:"Lemonade with fresh strawberries."},
-  limonana:{name:"Limonana", rar:"common", origin:"Levant",             tags:["CHILLED"],       appeal:1.04,price:2.25, needs:{mint:1},            desc:"Mint blended with crushed ice."},
+  classic:{name:"Classic Sweet", rar:"common", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.50, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
+  strawberry:{name:"Strawberry Lemonade", rar:"common", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:3.00, needs:{strawberries:1},    desc:"Lemonade with fresh strawberries."},
+  limonana:{name:"Limonana", rar:"common", origin:"Levant",             tags:["CHILLED"],       appeal:1.04,price:2.00, needs:{mint:1},            desc:"Mint blended with crushed ice."},
   brazilian:{name:"Brazilian Lemonade", rar:"epic", origin:"Brazil",         tags:["SWEET","FANCY"], appeal:1.08,price:3.75, needs:{condmilk:1},        desc:"Creamy with condensed milk."},
-  shikanji:{name:"Shikanji", rar:"common", origin:"India",              tags:["SOUR"],          appeal:1.14,price:3.00, needs:{sugar:3,ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
-  chia:{name:"Agua de Limón con Chía", rar:"common", origin:"Mexico",          tags:["CHILLED"],       appeal:1.03,price:2.25, needs:{chia:1},            desc:"Lemonade with chia seeds."},
-  citron:{name:"Citron Pressé", rar:"rare", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.16,price:3.50, needs:{sparkling:1},      desc:"Paris cafe style. Tart and sparkling."},
+  shikanji:{name:"Shikanji", rar:"common", origin:"India",              tags:["SOUR"],          appeal:1.14,price:2.75, needs:{sugar:3,ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
+  chia:{name:"Agua de Limón con Chía", rar:"common", origin:"Mexico",          tags:["CHILLED"],       appeal:1.03,price:2.00, needs:{chia:1},            desc:"Lemonade with chia seeds."},
+  citron:{name:"Citron Pressé", rar:"rare", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.16,price:3.25, needs:{sparkling:1},      desc:"Paris cafe style. Tart and sparkling."},
   rosewater:{name:"Sharbat-e-Limoo", rar:"epic", origin:"Iran",               tags:["FANCY","SWEET"], appeal:1.07,price:3.75, needs:{sugar:3,rosewater:1},desc:"Lemon with rosewater."},
   salted:{name:"Salted Lemonade", rar:"common", origin:"Vietnam",            tags:["SOUR"],          appeal:1.04,price:2.75, needs:{seasalt:1},         desc:"Salty lemon drink."},
   palmer:{name:"Arnold Palmer", rar:"rare", origin:"USA",                tags:["SWEET","SOUR"],  appeal:1.11,price:3.50, needs:{blacktea:1},        desc:"Half iced tea, half lemonade."},
-  cucumber:{name:"Cucumber Lemonade", rar:"common", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.05,price:2.25, needs:{cucumbering:1},     desc:"Cool cucumber lemonade."},
-  ramune:{name:"Ramune Lemonade", rar:"rare", origin:"Japan",              tags:["FIZZY","SWEET"], appeal:1.14,price:3.75, needs:{sparkling:2},       desc:"Japanese soda-shop fizz."}
+  cucumber:{name:"Cucumber Lemonade", rar:"common", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.05,price:2.00, needs:{cucumbering:1},     desc:"Cool cucumber lemonade."},
+  ramune:{name:"Ramune Lemonade", rar:"rare", origin:"Japan",              tags:["FIZZY","SWEET"], appeal:1.14,price:3.50, needs:{sparkling:2},       desc:"Japanese soda-shop fizz."}
 };
 /* ---------- Inventory: ingredients, the shop ----------
    Every cup takes 2 lemons and 2 sugar, plus its flavor's own supplies (RECIPES needs, per cup). A few real recipes
