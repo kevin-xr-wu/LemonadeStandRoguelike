@@ -182,6 +182,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .icon.spot{--n:13;background-image:var(--spotIcons)}
 .icon.gearA{--n:20;background-image:var(--gearIconsA)}
 .icon.gearB{--n:19;background-image:var(--gearIconsB)}
+.icon.gearC{--n:11;background-image:var(--gearIconsC)}
 .icon.crowd{--n:6;background-image:var(--crowdIcons)}
 .icon.weather{--n:6;background-image:var(--weatherIcons)}
 .coin{--s:2;--rise:28px;position:absolute;bottom:64px;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;z-index:9;animation:coinFly .8s ease-out forwards,coinSpin .32s steps(4) infinite;pointer-events:none}
@@ -530,7 +531,7 @@ body:has(.stage){overflow:hidden}
 .spotCard .mLbl{justify-content:center;margin:0 0 8px;font-size:var(--fs-lg)}
 .spotCard .tag{font-size:var(--fs-sm)}
 .spotCard .posts{max-width:none}
-/* Today's news (Lucky Dice, hot streak): one strip of notes just under the HUD */
+/* Today's news (Lucky Dice, Sellout Banner, Ice Chest, hot streak): one strip of notes just under the HUD */
 .news{grid-column:1/-1;justify-self:center;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:min(820px,100%)}
 .news .streak,.news .callout{margin:0;border-radius:10px;font-size:var(--fs-xs);font-weight:700;line-height:1.35;padding:4px 10px;box-shadow:0 3px 0 rgba(43,33,24,.25)}
 .news .callout{background:var(--card)}
@@ -812,10 +813,12 @@ const SUPPLY_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAQCA
 const FLAVOR_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAQCAMAAAB3PIAaAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAb5JREFUeNrdlltywjAMRauZUqChxcSd/HUN7H93lfWyFOwkncJHuT8gP+R7JI/h5ZkEED87092R5f3DsCHjsj23vLUV9kcahTzOZiGlBI1hXm/h7tzbXzQM8zPhdDO05P+SL7acsyWXvui4ZwMndCsy/xlgzBKqDrJedd5xjAv99kKKMgBbD8N7C6DOcwL9ntFEBBACSl9kGz5UMcEo88hD0vU7kXM8fRXV8FCkAN+qWtHYySJ2xLtJsQM1uaW3I2A6qSTOpJS5AjCdVRK/qSTmeshyOSFVgMmXp1Fxyuf9kKitsw5sBkDvpCUAqAC4Eu17ALTfB9COYk/bADlLDWvC6/Vaaaa9qgMwqroAxX0AgHiev0JKYOEGAF9A8V8J7gEQrxDZn10hvEOuZM6/Xbl657cApFYLbN77dwQWe/+OQF6piS4QQrgTXAP4petfYc4X7lz0P+/AAwCkBfGEewJg/QNAMIDxwLL4wtoOQPXfCNAo4CpAeKVxIPinR8r5Lz+C3j/Gn6Qav5LmvG5DSI/2XX9vASifJ4ZwAR4OUB/2eIAL4+zt+SsA5XfM+29k/GPc/HuwMv2r/Cv5/pN+AD8jNJrR7Nz7AAAAAElFTkSuQmCC";
 /* 13 spot icons, 16×16 each, in LOCATIONS order, drawn in Pixelwright with shaded, outlined objects to match the scene art. Shown with iconHtml("spot",name). */
 const SPOT_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANAAAAAQCAMAAABQkgHyAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAA7FJREFUeNqtl4taozAQhTsCEgWBVusrgFrp+7/dnjOZSQLVb9fdnQrYNJnMP5ckHP6niPxxR8g/qL8df6Pv9veyQRUUDfvv1trU1nb7+1ZdD+l+RgR98xyHiCxvb29LOYNU3VafPG2+s2vpj2fI6eQtItMTDBr3TmjqymZcZkrpgedTMXsPDSJfEOUZbhw4TZNplOt1XUNY1/Uzm1jteUqPRXVJpeKA53Q6RoXQrUDjsHFC4iFQ3ycgKsLwY9LXT4cD//ZEIpcLm0SaZprq2vszNnMCkut6fqWcz4lIJp8682QieAACB6yrKjAc3klEnjEClUQFD4D6p77zBHkIAUDPR+mfVF8vwOFnEyOYfbl8fHCCqgHQ2NRRYYwNgSIggMBCeXEgdKmmUpfyJCINqYr2BxCjw/vRgEZkmwh4MlDJwwh1nScIeEJ7gjMIyfEAOkyCEMlj8gBpgBPeBTwZiCoNKKUgIxR5HIgWVeDd8zgRRmyBQEIk8CgQugt9JH0uxA0PgUJwIPCEFjxH6I9AdHagnREo0YR38gCjaWQaBUB3d2jYiJr3YmIG0sMAGp048RiRXH107K8okScB0UEAchcrTy5jWcJDaD3l2vZeB3ed9tcINVJ5hDLNu9q7A4K5zDe/AJj8vX7SQC0BAKUCkMdCDMhqyiKqKCqxBhTopQCCEboMJR8tc9vmRXbnYXitRgVVEUgrJ+E40Aj7vgXqkv9hYOSJQE6EpijRIAAxTUJrQNGkFALNNPC8SPS48XQc71W4zKeTpxwrAhIfWhSdKJAFyGncGQQasQCMQwSKW4ALgR64ZEMegkZIRa3zZRGjdWOQBNT3IUfIbfZ/4Q9dFAaIEdJRHXgsRLJwEXCgWqXCp65RE0rE6Ty8TuPmVFU9wgIZai2hZcYuSklAKeVYQ0jOJBYiKH8940Y9BoR0p/u/BRpY4AakPGjFMt55zJf5eEwRuitFLa87pnfetRZtjQ91eY19YcA+RMX7CB1kXkzivgRTTNxFEzKIQK0BrdtFoci46EkCYbTx3FW0UrjPDmkrK+KPXKvLlIMuU0+Vtk+lh/uv6/KpI8dHI6RnIL9zrrwCWBlayqUIfSZR+7knn7E5827r7ACex8GGq9eBaRnoZjhbSjkKaoJk+YKBob2nXfFxc5bkKaGMEAJZinAHoWl2mce1KqraM2Zz9NEVLW5kCOQXZ62iLfMgUTZ9i1Vu990Pyt+dv383XrA85Svn1NcH6L3Gn7we/Pz94O9fWtJ1+AVxYmOuTHCCDgAAAABJRU5ErkJggg==";
-/* 20 upgrade icons (first half of GEAR), 16×16 each, drawn in Pixelwright. Shown with gearIconHtml(id). */
+/* 20 upgrade icons, 16×16 each, drawn in Pixelwright. Shown with gearIconHtml(id). */
 const GEAR_ICONS_A_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAAQCAMAAABQt1bbAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAABL1JREFUeNrVmNmamzgQhV0sDQ5eaC99E/sujDtxZtLv/3RzahOSgG53LvJ9KRuMjAylX6eqZFZsZCaNWcPJb++czvsGe6j/g9ddUflw1z9rVFdiZT5gbxINw/DNzsZ8+KtJe7Ppe9/kJ1OaMeCHsVBZ/TbARyczdU9b68xhtefnsXvVm+2TsRDVhmwY/gHBYZDxfhd7tQ9aUcvWyb5FcxsD7PgnxU+zMAN7sx36T/hNFazHCb/j8bcBLl1/bNZm0l63IEhGSAgcef+MVwrwcEwA8ijrQn4AfgqQo5gBtjnArtt0gpA7dN1+75tcr7jf7+0aO9WjT1cfAKYDmgxQB9Q09QjheDiM/n+QMvLzdIO98O7mxH79J+bN8k3MaIgCzWMeH+6Nj+dRggxw3bbNIQIoItnVBRMk058DbFv0fv2+3eDNABu2TvYNd6hGf1UzDJDNcPT62ilAJijOAbe0cW/1/+3NBlzhjrglXIw0GEVQfzzs+Mfdvhu/0+whx627w/PLAH0G3wO4DgDlqxAxOD4Qbj7eHw42jKRtAkDFtwsAh+twxdsViL5QIEJ1EwB2RnAe4A8xdy8osDeAyo8F6wDXYg6wfNLZeXryISVyo/7QC8C9JAw5yRkkKK6hl5cznc84MICn06nHbhmg5KMEIM+v+6dbnANlepsnASgpCvQigFfYBeYA8UIIMz8GmBYRKj2DsIkPRTZevfjOAfZCMHYwUSBVNZzjGK5r1Dm5hAKOZiRWIHUACCMcLAAEvQxg0zaJAgHEFBiGFib45514S4oIz68WESpLxte22FUK8HIlBkiXr5YDrYhsJAeuVqVfiQ+Q6yMr+asiTUmpAjnY+DBRoKdsA1gLwLrhhYLy85IVATxh0xFPAZqlAPsYIGIwVSDeBtCdQVZX/+4/iLeFKkxFWYFd06QAob8JQC0iESA+YIB+vaqiCcBcoQqQ5RcBzBQIgtyZ54M9YHTytpwmAE8IYQXIgxWAOFCAwZYBZgpscfcU4J44auIQHmOqwooD1mkO5NTFCMGvKrUMb6/V5VJdttJ4FbvZxxzAnlNCowCT87aaiwzXF/1xzc4VuAxwC3Tgt40AnjgHKkBlaPRUgYbvHYBZDpTbG0CvH77OtQgeo5gqnN9Ip1BEMDbmZwChPsyqCBCtF7HzmNimADUjMMDkfACoc6oAAUA8XKrC8EXVyv64AjVpGxCg0CISAKoCw4qiF4L4GJcxagsA01XPnhGSuCZti+AxiokdczOCZSEZTPkRs6Ov2KR5VjuFujAJ4cjmFQiJouYbwJUEh1pQoIjQAQpByag6pIQfAJ6sCi8AhPSYVlDgdCH9S2xUYAxD8NncGl++RBLC4XphmQB0cFwA8l8LN8nK6LdVMx8TgHwaqdH38wrUqHCAHyykMR6rSJKSjWDgN7eQxmK+0woyJh22KAeNXzjAoEC7C8rBnAKtDsermKieuALZVeMZVU1ZifsEO88cIMrM7QZ2sk/Pz+bAjx9GoK6JOb9sHThjX8SW/onMKDAJ4UwQUXBEUbzwNGT0MLRkNs2+ZJM+d0OeY04uutfOCcAitsee13zm4c7cz9PPaYd/zSLhBSnO3fxznnz28VTAP987f3rzl9v/YAyB7yHuyyQAAAAASUVORK5CYII=";
-/* 19 upgrade icons (second half of GEAR), 16×16 each, drawn in Pixelwright. Shown with gearIconHtml(id). */
+/* 19 upgrade icons, 16×16 each, drawn in Pixelwright. Shown with gearIconHtml(id). */
 const GEAR_ICONS_B_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATAAAAAQCAMAAACm/tNDAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAABD9JREFUeNq1mIly2kAMhr1Diu1iijHX9AkModO8/9tVv45drb0G2qSaQHzt9emXVqaaW/DmrsX751PAp9Cg0NtnLNxuz7ssTZev9/1Xz2dhAitvocKooWmamg54BuF0JF7HBPDbmxo9/Xj9qY0srn3y/HUBmHelDc7mvNj3NyFGj+Jp/fdPSGbucKc0UNelTwgkJfBq6pqP4Xa2q0xCptz3HtiC3BKwMAzDPlRt+4gY8RoxSOFOS/Px4p8rDLxkjlU4HIYBIx4OrwPzXQ1NS61hcUyaOZn4owhsTWbArgJspOvdBhfeVm/9eUXfERg/MJ/dbeo15rUUUonXHIfPEN22U8Ns7OkrmwDDUrHe14ERkTTA0HDjDBgkJD4Lu92ms0+/Q0iGCEyeYGIjJK7ASGFnp7CCv7fb08llPXqEHNRof6WIyvTlVq/9+7VNgIVvMJoLuVc8zNpICllwUMZr3bZrHw5sTtXMqwBs9wMDCk5NYzEkgUw8CIV1UWE0DbnvRdB1Hx8fek6yYknbkNRezacgzytfH3pz+UiBUTxsBJjl03CWBIwV78OwN4FQDJmlHJfhCy2ARY0psT0lkVeAJV5IY7wUsVF4icK6qDCSgxGT+VZhI8B+8ykSFwFLQzKwpsmAMS9zaDirFQUiwJBARO9n0jLs6AAEKCxm6bgeXXHsPj6RAwMxRKVzp2tOxDb4k0/itWZgRIzWQkcAZhkmV1jSoDl4skIoTPtk2ReAhfE2asDOgW2jGbBeeQmw3oC5ENuTxe4mCov9m2zJnQzMEZtukhs2W79twzhiYPjUFJAGrK7XrLC0sTuFxe6oPxk/92g7k8ib3TZg4X5/HwMRyxaEEPPAwlY2aQLGvExhc2BQGP4iMARICknZ8sBHx5sBq6rVqlz5KTAj4YCtHTALyQgMQbGZAPsegakDNe1zvpcEFhUqvExh4f6LeJHptiYd0PdEYZzLOCSFl4UkZw9fKFI07YPPYYLLgCV3akTEC0lVDlgErJXFAjCnsFEtAUMaccAsJFVBE2CWv2jjVYUhIhGTMjJ4oeTQTUZalIDFkPS7JAGjadbrBAw5m4ClXXIXrQSMElF2e1bWCLAUM1NgoKQKkyVSS4KV1dqcQObA8hT0ABhomcKYF/wUiUmLLIcJoDIw3aASsAN4ceVa3jViDaDnux1OE68qXC6r1eVSKpXnIYnbLDAu9VUyPbaU2B1lLwpBX+nnhasQi4WYTpArHVSuAMZVBeew8H4HLxoPI8qugOOY9OdVBuTNvAQYBEYtHbCDAFuq9HVCqudCHRl+si20TpudHUFZbDEHn2j5aULZq6cbceldLE5IXo1cewZGvETYtUlwQiiWZ1aW0X5OJttWQWFP3yWf/nbAxBarXL+wRwsu7Rp/+VZbejUyDnDQK/3J64bsNdz+qPaFv1X8l99ivvxXk1dn6Bz5ml4+ZX8A6EFhKNtGU3wAAAAASUVORK5CYII=";
+/* 11 upgrade icons for the flavor builds, 16×16 each, drawn in Pixelwright. Shown with gearIconHtml(id). */
+const GEAR_ICONS_C_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALAAAAAQCAMAAACBdQWCAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAxdJREFUeNqNlo1ymzAQhHtjOsCYOgIXXsHx0Fjv/3bdvTv9UZJm7bGRQOhjWU78OJWozvf5zi8P8cM+aXGTX+8pe0pPdfZ6Ou06mV5+Ut05jjxN79TnxDKOQ8X4iq/UkvtdhN+79kjcEmeYnJFnfzy8EYreFBgb2inaVF7jz8TN9cjzUT4nwOnqh9BXwB+vD6GtyutaFp1/c2LwhtbUDHylKmAZjNqJnVQu+QJMvlethR5QfUlpcwv8yDjUwNv6W8TBGl60b283JsT+SjQy8PXaU0A2YLoxiAS53YwYwCoHdt5xcMfPMizPnA7ZxoFq7soWAolTJkLF66iZ95hZAe9CgdiBOUEP4DQB/nB3pmDA5P01dd0wdO58TlTOUAs3bhvPuMq6rjoD+p5PAFchBm4G1hhjwvbsKbRC3hgjiT0SMFgzYRlx2gSh/k4AVtkA5mkpwBLsIfTWNq4OLEJgJEHW9/cMzMdtmWcgl5sSc4ARzKIbTCdw3Pc90uIELDC4ACsvywQBfYPaogH3PHQJMXqCngTONSNFghEWhVRoDYS21F+ILp84fBCmAy8mVGIHtjjgJzss4LtABP6zo3Ffui46MEb3hDaHC68RSwAwQ5GB9ZlbmWEYTntd8zyn3eawDsfdd71eWlr+Bdaa9muS6aou4GLlcsnA3U7gBcDo0QEczlLT6/XlmuylUx1mKAqwbAS2p07AGxJvAnaHWUUEnJt+KAKf1GG6O1F6RtQIxzVgBIM/2uUDYnnoCNyUuSoSkoHJ6yHWPIA68eqQ2mFwbpvxGnCqoxkYF63EV4uEuZscJrECX3IRIewOm73wH8sQI2HAmTGsK5hTPhp/aWuTYTqMQv6Vw7LMtPnqK4dkXK9rlbs2/RL0ucsOV6FgCascriLcABPXA1E5rNufOXyIhK3P1lEcTitFctsTF7lM9v3broczCkk6O4uaVYmyzq0rV44EbLye4JJhfSj/n+G67h0qS/N+kBuHheP4MmV2wtCyUjRt3NAZh9bAtcMfjdBX8eWl+Vvviyfvl9/d3bbzW+JxxOnr5KH9FzIgYo64jMkFAAAAAElFTkSuQmCC";
 /* 6 crowd icons, 16×16 each, in CROWDS order: head-and-shoulders crops of the customer sprites, drawn in Pixelwright. Shown with iconHtml("crowd",id). */
 const CROWD_ICONS_PNG="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAAQCAMAAADeZIrLAAAAnFBMVEUAAAArIRhKKhx6RCioajrTmlzJeAr1swH/2D3/86COKi7COy7kVy7yilvJp3rq1qj/9+AufUZYs2ib4Io/fqh/xOjY8v9SPihvVjiKa0apil/Cc1Dqp3z71bCUUy/Eg0/jrXpVMB+CUC+tdEc6KjBcQkiGZV5fWmaTjpnLx89PMXeLX7+5lOQqPG49YqNKo987TGFffZmTqb3X4uxbEE2dAAAAAXRSTlMAQObYZgAAAh9JREFUeNqFlOtuozAUhHNCukGyUdiu2D+w9eKCIOmF93+7zrnYEFq1ozgxGOY740sOLCKSloS+KN/Y64dheWTb995T0zTpHi2i9/d8YwekB9F6vR+HXr6oeOtfliuBRpM9Yf4Pp3R9Ndnj9KK6bUNuaI0GyBmy/zjgkitBYpbTqrL/PMvjr+YPwi2VcBeBxicTG+K6Nl0ubGflryHo+hyh67UXwIFuWcmxLEvvy/Ks4yEEbUBogmGAwTD0luDUmgpNEOOZCbHv7wPjPXWEvwCUsAfg/aitFwfqqIExt7Y1/78g5PFxTO8rIM0oT6qTG/8xzLIAnwAdvKVlAP36DlAU/zpVcdSMITjn4G8JZYrzFIBQdfIRfyHAfztFoQKgWgEoie1RkQB0FtdV5/KxxFagROhQAOpPANtEKwAV8gR8CdD99ISJczh+wmDCGkAJkPnvx7k8neHBAJKXJZllycuaTqK0gVF9n/os3kOby5rH680N3uRp62s9iKw1KYBOvFAUsBFj9H5hg8V7LCVVEPm29drDKSkK3h/eF0UNiBwZBkjHImwy05kRJOsUKpTBgLhEfBTQUsVndp7nyfNmEoCra+cU8HYnO/sc2RIpAATspMAxe6qwgxfUj/8GALq2gn8DwuQ7vHXBNoQzc44EwCWf/BpdGP55hFA9/zz+5vXVScI8EoX018NHUQAceJomQpvgf1AACPg68tPDmgFd+gD3dVeBARe+/wAAAABJRU5ErkJggg==";
 /* 6 forecast icons, 16×16 each, in WEATHERS order, drawn in Pixelwright. Shown with iconHtml("weather",id). */
@@ -853,6 +856,7 @@ document.documentElement.style.setProperty("--flavorIcons",`url(${FLAVOR_ICONS_P
 document.documentElement.style.setProperty("--spotIcons",`url(${SPOT_ICONS_PNG})`);
 document.documentElement.style.setProperty("--gearIconsA",`url(${GEAR_ICONS_A_PNG})`);
 document.documentElement.style.setProperty("--gearIconsB",`url(${GEAR_ICONS_B_PNG})`);
+document.documentElement.style.setProperty("--gearIconsC",`url(${GEAR_ICONS_C_PNG})`);
 document.documentElement.style.setProperty("--crowdIcons",`url(${CROWD_ICONS_PNG})`);
 document.documentElement.style.setProperty("--weatherIcons",`url(${WEATHER_ICONS_PNG})`);
 document.documentElement.style.setProperty("--hudPng",`url(${HUD_PNG})`);
@@ -1033,12 +1037,12 @@ function flavorSupplies(recipes){return [...new Set(recipes.flatMap(rk=>Object.k
 function fitsShelf(recipes){return flavorSupplies(recipes).length<=standLv().shelf}
 function swapOptions(rk){return S.recipes.filter(r=>fitsShelf([...S.recipes.filter(x=>x!==r),rk]))} // the flavors whose leaving alone makes room for rk
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
-const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name},gearB:{ids:["sunhat","awning","ponchos","icecrush","thermo","jug","shavedice","lemonzest","plaque","zester","tipjar","piggy","selloutbanner","rainjar","clover","wholesale","pitcher","squeezerpro","lemontree"],name:id=>GEAR.find(g=>g.id===id).name},crowd:{ids:["kids","parents","athletes","tourists","foodies","artists"],name:id=>CROWDS[id].name},weather:{ids:["sunny","hot","perfect","cloudy","rainy","windy"],name:id=>WEATHERS[id].name}};
+const ICONS={supply:{ids:["cups","lemons","sugar","ice","strawberries","mint","condmilk","ginger","blacksalt","chia","sparkling","rosewater","seasalt","blacktea","cucumbering","signs"],name:id=>INGREDIENTS[id].name},flavor:{ids:["classic","strawberry","limonana","brazilian","shikanji","chia","citron","rosewater","salted","palmer","cucumber","ramune"],name:id=>RECIPES[id].name},spot:{ids:["Maple St. Spot","School Gate","Riverside Park","Pool Entrance","Little League Field","Downtown Crossing","Farmers Market","Boardwalk","Skate Park","Dog Park","Outdoor Cinema","Train Station","The Marina"],name:id=>id},gearA:{ids:["painted","mega","brother","chalk","bigsign","secondcart","franchiseflag","loyalty","pricetag","chalkmenu","honeypot","mascot","map","sponsor","tourbus","foodblog","passport","special","dice","grapevine"],name:id=>GEAR.find(g=>g.id===id).name},gearB:{ids:["sunhat","awning","ponchos","icecrush","thermo","jug","shavedice","lemonzest","plaque","zester","tipjar","piggy","selloutbanner","rainjar","clover","wholesale","pitcher","squeezerpro","lemontree"],name:id=>GEAR.find(g=>g.id===id).name},gearC:{ids:["stickers","picnic","palette","sprinkles","silvertray","frostymugs","bottles","gummies","straws","icechest","rainbow"],name:id=>GEAR.find(g=>g.id===id).name},crowd:{ids:["kids","parents","athletes","tourists","foodies","artists"],name:id=>CROWDS[id].name},weather:{ids:["sunny","hot","perfect","cloudy","rainy","windy"],name:id=>WEATHERS[id].name}};
 function iconHtml(kind,id,big){const k=ICONS[kind];const i=k.ids.indexOf(id);if(i<0)console.warn("iconHtml: unknown "+kind+" icon id",id);return `<span class="icon ${kind}${big?" big":""}" style="--i:${i}" role="img" aria-label="${escAttr(k.name(id))}"></span>`}
-/* Upgrade icons ship in two sheets (A = first 20 of GEAR, B = the rest); gearIconHtml picks the right one.
+/* Upgrade icons ship in three sheets (A and B hold the first upgrades, C the flavor-build ones); gearIconHtml picks the right one.
    Sheet A still holds the art of the removed Town Grapevine ("grapevine"), and sheet B that of the removed
    Shaved Ice Machine ("shavedice"), so the frames after them keep their places. */
-function gearIconHtml(id,big){if(ICONS.gearA.ids.includes(id))return iconHtml("gearA",id,big);if(ICONS.gearB.ids.includes(id))return iconHtml("gearB",id,big);return ""}
+function gearIconHtml(id,big){if(ICONS.gearA.ids.includes(id))return iconHtml("gearA",id,big);if(ICONS.gearB.ids.includes(id))return iconHtml("gearB",id,big);if(ICONS.gearC.ids.includes(id))return iconHtml("gearC",id,big);return ""}
 /* Each morning rolls a temperature (°F) inside its sky's range. It never drops below 65°F. The temperature, not the sky,
    sets the ice in each cup, and it brings customers too: 1% more for every °F above 75°F, 1% fewer for every °F below. */
 const WX_TEMP={sunny:[72,86],hot:[90,104],perfect:[80,90],cloudy:[65,76],rainy:[65,72],windy:[66,79]};
@@ -1099,7 +1103,11 @@ const GEAR=[
  {id:"sponsor", name:"Team Sponsor", rar:"common",    desc:"Brings extra athletes to every spot (+12% customers). They love sour and chilled drinks, and dislike sweet."},
  {id:"tourbus", name:"Tour Bus Deal", rar:"common",    desc:"Brings extra tourists to every spot (+7% customers). They love fancy drinks and pay well."},
  {id:"foodblog",name:"Food Blog", rar:"common",    desc:"Brings extra foodies to every spot (+5% customers). They love fancy and sour drinks, and pay the most."},
+ {id:"stickers",name:"Sticker Sheet", rar:"common",    desc:"Kids pay 25% more for a cup that comes with a sticker. They love sweet drinks, and dislike sour."},
+ {id:"picnic",  name:"Picnic Basket", rar:"common",    desc:"Brings extra parents to every spot (+7% customers). They love fancy and sweet drinks."},
+ {id:"palette", name:"Paint Palette", rar:"common",    desc:"Brings extra artists to every spot (+7% customers). They love fancy and fizzy drinks."},
  {id:"passport",name:"Passport", rar:"epic",      desc:"+8% customers for each different origin on your menu (USA, Brazil, Japan…)."},
+ {id:"rainbow", name:"Rainbow Menu", rar:"legendary", desc:"+11% customers for each different tag on your menu (sweet, sour, chilled, fancy, fizzy)."},
  {id:"special", name:"Daily Special Board", rar:"rare",      desc:"Each morning one flavor is the Special. Everyone likes it best, so more people buy it."},
  {id:"dice",    name:"Lucky Dice", rar:"epic",      desc:"Each morning, roll between −25% and +65% customers. You see the roll before you open."},
  // weather & temperature
@@ -1118,6 +1126,14 @@ const GEAR=[
  {id:"selloutbanner",name:"Sellout Banner", rar:"rare",      desc:"+0.2★ reputation on days you sell out, and +40% customers the next day."},
  {id:"rainjar", name:"Rainy-Day Jar", rar:"rare",      desc:"Sunny, hot and perfect days add 20% of the money you made to the jar. The next cloudy or rainy day, it pays out."},
  {id:"clover",  name:"Four-Leaf Clover", rar:"rare",      desc:"Your hot streak bonus can grow to 40%. Once every 7 days, it saves a streak that would end."},
+ // flavor tags: each tag's build
+ {id:"sprinkles",name:"Rainbow Sprinkles", rar:"rare",      desc:"Sweet flavors earn +$0.40 per cup."},
+ {id:"silvertray",name:"Silver Tray", rar:"rare",      desc:"Customers pay 25% more for fancy flavors."},
+ {id:"frostymugs",name:"Frosty Mugs", rar:"rare",      desc:"Chilled flavors earn +$0.05 per cup for every °F above 75°F (95°F: +$1)."},
+ {id:"bottles", name:"Marble Bottles", rar:"rare",      desc:"Fizzy flavors earn +$0.75 per cup."},
+ {id:"gummies", name:"Sour Gummies", rar:"epic",      desc:"Sour flavors win over every crowd, and kids stop disliking sour."},
+ {id:"straws",  name:"Bendy Straws", rar:"epic",      desc:"Fizzy flavors win over every crowd."},
+ {id:"icechest",name:"Ice Chest", rar:"epic",      desc:"Days of 80°F or more: chilled flavors win over every crowd."},
  // stock & costs
  {id:"wholesale",name:"Wholesale Card", rar:"common",    desc:"All ingredient packs cost 15% less."},
  {id:"pitcher", name:"Grandma's Pitcher", rar:"common",    desc:"+10% customers every day."},
@@ -1257,16 +1273,23 @@ function computeBuild(){
   if(S.gear.includes("pitcher"))b.demandMult*=1.1;
   if(S.gear.includes("passport"))b.demandMult*=1+0.08*new Set(S.recipes.map(rk=>RECIPES[rk].origin.split(" · ")[0])).size;
   if(S.gear.includes("franchiseflag"))b.demandMult*=1+0.03*S.gear.length; // worth more with every slot you fill
+  if(S.gear.includes("rainbow"))b.demandMult*=1+0.11*new Set(S.recipes.flatMap(rk=>RECIPES[rk].tags)).size;
   if(S.gear.includes("tipjar"))b.tipMult*=3;
   return b;
 }
 function flavorTagSet(rk){return new Set(RECIPES[rk].tags)}
-/* How much one crowd likes ONE flavor: their loved tags on it and their hated tag. appealFor adds today's Special. */
+/* How much one crowd likes ONE flavor: their loved tags on it and their hated tag. appealFor adds today's Special.
+   Local Honey Pot, Sour Gummies, Bendy Straws and the Ice Chest (on warm days) win a tag new fans: they like it even more
+   than the crowds that love it. Honey Pot and Sour Gummies also end one crowd's dislike of their tag. The last three win
+   over every crowd but have one tag each to work with, so they win a little more (+0.65) than Honey Pot (+0.45). */
 function tasteFor(crowdKey,rk){
   const c=CROWDS[crowdKey];const ft=flavorTagSet(rk);let a=1.0;
   c.loves.forEach(t=>{if(ft.has(t))a+=0.28});
-  if(c.hates&&ft.has(c.hates)&&!(S.gear.includes("honeypot")&&c.hates==="SWEET"))a-=0.3;
+  if(c.hates&&ft.has(c.hates)&&!(S.gear.includes("honeypot")&&c.hates==="SWEET")&&!(S.gear.includes("gummies")&&c.hates==="SOUR"))a-=0.3;
   if(S.gear.includes("honeypot")&&ft.has("SWEET")&&c.loves.includes("FANCY"))a+=0.45;
+  if(S.gear.includes("gummies")&&ft.has("SOUR")&&!c.loves.includes("SOUR"))a+=0.65;
+  if(S.gear.includes("straws")&&ft.has("FIZZY")&&!c.loves.includes("FIZZY"))a+=0.65;
+  if(S.gear.includes("icechest")&&ft.has("CHILLED")&&!c.loves.includes("CHILLED")&&M&&M.temp>=80)a+=0.65;
   return a;
 }
 function appealFor(crowdKey,rk,b){
@@ -1279,14 +1302,17 @@ function crowdAppeal(crowdKey,b){ // menu-level: their favorite flavor on your m
   let best=0.4;S.recipes.forEach(rk=>{best=Math.max(best,appealFor(crowdKey,rk,b))});
   return best;
 }
-/* What each crowd will pay depends on the sky: heat loosens wallets, rain tightens them. */
+/* What each crowd will pay depends on the sky: heat loosens wallets, rain tightens them. With a flavor (rk), what they'll
+   pay for that flavor: the Silver Tray makes fancy flavors worth more. */
 const WX_PAY={sunny:1,hot:1.2,perfect:1.25,cloudy:0.95,rainy:0.9,windy:1};
-function payWillingness(crowdKey,b,wxKey){
+function payWillingness(crowdKey,b,wxKey,rk){
   let p=CROWDS[crowdKey].pay*(WX_PAY[wxKey]||1)*standLv().pay; // a nicer stand: everyone pays a little more
   if(S.gear.includes("lemonzest"))p*=1.15;
   if(S.gear.includes("bigsign"))p*=1.25; // Roof sign: the stand looks fancy from down the street
   if(S.gear.includes("jug")&&M&&M.temp>=80)p*=1.1; // Insulated Jug: ice-cold lemonade on a warm day
   if(S.gear.includes("plaque")&&S.rep>=4.5)p*=1.2;
+  if(S.gear.includes("stickers")&&crowdKey==="kids")p*=1.25; // Sticker Sheet: a sticker with every cup
+  if(rk&&S.gear.includes("silvertray")&&RECIPES[rk].tags.includes("FANCY"))p*=1.25;
   return p;
 }
 /* Buy rate vs price: gentle gains below a crowd's willingness, a steep cliff above it.
@@ -1319,9 +1345,10 @@ function genMorning(){
   if(S.gear.includes("lemontree")){S.treeDays=(S.treeDays||0)+1; // the tree only fills the stand up to what it holds
     M.treeLemons=Math.max(0,Math.min(15+25*S.treeDays,holdMax("lemons")-(S.inv.lemons||0)));if(M.treeLemons)addStock("lemons",M.treeLemons,0)}
 }
-/* Team Sponsor, Tour Bus Deal and Food Blog bring extra people of one crowd to every spot, on top of the usual crowd.
-   The crowds that pay less get more people, so the three are worth about the same. */
-const MAGNETS={sponsor:{crowd:"athletes",extra:0.12},tourbus:{crowd:"tourists",extra:0.07},foodblog:{crowd:"foodies",extra:0.05}};
+/* Team Sponsor, Tour Bus Deal, Food Blog, Picnic Basket and Paint Palette bring extra people of one crowd to every spot,
+   on top of the usual crowd. The crowds that pay less get more people, so they're all worth about the same. */
+const MAGNETS={sponsor:{crowd:"athletes",extra:0.12},tourbus:{crowd:"tourists",extra:0.07},foodblog:{crowd:"foodies",extra:0.05},
+  picnic:{crowd:"parents",extra:0.07},palette:{crowd:"artists",extra:0.07}};
 /* Flavors draw their fans: a crowd that loves a flavor on today's menu is 10% more likely to be the one walking by. */
 const FAN_PULL=1.1;
 function crowdMixFor(loc,menu=openingMenu()){
@@ -1358,7 +1385,7 @@ function demandEstimate(loc,signs,opts={}){
     let best=0,sumT=0;const tw={};
     menu.forEach(rk=>{
       const price=opts.prices?opts.prices[rk]:menuPrice(rk);
-      let pf=priceFactor(payWillingness(ck,b,useWx),price);
+      let pf=priceFactor(payWillingness(ck,b,useWx,rk),price);
       if(S.gear.includes("pricetag")&&(Math.abs(price%1)<0.01||Math.abs(price%1-0.5)<0.01))pf*=1.1;
       best=Math.max(best,appealFor(ck,rk,b)*pf*RECIPES[rk].appeal);
       const ap=appealFor(ck,rk,b); tw[rk]=ap*ap*ap*RECIPES[rk].appeal; sumT+=tw[rk];
@@ -1484,7 +1511,8 @@ function renderMorning(){
   const streakHtml=S.streak>=2?`<div class="streak">Hot streak: ${S.streak} ${plural(S.streak,"day")} in a row. Serve 3 out of 4 customers and make money today for a +${streakPct(S.streak+1)}% bonus tonight.</div>`:"";
   const diceHtml=M.dice?`<div class="callout">Lucky Dice: ${M.dice>=1?"+":"−"}${Math.round(Math.abs(M.dice-1)*100)}% customers today.</div>`:"";
   const bannerHtml=M.banner?`<div class="callout">Sellout Banner: you sold out yesterday. +40% customers today.</div>`:"";
-  const news=diceHtml+bannerHtml+streakHtml;
+  const chestHtml=S.gear.includes("icechest")&&M.temp>=80&&S.recipes.some(rk=>RECIPES[rk].tags.includes("CHILLED"))?`<div class="callout">Ice Chest: it's warm, so chilled flavors win over every crowd today.</div>`:"";
+  const news=diceHtml+bannerHtml+chestHtml+streakHtml;
   $("#screen").innerHTML=`
   <div class="stage morning" style="${standVars()}">
     <div class="sky ${M.shownWx}" id="skyBox">
@@ -1763,8 +1791,7 @@ function serveOne(ck){
   for(const r of D.menu){roll-=w[r];if(roll<=0){rk=r;break}}
   // price acceptance uses the same curve as the demand estimate, so projections stay honest:
   // at or under their willingness they always buy; far above it, most walk — after one re-pick.
-  const will=payWillingness(ck,b,M.actualWx);
-  const tryBuy=r=>Math.random()<Math.min(1,priceFactor(will,menuPrice(r)));
+  const tryBuy=r=>Math.random()<Math.min(1,priceFactor(payWillingness(ck,b,M.actualWx,r),menuPrice(r)));
   if(!tryBuy(rk)){
     const alt=D.menu.filter(r2=>r2!==rk).sort((x,y)=>appealFor(ck,y,b)-appealFor(ck,x,b))[0];
     if(alt&&tryBuy(alt))rk=alt; else return "price";
@@ -1844,9 +1871,14 @@ function sleepUntil(t){ // simulation-time wait until the clock reaches t: scale
     const iv=setInterval(()=>{if(D&&D.skip||simNow()>=t){clearInterval(iv);res()}},40);
   });
 }
+/* What n cups bring in: the price, plus what upgrades add to each cup of a flavor with their tag. */
 function saleRevenue(n,price,rk){
   let rev=n*price;
   if(S.gear.includes("zester")&&rk&&RECIPES[rk].tags.includes("SOUR"))rev+=n*0.50;
+  const tags=rk?RECIPES[rk].tags:[];
+  if(S.gear.includes("sprinkles")&&tags.includes("SWEET"))rev+=n*0.40;
+  if(S.gear.includes("bottles")&&tags.includes("FIZZY"))rev+=n*0.75;
+  if(S.gear.includes("frostymugs")&&tags.includes("CHILLED")&&M.temp>75)rev+=n*0.05*(M.temp-75);
   return rev;
 }
 function tipRate(){
