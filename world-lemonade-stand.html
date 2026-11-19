@@ -1630,7 +1630,7 @@ function flavorCups(rk,inv=S.inv){const ice=icePerCup();return Math.min(cupsPoss
 function recipeHtml(rk){return Object.entries(cupNeeds(rk)).map(([k,v])=>`<span class="need${(S.inv[k]||0)<v?" short":""}">${v}${iconHtml("supply",k)}</span>`).join("")}
 function mDrawerHtml(id){
   const ing=INGREDIENTS[id],n=S.inv[id]||0,hold=holdMax(id),room=hold-n; // a pack bigger than the room left won't fit on the stand
-  const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 20% off.":""].filter(Boolean).join(" ");
+  const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 15% off.":""].filter(Boolean).join(" ");
   return `<div class="drawer" id="mDrawer">
     <div class="mLbl"><span>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}. ${hold<Infinity?`The limit is ${hold}.`:"There's no limit."}</small></div>
     ${rule?`<div class="rule">${rule}</div>`:""}
