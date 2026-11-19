@@ -28,4 +28,4 @@ Your 10 best runs go on the High scores board, with the cash and days of each. T
 - Ice goes in each cup for you. Hotter days use more: none under 70°F, up to 4 cubes at 100°F and up.
 - Each flavor has tags: Sweet, Sour, Fancy, Chilled, Fizzy. Each kind of customer likes different tags, and comes by a little more often when you sell a flavor they like.
 - Serve at least half the people who come and your stars go up. More stars bring more people.
-- Pick an upgrade after each day.
+- Pick an upgrade or a new flavor after each day. Rarer ones show up less often and do more.

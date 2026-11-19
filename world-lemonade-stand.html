@@ -87,7 +87,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .choice .ttl{font-size:var(--fs-lg);font-weight:900;display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
 .choice .desc{font-size:var(--fs-sm);margin-top:5px;line-height:1.38}
 .rar{font-size:var(--fs-xs);font-weight:900;text-transform:uppercase;letter-spacing:.07em;padding:3px 8px;border-radius:99px;white-space:nowrap;flex-shrink:0;align-self:flex-start}
-.rar.common{background:#ead6a8}.rar.rare{background:#d8f2ff}.rar.epic{background:#f28a5b}.rar.legendary{background:var(--lemon)}.rar.flavor{background:#2f3b33;color:#fff7e0}
+.rar.common{background:#ead6a8}.rar.rare{background:#d8f2ff}.rar.epic{background:#f28a5b}.rar.legendary{background:var(--lemon)}
 /* Pick cards (cardHtml): the ink border, then a frame in the card's colour, an art window and a white body.
    Upgrades: the frame is the rarity (tan, blue, red, gold); epic and legendary get Pixelwright corner caps, legendary a shine.
    Flavors sit on a chalkboard in a wood frame; cash is a coin pile on green. Art pixels are --px screen pixels. */
@@ -100,7 +100,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .cardArt{position:relative;display:flex;align-items:center;justify-content:center;gap:4px 10px;min-height:calc(24px*var(--px) + 12px);padding:6px;background:var(--artBg);border-radius:8px;overflow:hidden}
 .cardArt .icon{--sz:calc(16px*var(--px));vertical-align:0;filter:drop-shadow(0 calc(var(--px)*1px) 0 rgba(43,33,24,.25))}
 .cardBody{flex:1;display:block;background:#fff;border-radius:8px;padding:8px 10px 12px}
-.pick .rar{display:inline-block;margin-bottom:5px} /* the rarity, or "New Flavor", over the name */
+.pick .rar{display:inline-block;margin-bottom:5px} /* the rarity over the name ("Rare flavor" on a flavor) */
 .pick .ttl{display:block;line-height:1.2}
 .pick .from{display:block;font-size:var(--fs-xs);font-weight:800;opacity:.72;margin-top:2px}
 .pick .desc{display:block}
@@ -982,19 +982,21 @@ const LOCATIONS=[
   {name:"Train Station", traffic:27, bias:{tourists:4,athletes:2}, desc:"Travelers in a hurry."},
   {name:"The Marina", traffic:28, bias:{tourists:4,foodies:3}, desc:"Sailors and tourists with money to spend."}
 ];
+/* Flavors have rarities like upgrades, and rarer ones earn more. Flavors of the same rarity earn about the same:
+   appeal evens them out, after their tags, what a cup costs, how fast the fruit goes bad and the shelf room they take. */
 const RECIPES={
-  classic:{name:"Classic Sweet", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.75, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
-  strawberry:{name:"Strawberry Lemonade", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:3.25, needs:{strawberries:1},    desc:"Lemonade with fresh strawberries."},
-  limonana:{name:"Limonana", origin:"Levant",             tags:["CHILLED"],       appeal:1.03,price:3.00, needs:{mint:1},            desc:"Mint blended with crushed ice."},
-  brazilian:{name:"Brazilian Lemonade", origin:"Brazil",         tags:["SWEET","FANCY"], appeal:1.08,price:3.75, needs:{condmilk:1},        desc:"Creamy with condensed milk."},
-  shikanji:{name:"Shikanji", origin:"India",              tags:["SOUR"],          appeal:1.04,price:3.00, needs:{sugar:3,ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
-  chia:{name:"Agua de Limón con Chía", origin:"Mexico",          tags:["CHILLED"],       appeal:1.03,price:3.25, needs:{chia:1},            desc:"Lemonade with chia seeds."},
-  citron:{name:"Citron Pressé", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.04,price:3.50, needs:{lemons:3,sparkling:1},desc:"Paris cafe style. Tart and sparkling."},
-  rosewater:{name:"Sharbat-e-Limoo", origin:"Iran",               tags:["FANCY","SWEET"], appeal:1.07,price:3.75, needs:{sugar:3,rosewater:1},desc:"Lemon with rosewater."},
-  salted:{name:"Salted Lemonade", origin:"Vietnam",            tags:["SOUR"],          appeal:1.02,price:2.75, needs:{seasalt:1},         desc:"Salty lemon drink."},
-  palmer:{name:"Arnold Palmer", origin:"USA",                tags:["SWEET","SOUR"],  appeal:1.08,price:3.25, needs:{blacktea:1},        desc:"Half iced tea, half lemonade."},
-  cucumber:{name:"Cucumber Lemonade", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.03,price:3.00, needs:{cucumbering:1},     desc:"Cool cucumber lemonade."},
-  ramune:{name:"Ramune Lemonade", origin:"Japan",              tags:["FIZZY","SWEET"], appeal:1.06,price:3.25, needs:{sparkling:2},       desc:"Japanese soda-shop fizz."}
+  classic:{name:"Classic Sweet", rar:"common", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.75, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
+  strawberry:{name:"Strawberry Lemonade", rar:"common", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:3.25, needs:{strawberries:1},    desc:"Lemonade with fresh strawberries."},
+  limonana:{name:"Limonana", rar:"common", origin:"Levant",             tags:["CHILLED"],       appeal:1.03,price:3.00, needs:{mint:1},            desc:"Mint blended with crushed ice."},
+  brazilian:{name:"Brazilian Lemonade", rar:"epic", origin:"Brazil",         tags:["SWEET","FANCY"], appeal:1.08,price:3.75, needs:{condmilk:1},        desc:"Creamy with condensed milk."},
+  shikanji:{name:"Shikanji", rar:"common", origin:"India",              tags:["SOUR"],          appeal:1.04,price:3.00, needs:{sugar:3,ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
+  chia:{name:"Agua de Limón con Chía", rar:"common", origin:"Mexico",          tags:["CHILLED"],       appeal:1.03,price:3.25, needs:{chia:1},            desc:"Lemonade with chia seeds."},
+  citron:{name:"Citron Pressé", rar:"common", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.04,price:3.50, needs:{lemons:3,sparkling:1},desc:"Paris cafe style. Tart and sparkling."},
+  rosewater:{name:"Sharbat-e-Limoo", rar:"epic", origin:"Iran",               tags:["FANCY","SWEET"], appeal:1.07,price:3.75, needs:{sugar:3,rosewater:1},desc:"Lemon with rosewater."},
+  salted:{name:"Salted Lemonade", rar:"common", origin:"Vietnam",            tags:["SOUR"],          appeal:1.02,price:2.75, needs:{seasalt:1},         desc:"Salty lemon drink."},
+  palmer:{name:"Arnold Palmer", rar:"rare", origin:"USA",                tags:["SWEET","SOUR"],  appeal:1.08,price:3.25, needs:{blacktea:1},        desc:"Half iced tea, half lemonade."},
+  cucumber:{name:"Cucumber Lemonade", rar:"common", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.03,price:3.00, needs:{cucumbering:1},     desc:"Cool cucumber lemonade."},
+  ramune:{name:"Ramune Lemonade", rar:"rare", origin:"Japan",              tags:["FIZZY","SWEET"], appeal:1.06,price:3.25, needs:{sparkling:2},       desc:"Japanese soda-shop fizz."}
 };
 /* ---------- Inventory: ingredients, the shop ----------
    Every cup takes 2 lemons and 2 sugar, plus its flavor's own supplies (RECIPES needs, per cup). A few real recipes
@@ -1403,7 +1405,8 @@ function tagTip(t){
 }
 function flavorFans(tags){return Object.entries(CROWDS).filter(([,c])=>c.loves.some(t=>tags.includes(t))).map(([k,c])=>`${iconHtml("crowd",k)} ${c.name}`).join(", ")}
 function tagChips(tags,tips=true){return tags.map(t=>`<span class="tag"${tips?tip(tagTip(t)):""}>${t.charAt(0)+t.slice(1).toLowerCase()}</span>`).join("")}
-const RARITY={common:"Common",rare:"Rare",epic:"Epic",legendary:"Legendary"},RARITY_TIP="Rarer upgrades show up less often: common, rare, epic, then legendary.";
+const RARITY={common:"Common",rare:"Rare",epic:"Epic",legendary:"Legendary"},RARITY_TIP="Rarer cards show up less often: common, rare, epic, then legendary.";
+const RARITY_W={common:10,rare:7,epic:4,legendary:2}; // how often a card of each rarity is dealt, for upgrades and flavors alike
 function rarBadge(r){return `<span class="rar ${r}"${tip(RARITY_TIP)}>${r}</span>`}
 /* Your upgrade slots, shown wherever you make choices so upgrades never hide. */
 function shelfHtml(){
@@ -2120,8 +2123,8 @@ function afterReport(){
 let draftChoices=[],pendingDraft=null;
 function buildDraftPool(){
   const pool=[];
-  GEAR.forEach(g=>{if(!S.gear.includes(g.id))pool.push({kind:"gear",id:g.id,w:g.rar==="legendary"?2:g.rar==="epic"?4:g.rar==="rare"?7:10})});
-  Object.keys(RECIPES).forEach(rk=>{if(!S.recipes.includes(rk)&&(fitsShelf([...S.recipes,rk])||swapOptions(rk).length))pool.push({kind:"recipe",id:rk,w:8})}); // a flavor no single swap can fit isn't offered
+  GEAR.forEach(g=>{if(!S.gear.includes(g.id))pool.push({kind:"gear",id:g.id,w:RARITY_W[g.rar]})});
+  Object.keys(RECIPES).forEach(rk=>{if(!S.recipes.includes(rk)&&(fitsShelf([...S.recipes,rk])||swapOptions(rk).length))pool.push({kind:"recipe",id:rk,w:RARITY_W[RECIPES[rk].rar]})}); // a flavor no single swap can fit isn't offered
   pool.push({kind:"cash",id:"cash",w:5});
   return pool;
 }
@@ -2141,21 +2144,21 @@ function drawDraft(skip=[]){
 }
 /* Pick cards. The frame shows the rarity: tan common, blue rare, red epic, gold legendary, with corner caps on epic
    and legendary. The art shows the type: an upgrade's item, a flavor's cup and tags on a chalkboard, a coin pile for cash.
-   The card's label says it in words too (the rarity, or "New Flavor"), so colour is never the only clue. Cards have no tips. */
+   The card's label says the rarity in words too ("Rare flavor" on a flavor), so colour is never the only clue. Cards have no tips. */
 function gearCard(g,full){
   return {cls:g.rar,rar:g.rar,label:RARITY[g.rar],art:gearIconHtml(g.id),title:g.name,desc:g.desc+(full?`<br><b class="warn">Your stand is full. You'll swap one out.</b>`:"")}}
 function draftCardHtml(p){
   if(p.kind==="gear")return gearCard(GEAR.find(x=>x.id===p.id),S.gear.length>=gearSlots());
   if(p.kind==="recipe"){const r=RECIPES[p.id];const needs=Object.entries(cupNeeds(p.id)).map(([k,v])=>v+iconHtml("supply",k)).join(" ");
     const price=S.menuPrices[p.id]!=null?S.menuPrices[p.id]:r.price;
-    return {cls:"flavor",label:"New Flavor",art:`${iconHtml("flavor",p.id)}<span class="artTags">${tagChips(r.tags,false)}</span>`,title:r.name,from:r.origin.replace(" · ",", "),
+    return {cls:"flavor",rar:r.rar,label:`${RARITY[r.rar]} flavor`,art:`${iconHtml("flavor",p.id)}<span class="artTags">${tagChips(r.tags,false)}</span>`,title:r.name,from:r.origin.replace(" · ",", "),
       desc:`${r.desc}<br>Sells for <b>${fmt(price)}</b>.<br>Each cup takes ${needs}.`+(fitsShelf([...S.recipes,p.id])?"":`<br><b class="warn">Your supply shelf is full. You'll swap a flavor out.</b>`)}}
   const amt=fmt(giftAmt());
   return {cls:"cash",art:`<i class="coinPile" role="img" aria-label="Coins"></i><b class="artAmt">+${amt}</b>`,title:"Cousin's Gift",desc:`+${amt} cash right now. It gets bigger later in the summer.`};
 }
 function cardHtml(c,attrs){
   const caps=c.rar==="epic"||c.rar==="legendary"?["tl","tr","bl","br"].map(k=>`<i class="orn ${k}" aria-hidden="true"></i>`).join(""):"";
-  return `<button class="choice pick ${c.cls}" ${attrs}><span class="cardArt">${c.art}<i class="outMark" aria-hidden="true"></i></span><span class="cardBody">${c.label?`<span class="rar ${c.cls}">${c.label}</span>`:""}<span class="ttl">${c.title}</span>${c.from?`<span class="from">From: ${c.from}</span>`:""}<span class="desc">${c.desc}</span></span>${caps}</button>`;
+  return `<button class="choice pick ${c.cls}" ${attrs}><span class="cardArt">${c.art}<i class="outMark" aria-hidden="true"></i></span><span class="cardBody">${c.label?`<span class="rar ${c.rar||c.cls}">${c.label}</span>`:""}<span class="ttl">${c.title}</span>${c.from?`<span class="from">From: ${c.from}</span>`:""}<span class="desc">${c.desc}</span></span>${caps}</button>`;
 }
 /* Re-roll deals three new cards for money. It costs $2, doubles with each re-roll, and is back to $2 at the next pick. */
 const REROLL_START=2;
@@ -2216,7 +2219,7 @@ let swapFlavors=[];
 function flavorGoes(rk,newRk){const rest=[...S.recipes.filter(x=>x!==rk),newRk];return flavorSupplies(S.recipes).filter(id=>!flavorSupplies(rest).includes(id))} // supplies that leave the shelf
 function showFlavorSwap(p){
   pendingDraft=p;swapOut=-1;swapFlavors=swapOptions(p.id);sfx.flip();
-  const card=rk=>{const c=draftCardHtml({kind:"recipe",id:rk}),lost=flavorGoes(rk,p.id).filter(id=>S.inv[id]>0);c.label=""; // a flavor you have isn't new
+  const card=rk=>{const c=draftCardHtml({kind:"recipe",id:rk}),lost=flavorGoes(rk,p.id).filter(id=>S.inv[id]>0);
     if(lost.length)c.desc+=`<br><b class="warn">You'll lose your ${listWords(lost.map(id=>`${S.inv[id]} ${iconHtml("supply",id)} ${INGREDIENTS[id].name.toLowerCase()}`))}.</b>`;
     return c};
   eveSheet(`
@@ -2339,7 +2342,7 @@ function showBuild(){
     <h3>My Stand (${S.gear.length}/${gearSlots()})</h3>
     <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${gearIconHtml(g.id)} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty ${plural(empty,"slot")}. You get to pick an upgrade after each day.</li>`:""}</ul>
     <h3>My flavors</h3>
-    <ul class="list">${S.recipes.map(rk=>{const r=RECIPES[rk];return `<li><b>${iconHtml("flavor",rk)} ${r.name}</b> ${tagChips(r.tags)}<br><span class="small">Liked by ${flavorFans(r.tags)}</span></li>`}).join("")}</ul>
+    <ul class="list">${S.recipes.map(rk=>{const r=RECIPES[rk];return `<li><b>${iconHtml("flavor",rk)} ${r.name}</b> ${rarBadge(r.rar)} ${tagChips(r.tags)}<br><span class="small">Liked by ${flavorFans(r.tags)}</span></li>`}).join("")}</ul>
   </div></div>`;
 }
 /* The ? help: the day's steps as picture tiles. */
