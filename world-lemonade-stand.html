@@ -73,7 +73,6 @@ h2{margin:0 0 8px;font-size:var(--fs-xl)}
 h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .center{text-align:center}
 .muted{opacity:.72}
-.small{font-size:var(--fs-sm)}
 .big{font-size:var(--fs-lg);font-weight:800}
 /* Cards / choices */
 .choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin-top:10px}
@@ -288,8 +287,9 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 /* ==================== Kid-friendly layer: tips, upgrade shelf, guess bar, the math ==================== */
 #tipBox{position:fixed;left:0;top:0;z-index:400;max-width:min(260px,calc(100vw - 16px));background:var(--ink);color:#fff;font-size:var(--fs-sm);font-weight:700;line-height:1.35;padding:8px 11px;border-radius:10px;box-shadow:0 4px 0 rgba(0,0,0,.25);pointer-events:none;opacity:0;transition:opacity .1s}
 #tipBox.on{opacity:1}
-[data-tip]:not(button){cursor:help}
-[data-tip]:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+#tipBox.card{width:min(250px,calc(100vw - 16px));max-width:none;padding:0;background:none;box-shadow:none;font-weight:400;line-height:normal} /* an upgrade's pick card, for its data-gear */
+[data-tip]:not(button),[data-gear]{cursor:help}
+[data-tip]:focus-visible,[data-gear]:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .playBtn{font-size:var(--fs-xl);padding:16px 64px}
 /* Title: the stand scene filling the screen. Its sprites share one pixel size, --px. */
 .scene.title,.title .sky{--px:2}
@@ -322,7 +322,6 @@ h2+.learn{margin:0 0 8px}
 #coachRing.on{animation:coachPulse 1.2s ease-in-out infinite}
 @keyframes coachPulse{50%{scale:1.05;opacity:.5}}
 @media (prefers-reduced-motion:reduce){#coach.on,#coachRing.on{animation:none}}
-.list{margin:6px 0 0;padding-left:20px;display:grid;gap:6px;line-height:1.45}
 /* How to play: the day's steps as picture tiles */
 .howSteps{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .howSteps li{--px:2;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--paper2);border-radius:12px;padding:10px 6px 8px;text-align:center;line-height:1.25}
@@ -422,7 +421,6 @@ h2+.learn{margin:0 0 8px}
   .hud{gap:12px}
   .helpBtn{margin-left:auto}
   .shelf .slots{order:3;flex:1 1 100%}
-  .shelf .btn{margin-left:auto}
   .slot{width:40px;height:40px}
   .highlights{grid-template-columns:repeat(2,1fr)}
   .scoreBig{font-size:var(--fs-2xl)}
@@ -482,6 +480,7 @@ button,input,select{touch-action:manipulation}
   .choices{grid-template-columns:1fr} /* draft picks and swaps: one clean column */
   .choice.pick{flex-direction:row}
   .pick .cardArt{flex:none;flex-direction:column;width:calc(32px*var(--px) + 12px)}
+  #tipBox.card{width:min(320px,calc(100vw - 16px))} /* the card lies on its side here, so it needs the width */
 }
 @media (max-width:380px){
   .hud{gap:8px}
@@ -637,12 +636,11 @@ body:has(.stage){overflow:hidden}
 .cbList{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 16px}
 .cb{display:flex;align-items:center;gap:6px}
 .cb.none{opacity:.4}
-/* The HUD's upgrade tray: your upgrade slots (5 to 7, by stand level), always in view. Tap it to see them all. On phones the slots shrink to pips. */
-.hudTray{display:flex;align-items:center;gap:4px;background:none;border:0;border-radius:10px;padding:4px;color:inherit}
-.hudTray:hover{background:rgba(255,247,224,.12)}
-.hudTray:focus-visible{outline:3px solid var(--blue)}
+/* The HUD's upgrade tray: your upgrade slots (5 to 7, by stand level), always in view. Point at or tap one to see its card. On phones the slots shrink to pips. */
+.hudTray{display:flex;align-items:center;gap:4px;padding:4px}
 .tSlot{width:38px;height:38px;border-radius:8px;background:rgba(255,247,224,.16);display:flex;align-items:center;justify-content:center}
 .tSlot.empty{background:none;border:2px dashed rgba(255,247,224,.3)}
+.tSlot[data-gear]:hover{background:rgba(255,247,224,.3)}
 .tSlot .icon{--sz:32px;vertical-align:0}
 .starNum{display:none}
 @media (max-width:1199px){ /* below the side panel's width: the supplies panel spans the ground */
@@ -686,7 +684,9 @@ body:has(.stage){overflow:hidden}
   .statChip.cupsAll{display:grid}
   .dock .cupsBy{display:none}
   .hudTray{gap:3px;padding:6px 4px}
-  .tSlot{width:10px;height:10px;border-radius:3px;background:var(--lemon)}
+  .tSlot{position:relative;width:10px;height:10px;border-radius:3px;background:var(--lemon)}
+  .tSlot[data-gear]:hover{background:var(--lemon)}
+  .tSlot:after{content:"";position:absolute;inset:-14px -2px} /* a pip is too small to tap: its tap area runs the height of the HUD and meets its neighbours' */
   .tSlot.empty{background:none;border:2px solid rgba(255,247,224,.4)}
   .tSlot .icon{display:none}
 }
@@ -732,7 +732,7 @@ body:has(.stage){overflow:hidden}
     <div class="hudDay" id="hudDayBox"><i class="hudIcon calPage"></i><span class="dayNum" id="hudDay"></span></div>
     <div class="hudWx" id="hudWx" tabindex="0" data-tip=""></div>
     <div class="starMeter" id="hudRepBox" tabindex="0" data-tip="Stars go up when at least half the people get lemonade. More stars bring more people." role="img"></div>
-    <button class="hudTray" id="hudTray" onclick="showBuild()"></button>
+    <div class="hudTray" id="hudTray" role="group"></div>
     <button class="hudBtn soundBtn" id="btnSound" aria-label="Sound on or off"><i class="hudIcon"></i></button>
     <button class="hudBtn helpBtn" id="btnHelp" aria-label="How to play">?</button>
     <button class="hudEnd" id="btnEnd" onclick="askEndRun()">End run</button>
@@ -1416,8 +1416,9 @@ function updateHUD(){
   // each star fills from the left, one art pixel at a time: 3.4 stars is three full stars and a star 4 of 11 pixels full
   $("#hudRepBox").innerHTML=[0,1,2,3,4].map(i=>`<i class="star" style="--f:${Math.round(clamp(S.rep-i,0,1)*11)}"></i>`).join("")+`<b class="starNum">${S.rep.toFixed(1)}</b>`;
   $("#hudRepBox").setAttribute("aria-label",`${S.rep.toFixed(1)} out of 5 stars`);
-  const tray=$("#hudTray"),n=S.gear.length;
-  tray.innerHTML=Array.from({length:gearSlots()},(_,i)=>S.gear[i]?`<span class="tSlot">${gearIconHtml(S.gear[i])}</span>`:`<span class="tSlot empty"></span>`).join("");
+  const tray=$("#hudTray"),n=S.gear.length,key=`${gearSlots()}:${S.gear}`;
+  if(tray.dataset.key!==key)tray.innerHTML=Array.from({length:gearSlots()},(_,i)=>S.gear[i]?`<span class="tSlot"${gearTip(S.gear[i])}>${gearIconHtml(S.gear[i])}</span>`:`<span class="tSlot empty"></span>`).join("");
+  tray.dataset.key=key; // redrawn only when the upgrades change, so a card being looked at stays put
   tray.setAttribute("aria-label",`My stand, ${n} of ${gearSlots()} upgrades`);
 }
 /* The HUD's money counts to each new amount, so buying and selling feel like coins changing hands. */
@@ -1443,17 +1444,17 @@ function tagTip(t){
   const fans=Object.values(CROWDS).filter(c=>c.loves.includes(t)).map(c=>c.name),foes=Object.values(CROWDS).filter(c=>c.hates===t).map(c=>c.name),drinks=`${t.toLowerCase()} drinks`;
   return [fans.length?`${listWords(fans)} love ${drinks}.`:"",foes.length?`${listWords(foes)} ${fans.length?"don't":`don't like ${drinks}`}.`:""].filter(Boolean).join(" ");
 }
-function flavorFans(tags){return Object.entries(CROWDS).filter(([,c])=>c.loves.some(t=>tags.includes(t))).map(([k,c])=>`${iconHtml("crowd",k)} ${c.name}`).join(", ")}
 function tagChips(tags,tips=true){return tags.map(t=>`<span class="tag"${tips?tip(tagTip(t)):""}>${t.charAt(0)+t.slice(1).toLowerCase()}</span>`).join("")}
-const RARITY={common:"Common",rare:"Rare",epic:"Epic",legendary:"Legendary"},RARITY_TIP="Rarer cards show up less often: common, rare, epic, then legendary.";
+const RARITY={common:"Common",rare:"Rare",epic:"Epic",legendary:"Legendary"};
 const RARITY_W={common:10,rare:7,epic:4,legendary:2}; // how often a card of each rarity is dealt, for upgrades and flavors alike
-function rarBadge(r){return `<span class="rar ${r}"${tip(RARITY_TIP)}>${r}</span>`}
+/* An upgrade you own: point at it, focus it or tap it to see its pick card (see showTip). */
+function gearTip(id){const g=GEAR.find(x=>x.id===id);return ` tabindex="0" role="img" data-gear="${id}" aria-label="${escAttr(`${g.name}: ${g.desc}`)}"`}
 /* Your upgrade slots, shown wherever you make choices so upgrades never hide. */
 function shelfHtml(){
   let slots="";
   for(let i=0;i<gearSlots();i++){const g=GEAR.find(x=>x.id===S.gear[i]);
-    slots+=g?`<span class="slot" tabindex="0"${tip(`${g.name}: ${g.desc}`)}>${gearIconHtml(g.id,true)}</span>`:`<span class="slot empty"></span>`}
-  return `<div class="shelf"><b>My Stand</b><div class="slots">${slots}</div><button class="btn sm ghost" onclick="showBuild()">See all</button></div>`;
+    slots+=g?`<span class="slot"${gearTip(g.id)}>${gearIconHtml(g.id,true)}</span>`:`<span class="slot empty"></span>`}
+  return `<div class="shelf"><b>My Stand</b><div class="slots">${slots}</div></div>`;
 }
 /* The day, step by step. The ? help lists them all. On a player's first day, tips walk them through the morning
    (see COACH) and the evening's hints show where the last two steps happen. */
@@ -2203,9 +2204,9 @@ function draftCardHtml(p){
   const amt=fmt(giftAmt());
   return {cls:"cash",art:`<i class="coinPile" role="img" aria-label="Coins"></i><b class="artAmt">+${amt}</b>`,title:"Cousin's Gift",desc:`+${amt} cash right now. It gets bigger later in the summer.`};
 }
-function cardHtml(c,attrs){
+function cardHtml(c,attrs,el="button"){
   const caps=c.rar==="epic"||c.rar==="legendary"?["tl","tr","bl","br"].map(k=>`<i class="orn ${k}" aria-hidden="true"></i>`).join(""):"";
-  return `<button class="choice pick ${c.cls}" ${attrs}><span class="cardArt">${c.art}<i class="outMark" aria-hidden="true"></i></span><span class="cardBody">${c.label?`<span class="rar ${c.rar||c.cls}">${c.label}</span>`:""}<span class="ttl">${c.title}</span>${c.from?`<span class="from">From: ${c.from}</span>`:""}<span class="desc">${c.desc}</span></span>${caps}</button>`;
+  return `<${el} class="choice pick ${c.cls}" ${attrs}><span class="cardArt">${c.art}<i class="outMark" aria-hidden="true"></i></span><span class="cardBody">${c.label?`<span class="rar ${c.rar||c.cls}">${c.label}</span>`:""}<span class="ttl">${c.title}</span>${c.from?`<span class="from">From: ${c.from}</span>`:""}<span class="desc">${c.desc}</span></span>${caps}</${el}>`;
 }
 /* Re-roll deals three new cards for money. It costs $2, doubles with each re-roll, and is back to $2 at the next pick. */
 const REROLL_START=2;
@@ -2380,18 +2381,7 @@ function buildSummary(){
   S.recipes.forEach(rk=>parts.push(iconHtml("flavor",rk)+" "+RECIPES[rk].name));
   return parts.length?parts.join(", "):"nothing yet.";
 }
-/* ---------- Modals: build + help ---------- */
-function showBuild(){
-  if(!S)return;
-  const empty=gearSlots()-S.gear.length;
-  $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal">
-    <div class="flex spread"><h2>My Upgrades</h2><button class="btn sm ghost" onclick="closeModal()">Close</button></div>
-    <h3>My Stand (${S.gear.length}/${gearSlots()})</h3>
-    <ul class="list">${S.gear.map(gid=>{const g=GEAR.find(x=>x.id===gid);return `<li><b>${gearIconHtml(g.id)} ${g.name}</b> ${rarBadge(g.rar)}<br><span class="small">${g.desc}</span></li>`}).join("")}${empty?`<li class="muted">${empty} empty ${plural(empty,"slot")}. You get to pick an upgrade after each day.</li>`:""}</ul>
-    <h3>My flavors</h3>
-    <ul class="list">${S.recipes.map(rk=>{const r=RECIPES[rk];return `<li><b>${iconHtml("flavor",rk)} ${r.name}</b> ${rarBadge(r.rar)} ${tagChips(r.tags)}<br><span class="small">Liked by ${flavorFans(r.tags)}</span></li>`}).join("")}</ul>
-  </div></div>`;
-}
+/* ---------- Modals: help ---------- */
 /* The ? help: the day's steps as picture tiles. */
 function showHelp(){
   const art=[iconHtml("spot","Maple St. Spot",true),iconHtml("supply","signs",true),iconHtml("supply","lemons",true),gearIconHtml("pricetag",true),
@@ -2414,22 +2404,25 @@ function showScores(){
   </div></div>`;
 }
 function closeModal(){$("#modalRoot").innerHTML=""}
-/* ---------- Tips: point at, focus or tap anything with data-tip to see what it means ---------- */
+/* ---------- Tips: point at, focus or tap anything with data-tip to see what it means, or an upgrade (data-gear) to see its card ---------- */
 const tipBox=document.createElement("div");tipBox.id="tipBox";tipBox.setAttribute("role","tooltip");document.body.appendChild(tipBox);
 let tipFor=null,tipAt=0;
 const touchOnly=()=>matchMedia("(hover:none)").matches;
+const TIPPED="[data-tip],[data-gear]";
 function showTip(el){
-  const t=el.getAttribute("data-tip");if(!t){hideTip();return}
-  tipFor=el;tipAt=performance.now();tipBox.textContent=t;tipBox.classList.add("on");
+  const t=el.getAttribute("data-tip"),g=GEAR.find(x=>x.id===el.getAttribute("data-gear"));if(!t&&!g){hideTip();return}
+  tipFor=el;tipAt=performance.now();tipBox.classList.toggle("card",!!g);
+  if(g)tipBox.innerHTML=cardHtml(gearCard(g,false),"","div");else tipBox.textContent=t;
+  tipBox.classList.add("on");
   const r=el.getBoundingClientRect(),w=tipBox.offsetWidth,h=tipBox.offsetHeight,pad=8;
   tipBox.style.left=Math.max(pad,Math.min(innerWidth-w-pad,r.left+r.width/2-w/2))+"px";
   tipBox.style.top=(r.top-h-8>=pad?r.top-h-8:r.bottom+8)+"px";
 }
 function hideTip(){tipFor=null;tipBox.classList.remove("on")}
-document.addEventListener("mouseover",e=>{if(touchOnly())return;const el=e.target.closest("[data-tip]");if(el){if(el!==tipFor)showTip(el)}else if(tipFor)hideTip()});
-document.addEventListener("focusin",e=>{if(touchOnly())return;const el=e.target.closest("[data-tip]");if(el)showTip(el)});
+document.addEventListener("mouseover",e=>{if(touchOnly())return;const el=e.target.closest(TIPPED);if(el){if(el!==tipFor)showTip(el)}else if(tipFor)hideTip()});
+document.addEventListener("focusin",e=>{if(touchOnly())return;const el=e.target.closest(TIPPED);if(el)showTip(el)});
 document.addEventListener("focusout",()=>{if(!touchOnly())hideTip()});
-document.addEventListener("click",e=>{if(!touchOnly())return;const el=e.target.closest("[data-tip]");
+document.addEventListener("click",e=>{if(!touchOnly())return;const el=e.target.closest(TIPPED);
   if(el&&!el.matches("button,input")){if(el===tipFor)hideTip();else showTip(el)}else hideTip()});
 addEventListener("scroll",()=>{if(tipFor&&performance.now()-tipAt>250)hideTip()},{passive:true,capture:true}); // a tap can nudge the page; don't close the tip it just opened
 /* ---------- The first morning's tips: they walk a new player through it, one at a time ----------
