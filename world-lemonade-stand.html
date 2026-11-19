@@ -1201,7 +1201,7 @@ function toggleSpeed(){
   const b=document.querySelector("#spdBtn");if(b)b.textContent=spdLabel();
   sfx.flip();
 }
-/* Simulation time: ms of scaled time, so it runs twice as fast on Fast. It keeps running while the tab is hidden.
+/* Simulation time: ms of scaled time, so it runs twice as fast at 2x. It keeps running while the tab is hidden.
    A hidden tab wakes its timers only now and then, so every wait is "until" a time on this clock, never "for" a while:
    a late timer catches up on everything that came due instead of stretching the day. */
 let simT=0,simAt=performance.now();
@@ -1212,7 +1212,7 @@ function at(t,fn){
   const iv=setInterval(()=>{if(simNow()>=t){clearInterval(iv);fn()}},40);
 }
 function after(ms,fn){at(simNow()+ms,fn)}
-const spdLabel=()=>SPEED===2?"Fast":"Normal";
+const spdLabel=()=>`Speed: ${SPEED}x`;
 const spdBtnHtml=()=>`<button class="btn sm ghost" id="spdBtn" onclick="toggleSpeed()">${spdLabel()}</button>`;
 function newRun(kidId){
   const kid=KIDS.find(k=>k.id===kidId);
