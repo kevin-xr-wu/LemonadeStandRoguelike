@@ -982,25 +982,26 @@ const LOCATIONS=[
   {name:"Train Station", traffic:27, bias:{tourists:4,athletes:2}, desc:"Travelers in a hurry."},
   {name:"The Marina", traffic:28, bias:{tourists:4,foodies:3}, desc:"Sailors and tourists with money to spend."}
 ];
-/* Flavors have rarities like upgrades, and rarer ones earn more. Flavors of the same rarity earn about the same:
-   appeal evens them out, after their tags, what a cup costs, how fast the fruit goes bad and the shelf room they take. */
+/* Flavors have rarities like upgrades: common flavors have one tag, rare ones two, and epic ones are fancy. Rarer
+   flavors earn more, and flavors of the same rarity earn about the same: appeal evens out their tags and what a cup
+   costs. Shikanji's is higher because it takes two spots on the supply shelf. */
 const RECIPES={
   classic:{name:"Classic Sweet", rar:"common", origin:"USA · 1979",        tags:["SWEET"],         appeal:1.0, price:2.75, needs:{},                  desc:"Lemons, sugar and water. The first recipe."},
   strawberry:{name:"Strawberry Lemonade", rar:"common", origin:"USA",          tags:["SWEET"],         appeal:1.05,price:3.25, needs:{strawberries:1},    desc:"Lemonade with fresh strawberries."},
-  limonana:{name:"Limonana", rar:"common", origin:"Levant",             tags:["CHILLED"],       appeal:1.03,price:3.00, needs:{mint:1},            desc:"Mint blended with crushed ice."},
+  limonana:{name:"Limonana", rar:"common", origin:"Levant",             tags:["CHILLED"],       appeal:1.04,price:3.00, needs:{mint:1},            desc:"Mint blended with crushed ice."},
   brazilian:{name:"Brazilian Lemonade", rar:"epic", origin:"Brazil",         tags:["SWEET","FANCY"], appeal:1.08,price:3.75, needs:{condmilk:1},        desc:"Creamy with condensed milk."},
-  shikanji:{name:"Shikanji", rar:"common", origin:"India",              tags:["SOUR"],          appeal:1.04,price:3.00, needs:{sugar:3,ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
+  shikanji:{name:"Shikanji", rar:"common", origin:"India",              tags:["SOUR"],          appeal:1.14,price:3.00, needs:{sugar:3,ginger:1,blacksalt:1},desc:"Lemon drink with black salt and ginger."},
   chia:{name:"Agua de Limón con Chía", rar:"common", origin:"Mexico",          tags:["CHILLED"],       appeal:1.03,price:3.25, needs:{chia:1},            desc:"Lemonade with chia seeds."},
-  citron:{name:"Citron Pressé", rar:"common", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.04,price:3.50, needs:{lemons:3,sparkling:1},desc:"Paris cafe style. Tart and sparkling."},
+  citron:{name:"Citron Pressé", rar:"rare", origin:"France",            tags:["FIZZY","SOUR"],  appeal:1.11,price:3.50, needs:{sparkling:1},      desc:"Paris cafe style. Tart and sparkling."},
   rosewater:{name:"Sharbat-e-Limoo", rar:"epic", origin:"Iran",               tags:["FANCY","SWEET"], appeal:1.07,price:3.75, needs:{sugar:3,rosewater:1},desc:"Lemon with rosewater."},
-  salted:{name:"Salted Lemonade", rar:"common", origin:"Vietnam",            tags:["SOUR"],          appeal:1.02,price:2.75, needs:{seasalt:1},         desc:"Salty lemon drink."},
-  palmer:{name:"Arnold Palmer", rar:"rare", origin:"USA",                tags:["SWEET","SOUR"],  appeal:1.08,price:3.25, needs:{blacktea:1},        desc:"Half iced tea, half lemonade."},
-  cucumber:{name:"Cucumber Lemonade", rar:"common", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.03,price:3.00, needs:{cucumbering:1},     desc:"Cool cucumber lemonade."},
-  ramune:{name:"Ramune Lemonade", rar:"rare", origin:"Japan",              tags:["FIZZY","SWEET"], appeal:1.06,price:3.25, needs:{sparkling:2},       desc:"Japanese soda-shop fizz."}
+  salted:{name:"Salted Lemonade", rar:"common", origin:"Vietnam",            tags:["SOUR"],          appeal:1.04,price:2.75, needs:{seasalt:1},         desc:"Salty lemon drink."},
+  palmer:{name:"Arnold Palmer", rar:"rare", origin:"USA",                tags:["SWEET","SOUR"],  appeal:1.06,price:3.25, needs:{blacktea:1},        desc:"Half iced tea, half lemonade."},
+  cucumber:{name:"Cucumber Lemonade", rar:"common", origin:"Spa classic",       tags:["CHILLED"],       appeal:1.05,price:3.00, needs:{cucumbering:1},     desc:"Cool cucumber lemonade."},
+  ramune:{name:"Ramune Lemonade", rar:"rare", origin:"Japan",              tags:["FIZZY","SWEET"], appeal:1.09,price:3.25, needs:{sparkling:2},       desc:"Japanese soda-shop fizz."}
 };
 /* ---------- Inventory: ingredients, the shop ----------
    Every cup takes 2 lemons and 2 sugar, plus its flavor's own supplies (RECIPES needs, per cup). A few real recipes
-   take more: Citron Pressé is a glass of pressed lemon juice (3 lemons), Shikanji and Sharbat-e-Limoo are sweeter (3 sugar).
+   take more: Shikanji and Sharbat-e-Limoo are sweeter (3 sugar).
    Lemons are the big cost: 50¢ each, in bags of 10 (45¢ each by 30, 40¢ by 60). A flavor's own pack makes 16 cups.
    Stock persists between days — buying well IS the production decision now. */
 const BASE_NEEDS={lemons:2,sugar:2};
@@ -1025,7 +1026,7 @@ const INGREDIENTS={
 /* The supply shelf holds cups, lemons, sugar and ice, plus a few supplies for your flavors: 4 at stand level 1, and one
    more each level up (STAND_LEVELS shelf). A new flavor that needs more room than that comes in only if an old one goes out (showFlavorSwap). */
 const BASIC_SUPPLIES=["cups","lemons","sugar","ice"];
-function flavorSupplies(recipes){return [...new Set(recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))].filter(id=>!BASIC_SUPPLIES.includes(id))} // Shikanji and Sharbat-e-Limoo take extra sugar, Citron Pressé extra lemons: those stay with the basics
+function flavorSupplies(recipes){return [...new Set(recipes.flatMap(rk=>Object.keys(RECIPES[rk].needs||{})))].filter(id=>!BASIC_SUPPLIES.includes(id))} // Shikanji and Sharbat-e-Limoo take extra sugar: that stays with the basics
 function fitsShelf(recipes){return flavorSupplies(recipes).length<=standLv().shelf}
 function swapOptions(rk){return S.recipes.filter(r=>fitsShelf([...S.recipes.filter(x=>x!==r),rk]))} // the flavors whose leaving alone makes room for rk
 /* Pixel-art icons: ids lists each group's icons in sheet order. iconHtml(kind,id) draws one in text; big draws it at 2×. */
