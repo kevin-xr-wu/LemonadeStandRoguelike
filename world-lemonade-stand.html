@@ -1120,7 +1120,7 @@ const GEAR=[
  // money
  {id:"lemonzest",name:"Golden Lemons", rar:"epic",      desc:"Every crowd will pay 15% more."},
  {id:"plaque",  name:"Five-Star Plaque", rar:"epic",      desc:"At 4.5★ or higher, customers pay 20% more."},
- {id:"zester",  name:"Zester of Doom", rar:"rare",      desc:"Sour flavors earn +$0.50 per cup."},
+ {id:"zester",  name:"Zester of Doom", rar:"rare",      desc:"Athletes and foodies pay 50% more for sour flavors."},
  {id:"tipjar",  name:"Cracked Tip Jar", rar:"common",    desc:"Customers tip three times as much."},
  {id:"piggy",   name:"Compound Piggy", rar:"epic",      desc:"Each night, your piggy bank adds 3% of your money over $150 (up to $200)."},
  {id:"selloutbanner",name:"Sellout Banner", rar:"rare",      desc:"+0.2★ reputation on days you sell out, and +40% customers the next day."},
@@ -1303,7 +1303,8 @@ function crowdAppeal(crowdKey,b){ // menu-level: their favorite flavor on your m
   return best;
 }
 /* What each crowd will pay depends on the sky: heat loosens wallets, rain tightens them. With a flavor (rk), what they'll
-   pay for that flavor: the Silver Tray makes fancy flavors worth more. */
+   pay for that flavor: the Silver Tray makes fancy flavors worth more, and the Zester of Doom makes sour flavors worth
+   more to the crowds that love sour. */
 const WX_PAY={sunny:1,hot:1.2,perfect:1.25,cloudy:0.95,rainy:0.9,windy:1};
 function payWillingness(crowdKey,b,wxKey,rk){
   let p=CROWDS[crowdKey].pay*(WX_PAY[wxKey]||1)*standLv().pay; // a nicer stand: everyone pays a little more
@@ -1313,6 +1314,7 @@ function payWillingness(crowdKey,b,wxKey,rk){
   if(S.gear.includes("plaque")&&S.rep>=4.5)p*=1.2;
   if(S.gear.includes("stickers")&&crowdKey==="kids")p*=1.25; // Sticker Sheet: a sticker with every cup
   if(rk&&S.gear.includes("silvertray")&&RECIPES[rk].tags.includes("FANCY"))p*=1.25;
+  if(rk&&S.gear.includes("zester")&&RECIPES[rk].tags.includes("SOUR")&&CROWDS[crowdKey].loves.includes("SOUR"))p*=1.5;
   return p;
 }
 /* Buy rate vs price: gentle gains below a crowd's willingness, a steep cliff above it.
@@ -1875,7 +1877,6 @@ function sleepUntil(t){ // simulation-time wait until the clock reaches t: scale
 /* What n cups bring in: the price, plus what upgrades add to each cup of a flavor with their tag. */
 function saleRevenue(n,price,rk){
   let rev=n*price;
-  if(S.gear.includes("zester")&&rk&&RECIPES[rk].tags.includes("SOUR"))rev+=n*0.50;
   const tags=rk?RECIPES[rk].tags:[];
   if(S.gear.includes("sprinkles")&&tags.includes("SWEET"))rev+=n*0.40;
   if(S.gear.includes("bottles")&&tags.includes("FIZZY"))rev+=n*0.75;
