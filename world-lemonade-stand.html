@@ -376,6 +376,10 @@ h2+.learn{margin:0 0 8px}
 .packs .btn small{display:block;font-size:var(--fs-xs)}
 .packs .off{position:absolute;top:-9px;right:-5px;background:var(--lemon);color:var(--ink);border-radius:99px;padding:1px 6px;font-size:var(--fs-xs);font-style:normal;text-shadow:none;transform:rotate(6deg)} /* the bulk discount, as a sale sticker */
 .packs .btn[aria-disabled="true"]{filter:grayscale(.7);opacity:.55;cursor:not-allowed;transform:none}
+/* Under the packs once the supply limit stops one: it opens the stand upgrade, with the same green arrow as the one on the stand. */
+.upHint{justify-self:start;display:flex;align-items:center;gap:6px;padding:2px 0;background:none;border:0;color:var(--green2);font:inherit;font-size:var(--fs-sm);font-weight:800;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.upHint i{flex:none;width:16px;height:16px;background:var(--arrowPng) 0 0/200% 100% no-repeat;image-rendering:pixelated}
+.upHint:focus-visible{outline:3px solid var(--blue);border-radius:4px}
 .stepper button:active{transform:translateY(2px);box-shadow:none}
 .stepper{display:inline-flex;align-items:center;gap:4px}
 .stepper button{width:36px;height:36px;padding:0;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:10px;font-size:var(--fs-lg);font-weight:900;line-height:1;box-shadow:0 2px 0 rgba(43,33,24,.85)}
@@ -389,13 +393,15 @@ h2+.learn{margin:0 0 8px}
 /* Today's signs stand on the grass by the stand. --k is its place out from the stand, --side left or right. */
 .signSlot{--w:calc(16px*var(--px) + 16px);position:absolute;bottom:0;z-index:5;width:var(--w);height:var(--w);margin-left:calc(var(--w)/-2);left:calc(50% + var(--side)*(var(--standW,64)*.5px*var(--px) + var(--w)/2 + 2px + var(--k)*(var(--w) + 2px)));display:flex;align-items:flex-end;justify-content:center}
 .signSlot .icon{--sz:calc(16px*var(--px));filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
-/* The stand upgrade arrow stands on top of the stand in the morning. It bobs, green, once you have the money; grey until then. */
-.standUp{--a:calc(16px*var(--px));position:absolute;z-index:6;left:50%;bottom:calc((var(--standTop) + 1)*1px*var(--px) - 6px);margin-left:calc(var(--a)/-2 - 6px);padding:6px;background:none;border:0;border-radius:12px;cursor:pointer}
+/* The stand upgrade arrow stands on top of the stand in the morning, in a dashed box so it reads as something to tap.
+   The box bobs, green, once you have the money; it's grey until then. The arrow is never under 2× (32px), so phones at 1× can see and tap it. */
+.standUp{--a:calc(16px*max(var(--px),2));position:absolute;z-index:6;left:50%;bottom:calc(var(--standTop)*1px*var(--px) + 2px);margin-left:calc(var(--a)*-.5625 - 4px);padding:4px;background:rgba(255,253,244,.85);border:calc(var(--a)/16) dashed rgba(43,33,24,.45);border-radius:10px;box-shadow:0 2px 0 rgba(43,33,24,.2);cursor:pointer} /* the dashes are one of the arrow's art pixels thick */
 .standUp i{display:block;width:var(--a);height:var(--a);background:var(--arrowPng) 100% 0/200% 100% no-repeat;image-rendering:pixelated;filter:drop-shadow(0 2px 1px rgba(0,0,0,.3))}
-.standUp.ok i{background-position-x:0;animation:standUpBob 1.4s ease-in-out infinite}
-.standUp:focus-visible{outline:3px solid var(--blue)}
-@keyframes standUpBob{50%{translate:0 calc(-2px*var(--px))}}
-@media (prefers-reduced-motion:reduce){.standUp.ok i{animation:none}}
+.standUp.ok{border-color:var(--green2);animation:standUpBob 1.4s ease-in-out infinite}
+.standUp.ok i{background-position-x:0}
+.standUp:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+@keyframes standUpBob{50%{translate:0 calc(var(--a)/-8)}}
+@media (prefers-reduced-motion:reduce){.standUp.ok{animation:none}}
 /* Once the last cup is handed over, the Sold Out sign drops onto the stand. It covers the stand's own sign, which sits 14 art pixels up on every level. */
 .soldOut{display:none;position:absolute;left:50%;bottom:calc(14px*var(--px));transform:translateX(-50%);width:calc(40px*var(--px));image-rendering:pixelated;z-index:5}
 .soldOut.up{display:block;animation:soldOutDrop .4s ease-out}
@@ -511,6 +517,9 @@ body:has(.stage){overflow:hidden}
 .hudWx:empty,#app:not(:has(.stage)) .hudWx{display:none} /* only for the morning and the selling day */
 .stage{--px:2;position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden auto;background:#8a6b46}
 .stage .sky{--px:2;flex:1 0 auto;height:auto;display:flex;flex-direction:column;padding:calc(var(--hudH) + 18px) 12px calc(var(--skyRoom,84)*1px*var(--px))}
+/* With the upgrade arrow up, the sky also keeps room for its box over the stand: the 2px gap under it, the arrow (16px*max(px,2)),
+   8px of padding, the border (a sixteenth of the arrow on each side), its bob (an eighth) and 2px more so it never touches the spot card. */
+.stage .sky:has(.standUp){padding-bottom:max(var(--skyRoom,84)*1px*var(--px),var(--standTop)*1px*var(--px) + 12px + 1.25*16px*max(var(--px),2))}
 .stage .ground{flex:none;height:auto;z-index:auto;background-size:calc(64px*var(--px)) calc(32px*var(--px));padding:calc(12px*var(--px)) 12px calc(14px + env(safe-area-inset-bottom,0px))}
 .stage .ground:before{z-index:3;top:calc(-9px*var(--px));height:calc(14px*var(--px));background-size:calc(64px*var(--px)) calc(14px*var(--px))}
 .stage .stand{width:calc(var(--standW,64)*1px*var(--px))} /* --standW, --standTop and --skyRoom come from the stand's level (standVars) */
@@ -1148,7 +1157,7 @@ const GLASS_MAX=500, PRICE_MAX=10, MAX_DAYS=100;
    customers pay 10% more, the stand holds more of each supply (level 3 holds any amount), the supply shelf fits
    one more flavor supply, and there's one more upgrade slot. Ice has its own limit, iceHold: a hot day puts up to
    4 cubes in each cup. The art: png, w its width in art pixels, top how far
-   its top sits above the ground line, room the sky the stage keeps clear above the ground for it (and the arrow). */
+   its top sits above the ground line, room the sky the stage keeps clear above the ground for it (the CSS keeps more if the arrow's box needs it). */
 const STAND_LEVELS=[
  {png:STAND_PNG, w:64,top:61,room:84,pay:1,   hold:250,     iceHold:500,     shelf:4,slots:5},
  {png:STAND2_PNG,w:64,top:71,room:92,pay:1.1, hold:500,     iceHold:1000,    shelf:5,slots:6,cost:400},
@@ -1662,11 +1671,13 @@ function recipeHtml(rk){return Object.entries(cupNeeds(rk)).map(([k,v])=>`<span 
 function mDrawerHtml(id){
   const ing=INGREDIENTS[id],n=S.inv[id]||0,hold=holdMax(id),room=hold-n; // a pack bigger than the room left won't fit on the stand
   const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 15% off.":""].filter(Boolean).join(" ");
+  const atLimit=nextStandLv()&&ing.pack*BULK[BULK.length-1].mult>room; // the limit stops a pack, and a bigger stand would hold more
   return `<div class="drawer" id="mDrawer">
     <div class="mLbl"><span>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}. ${hold<Infinity?`The limit is ${hold}.`:"There's no limit."}</small></div>
     ${rule?`<div class="rule">${rule}</div>`:""}
     <div class="packs">${BULK.map((t,i)=>{const qty=ing.pack*t.mult,price=packPrice(id,i);
       return `<button class="btn" onclick="buyItem('${id}',${i})" data-f="buy-${id}-${i}"${S.cash<price||qty>room?' aria-disabled="true"':""} aria-label="Buy ${qty} ${ing.name.toLowerCase()} for ${fmt(price)}">+${qty}<small>${fmt(price)}</small>${t.off?`<i class="off">−${Math.round(t.off*100)}%</i>`:""}</button>`}).join("")}</div>
+    ${atLimit?`<button class="upHint" onclick="showStandUp()" data-f="upHint"><i aria-hidden="true"></i>Upgrade your stand to hold more.</button>`:""}
   </div>`;
 }
 function stepperHtml(key,val,downCall,upCall,downLabel,upLabel,atMin,atMax){
