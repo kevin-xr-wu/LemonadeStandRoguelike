@@ -1654,10 +1654,16 @@ function canMakeHtml(){
     return `<div class="fRow${n?"":" none"}" tabindex="0"${tip(cupsTip(rk))}>${iconHtml("flavor",rk,true)}<span class="fName">${RECIPES[rk].name}</span>
       <span class="fCups"><b>${n}</b>${plural(n,"cup")}</span>
       <span class="recipe" aria-label="Each cup takes ${listWords(Object.entries(cupNeeds(rk)).map(([k,v])=>`${v} ${supplyWord(k,v)}`))}">${recipeHtml(rk)}</span></div>`};
-  return `<div class="canMake"><div class="mLbl">Cups you can make</div>
+  return `<div class="canMake" tabindex="0"${tip(canMakeTip())}><div class="mLbl">Cups you can make</div>
     <div class="perCup"><span>Each cup also takes ${each("cups",1,S.inv.cups||0)}${ice?` ${each("ice",ice,Math.floor((S.inv.ice||0)/ice))}`:""}</span></div>
     <div class="fList" onwheel="wheelSideways(event,this)">${S.recipes.map(row).join("")}</div>
     ${S.recipes.length>1?`<div class="rule">Flavors share lemons and sugar.</div>`:""}</div>`;
+}
+/* The tip for the rest of the box, around the flavor rows: with one flavor it's that flavor's tip, with more it says what the numbers mean. */
+function canMakeTip(){
+  if(S.recipes.length===1)return cupsTip(S.recipes[0]);
+  const ice=icePerCup();
+  return `The big numbers are the cups each flavor can make from your supplies. Each cup takes the supplies under its name, plus a cup${ice?` and ${ice} ${supplyWord("ice",ice)}`:""}.`;
 }
 /* A flavor's tip in the supplies panel: what each cup of it takes, and the supply that sets its count (it runs out first). */
 function cupsTip(rk){
