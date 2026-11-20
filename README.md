@@ -21,6 +21,8 @@ Play as long as you like, up to day 100. Press End run in the top bar to stop an
 
 Your 10 best runs go on the High scores board, with the cash and days of each. The game saves the board in a cookie.
 
+When a run ends, press Share your score to text a friend a picture of your score and a link to the game.
+
 ## Core mechanics
 
 - You start with $30. The money you end with is your score. If you can't pay for one cup, the game ends.
