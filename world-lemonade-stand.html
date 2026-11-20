@@ -1039,6 +1039,10 @@ const INGREDIENTS={
   blacktea:{name:"Black Tea",pack:16,price:1.20},
   cucumbering:{name:"Cucumbers",pack:16,price:1.60}
 };
+/* Supplies in words: what one of them is called, and more than one. The rest go by their name ("2 sugar"). */
+const SUPPLY_WORDS={cups:["cup","cups"],lemons:["lemon","lemons"],ice:["ice cube","ice cubes"],strawberries:["strawberry","strawberries"],mint:["mint sprig","mint sprigs"],cucumbering:["cucumber","cucumbers"],chia:["scoop of chia seeds","scoops of chia seeds"]};
+function supplyName(id){return INGREDIENTS[id].name.replace(/\u00ad/g,"").toLowerCase()}
+function supplyWord(id,n){const w=SUPPLY_WORDS[id];return w?plural(n,w[0],w[1]):supplyName(id)}
 /* The supply shelf holds cups, lemons, sugar and ice, plus a few supplies for your flavors: 4 at stand level 1, and one
    more each level up (STAND_LEVELS shelf). A new flavor that needs more room than that comes in only if an old one goes out (showFlavorSwap). */
 const BASIC_SUPPLIES=["cups","lemons","sugar","ice"];
@@ -1081,7 +1085,7 @@ function overnight(){ // tonight, after the stand closes: returns what melts and
   const melt=Math.ceil((S.inv.ice||0)/2);if(melt>0){S.inv.ice-=melt;notes.push(`${melt} ${iconHtml("supply","ice")} ${plural(melt,"ice cube")} ${melt===1?"melts":"melt"}`)}
   Object.entries(SHELF).forEach(([id,days])=>{if(!(S.inv[id]>0))return;syncBatches(id);const lots=S.lots[id];let bad=0;
     while(lots.length&&tomorrow-lots[0].day>=days){bad+=lots[0].qty;lots.shift()}
-    if(bad){S.inv[id]-=bad;const names={lemons:["lemon","lemons"],strawberries:["strawberry","strawberries"],mint:["mint sprig","mint sprigs"],cucumbering:["cucumber","cucumbers"]};const nm=names[id]||[INGREDIENTS[id].name.toLowerCase(),INGREDIENTS[id].name.toLowerCase()];notes.push(`${bad} ${iconHtml("supply",id)} ${plural(bad,nm[0],nm[1])} ${bad===1?"goes":"go"} bad`)}});
+    if(bad){S.inv[id]-=bad;notes.push(`${bad} ${iconHtml("supply",id)} ${supplyWord(id,bad)} ${bad===1?"goes":"go"} bad`)}});
   return notes;
 }
 /* What one cup of a flavor takes, besides the cup and its ice. Lemon Squeezer Pro saves a lemon on every cup. */
@@ -1656,13 +1660,26 @@ function canMakeHtml(){
   const ice=icePerCup(),most=Math.max(0,...S.recipes.map(rk=>cupsPossible(rk,S.inv)));
   const each=(id,n,left)=>`<b class="need${left<most?" short":""}"${left<most?tip(`You'll run out of ${INGREDIENTS[id].name.toLowerCase()} first.`):""}>${n}${iconHtml("supply",id)}</b>`; // red when it stops a flavor before its lemons and sugar do
   const row=rk=>{const n=flavorCups(rk);
-    return `<div class="fRow${n?"":" none"}">${iconHtml("flavor",rk,true)}<span class="fName">${RECIPES[rk].name}</span>
+    return `<div class="fRow${n?"":" none"}" tabindex="0"${tip(cupsTip(rk))}>${iconHtml("flavor",rk,true)}<span class="fName">${RECIPES[rk].name}</span>
       <span class="fCups"><b>${n}</b>${plural(n,"cup")}</span>
-      <span class="recipe" aria-label="Each cup takes ${listWords(Object.entries(cupNeeds(rk)).map(([k,v])=>`${v} ${INGREDIENTS[k].name.toLowerCase()}`))}">${recipeHtml(rk)}</span></div>`};
-  return `<div class="canMake"><div class="mLbl">Cups you can make</div>
+      <span class="recipe" aria-label="Each cup takes ${listWords(Object.entries(cupNeeds(rk)).map(([k,v])=>`${v} ${supplyWord(k,v)}`))}">${recipeHtml(rk)}</span></div>`};
+  return `<div class="canMake" tabindex="0"${tip(canMakeTip())}><div class="mLbl">Cups you can make</div>
     <div class="perCup"><span>Each cup also takes ${each("cups",1,S.inv.cups||0)}${ice?` ${each("ice",ice,Math.floor((S.inv.ice||0)/ice))}`:""}</span></div>
     <div class="fList" onwheel="wheelSideways(event,this)">${S.recipes.map(row).join("")}</div>
     ${S.recipes.length>1?`<div class="rule">Flavors share lemons and sugar.</div>`:""}</div>`;
+}
+/* The tip for the rest of the box, around the flavor rows: with one flavor it's that flavor's tip, with more it says what the numbers mean. */
+function canMakeTip(){
+  if(S.recipes.length===1)return cupsTip(S.recipes[0]);
+  const ice=icePerCup();
+  return `The big numbers are the cups each flavor can make from your supplies. Each cup takes the supplies under its name, plus a cup${ice?` and ${ice} ${supplyWord("ice",ice)}`:""}.`;
+}
+/* A flavor's tip in the supplies panel: what each cup of it takes, and the supply that sets its count (it runs out first). */
+function cupsTip(rk){
+  const ice=icePerCup(),n=flavorCups(rk),needs=cupNeeds(rk),all={...needs,cups:1,...(ice?{ice}:{})};
+  const first=Object.keys(all).filter(id=>Math.floor((S.inv[id]||0)/all[id])===n),names=listWords(first.map(supplyName));
+  const what=n?`Your ${names} ${first.length>1||/s$/.test(names)?"run":"runs"} out after ${n}${first.includes("cups")?"":` ${plural(n,"cup")}`}.`:`You need more ${names} to make one.`;
+  return `Each cup takes ${listWords(Object.entries(needs).map(([k,v])=>`${v} ${supplyWord(k,v)}`))}. It's poured into a cup${ice?` with ${ice} ${supplyWord("ice",ice)}`:""}. ${what}`;
 }
 /* Cups of one flavor your supplies make, if it were the only one, capped by the cups and the ice. */
 function flavorCups(rk,inv=S.inv){const ice=icePerCup();return Math.min(cupsPossible(rk,inv),inv.cups||0,ice>0?Math.floor((inv.ice||0)/ice):Infinity)}
@@ -2440,7 +2457,7 @@ document.addEventListener("click",e=>{if(!touchOnly())return;const el=e.target.c
   if(el&&!el.matches("button,input")){if(el===tipFor)hideTip();else showTip(el)}else hideTip()});
 addEventListener("scroll",()=>{if(tipFor&&performance.now()-tipAt>250)hideTip()},{passive:true,capture:true}); // a tap can nudge the page; don't close the tip it just opened
 /* ---------- The first morning's tips: they walk a new player through it, one at a time ----------
-   The forecast, a spot, the middle pack of each supply in turn, then the carousel's arrow up to Open. Each tip
+   The forecast, a spot, the middle pack of each supply in turn, the carousel's arrow, the cups your supplies make, then Open. Each tip
    points at its control and moves on once you've done that part (or tapped Got it, where there's nothing you have
    to do). They end when the stand opens. While a tip shows, only the tip and its part of the screen take taps
    (see coachGate). at: the control it rings (several matches count as one box; a function when it changes as you
@@ -2453,6 +2470,9 @@ const COACH=[
       return first+(M.shopOpen===id?`Buy ${INGREDIENTS[id].pack*BULK[1].mult} ${nm.toLowerCase()}.`:`${first?"Tap":"Now tap"} ${nm}.${id==="ice"?" Hot days need more ice.":""}`)}},
   {id:"next",done:()=>M.card===SPOT_SLIDES.length-1,at:'#mSpot .arrow[data-d="1"]',use:"#mSpot", // the slides' signs and prices too
     say:()=>["Now tap the arrow to see signs and prices.",S.cash>=signPrice()?"Put up signs if you like, then tap the arrow.":"You can try signs another day. Tap the arrow to go on.",`Set your prices, then tap the arrow. ${HOW_STEPS[3][1]}`][M.card]},
+  {id:"cups",ok:true,at:"#mShop .canMake",say:()=>{const rk=S.recipes[0],n=flavorCups(rk),ice=icePerCup();
+    const uses=[...Object.entries(cupNeeds(rk)).map(([k,v])=>`${v} ${supplyWord(k,v)}`),"a cup",...(ice?[`${ice} ${supplyWord("ice",ice)}`]:[])];
+    return `${n?`You can make ${n} ${plural(n,"cup")}.`:"You can't make any cups yet."} Each one uses ${listWords(uses)}.`}},
   {id:"open",done:()=>false,at:"#btnOpen",use:"#mSpot",say:()=>"When you're ready, tap Open to start selling."}
 ];
 let coach=null; // {ok: the tips dismissed with Got it, bought: the supplies whose middle pack you bought, key: the tip on screen}
