@@ -2138,7 +2138,7 @@ function finishDay(){
           ${sellRows}
           ${upgradeBonus>0.004?`<div class="rRow"><span>Upgrade bonuses</span><span class="amt">+${fmt(upgradeBonus)}</span></div>`:""}
           <div class="rRow"><span>Tips</span><span class="amt">+${fmt(tips)}</span></div>
-          <div class="rTotal"><span>Money made today${D.sold?`<small>You used ${fmt(suppliesUsed)} on supplies today.</small>`:""}</span><span class="coinSpot"><span class="amt ${made>=0?"pos":"negc"}" id="madeAmt">${fmt(made)}</span></span></div>
+          <div class="rTotal"><span>Money made today${D.sold?`<small>Spent ${fmt(suppliesUsed)} on supplies today.</small>`:""}</span><span class="coinSpot"><span class="amt ${made>=0?"pos":"negc"}" id="madeAmt">${fmt(made)}</span></span></div>
           ${stamp}
         </div></div>
       </div>
