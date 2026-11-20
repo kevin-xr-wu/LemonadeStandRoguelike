@@ -1032,7 +1032,7 @@ const INGREDIENTS={
 };
 /* Supplies in words: what one of them is called, and more than one. The rest go by their name ("2 sugar"). */
 const SUPPLY_WORDS={cups:["cup","cups"],lemons:["lemon","lemons"],ice:["ice cube","ice cubes"],strawberries:["strawberry","strawberries"],mint:["mint sprig","mint sprigs"],cucumbering:["cucumber","cucumbers"],chia:["scoop of chia seeds","scoops of chia seeds"]};
-function supplyName(id){return INGREDIENTS[id].name.replace(/­/g,"").toLowerCase()}
+function supplyName(id){return INGREDIENTS[id].name.replace(/\u00ad/g,"").toLowerCase()}
 function supplyWord(id,n){const w=SUPPLY_WORDS[id];return w?plural(n,w[0],w[1]):supplyName(id)}
 /* The supply shelf holds cups, lemons, sugar and ice, plus a few supplies for your flavors: 4 at stand level 1, and one
    more each level up (STAND_LEVELS shelf). A new flavor that needs more room than that comes in only if an old one goes out (showFlavorSwap). */
