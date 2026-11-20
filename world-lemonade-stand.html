@@ -272,10 +272,9 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .eve .modal.endCard{max-width:600px}
 .endCard .receiptBox{margin:4px auto 18px;text-align:left} /* the run's receipt: money made, what it cost, the profit */
 .endAsk{max-width:440px}
-/* Share your score, where there's no share sheet for pictures: the picture to save and the message to copy */
+/* Share your score, where there's no share sheet for pictures: the picture to copy or save */
 .shareBox{max-width:460px}
-.sharePic{display:block;width:auto;max-width:100%;max-height:min(400px,38dvh);margin:4px auto 0;border-radius:12px} /* short enough that the whole box fits a phone */
-.shareMsg{display:block;width:100%;margin-top:12px;padding:10px 12px;border:0;border-radius:12px;background:var(--paper2);color:var(--ink);font:700 var(--fs-md)/1.4 var(--font-body);resize:none}
+.sharePic{display:block;width:auto;max-width:100%;max-height:min(480px,60dvh);margin:4px auto 0;border-radius:12px} /* short enough that the whole box fits a phone */
 a.btn{text-decoration:none}
 /* Upgrade your stand: the stand now and after, at 2×, standing on one line, then what the new level does */
 .standUpBox{max-width:460px}
@@ -2393,17 +2392,17 @@ function buildSummary(){
   S.recipes.forEach(rk=>parts.push(iconHtml("flavor",rk)+" "+RECIPES[rk].name));
   return parts.length?parts.join(", "):"nothing yet.";
 }
-/* ---------- Share your score: a picture of the run and a message with the link to the game ----------
+/* ---------- Share your score: a picture of the run, with the link to the game on it ----------
    endRun draws the picture straight away, so it's ready when Share is pressed: a phone only opens its share sheet
-   right from a tap. The share sheet gets the picture and the message, ready to text. Where there's no share sheet
-   for pictures, a box shows the picture to save and the message to copy. */
+   right from a tap. The share sheet gets the picture and a message with the link, ready to text. Where there's no
+   share sheet for pictures, a box shows the picture to copy or save. */
 const GAME_URL="https://kevin-xr-wu.github.io/LemonadeStandRoguelike/world-lemonade-stand.html";
 let shareRun=null; // the run that just ended: {cash, days, hl, standPng, text}, then file and url once the picture is drawn
 function prepShare(r){
   if(shareRun&&shareRun.url)URL.revokeObjectURL(shareRun.url);
   r.text=`I scored ${fmt(r.cash)} in ${r.days} ${plural(r.days,"day")} at World Lemonade Stand. Can you beat it? ${GAME_URL}`;
   r.ready=drawSharePic(r).then(blob=>{r.file=new File([blob],"lemonade-stand-score.png",{type:"image/png"});r.url=URL.createObjectURL(blob)})
-    .catch(()=>{}); // no picture: the message still goes
+    .catch(()=>{}); // no picture: the box says so
   shareRun=r;
 }
 function shareScore(){
@@ -2414,24 +2413,16 @@ function shareScore(){
   else showShareBox();
 }
 function showShareBox(){
-  const r=shareRun,copyPic=r.file&&navigator.clipboard&&navigator.clipboard.write&&window.ClipboardItem;
-  const copyBtn=(label,what)=>`<button class="btn gold" data-copy="${label}" onclick="copyShare(this,'${what}')">${label}</button>`;
+  const r=shareRun,canCopy=r.file&&navigator.clipboard&&navigator.clipboard.write&&window.ClipboardItem; // no copying pictures in an old browser, or on a page not on https
   $("#modalRoot").innerHTML=`<div class="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal shareBox">
     <div class="flex spread"><h2>Share your score</h2><button class="btn sm ghost" onclick="closeModal()">Close</button></div>
     ${r.url?`<img class="sharePic" src="${r.url}" alt="My score: ${fmt(r.cash)}">
-    <div class="flex mt" style="justify-content:center">${copyPic?copyBtn("Copy picture","pic"):""}<a class="btn ghost" href="${r.url}" download="lemonade-stand-score.png">Save picture</a></div>`:""}
-    <textarea class="shareMsg" readonly rows="3" aria-label="Message">${r.text}</textarea>
-    <div class="flex mt" style="justify-content:center">${copyBtn("Copy message","text")}</div>
+    <div class="flex mt" style="justify-content:center">${canCopy?`<button class="btn gold" onclick="copySharePic(this)">Copy</button>`:""}<a class="btn ghost" href="${r.url}" download="lemonade-stand-score.png">Save</a></div>`
+    :`<p>Sorry, the picture didn't work this time.</p>`}
   </div></div>`;
-  const msg=$(".shareMsg");msg.style.height=msg.scrollHeight+"px"; // tall enough for the whole message
 }
-/* Copy picture and Copy message each put one thing on the clipboard: most chat apps paste only one thing at a time.
-   The button just used says "Copied!" and the other goes back to its name, since the clipboard holds only the newest. */
-function copyShare(btn,what){
-  const done=()=>{document.querySelectorAll(".shareBox [data-copy]").forEach(b=>{b.textContent=b.dataset.copy});btn.textContent="Copied!"};
-  if(what==="pic"){navigator.clipboard.write([new ClipboardItem({"image/png":shareRun.file})]).then(done,()=>{btn.textContent="Couldn't copy"});return}
-  const byHand=()=>{$(".shareMsg").select();if(document.execCommand("copy"))done()}; // no clipboard API: an old browser, or a page not on https
-  if(navigator.clipboard)navigator.clipboard.writeText(shareRun.text).then(done,byHand);else byHand();
+function copySharePic(btn){
+  navigator.clipboard.write([new ClipboardItem({"image/png":shareRun.file})]).then(()=>{btn.textContent="Copied!"},()=>{btn.textContent="Couldn't copy"});
 }
 /* The picture: 1080×1350, with the art at 4×. The logo in the sky, the score card, then your stand on the home street,
    and the link on the ground. */
