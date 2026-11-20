@@ -2446,7 +2446,7 @@ document.addEventListener("click",e=>{if(!touchOnly())return;const el=e.target.c
   if(el&&!el.matches("button,input")){if(el===tipFor)hideTip();else showTip(el)}else hideTip()});
 addEventListener("scroll",()=>{if(tipFor&&performance.now()-tipAt>250)hideTip()},{passive:true,capture:true}); // a tap can nudge the page; don't close the tip it just opened
 /* ---------- The first morning's tips: they walk a new player through it, one at a time ----------
-   The forecast, a spot, the middle pack of each supply in turn, then the carousel's arrow up to Open. Each tip
+   The forecast, a spot, the middle pack of each supply in turn, the carousel's arrow, the cups your supplies make, then Open. Each tip
    points at its control and moves on once you've done that part (or tapped Got it, where there's nothing you have
    to do). They end when the stand opens. While a tip shows, only the tip and its part of the screen take taps
    (see coachGate). at: the control it rings (several matches count as one box; a function when it changes as you
@@ -2459,6 +2459,9 @@ const COACH=[
       return first+(M.shopOpen===id?`Buy ${INGREDIENTS[id].pack*BULK[1].mult} ${nm.toLowerCase()}.`:`${first?"Tap":"Now tap"} ${nm}.${id==="ice"?" Hot days need more ice.":""}`)}},
   {id:"next",done:()=>M.card===SPOT_SLIDES.length-1,at:'#mSpot .arrow[data-d="1"]',use:"#mSpot", // the slides' signs and prices too
     say:()=>["Now tap the arrow to see signs and prices.",S.cash>=signPrice()?"Put up signs if you like, then tap the arrow.":"You can try signs another day. Tap the arrow to go on.",`Set your prices, then tap the arrow. ${HOW_STEPS[3][1]}`][M.card]},
+  {id:"cups",ok:true,at:"#mShop .canMake",say:()=>{const rk=S.recipes[0],n=flavorCups(rk),ice=icePerCup();
+    const uses=[...Object.entries(cupNeeds(rk)).map(([k,v])=>`${v} ${supplyWord(k,v)}`),"a cup",...(ice?[`${ice} ${supplyWord("ice",ice)}`]:[])];
+    return `${n?`You can make ${n} ${plural(n,"cup")}.`:"You can't make any cups yet."} Each one uses ${listWords(uses)}.`}},
   {id:"open",done:()=>false,at:"#btnOpen",use:"#mSpot",say:()=>"When you're ready, tap Open to start selling."}
 ];
 let coach=null; // {ok: the tips dismissed with Got it, bought: the supplies whose middle pack you bought, key: the tip on screen}
