@@ -214,7 +214,7 @@ h3{margin:14px 0 6px;font-size:var(--fs-lg)}
 .amt{font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
 .rTotal{border-top:2px dashed #cdbf9d;margin-top:8px;padding-top:10px;font-weight:900}
 .rTotal .amt{font-size:var(--fs-xl);line-height:1}
-.rRow small,.rTotal small{display:block;font-family:var(--font-body);font-size:var(--fs-sm);font-weight:600;opacity:.7} /* a row's second line: what each cup cost, how many signs */
+.rRow small,.rTotal small{display:block;font-family:var(--font-body);font-size:var(--fs-sm);font-weight:600;opacity:.7} /* a row's second line: what each cup cost, the supplies used, how many signs */
 .coinSpot{position:relative;display:inline-block}
 .dropCoin{--s:2;position:absolute;bottom:30%;width:calc(var(--s)*10px);height:calc(var(--s)*10px);margin-left:calc(var(--s)*-5px);background:var(--coinPng) 0 0/calc(var(--s)*40px) 100% no-repeat;image-rendering:pixelated;pointer-events:none;animation:coinDrop .5s ease-in both}
 @keyframes coinDrop{0%{transform:translateY(-60px) rotate(-30deg);opacity:0}25%,80%{opacity:1}100%{transform:translateY(0) rotate(20deg) scale(.6);opacity:0}}
@@ -2118,6 +2118,8 @@ function finishDay(){
   const tonight=overnight(); // ice melts and old produce goes bad once you close
   const byCups=Object.entries(D.soldBy).sort((a,b2)=>b2[1]-a[1]);
   const sellRows=byCups.map(([rk,n])=>`<div class="rRow"><span><span tabindex="0"${tip(RECIPES[rk].name)}>${iconHtml("flavor",rk)}</span> ${n} ${plural(n,"cup")} at ${fmt(menuPrice(rk))}<small>Each cup cost ${fmtCents(D.costBy[rk]/n)} to make.</small></span><span class="amt">${fmt(n*menuPrice(rk))}</span></div>`).join("");
+  // what today's cups used in supplies: each flavor's cups times the cost per cup shown above it, so the player can check it
+  const suppliesUsed=byCups.reduce((s,[rk,n])=>s+n*Math.round(D.costBy[rk]/n*100),0)/100;
   const upgradeBonus=Math.round((D.revenue-Object.entries(D.soldBy).reduce((s,[rk,n])=>s+n*menuPrice(rk),0))*100)/100;
   const walked=D.awayPrice,ranOut=Math.max(0,unserved-walked),why=[];
   if(ranOut)why.push(`${ranOut} left because you ran out`);if(walked)why.push(`${walked} said it cost too much`);
@@ -2137,7 +2139,7 @@ function finishDay(){
           ${sellRows}
           ${upgradeBonus>0.004?`<div class="rRow"><span>Upgrade bonuses</span><span class="amt">+${fmt(upgradeBonus)}</span></div>`:""}
           <div class="rRow"><span>Tips</span><span class="amt">+${fmt(tips)}</span></div>
-          <div class="rTotal"><span>Money made today</span><span class="coinSpot"><span class="amt ${made>=0?"pos":"negc"}" id="madeAmt">${fmt(made)}</span></span></div>
+          <div class="rTotal"><span>Money made today${D.sold?`<small>Spent ${fmt(suppliesUsed)} on supplies today.</small>`:""}</span><span class="coinSpot"><span class="amt ${made>=0?"pos":"negc"}" id="madeAmt">${fmt(made)}</span></span></div>
           ${stamp}
         </div></div>
       </div>
