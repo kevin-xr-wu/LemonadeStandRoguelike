@@ -376,6 +376,10 @@ h2+.learn{margin:0 0 8px}
 .packs .btn small{display:block;font-size:var(--fs-xs)}
 .packs .off{position:absolute;top:-9px;right:-5px;background:var(--lemon);color:var(--ink);border-radius:99px;padding:1px 6px;font-size:var(--fs-xs);font-style:normal;text-shadow:none;transform:rotate(6deg)} /* the bulk discount, as a sale sticker */
 .packs .btn[aria-disabled="true"]{filter:grayscale(.7);opacity:.55;cursor:not-allowed;transform:none}
+/* Under the packs once the supply limit stops one: it opens the stand upgrade, with the same green arrow as the one on the stand. */
+.upHint{justify-self:start;display:flex;align-items:center;gap:6px;padding:2px 0;background:none;border:0;color:var(--green2);font:inherit;font-size:var(--fs-sm);font-weight:800;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.upHint i{flex:none;width:16px;height:16px;background:var(--arrowPng) 0 0/200% 100% no-repeat;image-rendering:pixelated}
+.upHint:focus-visible{outline:3px solid var(--blue);border-radius:4px}
 .stepper button:active{transform:translateY(2px);box-shadow:none}
 .stepper{display:inline-flex;align-items:center;gap:4px}
 .stepper button{width:36px;height:36px;padding:0;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:10px;font-size:var(--fs-lg);font-weight:900;line-height:1;box-shadow:0 2px 0 rgba(43,33,24,.85)}
@@ -1667,11 +1671,13 @@ function recipeHtml(rk){return Object.entries(cupNeeds(rk)).map(([k,v])=>`<span 
 function mDrawerHtml(id){
   const ing=INGREDIENTS[id],n=S.inv[id]||0,hold=holdMax(id),room=hold-n; // a pack bigger than the room left won't fit on the stand
   const rule=[id==="ice"?"Half melts every night.":SHELF[id]?`Fresh for ${SHELF[id]} ${plural(SHELF[id],"day")}.`:"",S.gear.includes("wholesale")?"Wholesale: 15% off.":""].filter(Boolean).join(" ");
+  const atLimit=nextStandLv()&&ing.pack*BULK[BULK.length-1].mult>room; // the limit stops a pack, and a bigger stand would hold more
   return `<div class="drawer" id="mDrawer">
     <div class="mLbl"><span>${iconHtml("supply",id)} ${ing.name}</span><small>You have ${n}. ${hold<Infinity?`The limit is ${hold}.`:"There's no limit."}</small></div>
     ${rule?`<div class="rule">${rule}</div>`:""}
     <div class="packs">${BULK.map((t,i)=>{const qty=ing.pack*t.mult,price=packPrice(id,i);
       return `<button class="btn" onclick="buyItem('${id}',${i})" data-f="buy-${id}-${i}"${S.cash<price||qty>room?' aria-disabled="true"':""} aria-label="Buy ${qty} ${ing.name.toLowerCase()} for ${fmt(price)}">+${qty}<small>${fmt(price)}</small>${t.off?`<i class="off">−${Math.round(t.off*100)}%</i>`:""}</button>`}).join("")}</div>
+    ${atLimit?`<button class="upHint" onclick="showStandUp()" data-f="upHint"><i aria-hidden="true"></i>Upgrade your stand to hold more.</button>`:""}
   </div>`;
 }
 function stepperHtml(key,val,downCall,upCall,downLabel,upLabel,atMin,atMax){
